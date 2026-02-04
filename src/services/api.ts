@@ -1,6 +1,6 @@
 import { APIResponse, Dataset } from '@/types/api';
 
-const API_BASE_URL = 'http://dev.local:7000/api/1';
+const API_BASE_URL = 'http://localhost:7000/api/1';
 
 export async function fetchDatasets(
   page: number = 1,
