@@ -1,17 +1,24 @@
-import { APIResponse, Dataset } from '@/types/api';
+import { APIResponse, Dataset, Organization } from '@/types/api';
 
-const API_BASE_URL = 'http://localhost:7000/api/1';
+const API_BASE_URL = 'https://dados.gov.pt/api/1';
 
 export async function fetchDatasets(
   page: number = 1,
   pageSize: number = 20,
+  organization?: string,
 ): Promise<APIResponse<Dataset>> {
   try {
-    const res = await fetch(
-      `${API_BASE_URL}/datasets/?page=${page}&page_size=${pageSize}`,
-      {
-        cache: 'no-store', // Ensure fresh data
-      },
+    console.log('fetchDatasets called with org:', organization);
+    let url = `${API_BASE_URL}/datasets/?page=${page}&page_size=${pageSize}`;
+    if (organization) {
+      url += `&organization=${organization}`;
+    }
+
+    console.log('API Fetch URL:', url);
+
+    const res = await fetch(url, {
+      cache: 'no-store', // Ensure fresh data
+    },
     );
 
     if (!res.ok) {
@@ -22,6 +29,53 @@ export async function fetchDatasets(
   } catch (error) {
     console.error('Error fetching datasets:', error);
     // Return empty state or rethrow depending on desired error handling
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchDataset(slug: string): Promise<Dataset> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/datasets/${slug}/`, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch dataset: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching dataset:', error);
+    throw error;
+  }
+}
+
+export async function fetchOrganizations(
+  page: number = 1,
+  pageSize: number = 20,
+): Promise<APIResponse<Organization>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/organizations/?page=${page}&page_size=${pageSize}`,
+      {
+        cache: 'no-store',
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch organizations: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching organizations:', error);
     return {
       data: [],
       page: 1,

@@ -1,38 +1,82 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import {
+  Header as AgoraHeader,
+  Brand,
+  Logo,
+  GeneralBar,
+  Areas,
+  Area,
+  Languages,
+  Language,
+  Unauthenticated,
+  NavigationBar,
+  NavigationLink,
+} from '@ama-pt/agora-design-system';
 
 export const Header = () => {
+  const headerRef = useRef<any>(null);
+  const router = useRouter();
+
   return (
-    <header className="bg-white border-b border-neutral-200">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-4">
-          {/* Logo area */}
-          <span className="text-2xl font-bold text-primary-900">dados.gov</span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-6 text-neutral-600 font-medium">
-          <Link
-            href="/datasets"
-            className="hover:text-primary-600 transition-colors"
-          >
-            Conjuntos de dados
+    <AgoraHeader ref={headerRef}>
+      <Brand>
+        <Logo>
+          <Link href="/" className="flex items-center">
+            <img src="/logo.png" alt="dados.gov" style={{ height: '43px' }} />
           </Link>
-          <a href="#" className="hover:text-primary-600 transition-colors">
-            Organizações
-          </a>
-          <a href="#" className="hover:text-primary-600 transition-colors">
-            Reutilizações
-          </a>
-          <a href="#" className="hover:text-primary-600 transition-colors">
-            Documentação
-          </a>
-          <div className="border-l border-neutral-300 h-6 mx-2"></div>
-          <a href="#" className="hover:text-primary-600 transition-colors">
-            Entrar / Registar
-          </a>
-        </nav>
-      </div>
-    </header>
+        </Logo>
+      </Brand>
+
+      <GeneralBar aria-label="Barra de utilidades">
+        <Areas aria-label="Áreas do portal">
+          <Area value="1" label="Portal" onClick={() => router.push('/')} />
+          <Area value="2" label="Iniciar Sessão" onClick={() => router.push('/login')} />
+        </Areas>
+
+        <Languages
+          aria-label="Selecionar idioma"
+          onChange={(lang: string) => console.log('Language:', lang)}
+        >
+          <Language value="pt" label="Português" abbr="PT" />
+          <Language value="en" label="English" abbr="EN" />
+          <Language value="es" label="Español" abbr="ES" />
+          <Language value="fr" label="Français" abbr="FR" />
+        </Languages>
+
+        <Unauthenticated
+          label="Inscrever-se"
+          aria-label="Registar"
+        />
+      </GeneralBar>
+
+      <NavigationBar
+        responsiveMenuLabel="Menu"
+        responsiveMenuAriaLabel="Abrir menu"
+        responsiveMenuBackToRootLabel="Voltar ao início"
+        modalMenuLabel="Navegação Principal"
+        modalAriaLabel="Menu de navegação"
+        modalCloseLabel="Fechar"
+      >
+        <NavigationLink>
+          <Link href="/datasets">Conjuntos de dados</Link>
+        </NavigationLink>
+        <NavigationLink>
+          <Link href="/organizations">Organizações</Link>
+        </NavigationLink>
+        <NavigationLink>
+          <Link href="/reuses">Reutilizações</Link>
+        </NavigationLink>
+        <NavigationLink>
+          <Link href="/documentation">Documentação</Link>
+        </NavigationLink>
+        <NavigationLink>
+          <Link href="/start">Primeiros passos</Link>
+        </NavigationLink>
+      </NavigationBar>
+    </AgoraHeader>
   );
 };

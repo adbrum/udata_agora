@@ -9,7 +9,7 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-nunito), Arial, Helvetica, sans-serif;
+  font-family: var(--font-noto-sans), Arial, Helvetica, sans-serif;
 }
 
 @theme {
@@ -34,4 +34,71 @@ body {
   --color-neutral-200: #bfbfbf;
   --color-neutral-100: #d9d9d9;
   --color-neutral-50: #fafafa;
+}
+
+/* Hero Section Background */
+.hero-background {
+  background-image: url('/hero-bg.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.hero-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+/* Datasets Section Background */
+.datasets-background {
+  background-image: url('/banner-lines.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.datasets-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+/*Footer*/
+footer img {
+  height: 30px;
+}
+
+/* Font Weight Utilities */
+/*Fonts*/
+.font-thin {
+  font-weight: 100;
+}
+
+.font-extralight {
+  font-weight: 200;
+}
+
+.font-light {
+  font-weight: 300;
+}
+
+/*Margin*/
+
+.mb-64 {
+  margin-bottom: 64px;
+}
+
+.mt-64 {
+  margin-top: 64px;
 }

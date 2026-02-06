@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Button, InputSearch, Icon } from '@ama-pt/agora-design-system';
+import Link from 'next/link';
+import { Button, InputSearchBar, Icon } from '@ama-pt/agora-design-system';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Pagination } from '@/components/Pagination';
@@ -27,10 +28,10 @@ export default function DatasetsClient({
 
       <main className="flex-grow">
         {/* Breadcrumb Section */}
-        <div className="bg-primary-900 pt-8 pb-4">
-          <div className="container mx-auto px-4">
+        <div className="datasets-background bg-primary-900 pt-8 pb-4">
+          <div className="container mx-auto px-4 relative z-10">
             <div className="text-primary-100 text-sm mb-4">
-              <span className="opacity-70">Portal</span>
+              <Link href="/" className="opacity-70 hover:opacity-100 transition-opacity underline">Bem-vindo</Link>
               <span className="mx-2">/</span>
               <span className="font-semibold">Conjunto de dados</span>
             </div>
@@ -38,31 +39,35 @@ export default function DatasetsClient({
         </div>
 
         {/* Hero Section */}
-        <section className="bg-primary-900 text-white pb-20 pt-4">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-              <div className="max-w-3xl flex-grow">
-                <h1 className="text-4xl font-bold mb-4">Conjunto de dados</h1>
-                <p className="text-primary-100 mb-8">
-                  Pesquise através de {total.toLocaleString('pt-PT')} conjuntos
-                  de dados em dados.gov
-                </p>
+        <section className="datasets-background bg-primary-900 text-white pb-20 pt-4">
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-3xl">
+              <h1 className="text-4xl font-bold mb-4">Conjunto de dados</h1>
+              <p className="text-primary-100 mb-8">
+                Pesquise através de {total.toLocaleString('pt-PT')} conjuntos
+                de dados em dados.gov
+              </p>
 
-                <div className="bg-white p-2 rounded-8 shadow-top-medium flex items-center max-w-2xl">
-                  <div className="flex-grow">
-                    <InputSearch
-                      id="dataset-search"
-                      label="Pesquisar"
-                      hideLabel
-                      placeholder="Exemplo: Direção-geral de saúde de 2022"
-                    />
-                  </div>
-                </div>
+              <div className="max-w-2xl">
+                <InputSearchBar
+                  id="dataset-search"
+                  label="Pesquisar"
+                  hideLabel={true}
+                  placeholder="Exemplo: Eleição presidencial de 2022"
+                  searchActionAltText="Pesquisar"
+                />
               </div>
 
-              <div className="md:mb-2">
-                <Button variant="primary" leadingIcon="agora-line-plus-circle">
-                  Publicar dados.gov
+              <div className="mt-8">
+                <Button
+                  variant="primary"
+                  className="!bg-[#5F93FC] !text-primary-900 hover:!bg-[#4a80e8] border-none"
+                >
+                  <span className="flex items-center">
+                    <span className="font-normal">Publicar</span>
+                    <span className="font-bold mx-1">dados.gov</span>
+                    <Icon name="agora-line-arrow-right-circle" aria-hidden="true" className="w-6 h-6 ml-1" />
+                  </span>
                 </Button>
               </div>
             </div>
@@ -105,6 +110,8 @@ export default function DatasetsClient({
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <span className="text-neutral-600 font-medium">
                   {total.toLocaleString('pt-PT')} resultados
+                  {/* Debug Info */}
+                  {/* <span className="text-xs text-gray-400 ml-2">(Org: {new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('organization')})</span> */}
                 </span>
                 <div className="w-full md:w-auto flex items-center gap-3">
                   <span className="text-sm text-neutral-500 whitespace-nowrap">
@@ -143,8 +150,10 @@ export default function DatasetsClient({
                         </div>
                       </div>
 
-                      <h3 className="text-xl font-bold text-primary-900 mb-2 hover:text-primary-600 cursor-pointer">
-                        {dataset.title}
+                      <h3 className="text-xl font-bold text-primary-900 mb-2">
+                        <Link href={`/datasets/${dataset.slug}`} className="hover:text-primary-600 hover:underline">
+                          {dataset.title}
+                        </Link>
                       </h3>
 
                       <div className="text-xs text-neutral-500 mb-3 flex items-center gap-2">
