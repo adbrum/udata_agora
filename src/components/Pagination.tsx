@@ -51,7 +51,7 @@ export const Pagination = ({
 
   const handlePageChange = (page: number | string) => {
     if (page === '...' || typeof page !== 'number') return;
-    router.push(`/datasets?page=${page}`);
+    router.push(`/pages/datasets?page=${page}`);
   };
 
   if (totalPages <= 1) return null;
@@ -73,11 +73,10 @@ export const Pagination = ({
           ) : (
             <button
               onClick={() => handlePageChange(page)}
-              className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                currentPage === page
-                  ? 'bg-primary-600 text-white'
-                  : 'text-neutral-600 hover:bg-neutral-100'
-              }`}
+              className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${currentPage === page
+                ? 'bg-primary-600 text-white'
+                : 'text-neutral-600 hover:bg-neutral-100'
+                }`}
             >
               {page}
             </button>

@@ -8,6 +8,7 @@ import { Button, Icon, Tag } from '@ama-pt/agora-design-system';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Dataset } from '@/types/api';
+import { DatasetTabs } from '@/components/DatasetTabs';
 
 interface DatasetDetailClientProps {
     dataset: Dataset;
@@ -27,7 +28,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                                 Bem-vindo
                             </Link>
                             <span className="mx-2">/</span>
-                            <Link href="/datasets" className="opacity-70 hover:opacity-100 transition-opacity underline">
+                            <Link href="/pages/datasets" className="opacity-70 hover:opacity-100 transition-opacity underline">
                                 Conjuntos de dados
                             </Link>
                             <span className="mx-2">/</span>
@@ -134,6 +135,9 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                                         <p>{dataset.description}</p>
                                     </div>
                                 </div>
+
+                                {/* Tabs Section */}
+                                <DatasetTabs dataset={dataset} />
                             </div>
 
                             {/* Sidebar Column */}

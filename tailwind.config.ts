@@ -17,6 +17,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
+      
         sans: ['var(--font-nunito)', 'sans-serif'],
       },
       colors: {

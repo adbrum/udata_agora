@@ -2,6 +2,7 @@
 
 import React, { useRef } from 'react';
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
   Header as AgoraHeader,
@@ -18,6 +19,7 @@ import {
 } from '@ama-pt/agora-design-system';
 
 export const Header = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const headerRef = useRef<any>(null);
   const router = useRouter();
 
@@ -26,7 +28,7 @@ export const Header = () => {
       <Brand>
         <Logo>
           <Link href="/" className="flex items-center">
-            <img src="/logo.png" alt="dados.gov" style={{ height: '43px' }} />
+            <NextImage src="/logo.png" alt="dados.gov" height={43} width={251} priority />
           </Link>
         </Logo>
       </Brand>
@@ -62,7 +64,7 @@ export const Header = () => {
         modalCloseLabel="Fechar"
       >
         <NavigationLink>
-          <Link href="/datasets">Conjuntos de dados</Link>
+          <Link href="/pages/datasets">Conjuntos de dados</Link>
         </NavigationLink>
         <NavigationLink>
           <Link href="/organizations">Organizações</Link>

@@ -1,13 +1,10 @@
 'use client';
 
 import { Button, InputSearchBar, Icon, CardGeneral, CardArticle } from '@ama-pt/agora-design-system';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50">
-      <Header />
+    <div className="font-sans text-neutral-900 bg-neutral-50">
 
       <main className="flex-grow">
         {/* Hero Section */}
@@ -37,7 +34,7 @@ export default function Home() {
                   searchActionAltText="Pesquisar"
                 />
                 <p className=" text-sm mt-3">
-                  Exemplos: "educação", "saúde pública", "ambiente"
+                  Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
                 </p>
               </div>
               <div className="mt-64 flex gap-4">
@@ -266,7 +263,6 @@ export default function Home() {
         </section>
       </main >
 
-      <Footer />
     </div >
   );
 }

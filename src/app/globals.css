@@ -102,3 +102,36 @@ footer img {
 .mt-64 {
   margin-top: 64px;
 }
+
+/* Fix for Header expansion direction */
+html,
+body {
+  height: 100%;
+}
+
+/* Force header dropdowns/panels to open downwards */
+.agora-header {
+  position: relative;
+  z-index: 50;
+}
+
+.agora-header .panel-menu,
+.agora-header .languages-panel-menu,
+.agora-header .areas-panel-menu,
+/* Guessing class name based on pattern */
+.options-menu
+
+/* Potential generic class */
+  {
+  bottom: auto !important;
+  top: 100% !important;
+  transform: none !important;
+  /* Prevent transform flips */
+}
+
+/* Ensure they don't get flipped by Popper/Floating UI styles */
+.agora-header [data-popper-placement^='top'] {
+  top: 100% !important;
+  bottom: auto !important;
+  transform: none !important;
+}

@@ -151,7 +151,7 @@ export default function DatasetsClient({
                       </div>
 
                       <h3 className="text-xl font-bold text-primary-900 mb-2">
-                        <Link href={`/datasets/${dataset.slug}`} className="hover:text-primary-600 hover:underline">
+                        <Link href={`/pages/datasets/${dataset.slug}`} className="hover:text-primary-600 hover:underline">
                           {dataset.title}
                         </Link>
                       </h3>
