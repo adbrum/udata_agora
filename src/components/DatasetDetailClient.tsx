@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { Button, Icon, Tag } from '@ama-pt/agora-design-system';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
 import { Dataset } from '@/types/api';
 import { DatasetTabs } from '@/components/DatasetTabs';
 
@@ -16,9 +14,7 @@ interface DatasetDetailClientProps {
 
 export default function DatasetDetailClient({ dataset }: DatasetDetailClientProps) {
     return (
-        <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50">
-            <Header />
-
+        <div className="flex flex-col font-sans text-neutral-900 bg-neutral-50 h-full">
             <main className="flex-grow">
                 {/* Breadcrumb Section */}
                 <div className="bg-primary-900 pt-8 pb-4">
@@ -202,8 +198,6 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                     </div>
                 </section>
             </main>
-
-            <Footer />
         </div>
     );
 }

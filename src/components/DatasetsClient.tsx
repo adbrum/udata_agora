@@ -3,8 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { Button, InputSearchBar, Icon } from '@ama-pt/agora-design-system';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
 import { Pagination } from '@/components/Pagination';
 import { DatasetsFilters } from '@/components/DatasetsFilters';
 import { APIResponse, Dataset } from '@/types/api';
@@ -24,8 +22,6 @@ export default function DatasetsClient({
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50">
-      <Header />
-
       <main className="flex-grow">
         {/* Breadcrumb Section */}
         <div className="datasets-background bg-primary-900 pt-8 pb-4">
@@ -255,8 +251,6 @@ export default function DatasetsClient({
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

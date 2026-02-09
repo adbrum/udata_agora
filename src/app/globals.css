@@ -3,6 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --color-backdrop: rgba(43, 54, 60, .96);
 }
 
 /* Fallback/Overrides */
@@ -118,15 +119,13 @@ body {
 .agora-header .panel-menu,
 .agora-header .languages-panel-menu,
 .agora-header .areas-panel-menu,
-/* Guessing class name based on pattern */
-.options-menu
-
-/* Potential generic class */
-  {
+.agora-header .search-panel-menu,
+.agora-header .options-menu,
+.agora-header [class*="panel-menu"] {
   bottom: auto !important;
   top: 100% !important;
   transform: none !important;
-  /* Prevent transform flips */
+  margin-top: 0 !important;
 }
 
 /* Ensure they don't get flipped by Popper/Floating UI styles */
@@ -134,4 +133,9 @@ body {
   top: 100% !important;
   bottom: auto !important;
   transform: none !important;
+}
+
+/* Backdrop/Overlay for expanded menus */
+.panel-menu .panel-menu-backdrop {
+  background-color: var(--color-backdrop);
 }
