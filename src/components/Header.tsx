@@ -44,81 +44,83 @@ export const Header = () => {
   const currentAreaLabel = areas.find((a) => a.value === selectedArea)?.label || 'Portal';
 
   return (
-    <AgoraHeader ref={headerRef}>
-      <Brand>
-        <Logo>
-          <Link href="/" className="flex items-center">
-            <NextImage src="/logo.png" alt="dados.gov" height={43} width={251} priority />
-          </Link>
-        </Logo>
-      </Brand>
+    <header className="agora-header">
+      <AgoraHeader ref={headerRef}>
+        <Brand>
+          <Logo>
+            <Link href="/" className="flex items-center">
+              <NextImage src="/logo.png" alt="dados.gov" height={43} width={251} priority />
+            </Link>
+          </Logo>
+        </Brand>
 
-      <GeneralBar aria-label="Barra de utilidades">
-        <Areas
-          aria-label="Áreas do portal"
-          // @ts-ignore - Prop label does exist in component logic
-          label={currentAreaLabel}
-          onChange={(area: string) => setSelectedArea(area)}
-        >
-          <Area value="1" label="Portal" onClick={() => router.push('/')} />
-          <Area value="2" label="Iniciar Sessão" onClick={() => router.push('/login')} />
-        </Areas>
-
-        <Languages
-          aria-label="Selecionar idioma"
-          // @ts-ignore - Prop label does exist in component logic
-          label={currentLangLabel}
-          onChange={(lang: string) => setSelectedLanguage(lang)}
-        >
-          <Language value="pt" label="Português" abbr="PT" checked={selectedLanguage === 'pt'} />
-          <Language value="en" label="English" abbr="EN" checked={selectedLanguage === 'en'} />
-          <Language value="es" label="Español" abbr="ES" checked={selectedLanguage === 'es'} />
-          <Language value="fr" label="Français" abbr="FR" checked={selectedLanguage === 'fr'} />
-        </Languages>
-
-        <Unauthenticated
-          label="Inscrever-se"
-          aria-label="Registar"
-        >
-          <UnauthenticatedLink
-            hasIcon
-            leadingIcon="agora-line-user"
-            leadingIconHover="agora-solid-user"
+        <GeneralBar aria-label="Opções navegação geral">
+          <Areas
+            aria-label="Áreas do portal"
+            // @ts-ignore - Prop label does exist in component logic
+            label={currentAreaLabel}
+            onChange={(area: string) => setSelectedArea(area)}
           >
-            <Link href="/register">Inscrever-se</Link>
-          </UnauthenticatedLink>
-        </Unauthenticated>
-      </GeneralBar>
+            <Area value="1" label="Portal" onClick={() => router.push('/')} />
+            <Area value="2" label="Iniciar Sessão" onClick={() => router.push('/login')} />
+          </Areas>
 
-      <NavigationBar
-        responsiveMenuLabel="Menu"
-        responsiveMenuAriaLabel="Abrir menu"
-        responsiveMenuBackToRootLabel="Voltar ao início"
-        modalMenuLabel="Navegação Principal"
-        modalAriaLabel="Menu de navegação"
-        modalCloseLabel="Fechar"
-      >
-        <NavigationLink appearance="link">
-          <Link href="/pages/datasets">Conjuntos de dados</Link>
-        </NavigationLink>
-        <NavigationLink appearance="link">
-          <Link href="/organizations">Organizações</Link>
-        </NavigationLink>
-        <NavigationLink appearance="link">
-          <Link href="/reuses">Reutilizações</Link>
-        </NavigationLink>
-        <NavigationLink appearance="link">
-          <Link href="/documentation">Documentação</Link>
-        </NavigationLink>
-        <NavigationRoot label="Primeiros passos">
+          <Languages
+            aria-label="Selecionar idioma"
+            // @ts-ignore - Prop label does exist in component logic
+            label={currentLangLabel}
+            onChange={(lang: string) => setSelectedLanguage(lang)}
+          >
+            <Language value="pt" label="Português" abbr="PT" checked={selectedLanguage === 'pt'} />
+            <Language value="en" label="English" abbr="EN" checked={selectedLanguage === 'en'} />
+            <Language value="es" label="Español" abbr="ES" checked={selectedLanguage === 'es'} />
+            <Language value="fr" label="Français" abbr="FR" checked={selectedLanguage === 'fr'} />
+          </Languages>
+
+          <Unauthenticated
+            label="Inscrever-se"
+            aria-label="Registar"
+          >
+            <UnauthenticatedLink
+              hasIcon
+              leadingIcon="agora-line-user"
+              leadingIconHover="agora-solid-user"
+            >
+              <Link href="/register">Inscrever-se</Link>
+            </UnauthenticatedLink>
+          </Unauthenticated>
+        </GeneralBar>
+
+        <NavigationBar
+          responsiveMenuLabel="Menu"
+          responsiveMenuAriaLabel="Abrir menu"
+          responsiveMenuBackToRootLabel="Voltar ao início"
+          modalMenuLabel="Navegação Principal"
+          modalAriaLabel="Menu de navegação"
+          modalCloseLabel="Fechar"
+        >
           <NavigationLink appearance="link">
-            <Link href="/start">Visão geral</Link>
+            <Link href="/pages/datasets" className="no-underline hover:underline">Conjuntos de dados</Link>
           </NavigationLink>
           <NavigationLink appearance="link">
-            <Link href="/developers">Desenvolvedores</Link>
+            <Link href="/organizations" className="no-underline hover:underline">Organizações</Link>
           </NavigationLink>
-        </NavigationRoot>
-      </NavigationBar>
-    </AgoraHeader>
+          <NavigationLink appearance="link">
+            <Link href="/reuses" className="no-underline hover:underline">Reutilizações</Link>
+          </NavigationLink>
+          <NavigationLink appearance="link">
+            <Link href="/documentation" className="no-underline hover:underline">Documentação</Link>
+          </NavigationLink>
+          <NavigationRoot label="Primeiros passos">
+            <NavigationLink appearance="link">
+              <Link href="/start" className="no-underline hover:underline">Visão geral</Link>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <Link href="/item2" className="no-underline hover:underline">Items</Link>
+            </NavigationLink>
+          </NavigationRoot>
+        </NavigationBar>
+      </AgoraHeader>
+    </header>
   );
 };
