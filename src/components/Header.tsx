@@ -40,8 +40,10 @@ export const Header = () => {
     { value: '2', label: 'Iniciar Sessão' },
   ];
 
-  const currentLangLabel = languages.find((l) => l.value === selectedLanguage)?.label || 'Português';
-  const currentAreaLabel = areas.find((a) => a.value === selectedArea)?.label || 'Portal';
+  const currentLangLabel =
+    languages.find((l) => l.value === selectedLanguage)?.label || 'Português';
+  const currentAreaLabel =
+    areas.find((a) => a.value === selectedArea)?.label || 'Portal';
 
   return (
     <header className="sticky top-0 z-sticky">
@@ -49,7 +51,13 @@ export const Header = () => {
         <Brand>
           <Logo>
             <Link href="/" className="flex items-center">
-              <NextImage src="/logo.png" alt="dados.gov" height={43} width={251} priority />
+              <NextImage
+                src="/logo.png"
+                alt="dados.gov"
+                height={43}
+                width={251}
+                priority
+              />
             </Link>
           </Logo>
         </Brand>
@@ -62,7 +70,11 @@ export const Header = () => {
             onChange={(area: string) => setSelectedArea(area)}
           >
             <Area value="1" label="Portal" onClick={() => router.push('/')} />
-            <Area value="2" label="Iniciar Sessão" onClick={() => router.push('/login')} />
+            <Area
+              value="2"
+              label="Iniciar Sessão"
+              onClick={() => router.push('/login')}
+            />
           </Areas>
 
           <Languages
@@ -71,16 +83,33 @@ export const Header = () => {
             label={currentLangLabel}
             onChange={(lang: string) => setSelectedLanguage(lang)}
           >
-            <Language value="pt" label="Português" abbr="PT" checked={selectedLanguage === 'pt'} />
-            <Language value="en" label="English" abbr="EN" checked={selectedLanguage === 'en'} />
-            <Language value="es" label="Español" abbr="ES" checked={selectedLanguage === 'es'} />
-            <Language value="fr" label="Français" abbr="FR" checked={selectedLanguage === 'fr'} />
+            <Language
+              value="pt"
+              label="Português"
+              abbr="PT"
+              checked={selectedLanguage === 'pt'}
+            />
+            <Language
+              value="en"
+              label="English"
+              abbr="EN"
+              checked={selectedLanguage === 'en'}
+            />
+            <Language
+              value="es"
+              label="Español"
+              abbr="ES"
+              checked={selectedLanguage === 'es'}
+            />
+            <Language
+              value="fr"
+              label="Français"
+              abbr="FR"
+              checked={selectedLanguage === 'fr'}
+            />
           </Languages>
 
-          <Unauthenticated
-            label="Inscrever-se"
-            aria-label="Registar"
-          >
+          <Unauthenticated label="Inscrever-se" aria-label="Registar">
             <UnauthenticatedLink
               hasIcon
               leadingIcon="agora-line-user"

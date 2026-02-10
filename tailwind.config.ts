@@ -14,7 +14,7 @@ const config = {
       fontFamily: {
         sans: ['var(--font-noto-sans)', 'sans-serif'],
       },
-    }
+    },
   },
   plugins: AgoraTailwindConfig.plugins,
   safelist: [
@@ -24,7 +24,8 @@ const config = {
     '!flex',
   ] as any[],
   corePlugins: {
-    preflight: false
-  }
+    preflight: false,
+  },
 };
+
 export default config;

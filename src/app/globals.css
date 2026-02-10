@@ -5,23 +5,10 @@
 @tailwind components;
 @tailwind utilities;
 
-
-/* Hero Section Background */
-.hero-background {
-  background-image: url('/hero-bg.svg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+/*HomePage*/
+.homepage .agora-card-highlight-newsletter .card-container .input-container {
+  grid-template-columns: none;
   position: relative;
-}
-
-.hero-background::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   z-index: 1;
 }
 

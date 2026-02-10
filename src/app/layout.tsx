@@ -17,11 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${notoSans.variable} antialiased font-sans`}>
-        <div style={{}} className="min-h-screen w-full mx-auto">
+        <div className="min-h-screen w-full mx-auto flex flex-col">
           <Header />
-          <div className="grow">
-            {children}
-          </div>
+          <div className="grow">{children}</div>
           <Footer />
         </div>
       </body>
