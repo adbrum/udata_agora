@@ -44,7 +44,7 @@ export const Header = () => {
   const currentAreaLabel = areas.find((a) => a.value === selectedArea)?.label || 'Portal';
 
   return (
-    <header className="agora-header">
+    <header className="sticky top-0 z-sticky">
       <AgoraHeader ref={headerRef}>
         <Brand>
           <Logo>
@@ -100,23 +100,23 @@ export const Header = () => {
           modalCloseLabel="Fechar"
         >
           <NavigationLink appearance="link">
-            <Link href="/pages/datasets" className="no-underline hover:underline">Conjuntos de dados</Link>
+            <Link href="/pages/datasets">Conjuntos de dados</Link>
           </NavigationLink>
           <NavigationLink appearance="link">
-            <Link href="/organizations" className="no-underline hover:underline">Organizações</Link>
+            <Link href="/organizations">Organizações</Link>
           </NavigationLink>
           <NavigationLink appearance="link">
-            <Link href="/reuses" className="no-underline hover:underline">Reutilizações</Link>
+            <Link href="/reuses">Reutilizações</Link>
           </NavigationLink>
           <NavigationLink appearance="link">
-            <Link href="/documentation" className="no-underline hover:underline">Documentação</Link>
+            <Link href="/documentation">Documentação</Link>
           </NavigationLink>
           <NavigationRoot label="Primeiros passos">
             <NavigationLink appearance="link">
-              <Link href="/start" className="no-underline hover:underline">Visão geral</Link>
+              <Link href="/start">Visão geral</Link>
             </NavigationLink>
             <NavigationLink appearance="link">
-              <Link href="/item2" className="no-underline hover:underline">Items</Link>
+              <Link href="/item2">Items</Link>
             </NavigationLink>
           </NavigationRoot>
         </NavigationBar>

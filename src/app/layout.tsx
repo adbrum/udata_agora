@@ -1,5 +1,5 @@
 import { Noto_Sans } from 'next/font/google';
-import '@ama-pt/agora-design-system/artifacts/dist/style.css';
+import '@ama-pt/agora-design-system/artifacts/dist/tailwind.css';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -16,12 +16,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${notoSans.variable} antialiased font-sans min-h-screen flex flex-col`}>
-        <Header />
-        <div className="grow">
-          {children}
+      <body className={`${notoSans.variable} antialiased font-sans`}>
+        <div style={{}} className="min-h-screen w-full mx-auto">
+          <Header />
+          <div className="grow">
+            {children}
+          </div>
+          <Footer />
         </div>
-        <Footer />
       </body>
     </html>
   );
