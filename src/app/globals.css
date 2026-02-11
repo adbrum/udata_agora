@@ -1,37 +1,48 @@
-@import 'tailwindcss';
+@import url("@ama-pt/agora-design-system/artifacts/dist/tailwind.css");
+@import url("@ama-pt/agora-design-system/artifacts/dist/style.css");
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*HomePage*/
+.homepage .agora-card-highlight-newsletter .card-container .input-container {
+  grid-template-columns: none;
+  position: relative;
+  z-index: 1;
 }
 
-/* Fallback/Overrides */
+/* Datasets Section Background */
+.datasets-background {
+  background-image: url('/banner-lines.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.datasets-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+/*Footer*/
+footer img {
+  height: 30px;
+}
+
+/* Fix for Header expansion direction */
+html,
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-nunito), Arial, Helvetica, sans-serif;
+  height: 100%;
 }
 
-@theme {
-  --color-primary-900: #002855;
-  --color-primary-800: #003366;
-  --color-primary-700: #004785;
-  --color-primary-600: #005cab;
-  --color-primary-500: #0072c6;
-  --color-primary-400: #2b8be3;
-  --color-primary-300: #5ca3ed;
-  --color-primary-200: #92c1f5;
-  --color-primary-100: #cde4fc;
-  --color-primary-50: #e8f3ff;
-
-  --color-neutral-900: #1a1a1a;
-  --color-neutral-800: #2d2d2d;
-  --color-neutral-700: #404040;
-  --color-neutral-600: #595959;
-  --color-neutral-500: #737373;
-  --color-neutral-400: #8c8c8c;
-  --color-neutral-300: #a6a6a6;
-  --color-neutral-200: #bfbfbf;
-  --color-neutral-100: #d9d9d9;
-  --color-neutral-50: #fafafa;
+/*Grid 5 elements*/
+.grid-cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }

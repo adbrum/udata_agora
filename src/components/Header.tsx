@@ -1,38 +1,155 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import Link from 'next/link';
+import NextImage from 'next/image';
+import { useRouter } from 'next/navigation';
+import {
+  Header as AgoraHeader,
+  Brand,
+  Logo,
+  GeneralBar,
+  Areas,
+  Area,
+  Languages,
+  Language,
+  Unauthenticated,
+  UnauthenticatedLink,
+  NavigationBar,
+  NavigationLink,
+  NavigationRoot,
+} from '@ama-pt/agora-design-system';
 
 export const Header = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const headerRef = useRef<any>(null);
+  const router = useRouter();
+
+  const [selectedLanguage, setSelectedLanguage] = useState('pt');
+  const [selectedArea, setSelectedArea] = useState('1');
+
+  const languages = [
+    { value: 'pt', label: 'Português', abbr: 'PT' },
+    { value: 'en', label: 'English', abbr: 'EN' },
+    { value: 'es', label: 'Español', abbr: 'ES' },
+    { value: 'fr', label: 'Français', abbr: 'FR' },
+  ];
+
+  const areas = [
+    { value: '1', label: 'Portal' },
+    { value: '2', label: 'Iniciar Sessão' },
+  ];
+
+  const currentLangLabel =
+    languages.find((l) => l.value === selectedLanguage)?.label || 'Português';
+  const currentAreaLabel =
+    areas.find((a) => a.value === selectedArea)?.label || 'Portal';
+
   return (
-    <header className="bg-white border-b border-neutral-200">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-4">
-          {/* Logo area */}
-          <span className="text-2xl font-bold text-primary-900">dados.gov</span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-6 text-neutral-600 font-medium">
-          <Link
-            href="/datasets"
-            className="hover:text-primary-600 transition-colors"
+    <header className="sticky top-0 z-sticky">
+      <AgoraHeader ref={headerRef}>
+        <Brand>
+          <Logo>
+            <Link href="/" className="flex items-center">
+              <NextImage
+                src="/logo.png"
+                alt="dados.gov"
+                height={43}
+                width={251}
+                priority
+              />
+            </Link>
+          </Logo>
+        </Brand>
+
+        <GeneralBar aria-label="Opções navegação geral">
+          <Areas
+            aria-label="Áreas do portal"
+            // @ts-ignore - Prop label does exist in component logic
+            label={currentAreaLabel}
+            onChange={(area: string) => setSelectedArea(area)}
           >
-            Conjuntos de dados
-          </Link>
-          <a href="#" className="hover:text-primary-600 transition-colors">
-            Organizações
-          </a>
-          <a href="#" className="hover:text-primary-600 transition-colors">
-            Reutilizações
-          </a>
-          <a href="#" className="hover:text-primary-600 transition-colors">
-            Documentação
-          </a>
-          <div className="border-l border-neutral-300 h-6 mx-2"></div>
-          <a href="#" className="hover:text-primary-600 transition-colors">
-            Entrar / Registar
-          </a>
-        </nav>
-      </div>
+            <Area value="1" label="Portal" onClick={() => router.push('/')} />
+            <Area
+              value="2"
+              label="Iniciar Sessão"
+              onClick={() => router.push('/login')}
+            />
+          </Areas>
+
+          <Languages
+            aria-label="Selecionar idioma"
+            // @ts-ignore - Prop label does exist in component logic
+            label={currentLangLabel}
+            onChange={(lang: string) => setSelectedLanguage(lang)}
+          >
+            <Language
+              value="pt"
+              label="Português"
+              abbr="PT"
+              checked={selectedLanguage === 'pt'}
+            />
+            <Language
+              value="en"
+              label="English"
+              abbr="EN"
+              checked={selectedLanguage === 'en'}
+            />
+            <Language
+              value="es"
+              label="Español"
+              abbr="ES"
+              checked={selectedLanguage === 'es'}
+            />
+            <Language
+              value="fr"
+              label="Français"
+              abbr="FR"
+              checked={selectedLanguage === 'fr'}
+            />
+          </Languages>
+
+          <Unauthenticated label="Inscrever-se" aria-label="Registar">
+            <UnauthenticatedLink
+              hasIcon
+              leadingIcon="agora-line-user"
+              leadingIconHover="agora-solid-user"
+            >
+              <Link href="/register">Inscrever-se</Link>
+            </UnauthenticatedLink>
+          </Unauthenticated>
+        </GeneralBar>
+
+        <NavigationBar
+          responsiveMenuLabel="Menu"
+          responsiveMenuAriaLabel="Abrir menu"
+          responsiveMenuBackToRootLabel="Voltar ao início"
+          modalMenuLabel="Navegação Principal"
+          modalAriaLabel="Menu de navegação"
+          modalCloseLabel="Fechar"
+        >
+          <NavigationLink appearance="link">
+            <Link href="/pages/datasets">Conjuntos de dados</Link>
+          </NavigationLink>
+          <NavigationLink appearance="link">
+            <Link href="/organizations">Organizações</Link>
+          </NavigationLink>
+          <NavigationLink appearance="link">
+            <Link href="/reuses">Reutilizações</Link>
+          </NavigationLink>
+          <NavigationLink appearance="link">
+            <Link href="/documentation">Documentação</Link>
+          </NavigationLink>
+          <NavigationRoot label="Primeiros passos">
+            <NavigationLink appearance="link">
+              <Link href="/start">Visão geral</Link>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <Link href="/item2">Items</Link>
+            </NavigationLink>
+          </NavigationRoot>
+        </NavigationBar>
+      </AgoraHeader>
     </header>
   );
 };
