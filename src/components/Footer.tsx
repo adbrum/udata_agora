@@ -61,7 +61,7 @@ const FooterNavigation = () => {
   return (
     <div className="container mx-auto px-4 py-12 xl:py-64">
       <h3 className="text-lg font-bold mb-8">Mais para descobrir no portal</h3>
-      <div className="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 gap-32">
         {linkColumns.map((column, idx) => (
           <div key={idx}>
             <h4 className="font-semibold mb-4 text-white">{column.title}</h4>
@@ -89,12 +89,12 @@ const FooterInstitutional = () => {
   return (
     <div className="border-t border-primary-700">
       {/* Top Row: Brand & Partners */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+      <div className="container mx-auto px-4 py-32">
+        <div className="flex md:flex-row justify-between items-center gap-6">
           <p className="text-white text-sm">
             Plataforma aberta de dados públicos portugueses
           </p>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-32">
             <img src="/NextGenerationEU.svg" alt="NextGenerationEU" />
             <img src="/República Portuguesa.svg" alt="República Portuguesa" />
             <img src="/ARTE.svg" alt="ARTE" />
@@ -106,8 +106,8 @@ const FooterInstitutional = () => {
       <div className="border-t border-primary-700"></div>
 
       {/* Bottom Row: Social, Links, Copyright */}
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row min-h-[120px]">
+      <div className="container mx-auto px-4 py-32">
+        <div className="flex md:flex-row min-h-[120px]">
           {/* Left Column - Social Links */}
           <div className="flex items-center justify-center gap-16 py-8 md:w-1/3">
             {socialLinks.map((social, idx) => (
@@ -128,7 +128,7 @@ const FooterInstitutional = () => {
           {/* Right Column - Useful Links & Copyright */}
           <div className="flex-1 flex flex-col justify-center py-8 md:pl-12">
             {/* Useful Links */}
-            <div className="flex flex-wrap items-center justify-end gap-8 text-sm mb-4">
+            <div className="flex flex-wrap items-center justify-end gap-48 text-sm mb-4">
               {usefulLinks.map((link, idx) => (
                 <a
                   key={idx}
