@@ -4,15 +4,18 @@
 
 
 @tailwind utilities;
+@tailwind components;
+@tailwind base;
 
 /*HomePage*/
-.homepage .agora-card-highlight-newsletter .card-container .input-container {
+/*HomePage*/
+.agora-card-highlight-newsletter .card-container .input-container {
   grid-template-columns: none;
   position: relative;
   z-index: 1;
 }
 
-.homepage .agora-card-highlight-newsletter .card-container:before {
+.agora-card-highlight-newsletter .card-container:before {
   background-color: unset;
   position: unset;
 }
@@ -36,15 +39,6 @@
   position: relative;
 }
 
-.datasets-background::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-}
 
 /*Footer*/
 footer img {

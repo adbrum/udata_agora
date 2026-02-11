@@ -23,110 +23,157 @@ export default function DatasetsClient({
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50">
       <main className="flex-grow">
-        {/* Breadcrumb Section */}
-        <div className="datasets-background bg-primary-900 pt-8 pb-4">
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="text-primary-100 text-sm mb-4">
-              <Link href="/" className="opacity-70 hover:opacity-100 transition-opacity underline">Bem-vindo</Link>
-              <span className="mx-2">/</span>
-              <span className="font-semibold">Conjunto de dados</span>
+        {/* Combined Hero Section with Agora Structure */}
+        {/* Combined Hero Section with Agora Structure */}
+        <div className="agora-card-highlight-newsletter datasets-background bg-primary-900">
+          <div className="card-container relative z-10 pt-8 pb-20">
+            <div className="card-content w-full">
+              <div className="container mx-auto px-4">
+                {/* Breadcrumb */}
+                <div className="text-primary-100 text-sm mb-4">
+                  <Link href="/" className="opacity-70 hover:opacity-100 transition-opacity underline">Bem-vindo</Link>
+                  <span className="mx-2">/</span>
+                  <span className="font-semibold">Conjunto de dados</span>
+                </div>
+
+                <div className="title">
+                  <h1 className="xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold">Conjunto de dados</h1>
+                </div>
+
+                <div className="subtitle">
+                  <p className="text-primary-100 mb-8 max-w-3xl">
+                    Pesquise através de {total.toLocaleString('pt-PT')} conjuntos
+                    de dados em dados.gov
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="input-container">
+              <div className="email-bar">
+                <div className="container mx-auto grid xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-2 pb-64">
+                  <div className="relative text-white">
+                    <div className="agora-input-search-bar">
+                      <div className="input-label-wrapper flex items-end mb-16 justify-between">
+
+                      </div>
+                      <div className="input-search-bar-container">
+                        <input
+                          placeholder="Pesquisar datasets, organizações, temas..."
+                          id="portal-search"
+                          className="grow outline-none"
+                          type="text"
+                        />
+                        <div className="actions-container flex flex-row gap-16">
+                          <button
+                            type="button"
+                            aria-label="Pesquisar por voz"
+                            className="flex items-center justify-center content-center agora-btn agora-btn-link-primary microphone-icon"
+                          >
+                            <span className="children-wrapper">
+                              <div className="icon-wrapper leading">
+                                <svg
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  aria-hidden="true"
+                                  className="icon icon-m fill-(--color-primary-600) block!"
+                                  role="img"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
+                                    d="M12 0C10.9391 0 9.92172 0.421427 9.17157 1.17157C8.42143 1.92172 8 2.93913 8 4V12C8 13.0609 8.42143 14.0783 9.17157 14.8284C9.92172 15.5786 10.9391 16 12 16C13.0609 16 14.0783 15.5786 14.8284 14.8284C15.5786 14.0783 16 13.0609 16 12V4C16 2.93913 15.5786 1.92172 14.8284 1.17157C14.0783 0.421427 13.0609 0 12 0ZM10.5858 2.58579C10.9609 2.21071 11.4696 2 12 2C12.5304 2 13.0391 2.21071 13.4142 2.58579C13.7893 2.96086 14 3.46957 14 4V12C14 12.5304 13.7893 13.0391 13.4142 13.4142C13.0391 13.7893 12.5304 14 12 14C11.4696 14 10.9609 13.7893 10.5858 13.4142C10.2107 13.0391 10 12.5304 10 12V4C10 3.46957 10.2107 2.96086 10.5858 2.58579Z"
+                                  ></path>
+                                  <path d="M6 10C6 9.44771 5.55228 9 5 9C4.44772 9 4 9.44771 4 10V12C4 14.1217 4.84285 16.1566 6.34315 17.6569C7.60623 18.9199 9.2482 19.717 11.0019 19.9375C11.0006 19.9582 11 19.979 11 20V22H8C7.44772 22 7 22.4477 7 23C7 23.5523 7.44772 24 8 24H16C16.5523 24 17 23.5523 17 23C17 22.4477 16.5523 22 16 22H13V20C13 19.979 12.9993 19.9582 12.9981 19.9375C14.7518 19.717 16.3938 18.9199 17.6569 17.6569C19.1571 16.1566 20 14.1217 20 12V10C20 9.44771 19.5523 9 19 9C18.4477 9 18 9.44771 18 10V12C18 13.5913 17.3679 15.1174 16.2426 16.2426C15.1174 17.3679 13.5913 18 12 18C10.4087 18 8.88258 17.3679 7.75736 16.2426C6.63214 15.1174 6 13.5913 6 12V10Z"></path>
+                                </svg>
+                              </div>
+                            </span>
+                          </button>
+                          <button
+                            aria-label="Pesquisar"
+                            disabled
+                            className="flex items-center justify-center content-center agora-btn agora-btn-solid-primary agora-btn-with-icon is-icon-only magnifier-icon"
+                          >
+                            <div className="icon-wrapper leading">
+                              <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="icon icon-m fill-(--color-primary-600) leading-icon-default block!"
+                                aria-hidden="true"
+                                role="img"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  clipRule="evenodd"
+                                  d="M16.6177 18.0319C15.078 19.2635 13.125 20 11 20C6.02944 20 2 15.9706 2 11C2 6.02944 6.02944 2 11 2C15.9706 2 20 6.02944 20 11C20 13.125 19.2635 15.078 18.0319 16.6177L21.7071 20.2929C22.0976 20.6834 22.0976 21.3166 21.7071 21.7071C21.3166 22.0977 20.6834 22.0977 20.2929 21.7071L16.6177 18.0319ZM4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 12.886 17.2541 14.5978 16.0413 15.8565C16.0071 15.8828 15.9742 15.9116 15.9429 15.9429C15.9116 15.9742 15.8827 16.0071 15.8564 16.0413C14.5977 17.2542 12.886 18 11 18C7.13401 18 4 14.866 4 11Z"
+                                ></path>
+                              </svg>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-64">
+                      <Button
+                        variant="primary"
+                        hasIcon={true}
+                        trailingIcon="agora-line-arrow-right-circle"
+                        trailingIconHover="agora-solid-arrow-right-circle"
+                        className="!bg-[#7BB2FF] !text-[#002D72] px-24 py-16 rounded-8 h-auto [&_svg]:!fill-black"
+                      >
+                        <span className="text-lg font-medium">
+                          Publicar <span className="font-bold">dados.gov</span>
+                        </span>
+                      </Button>
+                    </div>
+                    <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Hero Section */}
-        <section className="datasets-background bg-primary-900 text-white pb-20 pt-4">
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-3xl">
-              <h1 className="text-4xl font-bold mb-4">Conjunto de dados</h1>
-              <p className="text-primary-100 mb-8">
-                Pesquise através de {total.toLocaleString('pt-PT')} conjuntos
-                de dados em dados.gov
-              </p>
-
-              <div className="max-w-2xl">
-                <InputSearchBar
-                  id="dataset-search"
-                  label="Pesquisar"
-                  hideLabel={true}
-                  placeholder="Exemplo: Eleição presidencial de 2022"
-                  searchActionAltText="Pesquisar"
-                />
-              </div>
-
-              <div className="mt-8">
-                <Button
-                  variant="primary"
-                  className="!bg-[#5F93FC] !text-primary-900 hover:!bg-[#4a80e8] border-none"
-                >
-                  <span className="flex items-center">
-                    <span className="font-normal">Publicar</span>
-                    <span className="font-bold mx-1">dados.gov</span>
-                    <Icon name="agora-line-arrow-right-circle" aria-hidden="true" className="w-6 h-6 ml-1" />
-                  </span>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Main Content */}
         {/* Main Content - Full Width Layout */}
         {/* Main Content - Full Width Layout Wrapper */}
-        <div className="flex flex-col md:flex-row w-full bg-white min-h-[500px]">
-          {/* Sidebar Wrapper: 
-               - w-full on mobile
-               - on desktop: flex-basis calculated to cover from left edge to content split 
-                 Logic: Container is centered (mx-auto). Left gutter is (100vw - 1280px)/2.
-                 Sidebar content width is approx 320px. 
-                 Total sidebar background width = Left Gutter + 320px.
-           */}
-          <aside className="bg-primary-50 border-r border-neutral-200 flex-shrink-0 w-full md:w-[calc((100vw-1280px)/2+300px)] xl:w-[calc((100vw-1280px)/2+320px)] hidden md:block">
-            <div className="flex justify-end h-full">
-              {/* Content Container: Fixed width aligned to the right of this sidebar area */}
-              <div className="w-[300px] xl:w-[320px] p-6 pt-12">
-                <DatasetsFilters />
-              </div>
-            </div>
-          </aside>
-
-          {/* Mobile Sidebar (simplified) */}
-          <aside className="w-full bg-primary-50 p-6 md:hidden">
+        {/* Main Content */}
+        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-12 md:gap-32">
+          {/* Sidebar */}
+          <div className="xl:col-span-3 hidden xl:block">
             <DatasetsFilters />
-          </aside>
+          </div>
 
-          {/* Results Wrapper */}
-          <div className="flex-grow bg-white">
-            {/* Content Container: aligned to the left of this area (which starts after sidebar)
-                  Since the flex container splits the screen, this div starts exactly where content should start.
-                  We just need to limit its width to the remaining part of the container (1280 - 320 = 960px).
-              */}
-            <div className="p-6 md:p-8 md:pt-12 max-w-5xl">
-              {/* ... Content ... */}
+
+          {/* Results Area */}
+          <div className="col-span-1 md:col-span-3 xl:col-span-9 xl:pl-[136px]">
+            <div className="max-w-5xl mx-auto">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <span className="text-neutral-600 font-medium">
                   {total.toLocaleString('pt-PT')} resultados
-                  {/* Debug Info */}
-                  {/* <span className="text-xs text-gray-400 ml-2">(Org: {new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('organization')})</span> */}
                 </span>
                 <div className="w-full md:w-auto flex items-center gap-3">
                   <span className="text-sm text-neutral-500 whitespace-nowrap">
                     Ordenar por:
                   </span>
-                  <div className="w-64 border border-neutral-300 rounded px-4 py-2 bg-white text-sm flex justify-between items-center cursor-pointer hover:border-primary-500 transition-colors">
+                  <div className="min-w-[240px] border border-neutral-300 rounded px-4 py-2 bg-white text-sm flex justify-between items-center cursor-pointer hover:border-primary-500 transition-colors">
                     <span>Número de visualizações</span>
                     <Icon name="agora-line-chevron-down" />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-6">
+              <div className="flex flex-col">
                 {datasets.map((dataset) => (
                   <div
                     key={dataset.id}
-                    className="bg-white p-6 rounded-8 shadow-center-low border border-neutral-200 flex flex-col md:flex-row gap-6 hover:shadow-center-medium transition-shadow items-start"
+                    className="py-8 border-b border-neutral-200 last:border-0 flex flex-col md:flex-row gap-6 items-start"
                   >
-                    <div className="w-full md:w-48 h-24 flex-shrink-0 border border-neutral-200 flex items-center justify-center text-xs font-bold text-neutral-400 uppercase overflow-hidden rounded bg-neutral-50">
+                    <div className="w-full md:w-48 h-24 flex-shrink-0 border border-neutral-200 flex items-center justify-center text-xs font-bold text-primary-300 uppercase overflow-hidden rounded-sm bg-white">
                       {dataset.organization?.logo ? (
                         <img
                           src={dataset.organization.logo}
@@ -140,13 +187,13 @@ export default function DatasetsClient({
 
                     <div className="flex-grow w-full">
                       <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                        <div className="text-xs text-neutral-500 font-semibold uppercase tracking-wider mb-1 md:mb-0">
+                        <div className="text-sm text-neutral-500 font-normal mb-1 md:mb-0">
                           {dataset.organization?.name ||
                             'Organização Desconhecida'}
                         </div>
                       </div>
 
-                      <h3 className="text-xl font-bold text-primary-900 mb-2">
+                      <h3 className="text-xl font-bold text-neutral-900 mb-1">
                         <Link href={`/pages/datasets/${dataset.slug}`} className="hover:text-primary-600 hover:underline">
                           {dataset.title}
                         </Link>
@@ -162,26 +209,17 @@ export default function DatasetsClient({
                         </span>
                       </div>
 
-                      <p className="text-neutral-600 text-sm mb-4 line-clamp-3 leading-relaxed">
+                      <p className="text-neutral-600 text-sm mb-4 line-clamp-2 leading-relaxed">
                         {dataset.description}
                       </p>
 
-                      <div className="mb-5 flex gap-2 flex-wrap">
-                        <span className="bg-warning-100 text-warning-800 text-xs px-3 py-1 rounded-full font-bold">
-                          Metadados 35%
+                      <div className="mb-5 flex gap-2 flex-wrap items-center">
+                        <span className="bg-warning-300 text-neutral-900 text-xs px-3 py-1 rounded-full font-medium">
+                          Metadados: 35%
                         </span>
-                        {dataset.tags &&
-                          dataset.tags.slice(0, 3).map((tag) => (
-                            <span
-                              key={tag}
-                              className="border border-neutral-200 text-neutral-600 text-xs px-3 py-1 rounded-full"
-                            >
-                              {tag}
-                            </span>
-                          ))}
                       </div>
 
-                      <div className="pt-4 border-t border-neutral-100 flex items-center gap-8 text-sm text-neutral-500">
+                      <div className="flex items-center gap-8 text-sm text-neutral-500">
                         <div
                           className="flex items-center gap-2"
                           title="Visualizações"
@@ -192,7 +230,7 @@ export default function DatasetsClient({
                             aria-hidden="true"
                           />
                           <span className="font-semibold">
-                            {dataset.metrics?.views || 0} M
+                            {dataset.metrics?.views ? (dataset.metrics.views / 1000000).toFixed(1) + ' M' : '0'}
                           </span>
                         </div>
                         <div
@@ -205,7 +243,7 @@ export default function DatasetsClient({
                             aria-hidden="true"
                           />
                           <span className="font-semibold">
-                            {dataset.metrics?.downloads || 0} mil
+                            {dataset.metrics?.downloads ? Math.round(dataset.metrics.downloads / 1000) + ' mil' : '0'}
                           </span>
                         </div>
                         <div
@@ -213,7 +251,7 @@ export default function DatasetsClient({
                           title="Reutilizações"
                         >
                           <Icon
-                            name="agora-line-share"
+                            name="agora-line-chart-bar"
                             className="w-4 h-4"
                             aria-hidden="true"
                           />
@@ -248,9 +286,10 @@ export default function DatasetsClient({
                 />
               </div>
             </div>
-          </div>
-        </div>
+          </div>        </div>
       </main>
     </div>
   );
+
+
 }
