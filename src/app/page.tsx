@@ -5,6 +5,7 @@ import {
   InputSearchBar,
   Icon,
   CardArticle,
+  CardGeneral,
 } from '@ama-pt/agora-design-system';
 
 export default function Home() {
@@ -151,7 +152,7 @@ export default function Home() {
             </p>
             <div className="grid grid-cols-4 md:grid-cols-4 gap-32">
               <div className="flex flex-col gap-4">
-                <div className="icon-container bg-[#F0F5FF] text-[#002D72]">
+                <div className="icon-container mb-16 bg-[#F0F5FF] text-[#002D72]">
                   <Icon name="agora-line-layers-menu" aria-hidden="true" className="w-8 h-8" />
                 </div>
                 <div className="flex flex-col">
@@ -163,7 +164,7 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col gap-4">
-                <div className="icon-container bg-[#FFF1F1] text-[#D42B34]">
+                <div className="icon-container mb-16 bg-[#FFF1F1] text-[#D42B34]">
                   <Icon name="agora-line-document" aria-hidden="true" className="w-8 h-8" />
                 </div>
                 <div className="flex flex-col">
@@ -175,7 +176,7 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col gap-4">
-                <div className="icon-container bg-[#EDFBF2] text-[#008947]">
+                <div className="icon-container mb-16 bg-[#EDFBF2] text-[#008947]">
                   <Icon name="agora-line-document" aria-hidden="true" className="w-8 h-8" />
                 </div>
                 <div className="flex flex-col">
@@ -187,7 +188,7 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col gap-4">
-                <div className="icon-container bg-[#FFFAEB] text-[#8C4B00]">
+                <div className="icon-container mb-16 bg-[#FFFAEB] text-[#8C4B00]">
                   <Icon name="agora-line-user-group" aria-hidden="true" className="w-8 h-8" />
                 </div>
                 <div className="flex flex-col">
@@ -234,32 +235,18 @@ export default function Home() {
                   views: '52 341',
                 },
               ].map((item, i) => (
-                <CardArticle
+                <CardGeneral
                   key={i}
-                  hasPill={true}
-                  pill={{
-                    children: item.time,
-                    variant: 'primary',
-                    appearance: 'solid',
-                  }}
-                  title={item.title}
-                  subtitle={item.org}
-                  blockedLink={true}
-                  mainAnchor={{ href: '#' }}
-                  className="border-2! border-[#1A65FA]! !bg-white !p-8 min-h-[300px]"
-                >
-                  <div className="flex flex-col h-full mt-4">
-                    <p className="text-neutral-600 mb-6 flex-grow">{item.desc}</p>
-                    <div className="flex items-center gap-2 font-medium">
-                      <Icon
-                        name="agora-line-eye"
-                        aria-hidden="true"
-                        className="w-5 h-5 text-[#1A65FA]"
-                      />
-                      <span className="text-[#1A65FA]">{item.views}</span>
-                    </div>
-                  </div>
-                </CardArticle>
+                  variant="white"
+                  pillText={item.time}
+                  subtitleText={item.org}
+                  titleText={item.title}
+                  descriptionText={item.desc}
+                  status="default"
+                  statusText={item.views}
+                  isBlockedLink={true}
+                  anchor={{ href: '#' }}
+                />
               ))}
             </div>
             <div className="mt-64">
