@@ -42,3 +42,5 @@ next-env.d.ts
 
 # gemini
 .gemini/
+google-chrome-stable_current_amd64.deb
+figma_node.json
