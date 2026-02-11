@@ -41,3 +41,8 @@ html,
 body {
   height: 100%;
 }
+
+/*Grid 5 elements*/
+.grid-cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}

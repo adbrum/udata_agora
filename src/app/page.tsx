@@ -22,14 +22,19 @@ export default function Home() {
           <div className="card-container">
             <div className="card-content">
               <div className="title">
-                <h1 className="container mx-auto xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold text-white grid sm:grid-cols-1 md:grid-cols-1 xl:grid-cols-3">
-                  Plataforma aberta
-                  de dados públicos portugueses
+                <h1 className="container mx-auto text-white flex flex-col items-start leading-tight">
+                  <span className="xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold">
+                    Plataforma aberta
+                  </span>
+                  <span className="xl:text-3xl-regular md:text-3xl-regular xs:text-2xl-regular font-light">
+                    de dados públicos portugueses
+                  </span>
                 </h1>
               </div>
               <div className="subtitle">
-                <div className="container mx-auto text-m-regular text-left grid sm:grid-cols-1 md:grid-cols-1 xl:grid-cols-2">
+                <div className="container mx-auto text-m-regular text-left">
                   Aceda, explore e reutilize dados públicos de forma transparente e acessível. Milhares de
+                  <br />
                   conjuntos de dados ao seu dispor.
                 </div>
               </div>
@@ -107,6 +112,22 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="mt-8 text-[14px] text-white">
+                      Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
+                    </div>
+                    <div className="mt-64">
+                      <Button
+                        variant="primary"
+                        hasIcon={true}
+                        trailingIcon="agora-line-arrow-right-circle"
+                        trailingIconHover="agora-solid-arrow-right-circle"
+                        className="!bg-[#7BB2FF] !text-[#002D72] px-24 py-16 rounded-8 h-auto [&_svg]:!fill-black"
+                      >
+                        <span className="text-lg font-medium">
+                          Publicar <span className="font-bold">dados.gov</span>
+                        </span>
+                      </Button>
+                    </div>
                     <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
                   </div>
                 </div>
@@ -119,41 +140,60 @@ export default function Home() {
         {/* Stats Section / Communities */}
         <div className="py-16 bg-white -mt-8 relative z-20 rounded-t-3xl border-t border-neutral-100 shadow-top-low md:mt-0 md:border-none md:shadow-none">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-8 text-primary-900">
-              Uma comunidade dinâmica e empenhada
+            <h2 className="text-2xl-bold mb-2 text-[#002D72]">
+              <span className="text-2xl-bold">Uma comunidade</span>{' '}
+              <span className="text-2xl-light">dinâmica e empenhada</span>
             </h2>
-            <div className="bg-white md:rounded-16 md:shadow-center-medium p-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-              <div className="flex flex-col gap-2">
-                <div className="w-12 h-12 bg-primary-50 rounded-8 flex items-center justify-center text-primary-600">
-                  <Icon name="agora-line-file" aria-hidden="true" />
+            <p className="text-neutral-600 mb-12">
+              Partilhe a utilização e a troca de dados entre produtores e reutilizadores de dados.
+            </p>
+            <div className="grid grid-cols-4 md:grid-cols-4 gap-8">
+              <div className="flex flex-col gap-4">
+                <div className="w-16 h-16 bg-[#F0F5FF] rounded-8 flex items-center justify-center text-[#002D72]">
+                  <Icon name="agora-line-layers" aria-hidden="true" className="w-8 h-8" />
                 </div>
-                <span className="text-3xl font-bold text-neutral-900">
-                  47,885
-                </span>
-                <span className="text-neutral-600">Conjuntos de dados</span>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-neutral-900">
+                    47,825
+                  </span>
+                  <span className="text-neutral-600">Conjuntos de Dados</span>
+                </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <div className="w-12 h-12 bg-danger-50 rounded-8 flex items-center justify-center text-danger-600">
-                  <Icon name="agora-line-buildings" aria-hidden="true" />
+
+              <div className="flex flex-col gap-4">
+                <div className="w-16 h-16 bg-[#FFF2F2] rounded-8 flex items-center justify-center text-[#D92D20]">
+                  <Icon name="agora-line-file-text" aria-hidden="true" className="w-8 h-8" />
                 </div>
-                <span className="text-3xl font-bold text-neutral-900">
-                  3,414
-                </span>
-                <span className="text-neutral-600">Organizações</span>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-neutral-900">
+                    2,456
+                  </span>
+                  <span className="text-neutral-600">Organizações</span>
+                </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <div className="w-12 h-12 bg-success-50 rounded-8 flex items-center justify-center text-success-600">
-                  <Icon name="agora-line-refresh-ccw" aria-hidden="true" />
+
+              <div className="flex flex-col gap-4">
+                <div className="w-16 h-16 bg-[#ECFDF3] rounded-8 flex items-center justify-center text-[#039855]">
+                  <Icon name="agora-line-bar-chart" aria-hidden="true" className="w-8 h-8" />
                 </div>
-                <span className="text-3xl font-bold text-neutral-900">835</span>
-                <span className="text-neutral-600">Reutilizações</span>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-neutral-900">
+                    8,234
+                  </span>
+                  <span className="text-neutral-600">Reutilizações</span>
+                </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <div className="w-12 h-12 bg-warning-50 rounded-8 flex items-center justify-center text-warning-600">
-                  <Icon name="agora-line-share" aria-hidden="true" />
+
+              <div className="flex flex-col gap-4">
+                <div className="w-16 h-16 bg-[#FFFAEB] rounded-8 flex items-center justify-center text-[#DC6803]">
+                  <Icon name="agora-line-users" aria-hidden="true" className="w-8 h-8" />
                 </div>
-                <span className="text-3xl font-bold text-neutral-900">124</span>
-                <span className="text-neutral-600">Harvesters</span>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-neutral-900">
+                    152K
+                  </span>
+                  <span className="text-neutral-600">Utilizadores</span>
+                </div>
               </div>
             </div>
           </div>
@@ -162,13 +202,13 @@ export default function Home() {
         {/* Featured Datasets */}
         <div className="py-16 md:bg-transparent">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold text-primary-900 mb-2">
+            <h2 className="text-2xl-bold text-primary-900 mb-2">
               Conjunto de Dados em Destaque
             </h2>
             <p className="text-neutral-600 mb-8 max-w-3xl">
               Conjuntos de dados mais populares e atualizados.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
               {[
                 {
                   time: 'Hoje',
@@ -234,7 +274,7 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-primary-900 mb-8">
               Utilizado diariamente por
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center justify-items-center">
+            <div className="grid grid-cols-5 md:grid-cols-5 gap-8 items-center justify-items-center">
               {['arte.svg', 'ADC.svg', 'IMPIC.svg', 'DSPA.svg', 'apa.svg'].map(
                 (logo, i) => (
                   <div
@@ -256,13 +296,13 @@ export default function Home() {
         {/* Reuses */}
         <div className="py-16 md:bg-transparent">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold text-primary-900 mb-2">
+            <h2 className="text-2xl-bold text-primary-900 mb-2">
               Storytellings em Destaque
             </h2>
             <p className="text-neutral-600 mb-8 max-w-3xl">
               Storytellings mais populares
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
               {[
                 {
                   img: 'storytelling1.svg',
@@ -308,9 +348,9 @@ export default function Home() {
         <div className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-primary-900 mb-12">
-              <span className="font-normal">Últimas</span> novidades
+              <span className="text-2xl-light">Últimas</span> novidades
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-3 md:grid-cols-3 gap-8">
               {['last-new1.svg', 'last-new2.svg', 'last-new3.svg'].map(
                 (img, i) => (
                   <CardArticle
