@@ -150,7 +150,7 @@ export default function Home() {
             <p className=" mt-16 mb-32">
               Partilhe a utilização e a troca de dados entre produtores e reutilizadores de dados.
             </p>
-            <div className="grid grid-cols-4 md:grid-cols-4 gap-32">
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-32">
               <div className="flex flex-col gap-4">
                 <div className="icon-container mb-16 bg-[#F0F5FF] text-[#002D72]">
                   <Icon name="agora-line-layers-menu" aria-hidden="true" className="w-8 h-8" />
@@ -211,7 +211,7 @@ export default function Home() {
             <p className="mt-16 mb-32 max-w-3xl">
               Conjuntos de dados mais populares e atualizados.
             </p>
-            <div className="grid grid-cols-3 md:grid-cols-3 gap-32">
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {[
                 {
                   time: 'Hoje',
@@ -241,9 +241,21 @@ export default function Home() {
                   pillText={item.time}
                   subtitleText={item.org}
                   titleText={item.title}
-                  descriptionText={item.desc}
-                  status="default"
-                  statusText={item.views}
+                  descriptionText={
+                    (
+                      <div className="flex flex-col gap-16">
+                        <span>{item.desc}</span>
+                        <div className="flex items-center gap-8 text-neutral-600">
+                          <Icon
+                            name="agora-line-eye"
+                            className="w-20 h-20"
+                            aria-hidden="true"
+                          />
+                          <span>{item.views}</span>
+                        </div>
+                      </div>
+                    ) as unknown as string
+                  }
                   isBlockedLink={true}
                   anchor={{ href: '#' }}
                 />
@@ -291,7 +303,7 @@ export default function Home() {
             <p className="mt-16 mb-32 max-w-3xl">
               Storytellings mais populares
             </p>
-            <div className="grid grid-cols-3 md:grid-cols-3 gap-32">
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {[
                 {
                   img: 'storytelling1.svg',
@@ -311,21 +323,30 @@ export default function Home() {
                   subtitle: 'Publicado a DD MM AAAA',
                 },
               ].map((story, i) => (
-                <CardArticle
+                <a
                   key={i}
-                  image={{
-                    src: `/${story.img}`,
-                    alt: story.title,
-                  }}
-                  subtitle={story.subtitle}
-                  title={story.title}
-                  blockedLink={true}
-                  mainAnchor={{ href: '#' }}
-                  className="bg-primary-50! border-none shadow-none"
-                />
+                  href="#"
+                  className="flex flex-col rounded-2xl overflow-hidden bg-[#DCEEFE] h-full hover:shadow-lg transition-all duration-300 group"
+                >
+                  <div className="relative h-[200px] w-full overflow-hidden">
+                    <img
+                      src={`/${story.img}`}
+                      alt={story.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-24 flex flex-col gap-8 grow">
+                    <span className="text-sm text-neutral-600 font-light">
+                      {story.subtitle}
+                    </span>
+                    <h3 className="text-lg font-bold text-neutral-900 leading-tight">
+                      {story.title}
+                    </h3>
+                  </div>
+                </a>
               ))}
             </div>
-            <div className="mt-12">
+            <div className="mt-64 mt-12">
               <Button variant="primary" appearance="outline">
                 Ver mais
               </Button>
@@ -339,7 +360,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-primary-900 mb-64">
               <span className="text-2xl-light">Últimas</span> <span className="text-2xl-bold">novidades</span>
             </h2>
-            <div className="grid grid-cols-3 md:grid-cols-3 gap-32">
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {['last-new1.svg', 'last-new2.svg', 'last-new3.svg'].map(
                 (img, i) => (
                   <CardArticle
@@ -348,12 +369,7 @@ export default function Home() {
                       src: `/${img}`,
                       alt: `Novidade ${i + 1}`,
                     }}
-                    hasPill={true}
-                    pill={{
-                      children: 'Webinar',
-                      variant: 'primary',
-                      appearance: 'solid',
-                    }}
+
                     subtitle="Publicado em 21 de novembro de 2024"
                     title="Webinar Developers e Data Scientists: Publicação e uso de dados abertos"
                     mainAnchor={{
