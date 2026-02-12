@@ -78,49 +78,40 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                     {/* Sidebar Column */}
                     <div className="xl:col-span-6 md:pt-64 ">
                         {/* Organization Box */}
-                        <div className="bg-white border border-neutral-200 rounded-lg p-6">
-                            <div className="flex items-center gap-4 mb-6 pb-6 border-b border-neutral-200">
-                                {dataset.organization?.logo ? (
-                                    <div className="w-16 h-16 bg-white rounded border border-neutral-200 flex items-center justify-center p-2">
-                                        <img
-                                            src={dataset.organization.logo}
-                                            alt={dataset.organization.name}
-                                            className="max-w-full max-h-full object-contain"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="w-16 h-16 bg-neutral-200 rounded flex items-center justify-center text-neutral-400">
-                                        <Icon name="agora-line-building" className="w-8 h-8" />
-                                    </div>
-                                )}
-                                <div>
-                                    <div className="text-xs font-bold text-neutral-500 uppercase tracking-wide mb-1">
-                                        Organização
-                                    </div>
-                                    <div className="font-bold text-neutral-900 text-lg leading-tight">
-                                        {dataset.organization?.name || 'Organização Desconhecida'}
-                                    </div>
+                        <div className="rounded-lg p-32 flex flex-col gap-24 h-fit md:mb-8 bg-primary-100">
+                            {/* Organization Logo Badge */}
+                            {dataset.organization?.logo ? (
+                                <div className="w-fit px-12 py-6 bg-[#F0F5FF] rounded-8 border border-[#7BB2FF] flex items-center justify-center">
+                                    <img
+                                        src={dataset.organization.logo}
+                                        alt={dataset.organization.name}
+                                        className="h-24 object-contain"
+                                    />
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="w-fit px-12 py-6 bg-neutral-100 rounded-8 border border-neutral-200 flex items-center justify-center text-neutral-400">
+                                    <Icon name="agora-line-building" className="w-6 h-6" />
+                                </div>
+                            )}
 
-                            <div className="space-y-4 text-sm">
-                                <div>
-                                    <div className="font-bold text-neutral-900 mb-1">Relatório Anual</div>
-                                    <div className="text-neutral-600">Disponível para consulta pública</div>
+                            {/* Main Information */}
+                            <div className="space-y-16">
+                                <div className="text-neutral-600 text-sm">
+                                    {dataset.organization?.name || 'Organização Desconhecida'}
                                 </div>
-                                <div>
-                                    <div className="font-bold text-neutral-900 mb-1">Última atualização</div>
-                                    <div className="text-neutral-600">
-                                        {new Date(dataset.last_modified).toLocaleDateString('pt-PT', {
-                                            day: 'numeric',
-                                            month: 'long',
-                                            year: 'numeric'
-                                        })}
-                                    </div>
+                                <div className="text-xl-bold text-neutral-900 leading-tight">
+                                    {dataset.title}
                                 </div>
-                                <div>
-                                    <div className="font-bold text-neutral-900 mb-1">Licença</div>
-                                    <a href="#" className="text-primary-700 hover:underline font-medium">
+                                <div className="text-neutral-900 text-sm">
+                                    <span className="font-bold">Última atualização:</span>{' '}
+                                    {new Date(dataset.last_modified).toLocaleDateString('pt-PT', {
+                                        day: 'numeric',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    })}
+                                </div>
+                                <div className="pt-8">
+                                    <a href="#" className="text-primary-700 hover:underline font-medium text-sm">
                                         Licença Aberta / Licença Aberta versão 2.0
                                     </a>
                                 </div>
@@ -128,8 +119,8 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                         </div>
 
                         {/* Metrics Box */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-white border border-neutral-200 rounded-lg p-6">
+                        <div className="grid grid-cols-2 gap-8 md:mb-8">
+                            <div className="bg-primary-100 p-32 rounded-lg p-6 ">
                                 <div className="text-sm text-neutral-500 mb-2">Vistas</div>
                                 <div className="text-2xl font-bold text-neutral-900">
                                     {dataset.metrics?.views
@@ -143,7 +134,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                                 </div>
                                 <div className="text-xs text-neutral-400 mt-1">desde julho de 2022</div>
                             </div>
-                            <div className="bg-white border border-neutral-200 rounded-lg p-6">
+                            <div className="bg-primary-100 p-32 rounded-lg p-6">
                                 <div className="text-sm text-neutral-500 mb-2">Downloads</div>
                                 <div className="text-2xl font-bold text-neutral-900">
                                     {dataset.metrics?.downloads
@@ -160,7 +151,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                         </div>
 
                         {/* Quality Box */}
-                        <div className="bg-white border border-neutral-200 rounded-lg p-6">
+                        <div className="bg-primary-100 p-32 rounded-lg p-6">
                             <div className="flex justify-between items-end mb-4">
                                 <h3 className="font-bold text-neutral-900">Qualidade dos metados</h3>
                             </div>
