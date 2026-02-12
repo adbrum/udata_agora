@@ -62,7 +62,7 @@ export const DatasetsFilters = () => {
   return (
     <div className="h-full">
       <div className="mb-6">
-        <h2 className="font-bold text-xl text-neutral-900">Filtros</h2>
+        <h2 className="font-bold text-xl text-neutral-900 pb-64">Filtros</h2>
       </div>
 
       <Sidebar variant="filter">
