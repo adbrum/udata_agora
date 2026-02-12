@@ -22,7 +22,7 @@ export default function DatasetsClient({
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50">
-      <main className="flex-grow">
+      <main className="flex-grow bg-white">
         {/* Combined Hero Section with Agora Structure */}
         {/* Combined Hero Section with Agora Structure */}
         <div className="agora-card-highlight-newsletter datasets-background bg-primary-900">
@@ -142,153 +142,159 @@ export default function DatasetsClient({
         {/* Main Content - Full Width Layout */}
         {/* Main Content - Full Width Layout Wrapper */}
         {/* Main Content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-12 md:gap-32">
-          {/* Sidebar */}
-          <div className="xl:col-span-3 hidden xl:block">
-            <DatasetsFilters />
+        <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
+            {/* Sidebar */}
+            <div className="xl:col-span-4 xl:block bg-primary-100 md:pt-64 p-32">
+              <DatasetsFilters />
+            </div>
+
+
+            {/* Results Area */}
+            <div className="xl:col-span-8 md:pt-64 ">
+              <div>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                  <span className="text-neutral-600 font-medium">
+                    {total.toLocaleString('pt-PT')} resultados
+                  </span>
+                  <div className="w-full md:w-auto flex items-center gap-3">
+                    <span className="text-sm text-neutral-500 whitespace-nowrap">
+                      Ordenar por :
+                    </span>
+                    <div className="min-w-[240px] border border-neutral-300 rounded px-4 py-2 bg-white text-sm flex justify-between items-center cursor-pointer hover:border-primary-500 transition-colors">
+                      <span>Número de reutilizações</span>
+                      <Icon name="agora-line-chevron-down" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  {datasets.map((dataset) => (
+                    <div
+                      key={dataset.id}
+                      className="py-8 border-b border-neutral-200 last:border-0 flex flex-col md:flex-row gap-6 items-start"
+                    >
+                      <div className="w-full md:w-48 h-32 flex-shrink-0 border border-primary-100 flex items-center justify-center text-sm font-bold text-primary-300 uppercase overflow-hidden rounded-sm bg-primary-50/10">
+                        {dataset.organization?.logo ? (
+                          <img
+                            src={dataset.organization.logo}
+                            alt={dataset.organization.name}
+                            className="max-w-full max-h-full object-contain p-2"
+                          />
+                        ) : (
+                          <span>LOGOIPSUM</span>
+                        )}
+                      </div>
+
+                      <div className="flex-grow w-full">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-1">
+                          <div className="text-sm text-neutral-500 font-normal">
+                            {dataset.organization?.name ||
+                              'Organização Desconhecida'}
+                          </div>
+                        </div>
+
+                        <h3 className="text-xl font-bold text-neutral-900 mb-1">
+                          <Link href={`/pages/datasets/${dataset.slug}`} className="hover:text-primary-600 hover:underline">
+                            {dataset.title}
+                          </Link>
+                        </h3>
+
+                        <div className="text-xs text-neutral-500 mb-3 flex items-center gap-2">
+                          <span>
+                            Actualizado há{' '}
+                            {formatDistanceToNow(
+                              new Date(dataset.last_modified),
+                              { locale: pt },
+                            )}
+                          </span>
+                        </div>
+
+                        <p className="text-neutral-600 text-sm mb-4 line-clamp-3 leading-relaxed">
+                          {dataset.description}
+                        </p>
+
+                        <div className="mb-5 flex gap-2 flex-wrap items-center">
+                          <span className="bg-warning-300 text-neutral-900 text-xs px-3 py-1 rounded-full font-medium">
+                            Metadados: 35%
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-8 text-sm text-neutral-500">
+                          <div
+                            className="flex items-center gap-2"
+                            title="Visualizações"
+                          >
+                            <Icon
+                              name="agora-line-visibility"
+                              className="w-5 h-5"
+                              aria-hidden="true"
+                            />
+                            <span className="font-semibold">
+                              {dataset.metrics?.views ? (dataset.metrics.views / 1000000).toFixed(1) + ' M' : '0'}
+                            </span>
+                          </div>
+                          <div
+                            className="flex items-center gap-2"
+                            title="Downloads"
+                          >
+                            <Icon
+                              name="agora-line-download"
+                              className="w-5 h-5"
+                              aria-hidden="true"
+                            />
+                            <span className="font-semibold">
+                              {dataset.metrics?.downloads ? Math.round(dataset.metrics.downloads / 1000) + ' mil' : '0'}
+                            </span>
+                          </div>
+                          <div
+                            className="flex items-center gap-2"
+                            title="Reutilizações"
+                          >
+                            <Icon
+                              name="agora-line-chart-bar"
+                              className="w-4 h-4"
+                              aria-hidden="true"
+                            />
+                            <span className="font-semibold">
+                              {dataset.metrics?.reuses || 0}
+                            </span>
+                          </div>
+                          <div
+                            className="flex items-center gap-2"
+                            title="Seguidores"
+                          >
+                            <Icon
+                              name="agora-line-star"
+                              className="w-5 h-5"
+                              aria-hidden="true"
+                            />
+                            <span className="font-semibold">
+                              {dataset.metrics?.followers || 0}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-12 flex justify-center pb-12">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalItems={total}
+                    pageSize={page_size}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
 
-          {/* Results Area */}
-          <div className="col-span-1 md:col-span-3 xl:col-span-9 xl:pl-[136px]">
-            <div className="max-w-5xl mx-auto">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <span className="text-neutral-600 font-medium">
-                  {total.toLocaleString('pt-PT')} resultados
-                </span>
-                <div className="w-full md:w-auto flex items-center gap-3">
-                  <span className="text-sm text-neutral-500 whitespace-nowrap">
-                    Ordenar por:
-                  </span>
-                  <div className="min-w-[240px] border border-neutral-300 rounded px-4 py-2 bg-white text-sm flex justify-between items-center cursor-pointer hover:border-primary-500 transition-colors">
-                    <span>Número de visualizações</span>
-                    <Icon name="agora-line-chevron-down" />
-                  </div>
-                </div>
-              </div>
+        </div>
 
-              <div className="flex flex-col">
-                {datasets.map((dataset) => (
-                  <div
-                    key={dataset.id}
-                    className="py-8 border-b border-neutral-200 last:border-0 flex flex-col md:flex-row gap-6 items-start"
-                  >
-                    <div className="w-full md:w-48 h-24 flex-shrink-0 border border-neutral-200 flex items-center justify-center text-xs font-bold text-primary-300 uppercase overflow-hidden rounded-sm bg-white">
-                      {dataset.organization?.logo ? (
-                        <img
-                          src={dataset.organization.logo}
-                          alt={dataset.organization.name}
-                          className="max-w-full max-h-full object-contain p-2"
-                        />
-                      ) : (
-                        <span>LOGOIPSUM</span>
-                      )}
-                    </div>
-
-                    <div className="flex-grow w-full">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                        <div className="text-sm text-neutral-500 font-normal mb-1 md:mb-0">
-                          {dataset.organization?.name ||
-                            'Organização Desconhecida'}
-                        </div>
-                      </div>
-
-                      <h3 className="text-xl font-bold text-neutral-900 mb-1">
-                        <Link href={`/pages/datasets/${dataset.slug}`} className="hover:text-primary-600 hover:underline">
-                          {dataset.title}
-                        </Link>
-                      </h3>
-
-                      <div className="text-xs text-neutral-500 mb-3 flex items-center gap-2">
-                        <span>
-                          Actualizado há{' '}
-                          {formatDistanceToNow(
-                            new Date(dataset.last_modified),
-                            { locale: pt },
-                          )}
-                        </span>
-                      </div>
-
-                      <p className="text-neutral-600 text-sm mb-4 line-clamp-2 leading-relaxed">
-                        {dataset.description}
-                      </p>
-
-                      <div className="mb-5 flex gap-2 flex-wrap items-center">
-                        <span className="bg-warning-300 text-neutral-900 text-xs px-3 py-1 rounded-full font-medium">
-                          Metadados: 35%
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-8 text-sm text-neutral-500">
-                        <div
-                          className="flex items-center gap-2"
-                          title="Visualizações"
-                        >
-                          <Icon
-                            name="agora-line-visibility"
-                            className="w-5 h-5"
-                            aria-hidden="true"
-                          />
-                          <span className="font-semibold">
-                            {dataset.metrics?.views ? (dataset.metrics.views / 1000000).toFixed(1) + ' M' : '0'}
-                          </span>
-                        </div>
-                        <div
-                          className="flex items-center gap-2"
-                          title="Downloads"
-                        >
-                          <Icon
-                            name="agora-line-download"
-                            className="w-5 h-5"
-                            aria-hidden="true"
-                          />
-                          <span className="font-semibold">
-                            {dataset.metrics?.downloads ? Math.round(dataset.metrics.downloads / 1000) + ' mil' : '0'}
-                          </span>
-                        </div>
-                        <div
-                          className="flex items-center gap-2"
-                          title="Reutilizações"
-                        >
-                          <Icon
-                            name="agora-line-chart-bar"
-                            className="w-4 h-4"
-                            aria-hidden="true"
-                          />
-                          <span className="font-semibold">
-                            {dataset.metrics?.reuses || 0}
-                          </span>
-                        </div>
-                        <div
-                          className="flex items-center gap-2"
-                          title="Seguidores"
-                        >
-                          <Icon
-                            name="agora-line-star"
-                            className="w-5 h-5"
-                            aria-hidden="true"
-                          />
-                          <span className="font-semibold">
-                            {dataset.metrics?.followers || 0}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-12 flex justify-center pb-12">
-                <Pagination
-                  currentPage={currentPage}
-                  totalItems={total}
-                  pageSize={page_size}
-                />
-              </div>
-            </div>
-          </div>        </div>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 
 
