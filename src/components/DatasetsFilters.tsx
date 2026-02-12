@@ -60,13 +60,12 @@ export const DatasetsFilters = () => {
   const filterGroups = [
     { name: 'Organização', type: 'dynamic', data: organizations },
     { name: 'Tipo de organização', type: 'static' },
-    { name: 'Palavras-chave', type: 'static' },
+    { name: 'Etiquetas', type: 'static' },
     { name: 'Formatos', type: 'static' },
     { name: 'Licenças', type: 'static' },
-    { name: 'Plano', type: 'static' },
+    { name: 'Esquema', type: 'static' },
     { name: 'Cobertura espacial', type: 'static' },
     { name: 'Granularidade espacial', type: 'static' },
-    { name: 'Rótulo de dados', type: 'static' },
   ];
 
   return (

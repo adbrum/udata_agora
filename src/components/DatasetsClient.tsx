@@ -153,15 +153,15 @@ export default function DatasetsClient({
             {/* Results Area */}
             <div className="xl:col-span-8 md:pt-64 ">
               <div>
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                  <span className="text-neutral-600 font-medium">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-16">
+                  <span className="text-neutral-600 font-medium text-base">
                     {total.toLocaleString('pt-PT')} resultados
                   </span>
-                  <div className="w-full md:w-auto flex items-center gap-3">
-                    <span className="text-sm text-neutral-500 whitespace-nowrap">
+                  <div className="w-full md:w-auto flex items-center gap-12">
+                    <span className="text-base text-[#002D72] whitespace-nowrap font-medium">
                       Ordenar por :
                     </span>
-                    <div className="min-w-[240px] border border-neutral-300 rounded px-4 py-2 bg-white text-sm flex justify-between items-center cursor-pointer hover:border-primary-500 transition-colors">
+                    <div className="min-w-[240px] border border-neutral-300 rounded px-16 py-8 bg-white text-base flex justify-between items-center cursor-pointer hover:border-primary-500 transition-colors">
                       <span>Número de reutilizações</span>
                       <Icon name="agora-line-chevron-down" />
                     </div>
@@ -169,79 +169,86 @@ export default function DatasetsClient({
                 </div>
 
                 <div className="flex flex-col">
-                  {datasets.map((dataset) => (
-                    <CardAction
+                  {datasets.map((dataset, index) => (
+                    <div
                       key={dataset.id}
-                      isCardHorizontal={true}
-                      image={{
-                        src: dataset.organization?.logo || '/images/placeholders/organization.png',
-                        alt: dataset.organization?.name || 'Organização sem logo',
-                      }}
-                      titleText={
-                        (
-                          <Link href={`/pages/datasets/${dataset.slug}`} className="hover:underline">
-                            {dataset.title}
-                          </Link>
-                        ) as unknown as string
-                      }
-                      button={{
-                        children: 'Ver mais',
-                        className: 'hidden', // Hide the button as it is not in the Figma design
-                      }}
-                      descriptionText={
-                        (
-                          <div className="flex flex-col gap-2">
-                            <span className="text-sm text-neutral-500 font-normal">
-                              {dataset.organization?.name || 'Organização Desconhecida'}
-                            </span>
-
-                            <span className="text-xs text-neutral-500">
-                              Atualizado há{' '}
-                              {formatDistanceToNow(new Date(dataset.last_modified), {
-                                locale: pt,
-                              })}
-                            </span>
-
-                            <p className="text-neutral-600 text-sm line-clamp-3 leading-relaxed mt-2">
-                              {dataset.description}
-                            </p>
-
-                            <div className="flex gap-2 flex-wrap items-center mt-2">
-                              <span className="bg-warning-300 text-neutral-900 text-xs px-3 py-1 rounded-full font-medium">
-                                Metadados: 35%
+                      className={`border-t border-x border-[#FAFCFF] ${index === datasets.length - 1
+                        ? 'border-b'
+                        : ''
+                        }`}
+                    >
+                      <CardAction
+                        isCardHorizontal={true}
+                        image={{
+                          src: dataset.organization?.logo || '/images/placeholders/organization.png',
+                          alt: dataset.organization?.name || 'Organização sem logo',
+                        }}
+                        titleText={
+                          (
+                            <Link href={`/pages/datasets/${dataset.slug}`} className="hover:underline">
+                              {dataset.title}
+                            </Link>
+                          ) as unknown as string
+                        }
+                        button={{
+                          children: 'Ver mais',
+                          className: 'hidden',
+                        }}
+                        descriptionText={
+                          (
+                            <div className="flex flex-col gap-2">
+                              <span className="text-sm text-neutral-500 font-normal">
+                                {dataset.organization?.name || 'Organização Desconhecida'}
                               </span>
-                            </div>
 
-                            <div className="flex items-center gap-8 text-sm text-neutral-500 mt-2">
-                              <div className="flex items-center gap-2" title="Visualizações">
-                                <Icon name="agora-line-visibility" className="w-5 h-5" aria-hidden="true" />
-                                <span className="font-semibold">
-                                  {dataset.metrics?.views
-                                    ? (dataset.metrics.views / 1000000).toFixed(1) + ' M'
-                                    : '0'}
+                              <span className="text-xs text-neutral-500">
+                                Atualizado há{' '}
+                                {formatDistanceToNow(new Date(dataset.last_modified), {
+                                  locale: pt,
+                                })}
+                              </span>
+
+                              <p className="text-neutral-600 text-sm line-clamp-3 leading-relaxed mt-2">
+                                {dataset.description}
+                              </p>
+
+                              <div className="flex gap-2 flex-wrap items-center mt-2">
+                                <span className="bg-warning-300 text-neutral-900 text-xs px-3 py-1 rounded-full font-medium">
+                                  Metadados: 35%
                                 </span>
                               </div>
-                              <div className="flex items-center gap-2" title="Downloads">
-                                <Icon name="agora-line-download" className="w-5 h-5" aria-hidden="true" />
-                                <span className="font-semibold">
-                                  {dataset.metrics?.downloads
-                                    ? Math.round(dataset.metrics.downloads / 1000) + ' mil'
-                                    : '0'}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2" title="Reutilizações">
-                                <Icon name="agora-line-chart-bar" className="w-4 h-4" aria-hidden="true" />
-                                <span className="font-semibold">{dataset.metrics?.reuses || 0}</span>
-                              </div>
-                              <div className="flex items-center gap-2" title="Seguidores">
-                                <Icon name="agora-line-star" className="w-5 h-5" aria-hidden="true" />
-                                <span className="font-semibold">{dataset.metrics?.followers || 0}</span>
+
+                              <div className="flex items-center gap-8 text-sm text-neutral-500 mt-2">
+                                <div className="flex items-center gap-2" title="Visualizações">
+                                  <Icon name="agora-line-eye" className="w-5 h-5" aria-hidden="true" />
+                                  <span className="font-semibold">
+                                    {dataset.metrics?.views
+                                      ? (dataset.metrics.views / 1000000).toFixed(1) + ' M'
+                                      : '0'}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2" title="Downloads">
+                                  <Icon name="agora-line-download" className="w-5 h-5" aria-hidden="true" />
+                                  <span className="font-semibold">
+                                    {dataset.metrics?.downloads
+                                      ? Math.round(dataset.metrics.downloads / 1000) + ' mil'
+                                      : '0'}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2" title="Reutilizações">
+                                  <Icon name="agora-line-chart-bar" className="w-4 h-4" aria-hidden="true" />
+                                  <span className="font-semibold">{dataset.metrics?.reuses || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-2" title="Seguidores">
+                                  <Icon name="agora-line-star" className="w-5 h-5" aria-hidden="true" />
+                                  <span className="font-semibold">{dataset.metrics?.followers || 0}</span>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ) as unknown as string
-                      }
-                    />
+                          ) as unknown as string
+                        }
+                      />
+                    </div>
                   ))}
                 </div>
 
