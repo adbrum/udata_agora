@@ -200,14 +200,14 @@ export default function DatasetsClient({
                           descriptionText={
                             (
                               <div className="flex flex-col gap-8">
-                                <span className="text-xs text-neutral-500">
+                                <span className="text-xs ">
                                   Atualizado há{' '}
                                   {formatDistanceToNow(new Date(dataset.last_modified), {
                                     locale: pt,
                                   })}
                                 </span>
 
-                                <p className="text-neutral-600 text-sm line-clamp-2 leading-relaxed">
+                                <p className=" text-sm line-clamp-2 leading-relaxed">
                                   {dataset.description}
                                 </p>
 
@@ -215,7 +215,7 @@ export default function DatasetsClient({
                                   Metadados: 35%
                                 </Pill>
 
-                                <div className="flex items-center gap-16 text-sm text-neutral-600 mt-8">
+                                <div className="flex items-center gap-16 text-sm  mt-8">
                                   <div className="flex items-center gap-8" title="Visualizações">
                                     <Icon name="agora-line-eye" className="w-20 h-20" aria-hidden="true" />
                                     <span className="font-medium">
