@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
-import { Button, Icon, Tag, Breadcrumb, CardExpandable } from '@ama-pt/agora-design-system';
+import { Button, Icon, Tag, Breadcrumb, CardExpandable, Pill } from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
 import { DatasetTabs } from '@/components/DatasetTabs';
 
@@ -15,7 +15,7 @@ interface DatasetDetailClientProps {
 export default function DatasetDetailClient({ dataset }: DatasetDetailClientProps) {
     return (
         <div className="flex flex-col font-sans text-neutral-900 bg-white h-full">
-            <main className="flex-grow container mx-auto px-4 py-8">
+            <main className="flex-grow container mx-auto px-4 py-64">
                 {/* Breadcrumb & Action Section */}
                 <div className="flex justify-between items-center mb-6">
                     <Breadcrumb
@@ -57,7 +57,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                             {/* Example of extra content structure to match screenshot "Observações preliminares" */}
                             <div className="mt-8">
                                 <h3 className="text-xl font-bold text-neutral-900 mb-4">Observações preliminares</h3>
-                                <p className="text-neutral-600">
+                                <p className="">
                                     Este relatório aborda as tendências demográficas e económicas do país, baseando-se em dados recolhidos ao longo do ano.
                                 </p>
                             </div>
@@ -65,7 +65,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                             {/* Example of extra content structure to match screenshot "O que é DVF?" */}
                             <div className="mt-8">
                                 <h3 className="text-xl font-bold text-neutral-900 mb-4">O que é DVF?</h3>
-                                <p className="text-neutral-600">
+                                <p className="">
                                     Este conjunto de dados "Pedidos de Valores de Terrenos", publicado e produzido pela Direção Geral das Finanças Públicas, fornece informações sobre transações imobiliárias realizadas nos últimos cinco anos na França metropolitana e nos departamentos e territórios ultramarinos franceses, com exceção da Alsácia, Mosela e Mayotte. Os dados que contém provêm de escrituras notariais e informações cadastrais.
                                 </p>
                                 <a href="#" className="block mt-4 text-primary-700 font-bold hover:underline">
@@ -96,7 +96,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
 
                             {/* Main Information */}
                             <div className="space-y-16">
-                                <div className="text-neutral-600 text-sm">
+                                <div className=" text-sm">
                                     {dataset.organization?.name || 'Organização Desconhecida'}
                                 </div>
                                 <div className="text-xl-bold text-neutral-900 leading-tight">
@@ -121,30 +121,38 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                         {/* Metrics Box */}
                         <div className="grid grid-cols-2 gap-8 md:mb-8">
                             <div className="bg-primary-100 p-32 rounded-lg p-6 ">
-                                <div className="text-sm text-neutral-500 mb-2">Vistas</div>
+                                <div className="text-sm mb-2">Vistas</div>
                                 <div className="text-2xl font-bold text-neutral-900">
                                     {dataset.metrics?.views
                                         ? (dataset.metrics.views / 1000).toLocaleString('pt-PT', { maximumFractionDigits: 1 }) + ' mil'
                                         : '0'}
                                 </div>
                                 <div className="flex items-center gap-1 mt-2">
-                                    <span className="text-xs text-green-700 font-medium bg-green-50 px-2 py-0.5 rounded border border-green-100">
+                                    <Pill
+                                        appearance="outline"
+                                        variant="success"
+                                        className="h-auto"
+                                    >
                                         +11.2 mil
-                                    </span>
+                                    </Pill>
                                 </div>
                                 <div className="text-xs text-neutral-400 mt-1">desde julho de 2022</div>
                             </div>
                             <div className="bg-primary-100 p-32 rounded-lg p-6">
-                                <div className="text-sm text-neutral-500 mb-2">Downloads</div>
+                                <div className="text-sm mb-2">Downloads</div>
                                 <div className="text-2xl font-bold text-neutral-900">
                                     {dataset.metrics?.downloads
                                         ? (dataset.metrics.downloads / 1000).toLocaleString('pt-PT', { maximumFractionDigits: 1 }) + ' mil'
                                         : '0'}
                                 </div>
                                 <div className="flex items-center gap-1 mt-2">
-                                    <span className="text-xs text-green-700 font-medium bg-green-50 px-2 py-0.5 rounded border border-green-100">
+                                    <Pill
+                                        appearance="outline"
+                                        variant="success"
+                                        className="h-auto"
+                                    >
                                         +37.2 mil
-                                    </span>
+                                    </Pill>
                                 </div>
                                 <div className="text-xs text-neutral-400 mt-1">desde julho de 2022</div>
                             </div>
@@ -170,7 +178,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                     cardTitle="Está à procura do preço de venda de um imóvel ou terreno?"
                     cardSubtitle={
                         <div className="flex flex-col gap-4 mt-4">
-                            <p className="text-neutral-600">
+                            <p className="">
                                 O aplicativo "Dados de Valorização de Terrenos (DVF)" permite acessar informações claras sobre imóveis vendidos a partir do banco de dados da Direção Geral de Finanças Públicas.
                             </p>
                             <a href="#" className="text-primary-700 font-bold hover:underline inline-flex items-center gap-2">
