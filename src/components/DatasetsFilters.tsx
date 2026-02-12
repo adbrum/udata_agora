@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { Sidebar, SidebarItem, CheckboxGroup, Checkbox } from '@ama-pt/agora-design-system';
+import { Sidebar, SidebarItem, Checkbox, InputSearch, Icon } from '@ama-pt/agora-design-system';
 import { fetchOrganizations } from '@/services/api';
 import { Organization } from '@/types/api';
 
@@ -12,6 +12,7 @@ export const DatasetsFilters = () => {
   const searchParams = useSearchParams();
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [searchQueries, setSearchQueries] = React.useState<Record<string, string>>({});
 
   React.useEffect(() => {
     async function loadOrganizations() {
@@ -29,12 +30,15 @@ export const DatasetsFilters = () => {
 
   const handleOrganizationChange = (orgId: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
-    const currentOrg = current.get('org_id');
+    const currentOrgs = current.getAll('org_id');
 
-    if (currentOrg === orgId) {
+    if (currentOrgs.includes(orgId)) {
       current.delete('org_id');
+      currentOrgs
+        .filter((id) => id !== orgId)
+        .forEach((id) => current.append('org_id', id));
     } else {
-      current.set('org_id', orgId);
+      current.append('org_id', orgId);
     }
 
     // Reset page to 1 on filter change
@@ -43,8 +47,14 @@ export const DatasetsFilters = () => {
     const search = current.toString();
     const query = search ? `?${search}` : '';
 
-    // Force full page reload to ensure filters are applied correctly bypassing any router cache issues
-    window.location.href = `${pathname}${query}`;
+    router.push(`${pathname}${query}`);
+  };
+
+  const handleSearchChange = (groupName: string, value: string) => {
+    setSearchQueries((prev) => ({
+      ...prev,
+      [groupName]: value,
+    }));
   };
 
   const filterGroups = [
@@ -66,46 +76,73 @@ export const DatasetsFilters = () => {
       </div>
 
       <Sidebar variant="filter">
-        {filterGroups.map((group, index) => (
-          <SidebarItem
-            key={index}
-            variant="filter"
-            item={{
-              children: group.name,
-              hasIcon: true,
-              collapsedIconLeading: 'agora-line-minus-circle',
-              collapsedIconHoverLeading: 'agora-solid-minus-circle',
-              expandedIconLeading: 'agora-line-plus-circle',
-              expandedIconHoverLeading: 'agora-solid-plus-circle'
-            }}
-          >
-            <div className="px-6 py-4 bg-white border-t border-neutral-100 max-h-60 overflow-y-auto">
-              <div className="flex flex-col gap-2">
-                {group.name === 'Organização' ? (
-                  isLoading ? (
-                    <p className="text-sm text-neutral-500">A carregar...</p>
-                  ) : (
-                    organizations.map((org) => (
-                      <Checkbox
-                        key={org.id}
-                        label={org.name}
-                        value={org.id}
-                        name="org_id"
-                        checked={searchParams.get('org_id') === org.id}
-                        onChange={() => handleOrganizationChange(org.id)}
-                      />
-                    ))
-                  )
-                ) : (
-                  <>
-                    <Checkbox label="Opção 1" value="opt1" />
-                    <Checkbox label="Opção 2" value="opt2" />
-                  </>
+        {filterGroups.map((group, index) => {
+          const searchQuery = searchQueries[group.name] || '';
+          const filteredData = group.data?.filter(item =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+          const showSearch = (group.data?.length || 0) > 10;
+          const showScroll = (filteredData?.length || 0) > 5;
+
+          return (
+            <SidebarItem
+              key={index}
+              variant="filter"
+              item={{
+                children: group.name,
+                hasIcon: true,
+                collapsedIconTrailing: 'agora-line-minus-circle',
+                collapsedIconHoverTrailing: 'agora-solid-minus-circle',
+                expandedIconTrailing: 'agora-line-plus-circle',
+                expandedIconHoverTrailing: 'agora-solid-plus-circle'
+              }}
+              hasPill={group.name === 'Organização' && searchParams.getAll('org_id').length > 0}
+              pillValue={group.name === 'Organização' ? searchParams.getAll('org_id').length : 0}
+            >
+              <div className="px-6 py-4 bg-white border-t border-neutral-100">
+                {showSearch && (
+                  <div className="mb-4 mt-8 relative">
+                    <InputSearch
+                      label="Pesquisar"
+                      hideLabel
+                      placeholder="Pesquisar"
+                      value={searchQuery}
+                      onChange={(e) => handleSearchChange(group.name, e.target.value)}
+                    />
+                    <Icon
+                      name="agora-solid-search"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary-500 w-5 h-5 pointer-events-none"
+                      aria-hidden="true"
+                    />
+                  </div>
                 )}
+                <div className={`flex flex-col gap-2 ${showScroll ? 'max-h-[225px] overflow-y-auto' : ''}`}>
+                  {group.name === 'Organização' ? (
+                    isLoading ? (
+                      <p className="text-sm text-neutral-500">A carregar...</p>
+                    ) : (
+                      (filteredData || []).map((org) => (
+                        <Checkbox
+                          key={org.id}
+                          label={org.name}
+                          value={org.id}
+                          name="org_id"
+                          checked={searchParams.getAll('org_id').includes(org.id)}
+                          onChange={() => handleOrganizationChange(org.id)}
+                        />
+                      ))
+                    )
+                  ) : (
+                    <>
+                      <Checkbox label="Opção 1" value="opt1" />
+                      <Checkbox label="Opção 2" value="opt2" />
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          </SidebarItem>
-        ))}
+            </SidebarItem>
+          );
+        })}
       </Sidebar>
     </div>
   );
