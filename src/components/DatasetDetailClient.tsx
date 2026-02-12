@@ -15,188 +15,189 @@ interface DatasetDetailClientProps {
 export default function DatasetDetailClient({ dataset }: DatasetDetailClientProps) {
     return (
         <div className="flex flex-col font-sans text-neutral-900 bg-neutral-50 h-full">
-            <main className="flex-grow">
+            <main className="flex-grow container mx-auto px-4 py-8">
                 {/* Breadcrumb Section */}
-                <div className="bg-primary-900 pt-8 pb-4">
-                    <div className="container mx-auto px-4 relative z-10">
-                        <div className="text-primary-100 text-sm mb-4">
-                            <Link href="/" className="opacity-70 hover:opacity-100 transition-opacity underline">
-                                Bem-vindo
-                            </Link>
-                            <span className="mx-2">/</span>
-                            <Link href="/pages/datasets" className="opacity-70 hover:opacity-100 transition-opacity underline">
-                                Conjuntos de dados
-                            </Link>
-                            <span className="mx-2">/</span>
-                            <span className="font-semibold truncate">{dataset.title}</span>
-                        </div>
-                    </div>
+                <div className="text-sm mb-6 flex items-center gap-2 text-neutral-600">
+                    <Link href="/" className="hover:text-primary-700 transition-colors">
+                        Bem-vindo
+                    </Link>
+                    <Icon name="agora-line-chevron-right" className="w-4 h-4 text-neutral-400" />
+                    <Link href="/pages/datasets" className="hover:text-primary-700 transition-colors">
+                        Conjuntos de dados
+                    </Link>
+                    <Icon name="agora-line-chevron-right" className="w-4 h-4 text-neutral-400" />
+                    <span className="font-semibold text-neutral-900 truncate max-w-xs">{dataset.title}</span>
                 </div>
 
-                {/* Hero Section */}
-                <section className="bg-white border-b border-neutral-200 pb-12 pt-8">
-                    <div className="container mx-auto px-4">
-                        <div className="flex flex-col md:flex-row gap-8">
-                            {/* Logo / Image */}
-                            <div className="w-full md:w-auto flex-shrink-0">
-                                <div className="w-32 h-32 bg-neutral-100 rounded-lg flex items-center justify-center p-4 border border-neutral-200">
-                                    {dataset.organization?.logo ? (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    {/* Main Content Column */}
+                    <div className="lg:col-span-2 space-y-8">
+                        {/* Title & Organization Header */}
+                        <div className="flex flex-col gap-4">
+                            <div className="flex justify-between items-start">
+                                <h1 className="text-4xl font-bold text-neutral-900 leading-tight">
+                                    {dataset.title}
+                                </h1>
+                                <Button variant="neutral" appearance="outline" className="flex-shrink-0 gap-2 items-center">
+                                    <Icon name="agora-line-star" className="w-5 h-5" />
+                                    Adicionar aos favoritos
+                                </Button>
+                            </div>
+
+                            {/* Tags / Badges */}
+                            <div className="flex flex-wrap gap-2">
+                                {dataset.tags && dataset.tags.map((tag, i) => (
+                                    <Tag key={i} className="bg-neutral-100 text-neutral-700 border-neutral-200">
+                                        {tag}
+                                    </Tag>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Description Section */}
+                        <div className="prose max-w-none text-neutral-700 text-lg leading-relaxed">
+                            <h2 className="text-xl font-bold text-neutral-900 mb-4 hidden">Descrição</h2>
+                            <p>{dataset.description}</p>
+
+                            {/* Example of extra content structure to match screenshot "Observações preliminares" */}
+                            <div className="mt-8">
+                                <h3 className="text-xl font-bold text-neutral-900 mb-4">Observações preliminares</h3>
+                                <p className="text-neutral-600">
+                                    Este relatório aborda as tendências demográficas e económicas do país, baseando-se em dados recolhidos ao longo do ano.
+                                </p>
+                            </div>
+
+                            {/* Example of extra content structure to match screenshot "O que é DVF?" */}
+                            <div className="mt-8">
+                                <h3 className="text-xl font-bold text-neutral-900 mb-4">O que é DVF?</h3>
+                                <p className="text-neutral-600">
+                                    Este conjunto de dados "Pedidos de Valores de Terrenos", publicado e produzido pela Direção Geral das Finanças Públicas, fornece informações sobre transações imobiliárias realizadas nos últimos cinco anos na França metropolitana e nos departamentos e territórios ultramarinos franceses, com exceção da Alsácia, Mosela e Mayotte. Os dados que contém provêm de escrituras notariais e informações cadastrais.
+                                </p>
+                                <a href="#" className="block mt-4 text-primary-700 font-bold hover:underline">
+                                    Ler mais
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Blue Banner / Callout */}
+                        <div className="bg-blue-50 border border-blue-100 rounded-lg p-6 flex flex-col sm:flex-row gap-6 items-start">
+                            <div className="bg-blue-100 p-3 rounded-full text-blue-700 flex-shrink-0">
+                                <Icon name="agora-line-information" className="w-6 h-6" />
+                            </div>
+                            <div className="flex-grow">
+                                <h3 className="text-lg font-bold text-neutral-900 mb-2">
+                                    Está à procura do preço de venda de um imóvel ou terreno?
+                                </h3>
+                                <p className="text-neutral-600 mb-4">
+                                    O aplicativo "Dados de Valorização de Terrenos (DVF)" permite acessar informações claras sobre imóveis vendidos a partir do banco de dados da Direção Geral de Finanças Públicas.
+                                </p>
+                                <a href="#" className="text-primary-700 font-bold hover:underline inline-flex items-center gap-2">
+                                    Consulte o aplicativo "Dados de Valor de Terreno (DVF)"
+                                    <Icon name="agora-line-external-link" className="w-4 h-4" />
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Tabs Section */}
+                        <DatasetTabs dataset={dataset} />
+                    </div>
+
+                    {/* Sidebar Column */}
+                    <div className="space-y-8">
+                        {/* Organization Box */}
+                        <div className="bg-white border border-neutral-200 rounded-lg p-6">
+                            <div className="flex items-center gap-4 mb-6 pb-6 border-b border-neutral-200">
+                                {dataset.organization?.logo ? (
+                                    <div className="w-16 h-16 bg-white rounded border border-neutral-200 flex items-center justify-center p-2">
                                         <img
                                             src={dataset.organization.logo}
                                             alt={dataset.organization.name}
                                             className="max-w-full max-h-full object-contain"
                                         />
-                                    ) : (
-                                        <Icon name="agora-line-building" className="w-12 h-12 text-neutral-400" />
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Title & Info */}
-                            <div className="flex-grow">
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {dataset.organization && (
-                                        <span className="inline-flex items-center px-2 py-1 bg-primary-50 text-primary-700 text-xs rounded font-medium">
-                                            {dataset.organization.name}
-                                        </span>
-                                    )}
-                                    <span className="inline-flex items-center px-2 py-1 bg-neutral-100 text-neutral-600 text-xs rounded font-medium">
-                                        Atualizado {formatDistanceToNow(new Date(dataset.last_modified), { addSuffix: true, locale: pt })}
-                                    </span>
-                                </div>
-
-                                <h1 className="text-3xl font-bold text-neutral-900 mb-4">{dataset.title}</h1>
-
-                                <p className="text-neutral-600 text-lg leading-relaxed max-w-4xl">
-                                    {dataset.description && dataset.description.length > 300
-                                        ? dataset.description.substring(0, 300) + '...'
-                                        : dataset.description}
-                                </p>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex-shrink-0 flex flex-col gap-3">
-                                <Button variant="primary">
-                                    Seguir
-                                </Button>
-                                <Button variant="neutral" appearance="outline">
-                                    Partilhar
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Content Section */}
-                <section className="py-12">
-                    <div className="container mx-auto px-4">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                            {/* Main Column */}
-                            <div className="lg:col-span-2 space-y-12">
-                                {/* Resources */}
-                                <div>
-                                    <h2 className="text-2xl font-bold mb-6">Recursos</h2>
-                                    <div className="space-y-4">
-                                        {dataset.resources.map((resource) => (
-                                            <div key={resource.id} className="bg-white border border-neutral-200 rounded-lg p-6 hover:shadow-md transition-shadow flex items-start justify-between gap-4">
-                                                <div className="flex-grow">
-                                                    <div className="flex items-center gap-3 mb-2">
-                                                        <span className="px-2 py-0.5 bg-neutral-100 border border-neutral-300 rounded text-xs font-mono font-bold uppercase text-neutral-600">
-                                                            {resource.format || 'Ficheiro'}
-                                                        </span>
-                                                        <h3 className="font-bold text-lg text-primary-700 hover:underline cursor-pointer">
-                                                            {resource.title}
-                                                        </h3>
-                                                    </div>
-                                                    <div className="text-sm text-neutral-500">
-                                                        Publicado {formatDistanceToNow(new Date(resource.created_at), { addSuffix: true, locale: pt })}
-                                                    </div>
-                                                </div>
-                                                <div className="flex-shrink-0">
-                                                    <a href={resource.url} target="_blank" rel="noopener noreferrer">
-                                                        <Button variant="primary" className="!p-2">
-                                                            <Icon name="agora-line-download" className="w-5 h-5" aria-label="Download" />
-                                                        </Button>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        ))}
                                     </div>
-                                </div>
-
-                                {/* Full Description */}
-                                <div>
-                                    <h2 className="text-2xl font-bold mb-6">Descrição</h2>
-                                    <div className="prose max-w-none text-neutral-700">
-                                        <p>{dataset.description}</p>
-                                    </div>
-                                </div>
-
-                                {/* Tabs Section */}
-                                <DatasetTabs dataset={dataset} />
-                            </div>
-
-                            {/* Sidebar Column */}
-                            <div className="space-y-8">
-                                {/* Metrics */}
-                                <div className="bg-white border border-neutral-200 rounded-lg p-6">
-                                    <h3 className="font-bold text-lg mb-4 border-b pb-2">Métricas</h3>
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-neutral-600 flex items-center gap-2">
-                                                <Icon name="agora-line-eye" className="w-5 h-5" /> Visualizações
-                                            </span>
-                                            <span className="font-bold">{dataset.metrics?.views || 0}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-neutral-600 flex items-center gap-2">
-                                                <Icon name="agora-line-download" className="w-5 h-5" /> Downloads
-                                            </span>
-                                            <span className="font-bold">{dataset.metrics?.downloads || 0}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-neutral-600 flex items-center gap-2">
-                                                <Icon name="agora-line-user" className="w-5 h-5" /> Seguidores
-                                            </span>
-                                            <span className="font-bold">{dataset.metrics?.followers || 0}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Tags */}
-                                {dataset.tags && dataset.tags.length > 0 && (
-                                    <div className="bg-white border border-neutral-200 rounded-lg p-6">
-                                        <h3 className="font-bold text-lg mb-4 border-b pb-2">Palavras-chave</h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {dataset.tags.map((tag, i) => (
-                                                <Tag key={i}>{tag}</Tag>
-                                            ))}
-                                        </div>
+                                ) : (
+                                    <div className="w-16 h-16 bg-neutral-200 rounded flex items-center justify-center text-neutral-400">
+                                        <Icon name="agora-line-building" className="w-8 h-8" />
                                     </div>
                                 )}
-
-                                {/* Additional Info */}
-                                <div className="bg-white border border-neutral-200 rounded-lg p-6">
-                                    <h3 className="font-bold text-lg mb-4 border-b pb-2">Informação Adicional</h3>
-                                    <div className="space-y-3 text-sm">
-                                        <div>
-                                            <span className="block text-neutral-500 text-xs uppercase">Criado em</span>
-                                            <span className="font-medium">{new Date(dataset.created_at).toLocaleDateString('pt-PT')}</span>
-                                        </div>
-                                        <div>
-                                            <span className="block text-neutral-500 text-xs uppercase">Última atualização</span>
-                                            <span className="font-medium">{new Date(dataset.last_modified).toLocaleDateString('pt-PT')}</span>
-                                        </div>
-                                        <div>
-                                            <span className="block text-neutral-500 text-xs uppercase">Identificador</span>
-                                            <span className="font-mono text-xs">{dataset.id}</span>
-                                        </div>
+                                <div>
+                                    <div className="text-xs font-bold text-neutral-500 uppercase tracking-wide mb-1">
+                                        Organização
+                                    </div>
+                                    <div className="font-bold text-neutral-900 text-lg leading-tight">
+                                        {dataset.organization?.name || 'Organização Desconhecida'}
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="space-y-4 text-sm">
+                                <div>
+                                    <div className="font-bold text-neutral-900 mb-1">Relatório Anual</div>
+                                    <div className="text-neutral-600">Disponível para consulta pública</div>
+                                </div>
+                                <div>
+                                    <div className="font-bold text-neutral-900 mb-1">Última atualização</div>
+                                    <div className="text-neutral-600">
+                                        {new Date(dataset.last_modified).toLocaleDateString('pt-PT', {
+                                            day: 'numeric',
+                                            month: 'long',
+                                            year: 'numeric'
+                                        })}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="font-bold text-neutral-900 mb-1">Licença</div>
+                                    <a href="#" className="text-primary-700 hover:underline font-medium">
+                                        Licença Aberta / Licença Aberta versão 2.0
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Metrics Box */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-white border border-neutral-200 rounded-lg p-6">
+                                <div className="text-sm text-neutral-500 mb-2">Vistas</div>
+                                <div className="text-2xl font-bold text-neutral-900">
+                                    {dataset.metrics?.views
+                                        ? (dataset.metrics.views / 1000).toLocaleString('pt-PT', { maximumFractionDigits: 1 }) + ' mil'
+                                        : '0'}
+                                </div>
+                                <div className="flex items-center gap-1 mt-2">
+                                    <span className="text-xs text-green-700 font-medium bg-green-50 px-2 py-0.5 rounded border border-green-100">
+                                        +11.2 mil
+                                    </span>
+                                </div>
+                                <div className="text-xs text-neutral-400 mt-1">desde julho de 2022</div>
+                            </div>
+                            <div className="bg-white border border-neutral-200 rounded-lg p-6">
+                                <div className="text-sm text-neutral-500 mb-2">Downloads</div>
+                                <div className="text-2xl font-bold text-neutral-900">
+                                    {dataset.metrics?.downloads
+                                        ? (dataset.metrics.downloads / 1000).toLocaleString('pt-PT', { maximumFractionDigits: 1 }) + ' mil'
+                                        : '0'}
+                                </div>
+                                <div className="flex items-center gap-1 mt-2">
+                                    <span className="text-xs text-green-700 font-medium bg-green-50 px-2 py-0.5 rounded border border-green-100">
+                                        +37.2 mil
+                                    </span>
+                                </div>
+                                <div className="text-xs text-neutral-400 mt-1">desde julho de 2022</div>
+                            </div>
+                        </div>
+
+                        {/* Quality Box */}
+                        <div className="bg-white border border-neutral-200 rounded-lg p-6">
+                            <div className="flex justify-between items-end mb-4">
+                                <h3 className="font-bold text-neutral-900">Qualidade dos metados</h3>
+                            </div>
+                            <div className="w-full bg-neutral-100 rounded-full h-2 mb-2">
+                                <div className="bg-green-600 h-2 rounded-full" style={{ width: '100%' }}></div>
+                            </div>
+                            <div className="text-xs text-neutral-500">100% Excelente</div>
                         </div>
                     </div>
-                </section>
+                </div>
             </main>
         </div>
     );

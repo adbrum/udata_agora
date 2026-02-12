@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button, InputSearchBar, Icon, CardAction } from '@ama-pt/agora-design-system';
+import { Button, InputSearchBar, Icon, CardGeneral, InputSelect, DropdownSection, DropdownOption, Pill } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { DatasetsFilters } from '@/components/DatasetsFilters';
 import { APIResponse, Dataset } from '@/types/api';
@@ -21,7 +21,7 @@ export default function DatasetsClient({
   const { data: datasets, total, page_size } = initialData;
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50">
+    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters">
       <main className="flex-grow bg-white">
         {/* Combined Hero Section with Agora Structure */}
         {/* Combined Hero Section with Agora Structure */}
@@ -153,18 +153,22 @@ export default function DatasetsClient({
             {/* Results Area */}
             <div className="xl:col-span-8 md:pt-64 ">
               <div>
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-16">
-                  <span className="text-neutral-600 font-medium text-base">
+                <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center">
+                  <span className="text-neutral-900 font-medium text-base xl:col-span-6 ">
                     {total.toLocaleString('pt-PT')} resultados
                   </span>
-                  <div className="w-full md:w-auto flex items-center gap-12">
-                    <span className="text-base text-[#002D72] whitespace-nowrap font-medium">
-                      Ordenar por :
-                    </span>
-                    <div className="min-w-[240px] border border-neutral-300 rounded px-16 py-8 bg-white text-base flex justify-between items-center cursor-pointer hover:border-primary-500 transition-colors">
-                      <span>Número de reutilizações</span>
-                      <Icon name="agora-line-chevron-down" />
-                    </div>
+                  <div className="w-full md:w-auto xl:col-span-6 ">
+                    <InputSelect
+                      label="Ordenar por :"
+                      id="sort-datasets"
+                      defaultValue="reutilizacoes"
+                    >
+                      <DropdownSection>
+                        <DropdownOption value="reutilizacoes">Número de reutilizações</DropdownOption>
+                        <DropdownOption value="recentes">Mais recentes</DropdownOption>
+                        <DropdownOption value="visualizados">Mais visualizados</DropdownOption>
+                      </DropdownSection>
+                    </InputSelect>
                   </div>
                 </div>
 
@@ -172,82 +176,82 @@ export default function DatasetsClient({
                   {datasets.map((dataset, index) => (
                     <div
                       key={dataset.id}
-                      className={`border-t border-x border-[#FAFCFF] ${index === datasets.length - 1
+                      className={`border-t md:pt-24 border-[#E1E4EA]  ${index === datasets.length - 1
                         ? 'border-b'
                         : ''
                         }`}
                     >
-                      <CardAction
-                        isCardHorizontal={true}
-                        image={{
-                          src: dataset.organization?.logo || '/images/placeholders/organization.png',
-                          alt: dataset.organization?.name || 'Organização sem logo',
-                        }}
-                        titleText={
-                          (
-                            <Link href={`/pages/datasets/${dataset.slug}`} className="hover:underline">
-                              {dataset.title}
-                            </Link>
-                          ) as unknown as string
-                        }
-                        button={{
-                          children: 'Ver mais',
-                          className: 'hidden',
-                        }}
-                        descriptionText={
-                          (
-                            <div className="flex flex-col gap-2">
-                              <span className="text-sm text-neutral-500 font-normal">
-                                {dataset.organization?.name || 'Organização Desconhecida'}
-                              </span>
-
-                              <span className="text-xs text-neutral-500">
-                                Atualizado há{' '}
-                                {formatDistanceToNow(new Date(dataset.last_modified), {
-                                  locale: pt,
-                                })}
-                              </span>
-
-                              <p className="text-neutral-600 text-sm line-clamp-3 leading-relaxed mt-2">
-                                {dataset.description}
-                              </p>
-
-                              <div className="flex gap-2 flex-wrap items-center mt-2">
-                                <span className="bg-warning-300 text-neutral-900 text-xs px-3 py-1 rounded-full font-medium">
-                                  Metadados: 35%
+                      <div className="dataset-card-modern">
+                        <CardGeneral
+                          isCardHorizontal={true}
+                          variant="white"
+                          image={{
+                            src: dataset.organization?.logo || '/images/placeholders/organization.png',
+                            alt: dataset.organization?.name || 'Organização sem logo',
+                          }}
+                          subtitleText={dataset.organization?.name || 'Organização Desconhecida'}
+                          titleText={
+                            (
+                              <Link href={`/pages/datasets/${dataset.slug}`} className="hover:underline text-primary-900 font-bold text-lg">
+                                {dataset.title}
+                              </Link>
+                            ) as unknown as string
+                          }
+                          descriptionText={
+                            (
+                              <div className="flex flex-col gap-8">
+                                <span className="text-xs text-neutral-500">
+                                  Atualizado há{' '}
+                                  {formatDistanceToNow(new Date(dataset.last_modified), {
+                                    locale: pt,
+                                  })}
                                 </span>
-                              </div>
 
-                              <div className="flex items-center gap-8 text-sm text-neutral-500 mt-2">
-                                <div className="flex items-center gap-2" title="Visualizações">
-                                  <Icon name="agora-line-eye" className="w-5 h-5" aria-hidden="true" />
-                                  <span className="font-semibold">
-                                    {dataset.metrics?.views
-                                      ? (dataset.metrics.views / 1000000).toFixed(1) + ' M'
-                                      : '0'}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2" title="Downloads">
-                                  <Icon name="agora-line-download" className="w-5 h-5" aria-hidden="true" />
-                                  <span className="font-semibold">
-                                    {dataset.metrics?.downloads
-                                      ? Math.round(dataset.metrics.downloads / 1000) + ' mil'
-                                      : '0'}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2" title="Reutilizações">
-                                  <Icon name="agora-line-chart-bar" className="w-4 h-4" aria-hidden="true" />
-                                  <span className="font-semibold">{dataset.metrics?.reuses || 0}</span>
-                                </div>
-                                <div className="flex items-center gap-2" title="Seguidores">
-                                  <Icon name="agora-line-star" className="w-5 h-5" aria-hidden="true" />
-                                  <span className="font-semibold">{dataset.metrics?.followers || 0}</span>
+                                <p className="text-neutral-600 text-sm line-clamp-2 leading-relaxed">
+                                  {dataset.description}
+                                </p>
+
+                                <Pill appearance="solid" variant="warning" className="w-fit h-fit inline-flex items-center">
+                                  Metadados: 35%
+                                </Pill>
+
+                                <div className="flex items-center gap-16 text-sm text-neutral-600 mt-8">
+                                  <div className="flex items-center gap-8" title="Visualizações">
+                                    <Icon name="agora-line-eye" className="w-20 h-20" aria-hidden="true" />
+                                    <span className="font-medium">
+                                      {dataset.metrics?.views
+                                        ? dataset.metrics.views >= 1000000
+                                          ? (dataset.metrics.views / 1000000).toFixed(1).replace('.', ',') + ' M'
+                                          : dataset.metrics.views >= 1000
+                                            ? (dataset.metrics.views / 1000).toFixed(0) + ' mil'
+                                            : dataset.metrics.views
+                                        : '0'}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-8" title="Downloads">
+                                    <Icon name="agora-line-download" className="w-20 h-20" aria-hidden="true" />
+                                    <span className="font-medium">
+                                      {dataset.metrics?.downloads
+                                        ? dataset.metrics.downloads >= 1000
+                                          ? (dataset.metrics.downloads / 1000).toFixed(0) + ' mil'
+                                          : dataset.metrics.downloads
+                                        : '0'}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-8" title="Reutilizações">
+                                    <Icon name="agora-line-chart-bar" className="w-20 h-20" aria-hidden="true" />
+                                    <span className="font-medium">{dataset.metrics?.reuses || 0}</span>
+                                  </div>
+                                  <div className="flex items-center gap-8" title="Seguidores">
+                                    <Icon name="agora-line-star" className="w-20 h-20" aria-hidden="true" />
+                                    <span className="font-medium">{dataset.metrics?.followers || 0}</span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ) as unknown as string
-                        }
-                      />
+                            ) as unknown as string
+                          }
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
