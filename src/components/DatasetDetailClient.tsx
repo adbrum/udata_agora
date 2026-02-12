@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
-import { Button, Icon, Tag } from '@ama-pt/agora-design-system';
+import { Button, Icon, Tag, Breadcrumb, CardExpandable } from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
 import { DatasetTabs } from '@/components/DatasetTabs';
 
@@ -14,20 +14,17 @@ interface DatasetDetailClientProps {
 
 export default function DatasetDetailClient({ dataset }: DatasetDetailClientProps) {
     return (
-        <div className="flex flex-col font-sans text-neutral-900 bg-neutral-50 h-full">
+        <div className="flex flex-col font-sans text-neutral-900 bg-white h-full">
             <main className="flex-grow container mx-auto px-4 py-8">
                 {/* Breadcrumb Section */}
-                <div className="text-sm mb-6 flex items-center gap-2 text-neutral-600">
-                    <Link href="/" className="hover:text-primary-700 transition-colors">
-                        Bem-vindo
-                    </Link>
-                    <Icon name="agora-line-chevron-right" className="w-4 h-4 text-neutral-400" />
-                    <Link href="/pages/datasets" className="hover:text-primary-700 transition-colors">
-                        Conjuntos de dados
-                    </Link>
-                    <Icon name="agora-line-chevron-right" className="w-4 h-4 text-neutral-400" />
-                    <span className="font-semibold text-neutral-900 truncate max-w-xs">{dataset.title}</span>
-                </div>
+                <Breadcrumb
+                    items={[
+                        { label: 'Bem-vindo', url: '/' },
+                        { label: 'Conjuntos de dados', url: '/pages/datasets' },
+                        { label: dataset.title, url: `/pages/datasets/${dataset.slug}` }
+                    ]}
+                    className="mb-6"
+                />
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     {/* Main Content Column */}
@@ -43,19 +40,10 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                                     Adicionar aos favoritos
                                 </Button>
                             </div>
-
-                            {/* Tags / Badges */}
-                            <div className="flex flex-wrap gap-2">
-                                {dataset.tags && dataset.tags.map((tag, i) => (
-                                    <Tag key={i} className="bg-neutral-100 text-neutral-700 border-neutral-200">
-                                        {tag}
-                                    </Tag>
-                                ))}
-                            </div>
                         </div>
 
                         {/* Description Section */}
-                        <div className="prose max-w-none text-neutral-700 text-lg leading-relaxed">
+                        <div className="prose max-w-none text-neutral-700 text-lg leading-relaxed mb-12">
                             <h2 className="text-xl font-bold text-neutral-900 mb-4 hidden">Descrição</h2>
                             <p>{dataset.description}</p>
 
@@ -78,28 +66,6 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                                 </a>
                             </div>
                         </div>
-
-                        {/* Blue Banner / Callout */}
-                        <div className="bg-blue-50 border border-blue-100 rounded-lg p-6 flex flex-col sm:flex-row gap-6 items-start">
-                            <div className="bg-blue-100 p-3 rounded-full text-blue-700 flex-shrink-0">
-                                <Icon name="agora-line-information" className="w-6 h-6" />
-                            </div>
-                            <div className="flex-grow">
-                                <h3 className="text-lg font-bold text-neutral-900 mb-2">
-                                    Está à procura do preço de venda de um imóvel ou terreno?
-                                </h3>
-                                <p className="text-neutral-600 mb-4">
-                                    O aplicativo "Dados de Valorização de Terrenos (DVF)" permite acessar informações claras sobre imóveis vendidos a partir do banco de dados da Direção Geral de Finanças Públicas.
-                                </p>
-                                <a href="#" className="text-primary-700 font-bold hover:underline inline-flex items-center gap-2">
-                                    Consulte o aplicativo "Dados de Valor de Terreno (DVF)"
-                                    <Icon name="agora-line-external-link" className="w-4 h-4" />
-                                </a>
-                            </div>
-                        </div>
-
-                        {/* Tabs Section */}
-                        <DatasetTabs dataset={dataset} />
                     </div>
 
                     {/* Sidebar Column */}
@@ -198,6 +164,35 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                         </div>
                     </div>
                 </div>
+
+                {/* Blue Banner / Callout replaced with CardExpandable */}
+                <CardExpandable
+                    variant="primary-100"
+                    leadingIcon="agora-line-information"
+                    hasIcon={true}
+                    cardTitle="Está à procura do preço de venda de um imóvel ou terreno?"
+                    cardSubtitle={
+                        <div className="flex flex-col gap-4 mt-4">
+                            <p className="text-neutral-600">
+                                O aplicativo "Dados de Valorização de Terrenos (DVF)" permite acessar informações claras sobre imóveis vendidos a partir do banco de dados da Direção Geral de Finanças Públicas.
+                            </p>
+                            <a href="#" className="text-primary-700 font-bold hover:underline inline-flex items-center gap-2">
+                                Consulte o aplicativo "Dados de Valor de Terreno (DVF)"
+                                <Icon name="agora-line-external-link" className="w-4 h-4" />
+                            </a>
+                        </div>
+                    }
+                    accordionHeadingTitle="Mais informações"
+                    className="mb-16"
+                >
+                    {/* Extra detail section or empty if nothing else is hidden */}
+                    <div className="pt-4">
+                        Aqui poderá encontrar detalhes adicionais sobre o funcionamento do aplicativo e integração de dados.
+                    </div>
+                </CardExpandable>
+
+                {/* Tabs Section at the very bottom of main content */}
+                <DatasetTabs dataset={dataset} />
             </main>
         </div>
     );

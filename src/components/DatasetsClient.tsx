@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button, InputSearchBar, Icon, CardGeneral, InputSelect, DropdownSection, DropdownOption, Pill } from '@ama-pt/agora-design-system';
+import { Button, InputSearchBar, Icon, CardGeneral, InputSelect, DropdownSection, DropdownOption, Pill, Breadcrumb } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { DatasetsFilters } from '@/components/DatasetsFilters';
 import { APIResponse, Dataset } from '@/types/api';
@@ -30,11 +30,14 @@ export default function DatasetsClient({
             <div className="card-content w-full">
               <div className="container mx-auto px-4">
                 {/* Breadcrumb */}
-                <div className="text-primary-100 text-sm mb-4">
-                  <Link href="/" className="opacity-70 hover:opacity-100 transition-opacity underline">Bem-vindo</Link>
-                  <span className="mx-2">/</span>
-                  <span className="font-semibold">Conjunto de dados</span>
-                </div>
+                <Breadcrumb
+                  items={[
+                    { label: 'Bem-vindo', url: '/' },
+                    { label: 'Conjunto de dados', url: '/pages/datasets' }
+                  ]}
+                  darkMode={true}
+                  className="mb-4"
+                />
 
                 <div className="title">
                   <h1 className="xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold">Conjunto de dados</h1>
