@@ -76,3 +76,8 @@ body {
 .md\:pt-24 {
   padding-top: 24px;
 }
+
+/*Margins*/
+.mb-24 {
+  margin-bottom: 24px;
+}

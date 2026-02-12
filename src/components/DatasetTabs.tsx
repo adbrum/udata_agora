@@ -10,7 +10,7 @@ interface DatasetTabsProps {
 
 export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
     return (
-        <div className="mt-12">
+        <div className="mt-64">
             <Tabs>
                 <Tab>
                     <TabHeader>Ficheiros ({dataset.resources.length})</TabHeader>

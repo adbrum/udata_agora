@@ -16,29 +16,36 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
     return (
         <div className="flex flex-col font-sans text-neutral-900 bg-white h-full">
             <main className="flex-grow container mx-auto px-4 py-8">
-                {/* Breadcrumb Section */}
-                <Breadcrumb
-                    items={[
-                        { label: 'Bem-vindo', url: '/' },
-                        { label: 'Conjuntos de dados', url: '/pages/datasets' },
-                        { label: dataset.title, url: `/pages/datasets/${dataset.slug}` }
-                    ]}
-                    className="mb-6"
-                />
+                {/* Breadcrumb & Action Section */}
+                <div className="flex justify-between items-center mb-6">
+                    <Breadcrumb
+                        items={[
+                            { label: 'Bem-vindo', url: '/' },
+                            { label: 'Conjuntos de dados', url: '/pages/datasets' },
+                            { label: dataset.title, url: `/pages/datasets/${dataset.slug}` }
+                        ]}
+                    />
+                    <Button
+                        variant="primary"
+                        appearance="outline"
+                        hasIcon={true}
+                        leadingIcon="agora-line-star"
+                        leadingIconHover="agora-solid-star"
+                        className="flex-shrink-0"
+                    >
+                        Adicionar aos favoritos
+                    </Button>
+                </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 pb-64">
                     {/* Main Content Column */}
-                    <div className="lg:col-span-2 space-y-8">
+                    <div className="xl:col-span-6 xl:block  md:pt-64">
                         {/* Title & Organization Header */}
                         <div className="flex flex-col gap-4">
                             <div className="flex justify-between items-start">
-                                <h1 className="text-4xl font-bold text-neutral-900 leading-tight">
+                                <h1 className="text-xl-bold text-neutral-900 leading-tight mb-24">
                                     {dataset.title}
                                 </h1>
-                                <Button variant="neutral" appearance="outline" className="flex-shrink-0 gap-2 items-center">
-                                    <Icon name="agora-line-star" className="w-5 h-5" />
-                                    Adicionar aos favoritos
-                                </Button>
                             </div>
                         </div>
 
@@ -69,7 +76,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                     </div>
 
                     {/* Sidebar Column */}
-                    <div className="space-y-8">
+                    <div className="xl:col-span-6 md:pt-64 ">
                         {/* Organization Box */}
                         <div className="bg-white border border-neutral-200 rounded-lg p-6">
                             <div className="flex items-center gap-4 mb-6 pb-6 border-b border-neutral-200">
@@ -168,8 +175,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                 {/* Blue Banner / Callout replaced with CardExpandable */}
                 <CardExpandable
                     variant="primary-100"
-                    leadingIcon="agora-line-information"
-                    hasIcon={true}
+                    showBookmarkIcon={true}
                     cardTitle="Está à procura do preço de venda de um imóvel ou terreno?"
                     cardSubtitle={
                         <div className="flex flex-col gap-4 mt-4">
@@ -183,7 +189,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                         </div>
                     }
                     accordionHeadingTitle="Mais informações"
-                    className="mb-16"
+                    className="mt-16"
                 >
                     {/* Extra detail section or empty if nothing else is hidden */}
                     <div className="pt-4">
