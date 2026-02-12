@@ -7,7 +7,7 @@ import DatasetsClient from '@/components/DatasetsClient';
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; org_id?: string }>;
+  searchParams: Promise<{ page?: string; org_id?: string | string[] }>;
 }) {
   const resolvedSearchParams = await searchParams; // Next.js 15+ needs await for params/searchParams
   console.log('Page Params:', resolvedSearchParams);

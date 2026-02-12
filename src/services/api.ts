@@ -5,13 +5,19 @@ const API_BASE_URL = 'https://dados.gov.pt/api/1';
 export async function fetchDatasets(
   page: number = 1,
   pageSize: number = 20,
-  organization?: string,
+  organization?: string | string[],
 ): Promise<APIResponse<Dataset>> {
   try {
     console.log('fetchDatasets called with org:', organization);
     let url = `${API_BASE_URL}/datasets/?page=${page}&page_size=${pageSize}`;
     if (organization) {
-      url += `&organization=${organization}`;
+      if (Array.isArray(organization)) {
+        organization.forEach((org) => {
+          url += `&organization=${org}`;
+        });
+      } else {
+        url += `&organization=${organization}`;
+      }
     }
 
     console.log('API Fetch URL:', url);
