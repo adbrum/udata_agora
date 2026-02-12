@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
-import { Button, Icon, Tag, Breadcrumb, CardExpandable, Pill } from '@ama-pt/agora-design-system';
+import { Button, Icon, Tag, Breadcrumb, CardExpandable, Pill, ProgressBar } from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
 import { DatasetTabs } from '@/components/DatasetTabs';
 
@@ -163,10 +163,10 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                             <div className="flex justify-between items-end mb-4">
                                 <h3 className="font-bold text-neutral-900">Qualidade dos metados</h3>
                             </div>
-                            <div className="w-full bg-neutral-100 rounded-full h-2 mb-2">
-                                <div className="bg-green-600 h-2 rounded-full" style={{ width: '100%' }}></div>
-                            </div>
-                            <div className="text-xs text-neutral-500">100% Excelente</div>
+                            <ProgressBar
+                                value={100}
+                                label="Excelente"
+                            />
                         </div>
                     </div>
                 </div>
