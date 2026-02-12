@@ -55,3 +55,23 @@ body {
 .grid-cols-5 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
+
+/* CardGeneral Modern Customizations */
+.filters .dataset-card-modern img {
+  max-height: 80px;
+  object-fit: scale-down;
+}
+
+/*Borders*/
+.border-\[\#E1E4EA\] {
+  border-color: #E1E4EA;
+}
+
+/*Paddings*/
+.md\:pb-24 {
+  padding-bottom: 24px;
+}
+
+.md\:pt-24 {
+  padding-top: 24px;
+}
