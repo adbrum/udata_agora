@@ -1,15 +1,33 @@
 @import url("@ama-pt/agora-design-system/artifacts/dist/tailwind.css");
 @import url("@ama-pt/agora-design-system/artifacts/dist/style.css");
 
-@tailwind base;
-@tailwind components;
+
+
 @tailwind utilities;
+@tailwind components;
+@tailwind base;
 
 /*HomePage*/
-.homepage .agora-card-highlight-newsletter .card-container .input-container {
+/*HomePage*/
+.agora-card-highlight-newsletter .card-container .input-container {
   grid-template-columns: none;
   position: relative;
   z-index: 1;
+}
+
+.agora-card-highlight-newsletter .card-container:before {
+  background-color: unset;
+  position: unset;
+}
+
+/*Icon Container*/
+.icon-container {
+  border-radius: 8px;
+  padding: 16px;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Datasets Section Background */
@@ -21,15 +39,6 @@
   position: relative;
 }
 
-.datasets-background::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-}
 
 /*Footer*/
 footer img {

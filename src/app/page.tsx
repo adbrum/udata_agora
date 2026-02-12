@@ -5,6 +5,7 @@ import {
   InputSearchBar,
   Icon,
   CardArticle,
+  CardGeneral,
 } from '@ama-pt/agora-design-system';
 
 export default function Home() {
@@ -15,8 +16,10 @@ export default function Home() {
         <div
           className="agora-card-highlight-newsletter"
           style={{
-            backgroundImage:
-              'url("/hero-bg.svg")',
+            backgroundImage: 'url("/hero-bg.svg")',
+            backgroundPosition: 'center 40px',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
           }}
         >
           <div className="card-container">
@@ -138,61 +141,61 @@ export default function Home() {
 
 
         {/* Stats Section / Communities */}
-        <div className="py-16 bg-white -mt-8 relative z-20 rounded-t-3xl border-t border-neutral-100 shadow-top-low md:mt-0 md:border-none md:shadow-none">
+        <div className="xl:py-64 bg-white -mt-8 relative z-20 rounded-t-3xl border-t border-neutral-100 shadow-top-low md:mt-0 md:border-none md:shadow-none">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl-bold mb-2 text-[#002D72]">
+            <h2 className="text-2xl-bold text-[#002D72]">
               <span className="text-2xl-bold">Uma comunidade</span>{' '}
               <span className="text-2xl-light">dinâmica e empenhada</span>
             </h2>
-            <p className="text-neutral-600 mb-12">
+            <p className=" mt-16 mb-32">
               Partilhe a utilização e a troca de dados entre produtores e reutilizadores de dados.
             </p>
-            <div className="grid grid-cols-4 md:grid-cols-4 gap-8">
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-32">
               <div className="flex flex-col gap-4">
-                <div className="w-16 h-16 bg-[#F0F5FF] rounded-8 flex items-center justify-center text-[#002D72]">
-                  <Icon name="agora-line-layers" aria-hidden="true" className="w-8 h-8" />
+                <div className="icon-container mb-16 bg-[#F0F5FF] text-[#002D72]">
+                  <Icon name="agora-line-layers-menu" aria-hidden="true" className="w-8 h-8" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-2xl font-bold text-neutral-900">
                     47,825
                   </span>
-                  <span className="text-neutral-600">Conjuntos de Dados</span>
+                  <span className="">Conjuntos de Dados</span>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4">
-                <div className="w-16 h-16 bg-[#FFF2F2] rounded-8 flex items-center justify-center text-[#D92D20]">
-                  <Icon name="agora-line-file-text" aria-hidden="true" className="w-8 h-8" />
+                <div className="icon-container mb-16 bg-[#FFF1F1] text-[#D42B34]">
+                  <Icon name="agora-line-document" aria-hidden="true" className="w-8 h-8" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-2xl font-bold text-neutral-900">
                     2,456
                   </span>
-                  <span className="text-neutral-600">Organizações</span>
+                  <span className="">Organizações</span>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4">
-                <div className="w-16 h-16 bg-[#ECFDF3] rounded-8 flex items-center justify-center text-[#039855]">
-                  <Icon name="agora-line-bar-chart" aria-hidden="true" className="w-8 h-8" />
+                <div className="icon-container mb-16 bg-[#EDFBF2] text-[#008947]">
+                  <Icon name="agora-line-document" aria-hidden="true" className="w-8 h-8" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-2xl font-bold text-neutral-900">
                     8,234
                   </span>
-                  <span className="text-neutral-600">Reutilizações</span>
+                  <span className="">Reutilizações</span>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4">
-                <div className="w-16 h-16 bg-[#FFFAEB] rounded-8 flex items-center justify-center text-[#DC6803]">
-                  <Icon name="agora-line-users" aria-hidden="true" className="w-8 h-8" />
+                <div className="icon-container mb-16 bg-[#FFFAEB] text-[#8C4B00]">
+                  <Icon name="agora-line-user-group" aria-hidden="true" className="w-8 h-8" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-2xl font-bold text-neutral-900">
                     152K
                   </span>
-                  <span className="text-neutral-600">Utilizadores</span>
+                  <span className="">Utilizadores</span>
                 </div>
               </div>
             </div>
@@ -200,15 +203,15 @@ export default function Home() {
         </div>
 
         {/* Featured Datasets */}
-        <div className="py-16 md:bg-transparent">
+        <div className="xl:py-64 bg-neutral-50">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl-bold text-primary-900 mb-2">
+            <h2 className="text-2xl-bold text-primary-900 ">
               Conjunto de Dados em Destaque
             </h2>
-            <p className="text-neutral-600 mb-8 max-w-3xl">
+            <p className="mt-16 mb-32 max-w-3xl">
               Conjuntos de dados mais populares e atualizados.
             </p>
-            <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {[
                 {
                   time: 'Hoje',
@@ -232,35 +235,33 @@ export default function Home() {
                   views: '52 341',
                 },
               ].map((item, i) => (
-                <CardArticle
+                <CardGeneral
                   key={i}
-                  hasPill={true}
-                  pill={{
-                    children: item.time,
-                    variant: 'primary',
-                    appearance: 'solid',
-                  }}
-                  title={item.title}
-                  subtitle={item.org}
-                  blockedLink={true}
-                  mainAnchor={{ href: '#' }}
-                  className="border-2! border-[#1A65FA]! !bg-white !p-8 min-h-[300px]"
-                >
-                  <div className="flex flex-col h-full mt-4">
-                    <p className="text-neutral-600 mb-6 flex-grow">{item.desc}</p>
-                    <div className="flex items-center gap-2 font-medium">
-                      <Icon
-                        name="agora-line-eye"
-                        aria-hidden="true"
-                        className="w-5 h-5 text-[#1A65FA]"
-                      />
-                      <span className="text-[#1A65FA]">{item.views}</span>
-                    </div>
-                  </div>
-                </CardArticle>
+                  variant="white"
+                  pillText={item.time}
+                  subtitleText={item.org}
+                  titleText={item.title}
+                  descriptionText={
+                    (
+                      <div className="flex flex-col gap-16">
+                        <span>{item.desc}</span>
+                        <div className="flex items-center gap-8 text-neutral-600">
+                          <Icon
+                            name="agora-line-eye"
+                            className="w-20 h-20"
+                            aria-hidden="true"
+                          />
+                          <span>{item.views}</span>
+                        </div>
+                      </div>
+                    ) as unknown as string
+                  }
+                  isBlockedLink={true}
+                  anchor={{ href: '#' }}
+                />
               ))}
             </div>
-            <div className="mt-12">
+            <div className="mt-64">
               <Button variant="primary" appearance="outline">
                 Ver mais
               </Button>
@@ -269,9 +270,9 @@ export default function Home() {
         </div>
 
         {/* Utilizado diariamente por */}
-        <div className="py-16 bg-white">
+        <div className="xl:py-64 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold text-primary-900 mb-8">
+            <h2 className="text-xl-bold text-primary-900 mb-32">
               Utilizado diariamente por
             </h2>
             <div className="grid grid-cols-5 md:grid-cols-5 gap-8 items-center justify-items-center">
@@ -294,15 +295,15 @@ export default function Home() {
         </div>
 
         {/* Reuses */}
-        <div className="py-16 md:bg-transparent">
+        <div className="xl:py-64 bg-neutral-50">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl-bold text-primary-900 mb-2">
+            <h2 className="text-2xl-bold text-primary-900">
               Storytellings em Destaque
             </h2>
-            <p className="text-neutral-600 mb-8 max-w-3xl">
+            <p className="mt-16 mb-32 max-w-3xl">
               Storytellings mais populares
             </p>
-            <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {[
                 {
                   img: 'storytelling1.svg',
@@ -322,21 +323,30 @@ export default function Home() {
                   subtitle: 'Publicado a DD MM AAAA',
                 },
               ].map((story, i) => (
-                <CardArticle
+                <a
                   key={i}
-                  image={{
-                    src: `/${story.img}`,
-                    alt: story.title,
-                  }}
-                  subtitle={story.subtitle}
-                  title={story.title}
-                  blockedLink={true}
-                  mainAnchor={{ href: '#' }}
-                  className="bg-primary-50! border-none shadow-none"
-                />
+                  href="#"
+                  className="flex flex-col rounded-2xl overflow-hidden bg-[#DCEEFE] h-full hover:shadow-lg transition-all duration-300 group"
+                >
+                  <div className="relative h-[200px] w-full overflow-hidden">
+                    <img
+                      src={`/${story.img}`}
+                      alt={story.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-24 flex flex-col gap-8 grow">
+                    <span className="text-sm text-neutral-600 font-light">
+                      {story.subtitle}
+                    </span>
+                    <h3 className="text-lg font-bold text-neutral-900 leading-tight">
+                      {story.title}
+                    </h3>
+                  </div>
+                </a>
               ))}
             </div>
-            <div className="mt-12">
+            <div className="mt-64 mt-12">
               <Button variant="primary" appearance="outline">
                 Ver mais
               </Button>
@@ -345,12 +355,12 @@ export default function Home() {
         </div>
 
         {/* Latest News */}
-        <div className="py-16 bg-white">
+        <div className="xl:py-64 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-primary-900 mb-12">
-              <span className="text-2xl-light">Últimas</span> novidades
+            <h2 className="text-3xl font-bold text-primary-900 mb-64">
+              <span className="text-2xl-light">Últimas</span> <span className="text-2xl-bold">novidades</span>
             </h2>
-            <div className="grid grid-cols-3 md:grid-cols-3 gap-8">
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {['last-new1.svg', 'last-new2.svg', 'last-new3.svg'].map(
                 (img, i) => (
                   <CardArticle
@@ -359,12 +369,7 @@ export default function Home() {
                       src: `/${img}`,
                       alt: `Novidade ${i + 1}`,
                     }}
-                    hasPill={true}
-                    pill={{
-                      children: 'Webinar',
-                      variant: 'primary',
-                      appearance: 'solid',
-                    }}
+
                     subtitle="Publicado em 21 de novembro de 2024"
                     title="Webinar Developers e Data Scientists: Publicação e uso de dados abertos"
                     mainAnchor={{
@@ -382,7 +387,7 @@ export default function Home() {
                 )
               )}
             </div>
-            <div className="mt-12">
+            <div className="mt-64">
               <Button variant="primary" appearance="outline">
                 Ver mais
               </Button>
@@ -390,6 +395,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </main>
+    </main >
   );
 }
