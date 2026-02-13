@@ -81,3 +81,22 @@ body {
 .mb-24 {
   margin-bottom: 24px;
 }
+
+/*Tabs*/
+.tab-panel-content {
+  position: relative;
+}
+
+.tab-panel-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: -100%;
+  right: -100%;
+  background-color: var(--color-neutral-100);
+}
+
+.tab-panel-content>* {
+  position: relative;
+  z-index: 1;
+}
