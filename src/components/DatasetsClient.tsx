@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button, InputSearchBar, Icon, CardGeneral, InputSelect, DropdownSection, DropdownOption, Pill } from '@ama-pt/agora-design-system';
+import { Button, InputSearchBar, Icon, CardGeneral, InputSelect, DropdownSection, DropdownOption, Pill, Breadcrumb } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { DatasetsFilters } from '@/components/DatasetsFilters';
 import { APIResponse, Dataset } from '@/types/api';
@@ -30,11 +30,14 @@ export default function DatasetsClient({
             <div className="card-content w-full">
               <div className="container mx-auto px-4">
                 {/* Breadcrumb */}
-                <div className="text-primary-100 text-sm mb-4">
-                  <Link href="/" className="opacity-70 hover:opacity-100 transition-opacity underline">Bem-vindo</Link>
-                  <span className="mx-2">/</span>
-                  <span className="font-semibold">Conjunto de dados</span>
-                </div>
+                <Breadcrumb
+                  items={[
+                    { label: 'Bem-vindo', url: '/' },
+                    { label: 'Conjunto de dados', url: '/pages/datasets' }
+                  ]}
+                  darkMode={true}
+                  className="mb-4"
+                />
 
                 <div className="title">
                   <h1 className="xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold">Conjunto de dados</h1>
@@ -163,7 +166,7 @@ export default function DatasetsClient({
                       id="sort-datasets"
                       defaultValue="reutilizacoes"
                     >
-                      <DropdownSection>
+                      <DropdownSection name="order">
                         <DropdownOption value="reutilizacoes">Número de reutilizações</DropdownOption>
                         <DropdownOption value="recentes">Mais recentes</DropdownOption>
                         <DropdownOption value="visualizados">Mais visualizados</DropdownOption>
@@ -200,14 +203,14 @@ export default function DatasetsClient({
                           descriptionText={
                             (
                               <div className="flex flex-col gap-8">
-                                <span className="text-xs text-neutral-500">
+                                <span className="text-xs ">
                                   Atualizado há{' '}
                                   {formatDistanceToNow(new Date(dataset.last_modified), {
                                     locale: pt,
                                   })}
                                 </span>
 
-                                <p className="text-neutral-600 text-sm line-clamp-2 leading-relaxed">
+                                <p className=" text-sm line-clamp-2 leading-relaxed">
                                   {dataset.description}
                                 </p>
 
@@ -215,7 +218,7 @@ export default function DatasetsClient({
                                   Metadados: 35%
                                 </Pill>
 
-                                <div className="flex items-center gap-16 text-sm text-neutral-600 mt-8">
+                                <div className="flex items-center gap-16 text-sm  mt-8">
                                   <div className="flex items-center gap-8" title="Visualizações">
                                     <Icon name="agora-line-eye" className="w-20 h-20" aria-hidden="true" />
                                     <span className="font-medium">
@@ -256,7 +259,7 @@ export default function DatasetsClient({
                   ))}
                 </div>
 
-                <div className="mt-12 flex justify-center pb-12">
+                <div className="mt-64 flex justify-center pb-64">
                   <Pagination
                     currentPage={currentPage}
                     totalItems={total}

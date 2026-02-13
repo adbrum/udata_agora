@@ -1,4 +1,4 @@
-import { APIResponse, Dataset, Organization } from '@/types/api';
+import { APIResponse, Dataset, Organization, Reuse } from '@/types/api';
 
 const API_BASE_URL = 'https://dados.gov.pt/api/1';
 
@@ -90,5 +90,48 @@ export async function fetchOrganizations(
       next_page: null,
       previous_page: null,
     };
+  }
+}
+export async function fetchReuses(
+  page: number = 1,
+  pageSize: number = 20,
+): Promise<APIResponse<Reuse>> {
+  try {
+    const url = `${API_BASE_URL}/reuses/?page=${page}&page_size=${pageSize}`;
+    const res = await fetch(url, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch reuses: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching reuses:', error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+export async function fetchReuse(rid: string): Promise<Reuse> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/reuses/${rid}/`, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch reuse: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching reuse:', error);
+    throw error;
   }
 }
