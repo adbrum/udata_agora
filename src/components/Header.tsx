@@ -3,7 +3,7 @@
 import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   Header as AgoraHeader,
   Brand,
@@ -24,9 +24,18 @@ export const Header = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const headerRef = useRef<any>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   const [selectedLanguage, setSelectedLanguage] = useState('pt');
-  const [selectedArea, setSelectedArea] = useState('1');
+  const [selectedArea, setSelectedArea] = useState(pathname === '/pages/login' ? '2' : '1');
+
+  React.useEffect(() => {
+    if (pathname === '/pages/login') {
+      setSelectedArea('2');
+    } else {
+      setSelectedArea('1');
+    }
+  }, [pathname]);
 
   const languages = [
     { value: 'pt', label: 'Português', abbr: 'PT' },
@@ -69,11 +78,17 @@ export const Header = () => {
             label={currentAreaLabel}
             onChange={(area: string) => setSelectedArea(area)}
           >
-            <Area value="1" label="Portal" onClick={() => router.push('/')} />
+            <Area
+              value="1"
+              label="Portal"
+              onClick={() => router.push('/')}
+              active={selectedArea === '1'}
+            />
             <Area
               value="2"
               label="Iniciar Sessão"
-              onClick={() => router.push('/login')}
+              onClick={() => router.push('/pages/login')}
+              active={selectedArea === '2'}
             />
           </Areas>
 
@@ -135,7 +150,7 @@ export const Header = () => {
             <Link href="/organizations">Organizações</Link>
           </NavigationLink>
           <NavigationLink appearance="link">
-            <Link href="/reuses">Reutilizações</Link>
+            <Link href="/pages/reuses">Reutilizações</Link>
           </NavigationLink>
           <NavigationLink appearance="link">
             <Link href="/documentation">Documentação</Link>

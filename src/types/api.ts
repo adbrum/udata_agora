@@ -38,6 +38,23 @@ export interface Dataset {
   page: string; // The URL to the dataset page usually
 }
 
+export interface Reuse {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  type: string;
+  image: string | null;
+  image_thumbnail: string | null;
+  organization: Organization | null;
+  created_at: string;
+  last_modified: string;
+  metrics: Metric;
+  url: string;
+  tags: string[];
+  datasets?: Dataset[];
+}
+
 export interface APIResponse<T> {
   data: T[];
   page: number;

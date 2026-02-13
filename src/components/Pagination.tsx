@@ -8,12 +8,14 @@ interface PaginationProps {
   currentPage: number;
   totalItems: number;
   pageSize: number;
+  baseUrl?: string;
 }
 
 export const Pagination = ({
   currentPage,
   totalItems,
   pageSize,
+  baseUrl = '/pages/datasets',
 }: PaginationProps) => {
   const router = useRouter();
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -51,7 +53,7 @@ export const Pagination = ({
 
   const handlePageChange = (page: number | string) => {
     if (page === '...' || typeof page !== 'number') return;
-    router.push(`/pages/datasets?page=${page}`);
+    router.push(`${baseUrl}?page=${page}`);
   };
 
   if (totalPages <= 1) return null;
