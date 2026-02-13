@@ -166,7 +166,7 @@ export default function DatasetsClient({
                       id="sort-datasets"
                       defaultValue="reutilizacoes"
                     >
-                      <DropdownSection>
+                      <DropdownSection name="order">
                         <DropdownOption value="reutilizacoes">Número de reutilizações</DropdownOption>
                         <DropdownOption value="recentes">Mais recentes</DropdownOption>
                         <DropdownOption value="visualizados">Mais visualizados</DropdownOption>
@@ -259,7 +259,7 @@ export default function DatasetsClient({
                   ))}
                 </div>
 
-                <div className="mt-12 flex justify-center pb-12">
+                <div className="mt-64 flex justify-center pb-64">
                   <Pagination
                     currentPage={currentPage}
                     totalItems={total}
