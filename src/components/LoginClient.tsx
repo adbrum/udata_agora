@@ -16,7 +16,7 @@ export default function LoginClient() {
             <div className="container mx-auto px-16 py-64 flex flex-col items-center">
                 <div className="w-full max-w-[560px]">
                     {/* Title and Intro */}
-                    <h1 className="text-3xl-bold text-[#002D72] mb-16 text-left" id="login-title">
+                    <h1 className="text-3xl-bold text-[#002D72] mb-32 text-left" id="login-title">
                         Iniciar Sessão
                     </h1>
                     <p className="text-sm mb-32">
@@ -45,7 +45,7 @@ export default function LoginClient() {
                             <Checkbox label="Lembre de mim" id="remember" name="remember" />
                         </div>
 
-                        <div className="flex justify-center mt-8">
+                        <div className="flex justify-center mt-32">
                             <Button variant="primary" type="submit" className="min-w-[200px] h-11 px-48" id="submit-login">
                                 Iniciar sessão
                             </Button>
@@ -69,7 +69,7 @@ export default function LoginClient() {
                     </div>
 
                     {/* Separator */}
-                    <div className="my-48 border-t border-neutral-200 w-full" />
+                    <div className="my-32 border-t border-neutral-200 w-full" />
 
                     {/* Chave Móvel Digital Section */}
                     <div className="flex flex-col items-center gap-16 w-full">
@@ -88,7 +88,7 @@ export default function LoginClient() {
                     </div>
 
                     {/* Separator */}
-                    <div className="my-48 border-t border-neutral-200 w-full" />
+                    <div className="my-32 border-t border-neutral-200 w-full" />
 
                     {/* Create Account Section */}
                     <div className="flex flex-col items-center gap-16">
