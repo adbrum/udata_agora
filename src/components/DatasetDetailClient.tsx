@@ -88,7 +88,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                                     <img
                                         src={dataset.organization.logo}
                                         alt={dataset.organization.name}
-                                        className="h-24 object-contain"
+                                        className="h-[46px] object-contain"
                                     />
                                 </div>
                             ) : (

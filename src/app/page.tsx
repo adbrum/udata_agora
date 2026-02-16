@@ -17,9 +17,9 @@ export default function Home() {
           className="agora-card-highlight-newsletter"
           style={{
             backgroundImage: 'url("/hero-bg.png")',
-            backgroundPosition: 'center 40px',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
+            backgroundPosition: 'top',
           }}
         >
           <div className="card-container">
@@ -80,7 +80,7 @@ export default function Home() {
 
 
         {/* Stats Section / Communities */}
-        <div className="xl:py-64 bg-primary-900 text-white -mt-8 relative z-20 rounded-t-3xl border-t border-neutral-100 shadow-top-low md:mt-0 md:border-none md:shadow-none">
+        <div className="xl:py-64 bg-primary-900 text-white -mt-8 relative z-20 rounded-t-3xl shadow-top-low md:mt-0 md:border-none md:shadow-none">
           <div className="container mx-auto px-4">
             <h2 className="text-2xl-bold text-white">
               <span className="text-2xl-bold">Uma comunidade</span>{' '}

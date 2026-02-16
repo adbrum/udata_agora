@@ -39,23 +39,23 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
     return (
         <div className="flex flex-col font-sans text-neutral-900 bg-white min-h-screen">
             {/* Hero Section */}
-            <section className="bg-neutral-900 text-white pt-24 pb-48 sm:pb-64">
+            <section className="bg-white text-neutral-900 pt-24 pb-48 sm:pb-64">
                 <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
                     {/* Breadcrumbs & Actions */}
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-16 mb-32">
+                    <div className="flex justify-between items-center gap-16 mb-32">
                         <Breadcrumb
-                            darkMode={true}
+                            darkMode={false}
                             items={[
                                 { label: 'Bem-vindo', url: '/' },
                                 { label: 'Reutilizações', url: '/pages/reuses' },
                                 { label: reuse.title, url: `/pages/reuses/${reuse.slug || reuse.id}` }
                             ]}
                         />
-                        <div className="flex flex-wrap items-center gap-8 sm:gap-16">
+                        <div className="flex flex-wrap items-center gap-32 sm:gap-16">
                             <Button
                                 variant="primary"
                                 appearance="outline"
-                                darkMode={true}
+                                darkMode={false}
                                 hasIcon={true}
                                 leadingIcon="agora-line-star"
                                 leadingIconHover="agora-solid-star"
@@ -66,15 +66,14 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                                 variant="primary"
                                 hasIcon={true}
                                 trailingIcon="agora-line-external-link"
-                                className="hidden sm:flex"
                                 onClick={() => window.open(reuse.url, '_blank')}
                             >
                                 Veja reutilização
                             </Button>
                             <Button
-                                variant="secondary"
-                                appearance="ghost"
-                                darkMode={true}
+                                variant="primary"
+                                appearance="outline"
+                                darkMode={false}
                                 hasIcon={true}
                                 leadingIcon="agora-line-flag"
                                 aria-label="Reportar"
@@ -83,10 +82,10 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                     </div>
 
                     {/* Hero Content */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-32">
+                    <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
                         {/* Image Column */}
-                        <div className="lg:col-span-8">
-                            <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-neutral-800">
+                        <div className="xl:col-span-8 xl:block md:pt-64">
+                            <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-neutral-100 border border-neutral-200">
                                 <img
                                     src={reuse.image || '/images/placeholders/reuse-large.png'}
                                     alt={reuse.title}
@@ -96,8 +95,8 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                         </div>
 
                         {/* Sidebar Card Column */}
-                        <div className="lg:col-span-4">
-                            <div className="h-full bg-white text-neutral-900 rounded-lg p-32 flex flex-col gap-24">
+                        <div className="xl:col-span-4 md:pt-64 ">
+                            <div className="h-full bg-white text-neutral-900 rounded-lg p-32 flex flex-col gap-24 border border-neutral-200 shadow-sm">
                                 {reuse.organization?.logo ? (
                                     <div className="w-fit px-12 py-6 bg-primary-50 rounded-8 border border-primary-200 flex items-center justify-center">
                                         <img
@@ -156,27 +155,27 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                         <Tab>
                             <TabHeader>Descrição</TabHeader>
                             {renderTabBody(
-                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-32 sm:gap-64">
+                                <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
                                     {/* Sidebar Metadata */}
-                                    <aside className="lg:col-span-4 flex flex-col gap-24">
+                                    <aside className="xl:col-span-8 xl:block md:pt-64 flex flex-col gap-24">
                                         <div className="bg-white p-24 rounded-lg border border-neutral-200">
-                                            <div className="mb-24">
-                                                <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Temático</h3>
-                                                <p className="font-medium text-neutral-900">Política e vida pública</p>
-                                            </div>
-                                            <div className="mb-24">
-                                                <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Tipo</h3>
-                                                <p className="font-medium text-neutral-900">{reuse.type || 'Aplicação'}</p>
-                                            </div>
-                                            <div className="mb-24">
-                                                <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Tags</h3>
-                                                <div className="flex flex-wrap gap-8">
-                                                    {(reuse.tags || ['mapeamento', 'dataconnexions-6', 'eleição', 'noivado', 'demonstração de impacto', 'percorrer']).map(tag => (
-                                                        <Pill key={tag} appearance="solid" variant="primary-100" className="text-primary-700 h-auto py-4 px-8 text-xs font-semibold">
-                                                            {tag}
-                                                        </Pill>
-                                                    ))}
-                                                </div>
+                                            <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Temático</h3>
+                                            <p className="font-medium text-neutral-900">Política e vida pública</p>
+                                        </div>
+
+                                        <div className="bg-white p-24 rounded-lg border border-neutral-200">
+                                            <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Tipo</h3>
+                                            <p className="font-medium text-neutral-900">{reuse.type || 'Aplicação'}</p>
+                                        </div>
+
+                                        <div className="bg-white p-24 rounded-lg border border-neutral-200">
+                                            <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Tags</h3>
+                                            <div className="flex flex-wrap gap-8">
+                                                {(reuse.tags || ['mapeamento', 'dataconnexions-6', 'eleição', 'noivado', 'demonstração de impacto', 'percorrer']).map(tag => (
+                                                    <Pill key={tag} appearance="solid" variant="primary" className="bg-primary-100 text-primary-700 h-auto py-4 px-8 text-xs font-semibold">
+                                                        {tag}
+                                                    </Pill>
+                                                ))}
                                             </div>
                                         </div>
 
@@ -185,7 +184,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                                                 <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Última atualização</h3>
                                                 <p className="font-medium text-neutral-900">{formatDate(reuse.last_modified)}</p>
                                             </div>
-                                            <div className="mb-24">
+                                            <div className="mb-0">
                                                 <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Data de criação</h3>
                                                 <p className="font-medium text-neutral-900">{formatDate(reuse.created_at)}</p>
                                             </div>
@@ -202,7 +201,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                                     </aside>
 
                                     {/* Main Content */}
-                                    <div className="lg:col-span-8">
+                                    <div className="xl:col-span-4 md:pt-64 ">
                                         <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed">
                                             <h2 className="text-2xl-bold text-neutral-900 mb-24">Descrição</h2>
                                             <div className="whitespace-pre-wrap mb-32">
