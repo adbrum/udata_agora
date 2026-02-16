@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -13,6 +13,8 @@ interface DatasetDetailClientProps {
 }
 
 export default function DatasetDetailClient({ dataset }: DatasetDetailClientProps) {
+    const [isFavorite, setIsFavorite] = useState(false);
+
     return (
         <div className="flex flex-col font-sans text-neutral-900 bg-white h-full">
             <main className="flex-grow container mx-auto px-4 py-64">
@@ -27,13 +29,14 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                     />
                     <Button
                         variant="primary"
-                        appearance="outline"
+                        appearance={isFavorite ? 'solid' : 'outline'}
                         hasIcon={true}
-                        leadingIcon="agora-line-star"
+                        leadingIcon={isFavorite ? 'agora-solid-star' : 'agora-line-star'}
                         leadingIconHover="agora-solid-star"
                         className="flex-shrink-0"
+                        onClick={() => setIsFavorite(!isFavorite)}
                     >
-                        Adicionar aos favoritos
+                        {isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                     </Button>
                 </div>
 
@@ -161,7 +164,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                         {/* Quality Box */}
                         <div className="bg-primary-100 p-32 rounded-lg p-6">
                             <div className="flex justify-between items-end mb-4">
-                                <h3 className="font-bold text-neutral-900">Qualidade dos metados</h3>
+                                <h3 className="font-bold text-neutral-900">Qualidade dos metadados</h3>
                             </div>
                             <ProgressBar
                                 value={100}
@@ -178,7 +181,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                     cardTitle="Está à procura do preço de venda de um imóvel ou terreno?"
                     cardSubtitle={
                         <div className="flex flex-col gap-4 mt-4">
-                            <p className="">
+                            <p className="mb-16">
                                 O aplicativo "Dados de Valorização de Terrenos (DVF)" permite acessar informações claras sobre imóveis vendidos a partir do banco de dados da Direção Geral de Finanças Públicas.
                             </p>
                             <a href="#" className="text-primary-700 font-bold hover:underline inline-flex items-center gap-2">

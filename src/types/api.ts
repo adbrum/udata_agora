@@ -22,6 +22,8 @@ export interface Resource {
   format: string;
   url: string;
   created_at: string;
+  filesize?: number;
+  type?: string;
 }
 
 export interface Dataset {
