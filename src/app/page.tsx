@@ -234,12 +234,12 @@ export default function Home() {
         </div>
 
         {/* Reuses */}
-        <div className="xl:py-64 bg-neutral-50">
+        <div className="xl:py-64 bg-primary-900">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl-bold text-primary-900">
+            <h2 className="text-2xl-bold text-white">
               Storytellings em Destaque
             </h2>
-            <p className="mt-16 mb-32 max-w-3xl">
+            <p className="mt-16 mb-32 max-w-3xl text-white">
               Storytellings mais populares
             </p>
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
@@ -262,31 +262,31 @@ export default function Home() {
                   subtitle: 'Publicado a DD MM AAAA',
                 },
               ].map((story, i) => (
-                <a
+                <CardArticle
                   key={i}
-                  href="#"
-                  className="flex flex-col rounded-2xl overflow-hidden bg-[#DCEEFE] h-full hover:shadow-lg transition-all duration-300 group"
-                >
-                  <div className="relative h-[200px] w-full overflow-hidden">
-                    <img
-                      src={`/${story.img}`}
-                      alt={story.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="p-24 flex flex-col gap-8 grow">
-                    <span className="text-sm text-neutral-600 font-light">
-                      {story.subtitle}
-                    </span>
-                    <h3 className="text-lg font-bold text-neutral-900 leading-tight">
-                      {story.title}
-                    </h3>
-                  </div>
-                </a>
+                  variant="indented"
+                  image={{
+                    src: `/${story.img}`,
+                    alt: story.title,
+                  }}
+                  subtitle={story.subtitle}
+                  title={story.title}
+                  mainAnchor={{
+                    href: '#',
+                    target: '_self',
+                    title: 'Ver mais',
+                    hasIcon: true,
+                    iconOnly: true,
+                    leadingIcon: 'agora-line-arrow-right-circle',
+                    leadingIconHover: 'agora-solid-arrow-right-circle',
+                    variant: 'primary',
+                  }}
+                  blockedLink={true}
+                />
               ))}
             </div>
             <div className="mt-64 mt-12">
-              <Button variant="primary" appearance="outline">
+              <Button variant="primary" appearance="outline" darkMode={true}>
                 Ver mais
               </Button>
             </div>

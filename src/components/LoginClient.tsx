@@ -54,17 +54,17 @@ export default function LoginClient() {
 
                     {/* Links Section */}
                     <div className="flex flex-col items-center gap-16 mt-32 text-sm">
-                        <div className="flex flex-wrap justify-center gap-4">
-                            <span className="text-neutral-600">Esqueceu a senha?</span>
-                            <Link href="#" className="text-primary-600 hover:underline font-bold">
+                        <div className="flex flex-wrap justify-center items-center gap-8">
+                            <span className="">Esqueceu a senha?</span>
+                            <Button appearance="link">
                                 Recuperar a senha
-                            </Link>
+                            </Button>
                         </div>
-                        <div className="flex flex-wrap justify-center gap-4 text-center">
-                            <span className="text-neutral-600">Não recebeu as instruções de confirmação?</span>
-                            <Link href="#" className="text-primary-600 hover:underline font-bold">
+                        <div className="flex flex-wrap justify-center items-center gap-8 text-center">
+                            <span className="">Não recebeu as instruções de confirmação?</span>
+                            <Button appearance="link">
                                 Reenvie as instruções
-                            </Link>
+                            </Button>
                         </div>
                     </div>
 
@@ -76,10 +76,12 @@ export default function LoginClient() {
                         <Button
                             appearance="outline"
                             variant="primary"
-                            className="w-full flex items-center justify-center gap-8 h-11"
+                            hasIcon={true}
+                            leadingIcon="agora-line-user"
+                            leadingIconHover="agora-solid-user"
+                            className="w-full h-11"
                             id="login-cmd"
                         >
-                            <Icon name="agora-line-user" className="w-20 h-20" />
                             Autenticação Chave Móvel Digital
                         </Button>
                         <Link href="#" className="text-sm text-primary-600 hover:underline">
@@ -93,14 +95,16 @@ export default function LoginClient() {
                     {/* Create Account Section */}
                     <div className="flex flex-col items-center gap-16">
                         <h2 className="text-xl-bold text-[#002D72]">Não tem uma conta?</h2>
-                        <Button
-                            appearance="outline"
-                            variant="primary"
-                            className="min-w-[200px] h-11 px-48"
-                            id="create-account"
-                        >
-                            Criar uma conta
-                        </Button>
+                        <Link href="/pages/register">
+                            <Button
+                                appearance="outline"
+                                variant="primary"
+                                className="min-w-[200px] h-11 px-48"
+                                id="create-account"
+                            >
+                                Criar uma conta
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </div>

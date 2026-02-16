@@ -27,10 +27,12 @@ export const Header = () => {
   const pathname = usePathname();
 
   const [selectedLanguage, setSelectedLanguage] = useState('pt');
-  const [selectedArea, setSelectedArea] = useState(pathname === '/pages/login' ? '2' : '1');
+  const [selectedArea, setSelectedArea] = useState(
+    pathname === '/pages/login' || pathname === '/pages/register' ? '2' : '1'
+  );
 
   React.useEffect(() => {
-    if (pathname === '/pages/login') {
+    if (pathname === '/pages/login' || pathname === '/pages/register') {
       setSelectedArea('2');
     } else {
       setSelectedArea('1');
@@ -130,7 +132,7 @@ export const Header = () => {
               leadingIcon="agora-line-user"
               leadingIconHover="agora-solid-user"
             >
-              <Link href="/register">Inscrever-se</Link>
+              <Link href="/pages/register">Inscrever-se</Link>
             </UnauthenticatedLink>
           </Unauthenticated>
         </GeneralBar>
