@@ -149,22 +149,19 @@ export const Header = () => {
             <Link href="/pages/datasets">Conjuntos de dados</Link>
           </NavigationLink>
           <NavigationLink appearance="link">
-            <Link href="/organizations">Organizações</Link>
-          </NavigationLink>
-          <NavigationLink appearance="link">
             <Link href="/pages/reuses">Reutilizações</Link>
           </NavigationLink>
-          <NavigationLink appearance="link">
-            <Link href="/documentation">Documentação</Link>
-          </NavigationLink>
-          <NavigationRoot label="Primeiros passos">
+          <NavigationRoot label="Documentação">
             <NavigationLink appearance="link">
-              <Link href="/start">Visão geral</Link>
+              <Link href="/documentation">Documentação</Link>
             </NavigationLink>
             <NavigationLink appearance="link">
-              <Link href="/item2">Items</Link>
+              <Link href="/start">Primeiros passos</Link>
             </NavigationLink>
           </NavigationRoot>
+          <NavigationLink appearance="link">
+            <Link href="/pages/organizations">Organizações</Link>
+          </NavigationLink>
         </NavigationBar>
       </AgoraHeader>
     </header>
