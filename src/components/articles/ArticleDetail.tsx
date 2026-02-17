@@ -78,7 +78,7 @@ export default function ArticleDetail() {
                                     <a href="#" className="text-primary-600 underline font-medium hover:text-primary-700">Encontre as gravações dos webinars na página dedicada</a>.
                                 </p>
 
-                                <div className="my-48 rounded-2xl overflow-hidden shadow-sm">
+                                <div className="my-24 rounded-2xl overflow-hidden shadow-sm">
                                     <img
                                         src="/building.png"
                                         alt="Arquitetura e colaboração"
