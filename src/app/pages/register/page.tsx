@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import RegisterClient from '@/components/RegisterClient';
+import RegisterClient from '@/components/login/RegisterClient';
 
 export const metadata: Metadata = {
     title: 'Registe-se - dados.gov',

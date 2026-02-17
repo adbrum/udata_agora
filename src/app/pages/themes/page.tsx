@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Breadcrumb, Icon, Button, InputSearchBar } from '@ama-pt/agora-design-system';
+import { Icon, Button, InputSearchBar } from '@ama-pt/agora-design-system';
+import PageBanner from '@/components/PageBanner';
 
 export default function ThemesPage() {
     const [expandedSection, setExpandedSection] = useState<string | null>('ofertas');
@@ -12,66 +13,22 @@ export default function ThemesPage() {
 
     return (
         <main className="flex-grow bg-white">
-            {/* Banner Section */}
-            {/* Banner Section */}
-            <div className="agora-card-highlight-newsletter datasets-background bg-primary-900">
-                <div className="card-container relative z-10 pt-8 pb-20">
-                    <div className="card-content w-full">
-                        <div className="container mx-auto px-4">
-                            <Breadcrumb
-                                darkMode={true}
-                                items={[
-                                    { label: 'Bem-vindo', url: '/' },
-                                    { label: 'Dados relacionados à cultura', url: '#' }
-                                ]}
-                                className="mb-4"
-                            />
-                            <div className="title">
-                                <h1 className="xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold text-white">Dados relacionados à cultura</h1>
-                            </div>
-                            <div className="subtitle">
-                                <p className="text-primary-100 mb-8 max-w-4xl text-lg leading-relaxed">
-                                    Esta página tem como objetivo listar os principais conjuntos de dados relacionados à cultura disponíveis em dados.gov.pt. Ela não é exaustiva e <a href="#" className="underline font-bold hover:text-primary-200 transition-colors">está aberta a contribuições</a>.
-                                </p>
-                                <p className="text-primary-100 max-w-4xl text-lg leading-relaxed">
-                                    Você pode descobrir todos os dados relacionados à cultura em <a href="#" className="underline font-bold hover:text-primary-200 transition-colors">culture.data.gouv.fr</a>, a plataforma dedicada a referenciar, promover e divulgar dados culturais públicos na França.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="input-container">
-                        <div className="email-bar">
-                            <div className="container mx-auto grid xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-2 pb-64">
-                                <div className="relative text-white">
-                                    <InputSearchBar
-                                        label="Pesquisar conjuntos de dados de cultura"
-                                        hideLabel={true}
-                                        placeholder="Pesquisar datasets, organizações, temas..."
-                                        id="culture-search"
-                                        hasVoiceActionButton={true}
-                                        voiceActionAltText="Pesquisar por voz"
-                                        searchActionAltText="Pesquisar"
-                                        darkMode={true}
-                                    />
-                                    <div className="mt-64">
-                                        <Button
-                                            variant="primary"
-                                            darkMode={true}
-                                            hasIcon={false}
-                                            className="px-24 py-16 rounded-8 h-auto"
-                                        >
-                                            <span className="text-lg font-medium">
-                                                Publicar <span className="font-bold">dados.gov</span>
-                                            </span>
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <PageBanner
+                title="Dados relacionados à cultura"
+                breadcrumbItems={[
+                    { label: 'Bem-vindo', url: '/' },
+                    { label: 'Dados relacionados à cultura', url: '#' }
+                ]}
+            >
+                <div className="subtitle">
+                    <p className="text-primary-100 mb-8 max-w-4xl text-lg leading-relaxed">
+                        Esta página tem como objetivo listar os principais conjuntos de dados relacionados à cultura disponíveis em dados.gov.pt. Ela não é exaustiva e <a href="#" className="underline font-bold hover:text-primary-200 transition-colors">está aberta a contribuições</a>.
+                    </p>
+                    <p className="text-primary-100 max-w-4xl text-lg leading-relaxed">
+                        Você pode descobrir todos os dados relacionados à cultura em <a href="#" className="underline font-bold hover:text-primary-200 transition-colors">culture.data.gouv.fr</a>, a plataforma dedicada a referenciar, promover e divulgar dados culturais públicos na França.
+                    </p>
                 </div>
-            </div>
+            </PageBanner>
 
             <div className="container mx-auto px-4 py-64">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-48">

@@ -1,5 +1,5 @@
 import { fetchDataset } from '@/services/api';
-import DatasetDetailClient from '@/components/DatasetDetailClient';
+import DatasetDetailClient from '@/components/datasets/DatasetDetailClient';
 
 export default async function Page({
     params,

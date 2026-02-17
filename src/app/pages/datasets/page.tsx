@@ -1,5 +1,5 @@
 import { fetchDatasets } from '@/services/api';
-import DatasetsClient from '@/components/DatasetsClient';
+import DatasetsClient from '@/components/datasets/DatasetsClient';
 
 // Ensure this is a server component by not adding 'use client'
 // But DatasetsClient IS a client component

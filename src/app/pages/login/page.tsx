@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import LoginClient from '@/components/LoginClient';
+import LoginClient from '@/components/login/LoginClient';
 
 export const metadata: Metadata = {
     title: 'Iniciar Sessão - dados.gov',
