@@ -7,7 +7,7 @@ const linkColumns = [
   {
     title: 'Dados abertos',
     links: [
-      { href: '#', label: 'Temas' },
+      { href: '/pages/themes', label: 'Temas' },
       { href: '#', label: 'Dados de referência' },
       { href: '#', label: 'Catálogo de dados' },
       { href: '#', label: 'Acompanhe a abertura dos dados' },
