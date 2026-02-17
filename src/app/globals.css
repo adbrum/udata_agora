@@ -14,12 +14,12 @@
   z-index: 1;
 }
 
-.homepage .agora-card-highlight-newsletter .card-container:before {
-  background-color: var(--color-mask-image);
-}
-
 .agora-card-highlight-newsletter .card-container:before {
   background-color: unset;
+}
+
+.homepage .agora-card-highlight-newsletter .card-container:before {
+  background-color: var(--color-mask-image);
 }
 
 /*Icon Container*/
