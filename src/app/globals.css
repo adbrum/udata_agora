@@ -33,7 +33,7 @@
 }
 
 /* Datasets Section Background */
-.datasets-background {
+.bg-lines-image {
   background-image: url('/banner-lines.svg');
   background-size: cover;
   background-position: center;

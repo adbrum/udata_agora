@@ -6,7 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { Button, Icon, Tag, Breadcrumb, CardExpandable, Pill, ProgressBar } from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
-import { DatasetTabs } from '@/components/DatasetTabs';
+import { DatasetTabs } from '@/components/datasets/DatasetTabs';
 
 interface DatasetDetailClientProps {
     dataset: Dataset;

@@ -1,5 +1,5 @@
 import { fetchReuse } from '@/services/api';
-import ReuseDetailClient from '@/components/ReuseDetailClient';
+import ReuseDetailClient from '@/components/reuses/ReuseDetailClient';
 
 export default async function Page({
     params,

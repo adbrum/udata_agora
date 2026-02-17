@@ -1,5 +1,5 @@
 import { fetchReuses } from '@/services/api';
-import ReusesClient from '@/components/ReusesClient';
+import ReusesClient from '@/components/reuses/ReusesClient';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
