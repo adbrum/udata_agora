@@ -1,16 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Icon, Button, InputSearchBar } from '@ama-pt/agora-design-system';
+import React from 'react';
+import { Icon, Accordion, AccordionGroup } from '@ama-pt/agora-design-system';
 import PageBanner from '@/components/PageBanner';
 
 export default function ThemesPage() {
-    const [expandedSection, setExpandedSection] = useState<string | null>('ofertas');
-
-    const toggleSection = (section: string) => {
-        setExpandedSection(expandedSection === section ? null : section);
-    };
-
     return (
         <main className="flex-grow bg-white">
             <PageBanner
@@ -31,10 +25,10 @@ export default function ThemesPage() {
             </PageBanner>
 
             <div className="container mx-auto px-4 py-64">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-48">
+                <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
 
                     {/* Sidebar Navigation */}
-                    <div className="md:col-span-1">
+                    <div className="xl:col-span-4 xl:block">
                         <div className="sticky top-120">
                             <div className="mb-40 flex justify-center md:justify-start">
                                 <img
@@ -44,92 +38,63 @@ export default function ThemesPage() {
                                 />
                             </div>
 
-                            <nav className="flex flex-col border-t border-neutral-200 pt-16">
-                                <div className="py-12 border-b border-neutral-100">
-                                    <a href="#" className="text-primary-700 font-bold hover:text-primary-900 transition-colors flex items-center justify-between">
+                            <div className="flex flex-col border-t border-neutral-200 pt-16">
+                                <div className="py-16 px-16 border-b border-neutral-200">
+                                    <a href="#" className="text-neutral-900 font-bold hover:text-primary-700 transition-colors flex items-center justify-between">
                                         Observações preliminares
                                     </a>
                                 </div>
 
-                                {/* Ofertas e espaços culturais */}
-                                <div className="py-12 border-b border-neutral-100 flex flex-col">
-                                    <button
-                                        onClick={() => toggleSection('ofertas')}
-                                        className={`font-bold flex items-center justify-between w-full text-left transition-colors ${expandedSection === 'ofertas' ? 'text-primary-700' : 'text-neutral-900 hover:text-primary-700'}`}
-                                    >
-                                        Ofertas e espaços culturais
-                                        <Icon
-                                            name={expandedSection === 'ofertas' ? 'agora-line-chevron-down' : 'agora-line-chevron-right'}
-                                            className="w-5 h-5"
-                                        />
-                                    </button>
-                                    {expandedSection === 'ofertas' && (
-                                        <div className="pl-16 mt-12 flex flex-col gap-8 text-sm text-neutral-600">
+                                <AccordionGroup>
+                                    <Accordion headingTitle="Ofertas e espaços culturais" headingLevel="h3" defaultExpanded={true}>
+                                        <div className="pl-16 flex flex-col gap-8 text-sm text-neutral-600 pb-12">
                                             <a href="#heranca" className="hover:text-primary-700 transition-colors">Herança</a>
                                             <a href="#livros" className="hover:text-primary-700 transition-colors">Livros e leitura</a>
                                             <a href="#imprensa" className="hover:text-primary-700 transition-colors">Imprensa</a>
                                             <a href="#cinema" className="hover:text-primary-700 transition-colors">Cinema</a>
                                             <a href="#apresentacao" className="hover:text-primary-700 transition-colors">Apresentação ao vivo</a>
                                         </div>
-                                    )}
-                                </div>
+                                    </Accordion>
 
-                                {/* Práticas culturais */}
-                                <div className="py-12 border-b border-neutral-100">
-                                    <button
-                                        onClick={() => toggleSection('praticas')}
-                                        className="text-neutral-900 font-bold flex items-center justify-between w-full text-left hover:text-primary-700 transition-colors"
-                                    >
-                                        Práticas culturais
-                                        <Icon name="agora-line-chevron-right" className="w-5 h-5" />
-                                    </button>
-                                </div>
 
-                                {/* Políticas culturais */}
-                                <div className="py-12 border-b border-neutral-100">
-                                    <button
-                                        className="text-neutral-900 font-bold flex items-center justify-between w-full text-left hover:text-primary-700 transition-colors"
-                                    >
-                                        Políticas culturais
-                                        <Icon name="agora-line-chevron-right" className="w-5 h-5" />
-                                    </button>
-                                </div>
+                                    <Accordion headingTitle="Políticas culturais" headingLevel="h3">
+                                        <div className="pl-16 flex flex-col gap-8 text-sm text-neutral-600 pb-12">
+                                            <p className="text-neutral-500">Conteúdo em breve...</p>
+                                        </div>
+                                    </Accordion>
 
-                                {/* Economia da cultura */}
-                                <div className="py-12 border-b border-neutral-100">
-                                    <button
-                                        className="text-neutral-900 font-bold flex items-center justify-between w-full text-left hover:text-primary-700 transition-colors"
-                                    >
-                                        Economia da cultura
-                                        <Icon name="agora-line-chevron-right" className="w-5 h-5" />
-                                    </button>
-                                </div>
+                                    <Accordion headingTitle="Economia da cultura" headingLevel="h3">
+                                        <div className="pl-16 flex flex-col gap-8 text-sm text-neutral-600 pb-12">
+                                            <p className="text-neutral-500">Conteúdo em breve...</p>
+                                        </div>
+                                    </Accordion>
+                                </AccordionGroup>
 
-                                <div className="py-12 border-b border-neutral-100">
+                                <div className="py-16 px-16 border-b border-neutral-200">
                                     <a href="#" className="text-neutral-900 font-bold hover:text-primary-700 transition-colors block">
                                         Recursos documentais culturais
                                     </a>
                                 </div>
 
-                                <div className="py-12 border-b border-neutral-100">
+                                <div className="py-16 px-16 border-b border-neutral-200">
                                     <a href="#" className="text-neutral-900 font-bold hover:text-primary-700 transition-colors block">
                                         Reutilização de dados relacionados à cultura
                                     </a>
                                 </div>
 
-                                <div className="py-12">
+                                <div className="py-16 px-16">
                                     <a href="#" className="text-neutral-900 font-bold hover:text-primary-700 transition-colors leading-tight block">
                                         Os principais produtores de dados relacionados à cultura
                                     </a>
                                 </div>
-                            </nav>
+                            </div>
                         </div>
                     </div>
 
                     {/* Main Content Area */}
-                    <div className="md:col-span-3">
+                    <div className="xl:col-span-8 ml-32 ">
                         <section className="mb-64">
-                            <h2 className="text-3xl font-bold text-neutral-900 mb-24">Ofertas e espaços culturais</h2>
+                            <h2 className="text-xl-bold text-neutral-900 mb-24">Ofertas e espaços culturais</h2>
                             <ul className="space-y-4 mb-48">
                                 <li>
                                     <a href="#" className="text-primary-700 hover:underline flex items-center gap-8 font-medium group">
