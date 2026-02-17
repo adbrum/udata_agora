@@ -7,6 +7,7 @@ import {
   CardArticle,
   CardGeneral,
 } from '@ama-pt/agora-design-system';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -312,7 +313,7 @@ export default function Home() {
                     subtitle="Publicado em 21 de novembro de 2024"
                     title="Webinar Developers e Data Scientists: Publicação e uso de dados abertos"
                     mainAnchor={{
-                      href: '#',
+                      href: '/pages/article',
                       target: '_self',
                       title: 'Ver mais',
                       hasIcon: true,
@@ -327,9 +328,11 @@ export default function Home() {
               )}
             </div>
             <div className="mt-64">
-              <Button variant="primary" appearance="outline">
-                Ver mais
-              </Button>
+              <Link href="/pages/article">
+                <Button variant="primary" appearance="outline">
+                  Ver mais
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
