@@ -7,7 +7,7 @@ export default function ArticleDetail() {
     return (
         <div className="flex flex-col font-sans text-neutral-900 bg-white min-h-screen">
             <main className="flex-grow">
-                <div className="container mx-auto px-4 pt-32">
+                <div className="container mx-auto px-4 pt-32 pb-32">
                     <Breadcrumb
                         items={[
                             { label: 'Página inicial', url: '/' },
