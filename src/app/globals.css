@@ -8,17 +8,19 @@
 @tailwind utilities;
 
 /*HomePage*/
-/*HomePage*/
 .agora-card-highlight-newsletter .card-container .input-container {
   grid-template-columns: none;
   position: relative;
   z-index: 1;
 }
 
-/*.agora-card-highlight-newsletter .card-container:before {
+.homepage .agora-card-highlight-newsletter .card-container:before {
+  background-color: var(--color-mask-image);
+}
+
+.agora-card-highlight-newsletter .card-container:before {
   background-color: unset;
-  position: unset;
-}*/
+}
 
 /*Icon Container*/
 .icon-container {
@@ -37,6 +39,7 @@
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
+
 }
 
 
