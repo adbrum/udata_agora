@@ -32,14 +32,12 @@
   justify-content: center;
 }
 
-/* Datasets Section Background */
-.bg-lines-image {
-  background-image: url('/banner-lines.svg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  position: relative;
 
+.bg-lines-image {
+  background-image: url("/banner-lines.svg") !important;
+  /*background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;*/
 }
 
 

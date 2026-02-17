@@ -17,7 +17,15 @@ const PageBanner: React.FC<PageBannerProps> = ({
     children,
 }) => {
     return (
-        <div className="agora-card-highlight-newsletter bg-lines-image bg-primary-900">
+        <div
+            className="agora-card-highlight-newsletter bg-primary-900 bg-lines-image"
+            style={{
+                backgroundImage: 'url("/banner-lines.svg")',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+            }}
+        >
             <div className="card-container relative z-10 pt-8 pb-20">
                 <div className="card-content w-full">
                     <div className="container mx-auto px-4">
