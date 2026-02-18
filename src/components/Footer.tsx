@@ -19,7 +19,7 @@ const linkColumns = [
     links: [
       { href: '#', label: 'Guias' },
       { href: '#', label: 'Roteiro e novos desenvolvimentos' },
-      { href: '#', label: 'Escreva-nos' },
+      { href: '/pages/support', label: 'Escreva-nos' },
       { href: '#', label: 'Interaja com a comunidade' },
       { href: '#', label: 'Estatísticas' },
     ],

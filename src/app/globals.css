@@ -79,6 +79,15 @@ body {
 }
 
 /*Margins*/
+.mt-24 {
+  margin-top: 24px;
+}
+
+.my-24 {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
 .mb-24 {
   margin-bottom: 24px;
 }

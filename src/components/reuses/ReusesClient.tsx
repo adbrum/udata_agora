@@ -49,13 +49,11 @@ export default function ReusesClient({
                     <div className="mt-64">
                         <Button
                             variant="primary"
-                            hasIcon={true}
-                            trailingIcon="agora-line-arrow-right-circle"
-                            trailingIconHover="agora-solid-arrow-right-circle"
+                            hasIcon={false}
                             className="!bg-[#7BB2FF] !text-[#002D72] px-24 py-16 rounded-8 h-auto [&_svg]:!fill-black"
                         >
                             <span className="text-lg font-medium">
-                                Publicar <span className="font-bold">reutilização</span>
+                                Publicar <span className="font-bold">dados gov</span>
                             </span>
                         </Button>
                     </div>
