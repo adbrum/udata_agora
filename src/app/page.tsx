@@ -17,7 +17,7 @@ export default function Home() {
         <div
           className="agora-card-highlight-newsletter"
           style={{
-            backgroundImage: 'url("/hero-bg.png")',
+            backgroundImage: 'url("/Banner/hero-bg.png")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
             backgroundPosition: 'top',
@@ -81,61 +81,78 @@ export default function Home() {
 
 
         {/* Stats Section / Communities */}
-        <div className="xl:py-64 bg-primary-900 text-white -mt-8 relative z-20 rounded-t-3xl shadow-top-low md:mt-0 md:border-none md:shadow-none">
+        <div className="py-64 bg-primary-900 text-white -mt-8 relative z-20 rounded-t-3xl shadow-top-low md:mt-0 md:border-none md:shadow-none">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl-bold text-white">
-              <span className="text-2xl-bold">Uma comunidade</span>{' '}
-              <span className="text-2xl-light">dinâmica e empenhada</span>
-            </h2>
-            <p className=" mt-16 mb-32">
-              Partilhe a utilização e a troca de dados entre produtores e reutilizadores de dados.
-            </p>
-            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-32">
-              <div className="flex flex-col gap-4">
-                <div className="icon-container mb-16 bg-[#F0F5FF] text-[#002D72]">
-                  <Icon name="agora-line-layers-menu" aria-hidden="true" className="w-8 h-8" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-white">
-                    47,825
-                  </span>
-                  <span className="">Conjuntos de Dados</span>
-                </div>
+            <div className="grid xs:grid-cols-1 xl:grid-cols-2 gap-64 items-center">
+              {/* Left: title + description */}
+              <div className="flex flex-col gap-24">
+                <h2 className="text-white">
+                  <span className="text-2xl-bold">Uma comunidade</span>
+                  <br />
+                  <span className="text-2xl-light">dinâmica e empenhada</span>
+                </h2>
+                <p className="text-m-regular text-white opacity-80 max-w-sm">
+                  Partilhe a utilização e a troca de dados entre produtores e
+                  reutilizadores de dados.
+                </p>
               </div>
 
-              <div className="flex flex-col gap-4">
-                <div className="icon-container mb-16 bg-[#FFF1F1] text-[#D42B34]">
-                  <Icon name="agora-line-document" aria-hidden="true" className="w-8 h-8" />
+              {/* Right: 2x2 stats grid */}
+              <div className="grid grid-cols-2 gap-32">
+                <div className="flex flex-col gap-16 border-t border-white/20 pt-24">
+                  <div className="icon-container bg-transparent text-white border border-[#C7D9FF]">
+                    <Icon name="agora-line-layers-menu" aria-hidden="true" className="w-8 h-8" />
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    <span className="text-3xl font-bold text-white leading-tight">
+                      47 825
+                    </span>
+                    <span className="text-sm text-white opacity-70">
+                      Conjuntos de Dados
+                    </span>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-white">
-                    2,456
-                  </span>
-                  <span className="">Organizações</span>
-                </div>
-              </div>
 
-              <div className="flex flex-col gap-4">
-                <div className="icon-container mb-16 bg-[#EDFBF2] text-[#008947]">
-                  <Icon name="agora-line-document" aria-hidden="true" className="w-8 h-8" />
+                <div className="flex flex-col gap-16 border-t border-white/20 pt-24">
+                  <div className="icon-container bg-transparent text-white border border-[#FFCCCF]">
+                    <Icon name="agora-line-document" aria-hidden="true" className="w-8 h-8" />
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    <span className="text-3xl font-bold text-white leading-tight">
+                      2 456
+                    </span>
+                    <span className="text-sm text-white opacity-70">
+                      Organizações
+                    </span>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-white">
-                    8,234
-                  </span>
-                  <span className="">Reutilizações</span>
-                </div>
-              </div>
 
-              <div className="flex flex-col gap-4">
-                <div className="icon-container mb-16 bg-[#FFFAEB] text-[#8C4B00]">
-                  <Icon name="agora-line-user-group" aria-hidden="true" className="w-8 h-8" />
+                <div className="flex flex-col gap-16 border-t border-white/20 pt-24">
+                  <div className="icon-container bg-transparent text-white border border-[#B3EEC9]">
+                    <Icon name="agora-line-recycle" aria-hidden="true" className="w-8 h-8" />
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    <span className="text-3xl font-bold text-white leading-tight">
+                      8 234
+                    </span>
+                    <span className="text-sm text-white opacity-70">
+                      Reutilizações
+                    </span>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-white">
-                    152K
-                  </span>
-                  <span className="">Utilizadores</span>
+
+                <div className="flex flex-col gap-16 border-t border-white/20 pt-24">
+                  <div className="icon-container bg-transparent text-white border border-[#FFE4A3]">
+                    <Icon name="agora-line-user-group" aria-hidden="true" className="w-8 h-8" />
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    <span className="text-3xl font-bold text-white leading-tight">
+                      152K
+                    </span>
+                    <span className="text-sm text-white opacity-70">
+                      Utilizadores
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -223,7 +240,7 @@ export default function Home() {
                     className="flex items-center justify-center w-full h-20"
                   >
                     <img
-                      src={`/${logo}`}
+                      src={`/Logos/${logo}`}
                       alt={`Logo ${logo.replace('.svg', '')}`}
                       className="max-h-12 max-w-[160px] object-contain"
                     />
