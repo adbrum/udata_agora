@@ -1,15 +1,25 @@
 'use client';
 
 import Link from 'next/link';
-import { Breadcrumb, InputSearch, Icon, CardGeneral } from '@ama-pt/agora-design-system';
+import { Breadcrumb, InputSearch, Icon, CardGeneral, Feedback } from '@ama-pt/agora-design-system';
 import { MiniCoursesFilters } from './MiniCoursesFilters';
 import { Pagination } from '@/components/Pagination';
+
+function toSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-');
+}
 
 export default function MiniCoursesClient() {
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 ">
       <main className="flex-grow">
-        <div className="bg-[#F8F9FC] pt-32 pb-64">
+        <div className="bg-[#F8F9FC]">
           <div className="container mx-auto px-4 lg:px-64">
             <Breadcrumb
               items={[
@@ -40,25 +50,11 @@ export default function MiniCoursesClient() {
             </div>
           </div>
         </div>
-        <div className="bg-white pt-64 pb-64">
-          <div className="container mx-auto px-4 lg:px-64">
-            <div className="max-w-[700px] ml-auto">
-              <h2 className="text-[18px] font-bold text-[#000066] mb-16">
-                Que mini curso procura?
-              </h2>
-              <InputSearch
-                id="courses-search"
-                label="Pesquisar mini cursos"
-                hideLabel
-                placeholder="Pesquise pelo nome da formação, área técnica ou perfil"
-              />
-            </div>
-          </div>
-        </div>
+
 
         <div className="bg-white py-64 border-t border-neutral-100">
           <div className="container mx-auto px-4 lg:px-64">
-            <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
+            <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-[36px]">
               {/* Sidebar */}
               <div className="xl:col-span-3">
                 <MiniCoursesFilters />
@@ -66,6 +62,25 @@ export default function MiniCoursesClient() {
 
               {/* Results Area */}
               <div className="xl:col-span-9">
+
+
+                <div className="bg-white pt-64 pb-64">
+                  <div className="container px-4 lg:px-64">
+                    <div className="max-w-[700px]">
+                      <h2 className="text-[18px] font-bold text-[#000066] mb-16">
+                        Que mini curso procura?
+                      </h2>
+                      <InputSearch
+                        id="courses-search"
+                        label="Pesquisar mini cursos"
+                        hideLabel
+                        placeholder="Pesquise pelo nome da formação, área técnica ou perfil"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+
                 <div className="flex justify-end mb-16">
                   <span className="text-[14px] text-neutral-500 font-medium tracking-tight">4 de 8 resultados</span>
                 </div>
@@ -83,7 +98,7 @@ export default function MiniCoursesClient() {
                             variant="white"
                             titleText={
                               (
-                                <Link href="#" className="hover:underline text-primary-900 font-bold text-lg">
+                                <Link href={`/pages/mini-courses/${toSlug(course.title)}`} className="hover:underline text-primary-900 font-bold text-lg">
                                   {course.title}
                                 </Link>
                               ) as unknown as string
@@ -106,6 +121,21 @@ export default function MiniCoursesClient() {
                   />
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-[#F7F7FF]">
+          <div className="container mx-auto">
+            <div>
+              <Feedback
+                title="O conteúdo da página foi útil?"
+                subtitle="Avalie a sua experiência nesta página e deixe-nos um comentário."
+                ratingButtons={{
+                  likeButton: { children: 'Yes', appearance: 'outline', variant: 'success' },
+                  dislikeButton: { children: 'No', appearance: 'outline', variant: 'danger' }
+                }}
+              />
             </div>
           </div>
         </div>

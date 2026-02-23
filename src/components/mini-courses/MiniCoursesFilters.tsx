@@ -12,7 +12,7 @@ export const MiniCoursesFilters = () => {
   return (
     <div className="h-full">
       <div className="mb-32">
-        <h2 className="font-bold text-[24px] text-neutral-900 mb-16">Ordenar</h2>
+        <h2 className="font-bold text-[24px] text-neutral-900 mb-16 mt-[270px]">Ordenar</h2>
         <InputSelect
           label="Ordenar"
           id="sort-minicourses"
@@ -57,3 +57,4 @@ export const MiniCoursesFilters = () => {
     </div>
   );
 };
+
