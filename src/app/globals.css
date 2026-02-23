@@ -45,6 +45,12 @@
   z-index: 1;
 }
 
+.agora-card-highlight-newsletter .card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
 .agora-card-highlight-newsletter .card-container:before {
   background-color: unset;
   pointer-events: none;
@@ -70,7 +76,7 @@
 
 
 .bg-lines-image {
-  background-image: url("/banner-lines.svg") !important;
+  background-image: url("/Banner/banner-lines.svg") !important;
   /*background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;*/
