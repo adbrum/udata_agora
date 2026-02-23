@@ -151,7 +151,7 @@ export default function MiniCourseDetailClient() {
                                 </section>
 
                                 <section className="mb-32">
-                                    <h2 className="font-bold mb-16 text-brand-blue-dark">10. Como é que os dados abertos beneficiam a economy?</h2>
+                                    <h2 className="font-bold mb-16 text-brand-blue-dark">10. Como é que os dados abertos beneficiam a economia?</h2>
                                     <p className="text-base leading-relaxed">
                                         Os dados abertos estimulam a criação de novos serviços, produtos e empregos, e aumentam a eficiência das empresas. Estudos da UE estimam que o mercado de dados abertos poderá gerar quase 200 mil milhões de euros até 2030. Além disso, promovem inovação, melhoram decisões empresariais e fortalecem a economia digital.
                                     </p>

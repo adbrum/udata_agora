@@ -10,5 +10,6 @@ export default async function Page({
     // For now, we render the static design as requested
     const { slug } = await params;
 
+
     return <MiniCourseDetailClient />;
 }
