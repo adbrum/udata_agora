@@ -28,10 +28,8 @@ const PageBanner: React.FC<PageBannerProps> = ({
 
     return (
         <div
-            className={`agora-card-highlight-newsletter ${isLight ? '' : 'bg-primary-900 bg-lines-image'}`}
-            style={isLight ? {
-                backgroundColor: '#F7F7FF',
-            } : {
+            className={`agora-card-highlight-newsletter ${isLight ? 'bg-accent-light' : 'bg-primary-900 bg-lines-image'}`}
+            style={isLight ? {} : {
                 backgroundImage: 'url("/banner-lines.svg")',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',

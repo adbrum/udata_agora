@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button, Breadcrumb, CardExpandable } from '@ama-pt/agora-design-system';
 import PageBanner from '@/components/PageBanner';
+import Separator from '@/components/Separator';
 
 
 export default function MiniCourseDetailClient() {
@@ -41,7 +42,7 @@ export default function MiniCourseDetailClient() {
             <main className="flex-grow bg-white">
                 <PageBanner
                     title={
-                        <span style={{ color: 'var(--color-brand-blue-primary)', fontSize: '40px', fontWeight: 'bold' }}>
+                        <span className="text-brand-blue-primary font-bold text-[40px] leading-tight">
                             Mini Curso sobre a<br />introdução aos dados abertos
                         </span>
                     }
@@ -58,17 +59,12 @@ export default function MiniCourseDetailClient() {
                     }}
                     subtitle={
                         <div className="mb-64">
-                            <p
-                                className="leading-relaxed"
-                                style={{ color: 'var(--color-brand-blue-secondary)', fontSize: '16px' }}
-                            >
+                            <p className="leading-relaxed text-brand-blue-secondary">
                                 Este mini curso apresenta as informações introdutórias fundamentais dos dados abertos, explicando o que são, para que servem e porque são importantes para a transparência, inovação e reutilização da informação.
                                 <br /><br />
                                 As imagens utilizadas são apenas ilustrativas e podem ser substituídas ou adaptadas conforme o contexto da apresentação.
                             </p>
-                            <p
-                                style={{ color: 'var(--color-brand-blue-secondary)', fontSize: '16px', marginTop: '64px' }}
-                            >
+                            <p className="text-brand-blue-secondary mt-64">
                                 Atualizado em 30.09.2026
                             </p>
                         </div>
@@ -83,22 +79,22 @@ export default function MiniCourseDetailClient() {
                         {/* Main Content Column */}
                         <div className="xl:col-span-6 xl:block">
                             <article className="prose max-w-none text-neutral-800 space-y-48">
-                                <section>
-                                    <h2 className="text-xl-bold text-neutral-900 mb-16">1. O que são dados abertos?</h2>
+                                <section className="mb-32">
+                                    <h2 className="font-bold mb-16 text-brand-blue-dark">1. O que são dados abertos?</h2>
                                     <p className="text-base leading-relaxed">
                                         São dados disponibilizados de forma livre, que qualquer pessoa pode aceder, utilizar, modificar e partilhar. Devem estar acessíveis sem barreiras técnicas ou legais, permitindo a sua reutilização para fins pessoais, profissionais, científicos ou comerciais.
                                     </p>
                                 </section>
 
-                                <section>
-                                    <h2 className="text-xl-bold text-neutral-900 mb-16">2. Para que servem os dados abertos?</h2>
+                                <section className="mb-32">
+                                    <h2 className="font-bold mb-16 text-brand-blue-dark">2. Para que servem os dados abertos?</h2>
                                     <p className="text-base leading-relaxed">
                                         Os dados abertos servem para aumentar a transparência das instituições públicas e apoiar a tomada de decisões informadas. Permitem a investigação, a participação cidadã e a criação de novos serviços, aplicações e soluções inovadoras que beneficiam a sociedade.
                                     </p>
                                 </section>
 
-                                <section>
-                                    <h2 className="text-xl-bold text-neutral-900 mb-16">3. Quem pode usar dados abertos?</h2>
+                                <section className="mb-32">
+                                    <h2 className="font-bold mb-16 text-brand-blue-dark">3. Quem pode usar dados abertos?</h2>
                                     <p className="text-base leading-relaxed">
                                         Todos. O formato determina o quão fácil é aceder, reutilizar, analisar e integrar os dados noutros sistemas. Formatos inadequados podem limitar a reutilização, mesmo que os dados estejam publicamente disponíveis.
                                     </p>
@@ -112,50 +108,50 @@ export default function MiniCourseDetailClient() {
                                     />
                                 </div>
 
-                                <section>
-                                    <h2 className="text-xl-bold text-neutral-900 mb-16">4. Quais são as principais características dos dados abertos?</h2>
+                                <section className="mb-32">
+                                    <h2 className="font-bold mb-16 text-brand-blue-dark">4. Quais são as principais características dos dados abertos?</h2>
                                     <p className="text-base leading-relaxed">
                                         Os dados abertos devem ser facilmente acessíveis e gratuitos, sem discriminação de quem os utiliza. Devem estar completos, atualizados e disponíveis de forma a permitir a reutilização livre, garantindo utilidade, transparência e confiança na informação.
                                     </p>
                                 </section>
 
-                                <section>
-                                    <h2 className="text-xl-bold text-neutral-900 mb-16">5. Qual a diferença entre dados públicos e dados abertos?</h2>
+                                <section className="mb-32">
+                                    <h2 className="font-bold mb-16 text-brand-blue-dark">5. Qual a diferença entre dados públicos e dados abertos?</h2>
                                     <p className="text-base leading-relaxed">
                                         Dados públicos são informações disponibilizadas por entidades públicas, mas nem sempre podem ser reutilizadas. Os dados abertos, além de públicos, são disponibilizados de forma a permitir o acesso, a reutilização e a partilha livre por qualquer pessoa.
                                     </p>
                                 </section>
 
-                                <section>
-                                    <h2 className="text-xl-bold text-neutral-900 mb-16">6. Os dados abertos devem estar disponíveis para todos em condições iguais?</h2>
+                                <section className="mb-32">
+                                    <h2 className="font-bold mb-16 text-brand-blue-dark">6. Os dados abertos devem estar disponíveis para todos em condições iguais?</h2>
                                     <p className="text-base leading-relaxed">
                                         Sim. O acesso aos dados abertos deve ser igual para todos, sem discriminação de pessoas, organizações ou finalidades de uso. Este princípio garante transparência, equidade e oportunidades iguais de reutilização da informação.
                                     </p>
                                 </section>
 
-                                <section>
-                                    <h2 className="text-xl-bold text-neutral-900 mb-16">7. Os dados abertos devem estar atualizados?</h2>
+                                <section className="mb-32">
+                                    <h2 className="font-bold mb-16 text-brand-blue-dark">7. Os dados abertos devem estar atualizados?</h2>
                                     <p className="text-base leading-relaxed">
                                         Sim, para serem úteis e confiáveis, os dados abertos precisam refletir a realidade atual, permitindo decisões precisas e soluções eficazes. A atualização regular garante que empresas, cidadãos e pesquisadores possam aproveitar a informação de forma segura e eficiente.
                                     </p>
                                 </section>
 
-                                <section>
-                                    <h2 className="text-xl-bold text-neutral-900 mb-16">8. Pode haver limites no processo de abertura de dados?</h2>
+                                <section className="mb-32">
+                                    <h2 className="font-bold mb-16 text-brand-blue-dark">8. Pode haver limites no processo de abertura de dados?</h2>
                                     <p className="text-base leading-relaxed">
                                         Sim. Nem todos os dados podem ser abertos, especialmente dados pessoais, sensíveis ou confidenciais. A proteção da privacidade, da segurança e do interesse público deve ser sempre garantida antes da publicação de dados abertos.
                                     </p>
                                 </section>
 
-                                <section>
-                                    <h2 className="text-xl-bold text-neutral-900 mb-16">9. Os dados abertos podem ser reutilizados e modificados?</h2>
+                                <section className="mb-32">
+                                    <h2 className="font-bold mb-16 text-brand-blue-dark">9. Os dados abertos podem ser reutilizados e modificados?</h2>
                                     <p className="text-base leading-relaxed">
                                         Sim, inclusive para fins comerciais. Podem ser usados, combinados e adaptados por qualquer pessoa, permitindo criar novos serviços, produtos e soluções inovadoras.
                                     </p>
                                 </section>
 
-                                <section>
-                                    <h2 className="text-xl-bold text-neutral-900 mb-16">10. Como é que os dados abertos beneficiam a economia?</h2>
+                                <section className="mb-32">
+                                    <h2 className="font-bold mb-16 text-brand-blue-dark">10. Como é que os dados abertos beneficiam a economy?</h2>
                                     <p className="text-base leading-relaxed">
                                         Os dados abertos estimulam a criação de novos serviços, produtos e empregos, e aumentam a eficiência das empresas. Estudos da UE estimam que o mercado de dados abertos poderá gerar quase 200 mil milhões de euros até 2030. Além disso, promovem inovação, melhoram decisões empresariais e fortalecem a economia digital.
                                     </p>
@@ -195,8 +191,8 @@ export default function MiniCourseDetailClient() {
                                 <h3 className="text-lg font-medium text-neutral-700 mb-24">
                                     Outros <span className="font-bold text-neutral-900">mini cursos</span> relacionados
                                 </h3>
-                                <div className="space-y-32">
-                                    {relatedCourses.map((course) => (
+                                <div className="flex flex-col">
+                                    {relatedCourses.map((course, index) => (
                                         <div key={course.slug} className="group cursor-pointer">
                                             <h4 className="font-bold text-neutral-900 group-hover:text-primary-700 transition-colors mb-8">
                                                 {course.title}
@@ -204,7 +200,9 @@ export default function MiniCourseDetailClient() {
                                             <p className="text-sm text-neutral-600 line-clamp-3 leading-relaxed">
                                                 {course.description}
                                             </p>
-                                            <div className="mt-12 h-1 w-full bg-neutral-200 group-last:hidden"></div>
+                                            {index < relatedCourses.length - 1 && (
+                                                <Separator className="my-32" />
+                                            )}
                                         </div>
                                     ))}
                                 </div>
