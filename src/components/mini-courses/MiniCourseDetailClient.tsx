@@ -61,32 +61,11 @@ export default function MiniCourseDetailClient() {
 
                 <div className="container mx-auto px-4 py-64">
                     {/* Specific Course Header Section */}
-                    <div className="xl:grid xl:grid-cols-12 gap-32 mb-64">
-                        <div className="xl:col-span-8">
-                            <h1 className="text-3xl-bold text-primary-900 leading-tight mb-24">
-                                Mini Curso sobre a<br /> introdução aos dados abertos
-                            </h1>
-                            <p className="text-lg text-neutral-700 leading-relaxed mb-32 max-w-3xl">
-                                Este mini curso apresenta as informações introdutórias fundamentais dos dados abertos, explicando o que são, para que servem e porque são importantes para a transparência, inovação e reutilização da informação. As imagens utilizadas são apenas ilustrativas e podem ser substituídas ou adaptadas conforme o contexto da apresentação.
-                            </p>
-                            <p className="text-sm text-neutral-500 mb-8">
-                                Atualizado em 30.09.2026
-                            </p>
-                        </div>
-                        <div className="xl:col-span-4 flex justify-center items-start pt-64">
-                            <div className="relative w-full max-w-[280px]">
-                                <img
-                                    src="/minicourses/medal.png"
-                                    alt="Mini Course Achievement Medal"
-                                    className="w-full h-auto drop-shadow-xl"
-                                />
-                            </div>
-                        </div>
-                    </div>
 
-                    <div className="xl:grid xl:grid-cols-12 gap-64">
+
+                    <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
                         {/* Main Content Column */}
-                        <div className="xl:col-span-7">
+                        <div className="xl:col-span-7 xl:block md:pt-64 p-32">
                             <article className="prose max-w-none text-neutral-800 space-y-48">
                                 <section>
                                     <h2 className="text-xl-bold text-neutral-900 mb-16">1. O que são dados abertos?</h2>
@@ -204,7 +183,7 @@ export default function MiniCourseDetailClient() {
                         </div>
 
                         {/* Sidebar Column */}
-                        <aside className="xl:col-span-5">
+                        <aside className="xl:col-span-5 md:pt-64 ">
                             <div className="bg-primary-100 rounded-16 p-32 sticky top-32">
                                 <h3 className="text-lg font-medium text-neutral-700 mb-24">
                                     Outros <span className="font-bold text-neutral-900">mini cursos</span> relacionados

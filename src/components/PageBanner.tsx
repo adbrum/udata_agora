@@ -38,36 +38,42 @@ const PageBanner: React.FC<PageBannerProps> = ({
                 backgroundRepeat: 'no-repeat'
             }}
         >
-            <div className="card-container relative z-10 pt-8 pb-20">
-                <div className="card-content w-full">
-                    <div className="container mx-auto px-4">
-                        <Breadcrumb
-                            darkMode={!isLight}
-                            items={breadcrumbItems}
-                            className="mb-16"
-                        />
-
-                        <div className={image ? "grid grid-cols-1 md:grid-cols-2 gap-48 items-center" : ""}>
-                            <div className="w-full">
-                                <div className="title">
-                                    <h1 className={`xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold mt-24 ${isLight ? 'text-primary-900' : 'text-white'}`}>
-                                        {title}
-                                    </h1>
-                                </div>
-                                {subtitle && (
-                                    <div className="subtitle mt-16">
-                                        {/* Handle subtitle text color for light variant if it's a string */}
-                                        {typeof subtitle === 'string' ? (
-                                            <p className={`${isLight ? 'text-neutral-700' : 'text-primary-100'} mb-8 text-lg leading-relaxed`}>{subtitle}</p>
-                                        ) : (
-                                            subtitle
-                                        )}
-                                    </div>
-                                )}
+            <div className="card-container relative z-10 pt-32 pb-48 md:py-64">
+                <div className="container mx-auto px-4">
+                    <Breadcrumb
+                        darkMode={!isLight}
+                        items={breadcrumbItems}
+                        className="mb-16"
+                    />
+                    <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
+                        {/* Left Column: Texts */}
+                        <div className="xl:col-span-6 xl:block md:pt-64">
+                            <div className="title">
+                                <h1 className={`xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold mt-8 ${isLight ? 'text-primary-900' : 'text-white'}`}>
+                                    {title}
+                                </h1>
                             </div>
+                            {subtitle && (
+                                <div className="subtitle mt-16">
+                                    {/* Handle subtitle text color for light variant if it's a string */}
+                                    {typeof subtitle === 'string' ? (
+                                        <p className={`${isLight ? 'text-neutral-700' : 'text-primary-100'} text-lg leading-relaxed`}>{subtitle}</p>
+                                    ) : (
+                                        subtitle
+                                    )}
+                                </div>
+                            )}
+                            {children && (
+                                <div className={`w-full mt-32 ${isLight ? 'text-neutral-900' : 'text-white'}`}>
+                                    {children}
+                                </div>
+                            )}
+                        </div>
 
+                        {/* Right Column: Flexible content (Image) */}
+                        <div className="xl:col-span-6 md:pt-64 flex justify-end">
                             {image && (
-                                <div className="flex justify-end items-center">
+                                <div className="image-container mb-16 last:mb-0">
                                     <img
                                         src={image.src}
                                         alt={image.alt}
@@ -78,18 +84,6 @@ const PageBanner: React.FC<PageBannerProps> = ({
                         </div>
                     </div>
                 </div>
-
-                {children && (
-                    <div className="input-container mt-32">
-                        <div className="email-bar">
-                            <div className="container mx-auto grid xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-2 pb-64">
-                                <div className={`relative ${isLight ? 'text-neutral-900' : 'text-white'}`}>
-                                    {children}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );
