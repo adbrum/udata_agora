@@ -4,7 +4,7 @@ import React from 'react';
 import { Breadcrumb } from '@ama-pt/agora-design-system';
 
 interface PageBannerProps {
-    title: string;
+    title: React.ReactNode;
     breadcrumbItems: { label: string; url: string }[];
     subtitle?: React.ReactNode;
     children?: React.ReactNode;
@@ -43,13 +43,12 @@ const PageBanner: React.FC<PageBannerProps> = ({
                     <Breadcrumb
                         darkMode={!isLight}
                         items={breadcrumbItems}
-                        className="mb-16"
                     />
                     <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
                         {/* Left Column: Texts */}
                         <div className="xl:col-span-6 xl:block md:pt-64">
                             <div className="title">
-                                <h1 className={`xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold mt-8 ${isLight ? 'text-primary-900' : 'text-white'}`}>
+                                <h1 className={`xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold ${typeof title === 'string' ? (isLight ? 'text-primary-900' : 'text-white') : ''}`}>
                                     {title}
                                 </h1>
                             </div>

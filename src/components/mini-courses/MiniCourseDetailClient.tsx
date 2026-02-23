@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Button, Icon, Breadcrumb, CardExpandable } from '@ama-pt/agora-design-system';
+import { Button, Breadcrumb, CardExpandable } from '@ama-pt/agora-design-system';
 import PageBanner from '@/components/PageBanner';
 
 
@@ -32,7 +32,7 @@ export default function MiniCourseDetailClient() {
         { name: 'Facebook', icon: 'agora-line-facebook', color: '#1877F2' },
         { name: 'Twitter', icon: 'agora-line-twitter', color: '#1DA1F2' },
         { name: 'LinkedIn', icon: 'agora-line-linkedin', color: '#0A66C2' },
-        { name: 'WhatsApp', icon: 'agora-line-whatsapp', color: '#25D366' },
+        { name: 'WhatsApp', customIcon: '/Icons/whatsapp.svg', color: '#25D366' },
         { name: 'e-mail', icon: 'agora-line-mail', color: '#EA4335' }
     ];
 
@@ -40,7 +40,11 @@ export default function MiniCourseDetailClient() {
         <div className="flex flex-col font-sans text-neutral-900 bg-white min-h-screen">
             <main className="flex-grow bg-white">
                 <PageBanner
-                    title="Mini-cursos"
+                    title={
+                        <span style={{ color: 'var(--color-brand-blue-primary)', fontSize: '40px', fontWeight: 'bold' }}>
+                            Mini Curso sobre a<br />introdução aos dados abertos
+                        </span>
+                    }
                     variant="light"
                     breadcrumbItems={[
                         { label: 'Bem-vindo', url: '/' },
@@ -48,14 +52,26 @@ export default function MiniCourseDetailClient() {
                         { label: 'Mini Curso sobre a introdução aos dados abertos', url: '#' }
                     ]}
                     image={{
-                        src: "/minicourses/medal_people.png",
+                        src: "/minicourses/medal.png",
                         alt: "Mini-cursos",
                         className: "max-h-[350px] w-auto drop-shadow-2xl"
                     }}
                     subtitle={
-                        <p className="text-neutral-700 mb-8 text-xl leading-relaxed">
-                            Aprenda a explorar, utilizar e partilhar dados abertos com os nossos mini-cursos rápidos e práticos.
-                        </p>
+                        <div className="mb-64">
+                            <p
+                                className="leading-relaxed"
+                                style={{ color: 'var(--color-brand-blue-secondary)', fontSize: '16px' }}
+                            >
+                                Este mini curso apresenta as informações introdutórias fundamentais dos dados abertos, explicando o que são, para que servem e porque são importantes para a transparência, inovação e reutilização da informação.
+                                <br /><br />
+                                As imagens utilizadas são apenas ilustrativas e podem ser substituídas ou adaptadas conforme o contexto da apresentação.
+                            </p>
+                            <p
+                                style={{ color: 'var(--color-brand-blue-secondary)', fontSize: '16px', marginTop: '64px' }}
+                            >
+                                Atualizado em 30.09.2026
+                            </p>
+                        </div>
                     }
                 />
 
@@ -65,7 +81,7 @@ export default function MiniCourseDetailClient() {
 
                     <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
                         {/* Main Content Column */}
-                        <div className="xl:col-span-7 xl:block md:pt-64 p-32">
+                        <div className="xl:col-span-6 xl:block">
                             <article className="prose max-w-none text-neutral-800 space-y-48">
                                 <section>
                                     <h2 className="text-xl-bold text-neutral-900 mb-16">1. O que são dados abertos?</h2>
@@ -146,12 +162,13 @@ export default function MiniCourseDetailClient() {
                                 </section>
                             </article>
 
-                            <div className="flex flex-wrap gap-16 mt-64 pt-48 border-t border-neutral-100">
+                            <div className="flex flex-wrap justify-end gap-16 mt-64 pt-48 border-t border-neutral-100">
                                 <Button
                                     variant="primary"
                                     appearance={isFavorite ? 'solid' : 'outline'}
                                     hasIcon={true}
                                     leadingIcon={isFavorite ? 'agora-solid-star' : 'agora-line-star'}
+                                    leadingIconHover="agora-solid-star"
                                     onClick={() => setIsFavorite(!isFavorite)}
                                     className="px-24 h-48"
                                 >
@@ -162,29 +179,19 @@ export default function MiniCourseDetailClient() {
                                     appearance="solid"
                                     hasIcon={true}
                                     leadingIcon={isCompleted ? 'agora-solid-check-circle' : 'agora-line-check-circle'}
+                                    leadingIconHover="agora-solid-check-circle"
                                     onClick={() => setIsCompleted(!isCompleted)}
                                     className="px-24 h-48"
                                 >
                                     {isCompleted ? 'Curso concluído' : 'Concluir curso'}
                                 </Button>
                             </div>
-
-                            <div className="mt-48 pt-32 border-t border-neutral-200">
-                                <p className="text-sm font-bold text-neutral-600 mb-16 uppercase tracking-wider">Partilhar este mini curso</p>
-                                <div className="flex flex-wrap gap-32">
-                                    {socialLinks.map((link) => (
-                                        <Link key={link.name} href="#" className="flex items-center gap-8 text-neutral-700 hover:text-primary-700 transition-colors">
-                                            <Icon name={link.icon} className="w-20 h-20" />
-                                            <span className="text-sm font-medium">{link.name}</span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
                         </div>
 
+
                         {/* Sidebar Column */}
-                        <aside className="xl:col-span-5 md:pt-64 ">
-                            <div className="bg-primary-100 rounded-16 p-32 sticky top-32">
+                        <aside className="xl:col-span-6 md:pt-64 md:pl-64">
+                            <div className="rounded-16 p-32 sticky top-32 md:pl-64">
                                 <h3 className="text-lg font-medium text-neutral-700 mb-24">
                                     Outros <span className="font-bold text-neutral-900">mini cursos</span> relacionados
                                 </h3>
@@ -203,6 +210,32 @@ export default function MiniCourseDetailClient() {
                                 </div>
                             </div>
                         </aside>
+                    </div>
+
+                    <div className="mt-64 pt-32 md:pl-64">
+                        <p className="text-sm text-neutral-600 mb-16 tracking-wider ">Partilhar este mini curso</p>
+                        <div className="flex flex-wrap gap-16">
+                            {socialLinks.map((link) => (
+                                <Link key={link.name} href="#" className="no-underline">
+                                    <Button
+                                        appearance="link"
+                                        variant="primary"
+                                        hasIcon={!!link.icon}
+                                        leadingIcon={link.icon}
+                                        leadingIconHover={link.icon?.replace('agora-line-', 'agora-solid-')}
+                                        className="!flex !items-center !text-neutral-700 hover:!text-primary-700 font-medium !gap-8"
+                                    >
+                                        <div className="flex items-center gap-8">
+                                            {!link.icon && link.customIcon && (
+                                                <img src={link.customIcon} alt="" className="w-20 h-20 flex-shrink-0" />
+                                            )}
+                                            <span>{link.name}</span>
+                                        </div>
+                                    </Button>
+
+                                </Link>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </main>
