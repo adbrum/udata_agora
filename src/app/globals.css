@@ -7,6 +7,29 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-brand-blue-dark: #021C51;
+  --color-brand-blue-primary: #0C02CB;
+  --color-brand-blue-secondary: #050157;
+  --color-accent-light: #F7F7FF;
+}
+
+.bg-accent-light {
+  background-color: var(--color-accent-light) !important;
+}
+
+.text-brand-blue-primary {
+  color: var(--color-brand-blue-primary) !important;
+}
+
+.text-brand-blue-secondary {
+  color: var(--color-brand-blue-secondary) !important;
+}
+
+.text-brand-blue-dark {
+  color: var(--color-brand-blue-dark) !important;
+}
+
 /*HomePage*/
 .agora-card-highlight-newsletter .card-container .input-container {
   grid-template-columns: none;
@@ -16,6 +39,11 @@
 
 .agora-card-highlight-newsletter .card-container:before {
   background-color: unset;
+  pointer-events: none;
+}
+
+.agora-card-highlight-newsletter {
+  user-select: text !important;
 }
 
 .homepage .agora-card-highlight-newsletter .card-container:before {
