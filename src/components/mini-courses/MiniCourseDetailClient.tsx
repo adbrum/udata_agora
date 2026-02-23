@@ -197,7 +197,7 @@ export default function MiniCourseDetailClient() {
                                             <h4 className="font-bold text-neutral-900 group-hover:text-primary-700 transition-colors mb-8">
                                                 {course.title}
                                             </h4>
-                                            <p className="text-sm text-neutral-600 line-clamp-3 leading-relaxed">
+                                            <p className="text-sm text-brand-blue-secondary leading-relaxed">
                                                 {course.description}
                                             </p>
                                             {index < relatedCourses.length - 1 && (
@@ -211,7 +211,7 @@ export default function MiniCourseDetailClient() {
                     </div>
 
                     <div className="mt-64 pt-32 md:pl-64">
-                        <p className="text-sm text-neutral-600 mb-16 tracking-wider ">Partilhar este mini curso</p>
+                        <p className="text-sm text-brand-blue-secondary mb-16 tracking-wider ">Partilhar este mini curso</p>
                         <div className="flex flex-wrap gap-16">
                             {socialLinks.map((link) => (
                                 <Link key={link.name} href="#" className="no-underline">
