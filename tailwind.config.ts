@@ -11,6 +11,9 @@ const config = {
   theme: {
     ...AgoraTailwindConfig.theme,
     extend: {
+      colors: {
+        'accent-light': '#F7F7FF',
+      },
       fontFamily: {
         sans: ['var(--font-noto-sans)', 'sans-serif'],
       },

@@ -162,6 +162,9 @@ export const Header = () => {
           <NavigationLink appearance="link">
             <Link href="/pages/organizations">Organizações</Link>
           </NavigationLink>
+          <NavigationLink appearance="link">
+            <Link href="/pages/mini-courses">Mini cursos</Link>
+          </NavigationLink>
         </NavigationBar>
       </AgoraHeader>
     </header>

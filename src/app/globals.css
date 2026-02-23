@@ -14,20 +14,28 @@
   --color-accent-light: #F7F7FF;
 }
 
+.text-40 {
+  font-size: 40px;
+}
+
+.leading-60 {
+  line-height: 60px;
+}
+
 .bg-accent-light {
-  background-color: var(--color-accent-light) !important;
+  background-color: var(--color-accent-light);
 }
 
 .text-brand-blue-primary {
-  color: var(--color-brand-blue-primary) !important;
+  color: var(--color-brand-blue-primary);
 }
 
 .text-brand-blue-secondary {
-  color: var(--color-brand-blue-secondary) !important;
+  color: var(--color-brand-blue-secondary);
 }
 
 .text-brand-blue-dark {
-  color: var(--color-brand-blue-dark) !important;
+  color: var(--color-brand-blue-dark);
 }
 
 /*HomePage*/
@@ -137,4 +145,27 @@ body {
 .tab-panel-content>* {
   position: relative;
   z-index: 1;
+}
+
+
+/* Pagination*/
+.mini-courses-pagination button[aria-current="page"],
+.mini-courses-pagination .agora-pagination-item-active button,
+.mini-courses-pagination .active button {
+  background-color: #0C02CB !important;
+  border-color: #0C02CB !important;
+  color: white !important;
+}
+
+.mini-courses-pagination button[aria-current="page"]:hover,
+.mini-courses-pagination .agora-pagination-item-active button:hover,
+.mini-courses-pagination .active button:hover {
+  background-color: #0a01b0 !important;
+}
+
+.mini-course-card-wrapper .card-general,
+.mini-course-card-wrapper .card-general>div,
+.mini-course-card-wrapper .card-general [class*="agora-card"] {
+  background-color: var(--color-accent-light) !important;
+  border: none !important;
 }
