@@ -148,8 +148,7 @@ body {
 }
 
 
-/*Mini Cursos*/
-/* Custom Pagination for Mini Courses */
+/* Pagination*/
 .mini-courses-pagination button[aria-current="page"],
 .mini-courses-pagination .agora-pagination-item-active button,
 .mini-courses-pagination .active button {
@@ -162,4 +161,11 @@ body {
 .mini-courses-pagination .agora-pagination-item-active button:hover,
 .mini-courses-pagination .active button:hover {
   background-color: #0a01b0 !important;
+}
+
+.mini-course-card-wrapper .card-general,
+.mini-course-card-wrapper .card-general>div,
+.mini-course-card-wrapper .card-general [class*="agora-card"] {
+  background-color: var(--color-accent-light) !important;
+  border: none !important;
 }
