@@ -61,7 +61,7 @@
 }
 
 .homepage .agora-card-highlight-newsletter .card-container:before {
-  background-color: var(--color-mask-image);
+  background: linear-gradient(90deg, #021C51 0%, rgba(2, 28, 81, 0.64) 72%, rgba(2, 28, 81, 0.24) 100%);
 }
 
 /*Icon Container*/
@@ -76,10 +76,7 @@
 
 
 .bg-lines-image {
-  background-image: url("/Banner/banner-lines.svg") !important;
-  /*background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;*/
+  background-image: url("/Banner/banner-lines.svg");
 }
 
 
