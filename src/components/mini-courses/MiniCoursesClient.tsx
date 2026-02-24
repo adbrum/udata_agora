@@ -125,7 +125,7 @@ export default function MiniCoursesClient() {
           </div>
         </div>
 
-        <div className="bg-[#F7F7FF]">
+        <div className="bg-accent-light">
           <div className="container mx-auto">
             <div>
               <Feedback

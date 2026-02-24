@@ -20,7 +20,7 @@ export default function Home() {
             backgroundImage: 'url("/Banner/hero-bg.png")',
             backgroundRepeat: 'no-repeat',
             backgroundSize: 'cover',
-            backgroundPosition: 'top',
+            backgroundPosition: 'center right',
           }}
         >
           <div className="card-container">
@@ -87,9 +87,9 @@ export default function Home() {
               {/* Left: title + description */}
               <div className="flex flex-col gap-24">
                 <h2 className="text-white">
-                  <span className="text-2xl-bold">Uma comunidade</span>
+                  <span className="text-xl-bold">Uma comunidade</span>
                   <br />
-                  <span className="text-2xl-light">dinâmica e empenhada</span>
+                  <span className="text-2xl-light">Dinâmica e empenhada</span>
                 </h2>
                 <p className="text-m-regular text-white opacity-80 max-w-sm">
                   Partilhe a utilização e a troca de dados entre produtores e
@@ -99,7 +99,7 @@ export default function Home() {
 
               {/* Right: 2x2 stats grid */}
               <div className="grid grid-cols-2 gap-32">
-                <div className="flex flex-col gap-16 border-t border-white/20 pt-24">
+                <div className="flex flex-col gap-16 pt-24">
                   <div className="icon-container bg-transparent text-white border border-[#C7D9FF]">
                     <Icon name="agora-line-layers-menu" aria-hidden="true" className="w-8 h-8" />
                   </div>
@@ -113,7 +113,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-16 border-t border-white/20 pt-24">
+                <div className="flex flex-col gap-16 pt-24">
                   <div className="icon-container bg-transparent text-white border border-[#FFCCCF]">
                     <Icon name="agora-line-document" aria-hidden="true" className="w-8 h-8" />
                   </div>
@@ -127,7 +127,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-16 border-t border-white/20 pt-24">
+                <div className="flex flex-col gap-16 pt-24">
                   <div className="icon-container bg-transparent text-white border border-[#B3EEC9]">
                     <Icon name="agora-line-recycle" aria-hidden="true" className="w-8 h-8" />
                   </div>
@@ -141,7 +141,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-16 border-t border-white/20 pt-24">
+                <div className="flex flex-col gap-16 pt-24">
                   <div className="icon-container bg-transparent text-white border border-[#FFE4A3]">
                     <Icon name="agora-line-user-group" aria-hidden="true" className="w-8 h-8" />
                   </div>

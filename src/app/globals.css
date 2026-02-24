@@ -1,48 +1,45 @@
 @import url("@ama-pt/agora-design-system/artifacts/dist/tailwind.css");
 @import url("@ama-pt/agora-design-system/artifacts/dist/style.css");
 
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
+  /* Brand Colors */
   --color-brand-blue-dark: #021C51;
+  --color-brand-blue-dark-rgb: 2, 28, 81;
   --color-brand-blue-primary: #0C02CB;
+  --color-brand-blue-primary-rgb: 12, 2, 203;
   --color-brand-blue-secondary: #050157;
+  --color-brand-blue-secondary-rgb: 5, 1, 87;
+
+  /* Accent/Neutral Colors */
   --color-accent-light: #F7F7FF;
+  --color-accent-light-rgb: 247, 247, 255;
+  --color-gray-medium: #64718B;
+
+  /* Sizes & Spacing */
+  --size-32: 32px;
+  --size-64: 64px;
 }
 
-.text-40 {
-  font-size: 40px;
+/* Base Styles */
+html,
+body {
+  height: 100%;
 }
 
-.leading-60 {
-  line-height: 60px;
+/* Color & Background Utilities */
+.bg-lines-image {
+  background-image: url("/Banner/banner-lines.svg");
 }
 
-.bg-accent-light {
-  background-color: var(--color-accent-light);
-}
+/* Component Specific Styles */
 
-.text-brand-blue-primary {
-  color: var(--color-brand-blue-primary);
-}
-
-.text-brand-blue-secondary {
-  color: var(--color-brand-blue-secondary);
-}
-
-.text-brand-blue-dark {
-  color: var(--color-brand-blue-dark);
-}
-
-/*HomePage*/
-.agora-card-highlight-newsletter .card-container .input-container {
-  grid-template-columns: none;
-  position: relative;
-  z-index: 1;
+/* HomePage - Newsletter */
+.agora-card-highlight-newsletter {
+  user-select: text !important;
 }
 
 .agora-card-highlight-newsletter .card-container {
@@ -56,17 +53,20 @@
   pointer-events: none;
 }
 
-.agora-card-highlight-newsletter {
-  user-select: text !important;
+.agora-card-highlight-newsletter .card-container .input-container {
+  grid-template-columns: none;
+  position: relative;
+  z-index: 1;
 }
 
 .homepage .agora-card-highlight-newsletter .card-container:before {
-  background-color: var(--color-mask-image);
+  background: linear-gradient(90deg, var(--color-brand-blue-dark) 0%, rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%, rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%);
 }
 
-/*Icon Container*/
+/* Icon Container */
 .icon-container {
-  border-radius: 8px;
+  border-radius: 50%;
+  border-width: 2px;
   padding: 16px;
   width: fit-content;
   display: flex;
@@ -74,104 +74,16 @@
   justify-content: center;
 }
 
-
-.bg-lines-image {
-  background-image: url("/Banner/banner-lines.svg") !important;
-  /*background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;*/
-}
-
-
-/*Footer*/
+/* Footer */
 footer img {
   height: 30px;
 }
 
-/* Fix for Header expansion direction */
-html,
-body {
-  height: 100%;
+/* Tabs - Overrides */
+.agora-tabs.desktop.vertically .tab-panel.current-neutral {
+  background-color: var(--color-secondary-50);
 }
 
-/*Grid 5 elements*/
-.grid-cols-5 {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-
-/* CardGeneral Modern Customizations */
-.filters .dataset-card-modern img {
-  max-height: 80px !important;
-  width: auto !important;
-  object-fit: scale-down !important;
-}
-
-/*Borders*/
-.border-\[\#E1E4EA\] {
-  border-color: #E1E4EA;
-}
-
-/*Paddings*/
-.md\:pb-24 {
-  padding-bottom: 24px;
-}
-
-.md\:pt-24 {
-  padding-top: 24px;
-}
-
-/*Margins*/
-.mt-24 {
-  margin-top: 24px;
-}
-
-.my-24 {
-  margin-top: 24px;
-  margin-bottom: 24px;
-}
-
-.mb-24 {
-  margin-bottom: 24px;
-}
-
-/*Tabs*/
-.tab-panel-content {
-  position: relative;
-}
-
-.tab-panel-content::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  left: -100%;
-  right: -100%;
-  background-color: var(--color-neutral-100);
-}
-
-.tab-panel-content>* {
-  position: relative;
-  z-index: 1;
-}
-
-
-/* Pagination*/
-.mini-courses-pagination button[aria-current="page"],
-.mini-courses-pagination .agora-pagination-item-active button,
-.mini-courses-pagination .active button {
-  background-color: #0C02CB !important;
-  border-color: #0C02CB !important;
-  color: white !important;
-}
-
-.mini-courses-pagination button[aria-current="page"]:hover,
-.mini-courses-pagination .agora-pagination-item-active button:hover,
-.mini-courses-pagination .active button:hover {
-  background-color: #0a01b0 !important;
-}
-
-.mini-course-card-wrapper .card-general,
-.mini-course-card-wrapper .card-general>div,
-.mini-course-card-wrapper .card-general [class*="agora-card"] {
-  background-color: var(--color-accent-light) !important;
-  border: none !important;
+.agora-tabs.desktop.vertically .tab-list .tab-list-item.active.current-neutral {
+  background-color: var(--color-secondary-50);
 }

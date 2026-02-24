@@ -1,113 +1,148 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
+import React, { useState } from 'react';
+import NextImage from 'next/image';
 import {
-    Button,
-    InputText,
-    InputPassword,
-    Checkbox,
-    Icon,
+  Button,
+  RadioButton,
+  Checkbox,
+  Icon,
+  Breadcrumb,
+  Tabs,
+  Tab,
+  TabHeader,
+  TabBody,
 } from '@ama-pt/agora-design-system';
 
 export default function LoginClient() {
-    return (
-        <main className="flex-grow bg-white">
-            <div className="container mx-auto px-16 py-64 flex flex-col items-center">
-                <div className="w-full max-w-[560px]">
-                    {/* Title and Intro */}
-                    <h1 className="text-3xl-bold text-[#002D72] mb-32 text-left" id="login-title">
-                        Iniciar Sessão
-                    </h1>
-                    <p className="text-sm mb-32">
-                        Os campos marcados com um asterisco ( * ) são obrigatórios.
-                    </p>
+  const [isHovered, setIsHovered] = useState(false);
+  const breadcrumbItems = [
+    { label: 'Home', url: '/' },
+    { label: 'Autenticação', url: '#' },
+  ];
 
-                    {/* Login Form */}
-                    <form className="flex flex-col gap-24" onSubmit={(e) => e.preventDefault()}>
-                        <InputText
-                            label="Endereço de email *"
-                            placeholder="Introduza aqui o texto"
-                            id="email"
-                            name="email"
-                            type="email"
-                            className="w-full"
+  return (
+    <main className="flex-grow bg-white min-h-screen">
+      <div className="container mx-auto px-16 py-32 max-w-7xl">
+        {/* Breadcrumb */}
+        <div>
+          <Breadcrumb items={breadcrumbItems} />
+        </div>
+
+        {/* Title Section */}
+        <div>
+          <h1 className="text-32 font-bold text-brand-blue-dark mt-64 mb-16">
+            Autenticação
+          </h1>
+          <p className="text-lg text-gray-medium max-w-2xl mb-32">
+            Escolha um meio de autenticação para se autenticar no portal e ter acesso aos vários <br />
+            serviços e funcionalidades online.
+          </p>
+        </div>
+
+        {/* Main Content with Vertical Tabs */}
+        <Tabs vertically className="mt-24">
+          <Tab>
+            <TabHeader>Chave Móvel Digital (CMD)</TabHeader>
+            <TabBody>
+              <div className="p-64 rounded-8">
+                <div className="flex flex-col gap-40">
+                  <div className="grid mt-32 gap-32 xs:grid-cols-4 md:grid-cols-8 xl:grid-cols-12">
+                    <div className="xs:col-span-4 md:col-span-5 xl:col-span-7">
+                      <div className="bg-[#E9EBFF] p-12 rounded-8 w-fit">
+                        <Icon name="agora-line-user" className="w-24 h-24 text-brand-blue-primary" />
+                      </div>
+                      <div>
+                        <h2 className="text-24 font-bold text-brand-blue-dark mb-8">Para se autenticar</h2>
+                        <p className="">
+                          Precisa do código PIN da sua CMD e do telemóvel que lhe está associado.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="xs:col-span-4 md:col-span-3 xl:col-span-5 flex items-center justify-start md:justify-end">
+                      <div className="w-[278px] md:flex md:justify-end xl:flex xl:justify-end">
+                        <NextImage
+                          src="/Logos/autenticacao_gov.svg"
+                          alt="Autenticação.gov"
+                          width={240}
+                          height={48}
+                          className="h-48 w-auto"
                         />
-                        <InputPassword
-                            label="Senha *"
-                            placeholder="Introduza aqui o texto"
-                            id="password"
-                            name="password"
-                            className="w-full"
-                        />
+                      </div>
 
-                        <div className="flex items-center">
-                            <Checkbox label="Lembre de mim" id="remember" name="remember" />
-                        </div>
+                    </div>
+                  </div>
 
-                        <div className="flex justify-center mt-32">
-                            <Button variant="primary" type="submit" className="min-w-[200px] h-11 px-48" id="submit-login">
-                                Iniciar sessão
-                            </Button>
-                        </div>
-                    </form>
+                  <div className="w-full h-[2px] bg-neutral-200 mt-32 mb-16"></div>
 
-                    {/* Links Section */}
-                    <div className="flex flex-col items-center gap-16 mt-32 text-sm">
-                        <div className="flex flex-wrap justify-center items-center gap-8">
-                            <span className="">Esqueceu a senha?</span>
-                            <Button appearance="link">
-                                Recuperar a senha
-                            </Button>
-                        </div>
-                        <div className="flex flex-wrap justify-center items-center gap-8 text-center">
-                            <span className="">Não recebeu as instruções de confirmação?</span>
-                            <Button appearance="link">
-                                Reenvie as instruções
-                            </Button>
-                        </div>
+                  <div className="flex flex-col gap-24">
+                    <div className="flex flex-col gap-16">
+                      <RadioButton
+                        label="Cidadão nacional"
+                        id="nacional"
+                        name="citizen-type"
+                        defaultChecked
+                        className="text-lg"
+                      />
+                      <RadioButton
+                        label="Cidadão estrangeiro"
+                        id="estrangeiro"
+                        name="citizen-type"
+                        className="text-lg"
+                      />
                     </div>
 
-                    {/* Separator */}
-                    <div className="my-32 border-t border-neutral-200 w-full" />
-
-                    {/* Chave Móvel Digital Section */}
-                    <div className="flex flex-col items-center gap-16 w-full">
-                        <Button
-                            appearance="outline"
-                            variant="primary"
-                            hasIcon={true}
-                            leadingIcon="agora-line-user"
-                            leadingIconHover="agora-solid-user"
-                            className="w-full h-11"
-                            id="login-cmd"
-                        >
-                            Autenticação Chave Móvel Digital
-                        </Button>
-                        <Link href="#" className="text-sm text-primary-600 hover:underline">
-                            O que é a Chave Móvel Digital?
-                        </Link>
+                    <div className="mt-8">
+                      <Checkbox
+                        label="Declaro que li e aceito os termos e condições para o tratamento dos meus dados pessoais no acesso e utilização da Área Reservada do dadosgov.pt"
+                        id="terms"
+                        className="text-sm text-neutral-700 leading-relaxed"
+                      />
                     </div>
+                  </div>
 
-                    {/* Separator */}
-                    <div className="my-32 border-t border-neutral-200 w-full" />
-
-                    {/* Create Account Section */}
-                    <div className="flex flex-col items-center gap-16">
-                        <h2 className="text-xl-bold text-[#002D72]">Não tem uma conta?</h2>
-                        <Link href="/pages/register">
-                            <Button
-                                appearance="outline"
-                                variant="primary"
-                                className="min-w-[200px] h-11 px-48"
-                                id="create-account"
-                            >
-                                Criar uma conta
-                            </Button>
-                        </Link>
-                    </div>
+                  <div className="mt-16">
+                    <Button
+                      variant="primary"
+                      className="px-48 h-56 rounded-8 text-lg font-bold shadow-md hover:shadow-lg transition-all"
+                      hasIcon={true}
+                      trailingIcon={isHovered ? "agora-solid-arrow-right-circle" : "agora-line-arrow-right-circle"}
+                      onMouseEnter={() => setIsHovered(true)}
+                      onMouseLeave={() => setIsHovered(false)}
+                    >
+                      Autenticar com CMD
+                    </Button>
+                  </div>
                 </div>
-            </div>
-        </main>
-    );
+              </div>
+            </TabBody>
+          </Tab>
+          <Tab>
+            <TabHeader>Autenticação europeia (eIDAS)</TabHeader>
+            <TabBody>
+              <div className=" p-64 rounded-8 flex flex-col items-center justify-center text-center">
+                <Icon name="agora-line-globe" className="w-64 h-64 text-brand-blue-primary mb-24" />
+                <h2 className="text-2xl font-bold text-brand-blue-dark mb-16">Autenticação europeia (eIDAS)</h2>
+                <p className="text-neutral-600 max-w-md">
+                  Utilize os seus meios de autenticação de outros estados-membros da União Europeia.
+                </p>
+              </div>
+            </TabBody>
+          </Tab>
+          <Tab>
+            <TabHeader>Iniciar sessão</TabHeader>
+            <TabBody>
+              <div className="p-64 rounded-8 flex flex-col items-center justify-center text-center">
+                <Icon name="agora-line-lock" className="w-64 h-64 text-brand-blue-primary mb-24" />
+                <h2 className="text-2xl font-bold text-brand-blue-dark mb-16">Iniciar sessão</h2>
+                <p className="text-neutral-600 max-w-md">
+                  Utilize as suas credenciais do portal dados.gov para iniciar sessão.
+                </p>
+              </div>
+            </TabBody>
+          </Tab>
+        </Tabs>
+      </div>
+    </main>
+  );
 }
