@@ -122,7 +122,7 @@ export default function MiniCourseCompletionClient({ slug }: Props) {
                     src="/minicourses/cup.png"
                     alt="Troféu de conclusão"
                     className="max-h-[320px] w-auto drop-shadow-2xl"
-                    style={{ filter: 'drop-shadow(0 20px 40px rgba(12,2,203,0.15))' }}
+                    style={{ filter: 'drop-shadow(0 20px 40px rgba(var(--color-brand-blue-primary-rgb), 0.15))' }}
                   />
                 </div>
               </div>

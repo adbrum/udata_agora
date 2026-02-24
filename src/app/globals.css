@@ -9,9 +9,13 @@
 
 :root {
   --color-brand-blue-dark: #021C51;
+  --color-brand-blue-dark-rgb: 2, 28, 81;
   --color-brand-blue-primary: #0C02CB;
+  --color-brand-blue-primary-rgb: 12, 2, 203;
   --color-brand-blue-secondary: #050157;
+  --color-brand-blue-secondary-rgb: 5, 1, 87;
   --color-accent-light: #F7F7FF;
+  --color-accent-light-rgb: 247, 247, 255;
 }
 
 .text-40 {
@@ -61,12 +65,13 @@
 }
 
 .homepage .agora-card-highlight-newsletter .card-container:before {
-  background: linear-gradient(90deg, #021C51 0%, rgba(2, 28, 81, 0.64) 72%, rgba(2, 28, 81, 0.24) 100%);
+  background: linear-gradient(90deg, var(--color-brand-blue-dark) 0%, rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%, rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%);
 }
 
 /*Icon Container*/
 .icon-container {
-  border-radius: 8px;
+  border-radius: 50%;
+  border-width: 2px;
   padding: 16px;
   width: fit-content;
   display: flex;
@@ -155,8 +160,8 @@ body {
 .mini-courses-pagination button[aria-current="page"],
 .mini-courses-pagination .agora-pagination-item-active button,
 .mini-courses-pagination .active button {
-  background-color: #0C02CB !important;
-  border-color: #0C02CB !important;
+  background-color: var(--color-brand-blue-primary) !important;
+  border-color: var(--color-brand-blue-primary) !important;
   color: white !important;
 }
 
