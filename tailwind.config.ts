@@ -13,6 +13,21 @@ const config = {
     extend: {
       colors: {
         'accent-light': '#F7F7FF',
+        'brand-blue-dark': '#021C51',
+        'brand-blue-primary': '#0C02CB',
+        'brand-blue-secondary': '#050157',
+        'gray-medium': '#64718B',
+      },
+      fontSize: {
+        '24': '24px',
+        '32': '32px',
+        '40': '40px',
+      },
+      spacing: {
+        '32': '32px',
+        '64': '64px',
+        '24': '24px',
+        '40': '40px',
       },
       fontFamily: {
         sans: ['var(--font-noto-sans)', 'sans-serif'],
