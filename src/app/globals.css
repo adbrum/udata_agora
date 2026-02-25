@@ -129,3 +129,46 @@ footer img {
 .stats-icon-wrapper [class*="agora-icon"] {
   fill: currentColor;
 }
+
+.dataset-card-bordered .subtitle-text {
+  font-weight: 400 !important;
+  color: var(--color-neutral-700) !important;
+  font-size: 14px !important;
+}
+
+.dataset-card-bordered .title-text {
+  font-weight: 700 !important;
+  color: var(--color-primary-900) !important;
+  font-size: 18px !important;
+  margin-top: 8px !important;
+}
+
+.dataset-card-bordered [class*="agora-pill"] {
+  background-color: var(--color-primary-600) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.dataset-card-bordered .agora-card-general,
+.dataset-card-bordered .agora-card-general>div {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.dataset-card-bordered .agora-card-content,
+.dataset-card-bordered .description-text {
+  flex-grow: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.dataset-card-bordered .description-text>div {
+  flex-grow: 1 !important;
+}
+
+
+/*Card General*/
+.card-general {
+  height: 100%;
+}

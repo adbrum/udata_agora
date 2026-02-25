@@ -87,7 +87,7 @@ export default function Home() {
               {/* Left: title + description */}
               <div className="xl:col-span-5 flex flex-col gap-24">
                 <h2 className="text-white">
-                  <span className="xs:text-l-bold md:text-l-bold xl:text-l-bold">Uma comunidade</span>
+                  <span className="text-l-bold">Uma comunidade</span>
                   <br></br>
                   <span className="xs:text-xl-light md:text-2xl-light xl:text-2xl-light whitespace-nowrap">Dinâmica e empenhada</span>
                 </h2>
@@ -166,14 +166,12 @@ export default function Home() {
           </div>
         </div>
         {/* Featured Datasets */}
-        <div className="xl:py-64 bg-neutral-50">
+        <div className="xl:py-64 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl-bold text-primary-900 ">
-              Conjunto de Dados em Destaque
+            <h2 className="text-xl-bold mb-32 text-primary-900 ">
+              Conjunto de dados
             </h2>
-            <p className="mt-16 mb-32 max-w-3xl">
-              Conjuntos de dados mais populares e atualizados.
-            </p>
+
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {[
                 {
@@ -198,36 +196,51 @@ export default function Home() {
                   views: '52 341',
                 },
               ].map((item, i) => (
-                <CardGeneral
-                  key={i}
-                  variant="white"
-                  pillText={item.time}
-                  subtitleText={item.org}
-                  titleText={item.title}
-                  descriptionText={
-                    (
-                      <div className="flex flex-col gap-16">
-                        <span>{item.desc}</span>
-                        <div className="flex items-center gap-8 text-neutral-600">
-                          <Icon
-                            name="agora-line-eye"
-                            className="w-20 h-20"
-                            aria-hidden="true"
-                          />
-                          <span>{item.views}</span>
+                <div key={i} className="dataset-card-bordered border-2 border-[#1A65FA] rounded-8 overflow-hidden h-full">
+                  <CardGeneral
+                    variant="white"
+                    pillText={item.time}
+                    subtitleText={item.org}
+                    titleText={item.title}
+                    descriptionText={
+                      (
+                        <div className="flex flex-col gap-16 grow">
+                          <div className="flex items-center gap-8 text-neutral-900 mt-16 mb-8">
+                            <div className="w-8 h-8 rounded-full bg-primary-600" aria-hidden="true" />
+                            <span className="text-s-regular">{item.views} visualizações</span>
+                          </div>
+                          <span className="text-m-regular text-neutral-800 line-clamp-3">
+                            {item.desc}
+                          </span>
+                          <div className="flex items-center gap-8 text-primary-600 mt-auto">
+                            <Icon
+                              name="agora-line-arrow-right-circle"
+                              className="w-32 h-32"
+                              aria-hidden="true"
+                            />
+                          </div>
                         </div>
-                      </div>
-                    ) as unknown as string
-                  }
-                  isBlockedLink={true}
-                  anchor={{ href: '#' }}
-                />
+                      ) as unknown as string
+                    }
+                    isBlockedLink={true}
+                    anchor={{ href: '#' }}
+                  />
+                </div>
               ))}
             </div>
             <div className="mt-64">
-              <Button variant="primary" appearance="outline">
-                Ver mais
-              </Button>
+              <Link href="/pages/datasets">
+                <Button
+                  variant="primary"
+                  appearance="link"
+                  hasIcon={true}
+                  trailingIcon="agora-line-arrow-right-circle"
+                  trailingIconHover="agora-solid-arrow-right-circle"
+                  className="p-0! h-auto"
+                >
+                  <span>Ver todos os conjuntos de dados</span>
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
