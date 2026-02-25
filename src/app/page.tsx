@@ -87,9 +87,9 @@ export default function Home() {
               {/* Left: title + description */}
               <div className="xl:col-span-5 flex flex-col gap-24">
                 <h2 className="text-white">
-                  <span className="text-m-bold">Uma comunidade</span>
-                  <br />
-                  <span className="text-[48px] leading-tight font-light">Dinâmica e empenhada</span>
+                  <span className="xs:text-l-bold md:text-l-bold xl:text-l-bold">Uma comunidade</span>
+                  <br></br>
+                  <span className="xs:text-xl-light md:text-2xl-light xl:text-2xl-light whitespace-nowrap">Dinâmica e empenhada</span>
                 </h2>
                 <p className="text-m-regular max-w-sm">
                   Partilhe a utilização e a troca de dados entre produtores e
@@ -108,10 +108,10 @@ export default function Home() {
                       </div>
                       <div className="flex flex-col">
                         <div className="flex items-baseline gap-8">
-                          <span className="text-3xl-bold text-white leading-tight">47 825</span>
-                          <span className="text-m-regular text-white opacity-70">mil</span>
+                          <span className="text-2xl-semibold">47 825</span>
+                          <span className="text-l-bold ">mil</span>
                         </div>
-                        <span className="text-m-regular text-white opacity-70">Conjuntos de Dados</span>
+                        <span>Conjuntos de Dados</span>
                       </div>
                     </div>
 
@@ -122,10 +122,10 @@ export default function Home() {
                       </div>
                       <div className="flex flex-col">
                         <div className="flex items-baseline gap-8">
-                          <span className="text-3xl-bold text-white leading-tight">2 456</span>
-                          <span className="text-m-regular text-white opacity-70">mil</span>
+                          <span className="text-2xl-semibold">2 456</span>
+                          <span className="text-l-bold ">mil</span>
                         </div>
-                        <span className="text-m-regular text-white opacity-70">Organizações</span>
+                        <span>Organizações</span>
                       </div>
                     </div>
                   </div>
@@ -139,10 +139,10 @@ export default function Home() {
                       </div>
                       <div className="flex flex-col">
                         <div className="flex items-baseline gap-8">
-                          <span className="text-3xl-bold text-white leading-tight">8 234</span>
-                          <span className="text-m-regular text-white opacity-70">mil</span>
+                          <span className="text-2xl-semibold">8 234</span>
+                          <span className="text-l-bold ">mil</span>
                         </div>
-                        <span className="text-m-regular text-white opacity-70">Reutilizações</span>
+                        <span>Reutilizações</span>
                       </div>
                     </div>
 
@@ -153,10 +153,10 @@ export default function Home() {
                       </div>
                       <div className="flex flex-col">
                         <div className="flex items-baseline gap-8">
-                          <span className="text-3xl-bold text-white leading-tight">+152</span>
-                          <span className="text-m-regular text-white opacity-70">milhões</span>
+                          <span className="text-2xl-semibold">+152</span>
+                          <span className="text-l-bold">milhões</span>
                         </div>
-                        <span className="text-m-regular text-white opacity-70">Utilizadores</span>
+                        <span>Utilizadores</span>
                       </div>
                     </div>
                   </div>
