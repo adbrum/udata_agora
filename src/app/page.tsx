@@ -27,16 +27,16 @@ export default function Home() {
             <div className="card-content">
               <div className="title">
                 <h1 className="container mx-auto text-white flex flex-col items-start leading-tight">
-                  <span className="xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold">
+                  <span className="xs:text-xl-bold md:text-2xl-bold xl:text-2xl-bold">
                     Plataforma aberta
                   </span>
-                  <span className="xl:text-3xl-regular md:text-3xl-regular xs:text-2xl-regular font-light">
+                  <span className="xs:text-xl-light md:text-2xl-light xl:text-2xl-light">
                     de dados públicos portugueses
                   </span>
                 </h1>
               </div>
               <div className="subtitle">
-                <div className="container mx-auto text-m-regular text-left">
+                <div className="container mx-auto text-left">
                   Aceda, explore e reutilize dados públicos de forma transparente e acessível. Milhares de
                   <br />
                   conjuntos de dados ao seu dispor.
@@ -56,7 +56,7 @@ export default function Home() {
                       searchActionAltText="Pesquisar"
                       darkMode={true}
                     />
-                    <div className="mt-8 text-[14px] text-white">
+                    <div className="mt-8 text-s-regular">
                       Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
                     </div>
                     <div className="mt-64">
