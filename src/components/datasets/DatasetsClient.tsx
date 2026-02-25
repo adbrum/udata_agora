@@ -27,8 +27,10 @@ export default function DatasetsClient({
       <main className="flex-grow bg-white">
         <PageBanner
           title="Conjunto de dados"
+          backgroundImageUrl="/Banner/hero-bg.png"
+          backgroundPosition="center right"
           breadcrumbItems={[
-            { label: 'Bem-vindo', url: '/' },
+            { label: 'Home', url: '/' },
             { label: 'Conjunto de dados', url: '/pages/datasets' }
           ]}
           subtitle={
@@ -39,8 +41,7 @@ export default function DatasetsClient({
           }
         >
           <InputSearchBar
-            label="Pesquisar conjuntos de dados"
-            hideLabel={true}
+            label="O que procura no Portal?"
             placeholder="Pesquisar datasets, organizações, temas..."
             id="datasets-search"
             hasVoiceActionButton={true}
@@ -48,6 +49,9 @@ export default function DatasetsClient({
             searchActionAltText="Pesquisar"
             darkMode={true}
           />
+          <div className="mt-8 text-[14px] text-white">
+            Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
+          </div>
           <div className="mt-64">
             <Button
               variant="primary"
@@ -112,7 +116,7 @@ export default function DatasetsClient({
                             isCardHorizontal={true}
                             variant="white"
                             image={{
-                              src: dataset.organization?.logo || '/Logos/logo.png',
+                              src: dataset.organization?.logo || '/images/placeholders/organization.png',
                               alt: dataset.organization?.name || 'Organização sem logo',
                             }}
                             subtitleText={dataset.organization?.name || 'Organização Desconhecida'}
@@ -218,3 +222,4 @@ export default function DatasetsClient({
 
 
 }
+

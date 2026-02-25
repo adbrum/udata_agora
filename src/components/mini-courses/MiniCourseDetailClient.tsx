@@ -60,7 +60,7 @@ export default function MiniCourseDetailClient({ slug }: Props) {
           }
           variant="light"
           breadcrumbItems={[
-            { label: 'Bem-vindo', url: '/' },
+            { label: 'Home', url: '/' },
             { label: 'Minicursos', url: '/pages/mini-courses' },
             { label: 'Minicurso sobre a introdução aos dados abertos', url: '#' }
           ]}

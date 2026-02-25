@@ -46,7 +46,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
             <Breadcrumb
               darkMode={false}
               items={[
-                { label: 'Bem-vindo', url: '/' },
+                { label: 'Home', url: '/' },
                 { label: 'Reutilizações', url: '/pages/reuses' },
                 { label: reuse.title, url: `/pages/reuses/${reuse.slug || reuse.id}` }
               ]}

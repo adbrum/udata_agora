@@ -30,14 +30,8 @@ body {
   height: 100%;
 }
 
-/* Color & Background Utilities */
-.bg-lines-image {
-  background-image: url("/Banner/banner-lines.svg");
-}
 
-/* Component Specific Styles */
-
-/* HomePage - Newsletter */
+/* Newsletter */
 .agora-card-highlight-newsletter {
   user-select: text !important;
 }
@@ -59,7 +53,7 @@ body {
   z-index: 1;
 }
 
-.homepage .agora-card-highlight-newsletter .card-container:before {
+.agora-card-highlight-newsletter .card-container:before {
   background: linear-gradient(90deg, var(--color-brand-blue-dark) 0%, rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%, rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%);
 }
 

@@ -9,6 +9,8 @@ interface PageBannerProps {
   subtitle?: React.ReactNode;
   children?: React.ReactNode;
   variant?: 'dark' | 'light';
+  backgroundImageUrl?: string;
+  backgroundPosition?: string;
   image?: {
     src: string;
     alt: string;
@@ -22,65 +24,78 @@ const PageBanner: React.FC<PageBannerProps> = ({
   subtitle,
   children,
   variant = 'dark',
+  backgroundImageUrl,
+  backgroundPosition = 'center',
   image,
 }) => {
   const isLight = variant === 'light';
 
   return (
     <div
-      className={`agora-card-highlight-newsletter ${isLight ? 'bg-accent-light' : 'bg-primary-900 bg-lines-image'}`}
+      className={`agora-card-highlight-newsletter ${isLight ? 'bg-accent-light' : 'bg-primary-900'}`}
       style={isLight ? {} : {
-        backgroundImage: 'url("/Banner/banner-lines.svg")',
+        backgroundImage: `url("${backgroundImageUrl}")`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: backgroundPosition,
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="card-container relative z-10 pt-32 pb-48 md:py-64">
-        <div className="container mx-auto px-4">
+      <div className="card-container">
+        {/* Breadcrumbs Section */}
+        <div className="container mx-auto px-4 pt-32 relative z-10">
           <Breadcrumb
             darkMode={!isLight}
             items={breadcrumbItems}
           />
-          <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
-            {/* Left Column: Texts */}
-            <div className="xl:col-span-6 xl:block md:pt-64">
-              <div className="title">
-                <h1 className={`xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold ${typeof title === 'string' ? (isLight ? 'text-primary-900' : 'text-white') : ''}`}>
-                  {title}
-                </h1>
-              </div>
-              {subtitle && (
-                <div className="subtitle mt-16">
-                  {/* Handle subtitle text color for light variant if it's a string */}
-                  {typeof subtitle === 'string' ? (
-                    <p className={`${isLight ? 'text-neutral-700' : 'text-primary-100'} text-lg leading-relaxed`}>{subtitle}</p>
-                  ) : (
-                    subtitle
-                  )}
-                </div>
+        </div>
+
+        {/* Content Section (Title & Subtitle) */}
+        <div className="card-content relative z-10">
+          <div className="title">
+            <h1 className={`container mx-auto flex flex-col items-start leading-tight ${typeof title === 'string' ? (isLight ? 'text-primary-900' : 'text-white') : ''}`}>
+              {typeof title === 'string' ? (
+                <span className="xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold">{title}</span>
+              ) : (
+                title
               )}
-              {children && (
-                <div className={`w-full mt-32 ${isLight ? 'text-neutral-900' : 'text-white'}`}>
+            </h1>
+          </div>
+          {subtitle && (
+            <div className="subtitle">
+              <div className="container mx-auto text-m-regular text-left">
+                {typeof subtitle === 'string' ? (
+                  <p className={`${isLight ? 'text-neutral-700' : 'text-primary-100'} text-lg leading-relaxed`}>{subtitle}</p>
+                ) : (
+                  subtitle
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Search/Children Section */}
+        {(children || image) && (
+          <div className="input-container">
+            <div className="email-bar">
+              <div className="container mx-auto grid xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-2 pb-64 px-4">
+                <div className={`relative ${isLight ? 'text-neutral-900' : 'text-white'}`}>
                   {children}
                 </div>
-              )}
-            </div>
-
-            {/* Right Column: Flexible content (Image) */}
-            <div className="xl:col-span-6 md:pt-64 flex justify-end">
-              {image && (
-                <div className="image-container mb-16 last:mb-0">
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    className={`max-w-full h-auto object-contain drop-shadow-xl ${image.className || ''}`}
-                  />
-                </div>
-              )}
+                {image && (
+                  <div className="flex justify-end items-center">
+                    <div className="image-container mb-16 last:mb-0">
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        className={`max-w-full h-auto object-contain drop-shadow-xl ${image.className || ''}`}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
