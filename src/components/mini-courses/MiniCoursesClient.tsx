@@ -19,19 +19,19 @@ export default function MiniCoursesClient() {
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 ">
       <main className="flex-grow">
-        <div className="bg-[#F8F9FC]">
+        <div className="bg-[#F8F9FC] pb-[60px]">
           <div className="container mx-auto px-4 lg:px-64">
             <Breadcrumb
               items={[
                 { label: 'Início', url: '/' },
-                { label: 'Mini Cursos', url: '/pages/mini-cursos' }
+                { label: 'Minicursos', url: '/pages/mini-cursos' }
               ]}
               className="mb-64"
             />
             <div className="flex">
               <div className="w-1/2 pr-32">
                 <h1 className="text-[40px] leading-[48px] font-bold text-brand-blue-primary mb-32">
-                  Mini Cursos
+                  Minicursos
                 </h1>
 
                 <div className="text-[18px] leading-[28px] space-y-16 w-[94%]">
@@ -45,7 +45,7 @@ export default function MiniCoursesClient() {
                 </div>
               </div>
               <div className="img-container">
-                <img src="/minicourses/mini_cursos.svg" alt="Mini Cursos" className="w-[597px] h-[390px]" />
+                <img src="/minicourses/mini_cursos.svg" alt="Minicursos" className="w-[597px] h-[390px]" />
               </div>
             </div>
           </div>
@@ -68,11 +68,11 @@ export default function MiniCoursesClient() {
                   <div className="container px-4 lg:px-64">
                     <div className="max-w-[700px]">
                       <h2 className="text-[18px] font-bold text-[#000066] mb-16">
-                        Que mini curso procura?
+                        Que minicurso procura?
                       </h2>
                       <InputSearch
                         id="courses-search"
-                        label="Pesquisar mini cursos"
+                        label="Pesquisar minicursos"
                         hideLabel
                         placeholder="Pesquise pelo nome da formação, área técnica ou perfil"
                       />
@@ -132,8 +132,8 @@ export default function MiniCoursesClient() {
                 title="O conteúdo da página foi útil?"
                 subtitle="Avalie a sua experiência nesta página e deixe-nos um comentário."
                 ratingButtons={{
-                  likeButton: { children: 'Yes', appearance: 'outline', variant: 'success' },
-                  dislikeButton: { children: 'No', appearance: 'outline', variant: 'danger' }
+                  likeButton: { children: 'Sim', appearance: 'outline', variant: 'success' },
+                  dislikeButton: { children: 'Não', appearance: 'outline', variant: 'danger' }
                 }}
               />
             </div>
@@ -146,8 +146,8 @@ export default function MiniCoursesClient() {
 
 const miniCourses = [
   {
-    title: "Mini Curso sobre a introdução aos dados abertos",
-    description: "Este mini curso apresenta as informações introdutórias fundamentais dos dados abertos, explicando o que são, para que servem e porque são fundamentais para a transparência, inovação e reutilização da informação.",
+    title: "Minicurso sobre a introdução aos dados abertos",
+    description: "Este minicurso apresenta as informações introdutórias fundamentais dos dados abertos, explicando o que são, para que servem e porque são fundamentais para a transparência, inovação e reutilização da informação.",
     updatedAt: "2 dias",
     duration: "30 min",
     organization: {
@@ -161,7 +161,7 @@ const miniCourses = [
     }
   },
   {
-    title: "Mini Curso sobre reutilizações de dados abertos",
+    title: "MiniCurso sobre reutilizações de dados abertos",
     description: "Este minicurso apresenta como reutilizar dados abertos de forma prática e segura. Veremos como transformar informação pública em conhecimento útil, os formatos e licenças mais adequados, e os benefícios de usar dados já disponíveis.",
     updatedAt: "1 semana",
     duration: "45 min",
@@ -176,8 +176,8 @@ const miniCourses = [
     }
   },
   {
-    title: "Mini Curso sobre Metadados",
-    description: "Este mini curso apresenta os conceitos introdutórios fundamentais dos metadados relacionados com dados abertos, explicando o que são, para que servem e porque são essenciais para a descoberta.",
+    title: "Minicurso sobre Metadados",
+    description: "Este minicurso apresenta os conceitos introdutórios fundamentais dos metadados relacionados com dados abertos, explicando o que são, para que servem e porque são essenciais para a descoberta.",
     updatedAt: "3 dias",
     duration: "20 min",
     organization: {
@@ -191,7 +191,7 @@ const miniCourses = [
     }
   },
   {
-    title: "Mini Curso sobre os diferentes formatos de datasets",
+    title: "Minicurso sobre os diferentes formatos de datasets",
     description: "Este minicurso apresenta os conceitos essenciais sobre a publicação de dados abertos no dados.gov.pt, com foco nos formatos de datasets, metadados e no modelo das 5 Estrelas dos Dados Abertos.",
     updatedAt: "1 mês",
     duration: "1h",

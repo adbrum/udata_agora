@@ -61,7 +61,7 @@ export default function MiniCourseCompletionClient({ slug }: Props) {
                 darkMode={false}
                 items={[
                   { label: 'Bem-vindo', url: '/' },
-                  { label: 'Mini Cursos', url: '/pages/mini-courses' },
+                  { label: 'Minicursos', url: '/pages/mini-courses' },
                   {
                     label: 'Minicurso sobre a introdução aos dados abertos',
                     url: '/pages/mini-courses/introducao-dados-abertos',

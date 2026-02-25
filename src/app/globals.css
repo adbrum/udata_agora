@@ -87,3 +87,32 @@ footer img {
 .agora-tabs.desktop.vertically .tab-list .tab-list-item.active.current-neutral {
   background-color: var(--color-secondary-50);
 }
+
+/* Custom dataset reuse card layout */
+.dataset-reuse-card-wrapper .card-general,
+.dataset-reuse-card-wrapper .card-general>div {
+  height: 100% !important;
+  display: flex !important;
+  overflow: hidden !important;
+}
+
+.dataset-reuse-card-wrapper [class*="agora-card-image-container"] {
+  width: 300px !important;
+  min-width: 300px !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.dataset-reuse-card-wrapper img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  border-radius: 0 !important;
+}
+
+.dataset-reuse-card-wrapper [class*="agora-card-content"] {
+  flex: 1 !important;
+}
