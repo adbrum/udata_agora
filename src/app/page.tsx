@@ -166,7 +166,7 @@ export default function Home() {
           </div>
         </div>
         {/* Featured Datasets */}
-        <div className="xl:py-64 bg-white">
+        <div className="xl:pt-64 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-xl-bold mb-32 text-primary-900 ">
               Conjunto de dados
@@ -196,7 +196,7 @@ export default function Home() {
                   views: '52 341',
                 },
               ].map((item, i) => (
-                <div key={i} className="dataset-card-bordered border-2 border-[#1A65FA] rounded-8 overflow-hidden h-full">
+                <div key={i} className="dataset-card-home border-2 border-[#1A65FA] rounded-[4px] overflow-hidden h-full flex flex-col">
                   <CardGeneral
                     variant="white"
                     pillText={item.time}
@@ -204,12 +204,16 @@ export default function Home() {
                     titleText={item.title}
                     descriptionText={
                       (
-                        <div className="flex flex-col gap-16 grow">
-                          <div className="flex items-center gap-8 text-neutral-900 mt-16 mb-8">
-                            <div className="w-8 h-8 rounded-full bg-primary-600" aria-hidden="true" />
-                            <span className="text-s-regular">{item.views} visualizações</span>
+                        <div className="flex flex-col grow">
+                          <div className="flex items-center text-neutral-900 mb-8">
+                            <Icon
+                              name="agora-solid-bullet"
+                              className="w-8 h-8 text-primary-600"
+                              aria-hidden="true"
+                            />
+                            <span>{item.views} visualizações</span>
                           </div>
-                          <span className="text-m-regular text-neutral-800 line-clamp-3">
+                          <span className="text-m-regular text-neutral-800 line-clamp-3 mb-16">
                             {item.desc}
                           </span>
                           <div className="flex items-center gap-8 text-primary-600 mt-auto">
@@ -228,7 +232,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <div className="mt-64">
+            <div className="mt-32">
               <Link href="/pages/datasets">
                 <Button
                   variant="primary"
@@ -246,10 +250,10 @@ export default function Home() {
         </div>
 
         {/* Utilizado diariamente por */}
-        <div className="xl:py-64 bg-white">
+        <div className="xl:pb-64 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-xl-bold text-primary-900 mb-32">
-              Utilizado diariamente por
+            <h2 className="mb-32 text-neutral-700 mt-32">
+              Utilizado diariamente por:
             </h2>
             <div className="grid grid-cols-5 md:grid-cols-5 gap-8 items-center justify-items-center">
               {['arte.svg', 'ADC.svg', 'IMPIC.svg', 'DSPA.svg', 'apa.svg'].map(
@@ -274,7 +278,7 @@ export default function Home() {
         <div className="xl:py-64 bg-primary-900">
           <div className="container mx-auto px-4">
             <h2 className="text-2xl-bold text-white">
-              Storytellings em Destaque
+              Storytelling
             </h2>
             <p className="mt-16 mb-32 max-w-3xl text-white">
               Storytellings mais populares
