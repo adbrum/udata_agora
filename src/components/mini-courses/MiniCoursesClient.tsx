@@ -152,7 +152,7 @@ const miniCourses = [
     duration: "30 min",
     organization: {
       name: "dados.gov",
-      logo: "/images/placeholders/organization.png"
+      logo: "/Logos/logo.png"
     },
     metrics: {
       views: "1.2k",
@@ -167,7 +167,7 @@ const miniCourses = [
     duration: "45 min",
     organization: {
       name: "AMA",
-      logo: "/images/placeholders/organization.png"
+      logo: "/Logos/logo.png"
     },
     metrics: {
       views: "890",
@@ -182,7 +182,7 @@ const miniCourses = [
     duration: "20 min",
     organization: {
       name: "LabX",
-      logo: "/images/placeholders/organization.png"
+      logo: "/Logos/logo.png"
     },
     metrics: {
       views: "2.5k",
@@ -197,7 +197,7 @@ const miniCourses = [
     duration: "1h",
     organization: {
       name: "dados.gov",
-      logo: "/images/placeholders/organization.png"
+      logo: "/Logos/logo.png"
     },
     metrics: {
       views: "3.4k",

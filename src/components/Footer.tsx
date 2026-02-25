@@ -95,9 +95,9 @@ const FooterInstitutional = () => {
             Plataforma aberta de dados públicos portugueses
           </p>
           <div className="flex items-center gap-32">
-            <img src="/NextGenerationEU.svg" alt="NextGenerationEU" />
-            <img src="/República Portuguesa.svg" alt="República Portuguesa" />
-            <img src="/ARTE.svg" alt="ARTE" />
+            <img src="/Logos/NextGenerationEU.svg" alt="NextGenerationEU" />
+            <img src="/Logos/República Portuguesa.svg" alt="República Portuguesa" />
+            <img src="/Logos/ARTE.svg" alt="ARTE" />
           </div>
         </div>
       </div>
