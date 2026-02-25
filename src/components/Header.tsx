@@ -37,6 +37,27 @@ export const Header = () => {
     } else {
       setSelectedArea('1');
     }
+
+    // Force close the responsive menu on route change
+    const closeMenu = () => {
+      // 1. Try via design system ref
+      if (headerRef.current?.closeResponsiveMenu) {
+        headerRef.current.closeResponsiveMenu();
+      }
+
+      // 2. Fallback: Try to trigger click on the close button in the modal/menu
+      // The design system uses specific classes for the close button
+      const closeButton = document.querySelector(
+        '.agora-header-navigation-modal [aria-label="Fechar"], .agora-header-navigation-modal button.agora-modal-close'
+      ) as HTMLButtonElement;
+      if (closeButton) {
+        closeButton.click();
+      }
+    };
+
+    // Small timeout to ensure the route change has started and the DOM is accessible
+    const timer = setTimeout(closeMenu, 100);
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   const languages = [
@@ -55,6 +76,26 @@ export const Header = () => {
     languages.find((l) => l.value === selectedLanguage)?.label || 'Português';
   const currentAreaLabel =
     areas.find((a) => a.value === selectedArea)?.label || 'Portal';
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // Force close the menu immediately
+    if (headerRef.current?.closeResponsiveMenu) {
+      headerRef.current.closeResponsiveMenu();
+    }
+
+    // Fallback close
+    const closeButton = document.querySelector(
+      '.agora-header-navigation-modal [aria-label="Fechar"], .agora-header-navigation-modal button.agora-modal-close'
+    ) as HTMLButtonElement;
+    if (closeButton) {
+      closeButton.click();
+    }
+
+    // In mobile, sometimes we need to manually trigger the router to ensure it happens after the menu closes
+    if (href !== '#') {
+      router.push(href);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-sticky">
@@ -145,26 +186,137 @@ export const Header = () => {
           modalAriaLabel="Menu de navegação"
           modalCloseLabel="Fechar"
         >
-          <NavigationLink appearance="link">
-            <Link href="/pages/datasets">Conjuntos de dados</Link>
-          </NavigationLink>
-          <NavigationLink appearance="link">
-            <Link href="/pages/reuses">Reutilizações</Link>
-          </NavigationLink>
-          <NavigationRoot label="Documentação">
+          <NavigationRoot label="Contribuir">
             <NavigationLink appearance="link">
-              <Link href="/documentation">Documentação</Link>
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                Novo Conjunto de Dados
+              </a>
             </NavigationLink>
             <NavigationLink appearance="link">
-              <Link href="/start">Primeiros passos</Link>
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                Nova API
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                Nova Reutilização
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                Nova Organização
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a
+                href="/pages/support"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLinkClick(e, '/pages/support');
+                }}
+              >
+                Contactar
+              </a>
             </NavigationLink>
           </NavigationRoot>
-          <NavigationLink appearance="link">
-            <Link href="/pages/organizations">Organizações</Link>
-          </NavigationLink>
-          <NavigationRoot label="Publicações">
+
+          <NavigationRoot label="Explorar">
             <NavigationLink appearance="link">
-              <Link href="/pages/mini-courses">Mini cursos</Link>
+              <a
+                href="/pages/datasets"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLinkClick(e, '/pages/datasets');
+                }}
+              >
+                Conjuntos de dados
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                HVDs
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                APIs
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a
+                href="/pages/reuses"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLinkClick(e, '/pages/reuses');
+                }}
+              >
+                Reutilizações
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a
+                href="/pages/organizations"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLinkClick(e, '/pages/organizations');
+                }}
+              >
+                Organizações
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                Data Stories
+              </a>
+            </NavigationLink>
+          </NavigationRoot>
+
+          <NavigationRoot label="Conhecimento">
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                Sobre dados abertos
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                Como publicar dados?
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                Como reutilizar dados?
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                O que é o dados.gov
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                Desenvolvimento
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                Publicações
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+                Notícias
+              </a>
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <a
+                href="/pages/mini-courses"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLinkClick(e, '/pages/mini-courses');
+                }}
+              >
+                Minicursos
+              </a>
             </NavigationLink>
           </NavigationRoot>
         </NavigationBar>
