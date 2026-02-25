@@ -112,7 +112,7 @@ export default function DatasetsClient({
                             isCardHorizontal={true}
                             variant="white"
                             image={{
-                              src: dataset.organization?.logo || '/images/placeholders/organization.png',
+                              src: dataset.organization?.logo || '/Logos/logo.png',
                               alt: dataset.organization?.name || 'Organização sem logo',
                             }}
                             subtitleText={dataset.organization?.name || 'Organização Desconhecida'}

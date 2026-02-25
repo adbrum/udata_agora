@@ -66,7 +66,7 @@ export default function ReusesClient({
                             <CardArticle
                                 key={reuse.id}
                                 image={{
-                                    src: reuse.image_thumbnail || reuse.image || '/images/placeholders/reuse.png',
+                                    src: reuse.image_thumbnail || reuse.image || '/laptop.png',
                                     alt: reuse.title,
                                 }}
                                 subtitle={`Publicado a ${format(new Date(reuse.created_at), 'dd MM yyyy', { locale: pt })}`}

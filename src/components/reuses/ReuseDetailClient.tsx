@@ -87,7 +87,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
             <div className="xl:col-span-8 xl:block md:pt-64">
               <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-neutral-100 border border-neutral-200">
                 <img
-                  src={reuse.image || '/images/placeholders/reuse-large.png'}
+                  src={reuse.image || '/laptop.png'}
                   alt={reuse.title}
                   className="h-full w-full object-cover"
                 />
@@ -211,7 +211,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                       {/* Featured image in content */}
                       <div className="my-32 rounded-lg overflow-hidden border border-neutral-200">
                         <img
-                          src="/images/placeholders/reuse-content.png"
+                          src="/womanlibrary.png"
                           alt="Conteúdo da reutilização"
                           className="w-full h-auto"
                         />
@@ -314,7 +314,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                         isCardHorizontal={true}
                         variant="white"
                         image={{
-                          src: '/images/placeholders/dataset-a.svg',
+                          src: '/Logos/logo-ipsum.svg',
                           alt: `Logo - ${dataset.org}`,
                         }}
                         subtitleText={''}

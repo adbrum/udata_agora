@@ -20,7 +20,7 @@ export default function ArticleDetail() {
                 {/* Hero section with CardHighlight */}
                 <CardHighlight
                     image={{
-                        src: '/cubes.svg',
+                        src: '/Banner/cubes.svg',
                         alt: 'Uma retrospectiva da temporada de volta às aulas do data.gouv.fr',
                         style: { objectFit: 'cover', width: '100%', minHeight: '400px' }
                     }}
@@ -80,7 +80,7 @@ export default function ArticleDetail() {
 
                                 <div className="my-24 rounded-2xl overflow-hidden shadow-sm">
                                     <img
-                                        src="/building.png"
+                                        src="/Articles/building.png"
                                         alt="Arquitetura e colaboração"
                                         className="w-full h-auto object-cover max-h-[400px]"
                                     />
