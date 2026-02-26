@@ -139,11 +139,11 @@ footer img {
   padding-left: 0;
 }
 
-/*Buttons*/
-.icon-white {
+/*Icones*/
+.icon-white svg,
+.homepage .agora-btn-link-primary:hover:not(:disabled).icon-white svg {
   fill: var(--color-white);
 }
-
 
 /*Home - Datasets */
 .dataset-content-proper {
@@ -156,6 +156,7 @@ footer img {
   -webkit-box-orient: vertical;
 }
 
+/*Home - StoryTellings*/
 .dataset-card-home .card-general .title-text {
   min-height: 64px;
 }
@@ -167,4 +168,24 @@ footer img {
 
 .homepage .agora-card-article.indented .container-body * {
   color: var(--color-white);
+}
+
+.homepage .anchor-container.has-siblings {
+  height: 0;
+  padding-bottom: 32px;
+}
+
+/*Home - News*/
+.latest-news-section .agora-card-article .anchor-container {
+  margin-top: auto;
+}
+
+.homepage .latest-news-section .container-body {
+  background: var(--color-primary-100);
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
+.homepage .latest-news-section .agora-card-article.default {
+  gap: 0px;
 }

@@ -313,14 +313,7 @@ export default function Home() {
                   subtitle={story.subtitle}
                   title={story.title}
                   mainAnchor={{
-                    href: '#',
-                    target: '_self',
-                    title: 'Ver mais',
-                    hasIcon: true,
-                    iconOnly: true,
-                    leadingIcon: 'agora-line-arrow-right-circle',
-                    leadingIconHover: 'agora-solid-arrow-right-circle',
-                    variant: 'primary',
+
                   }}
                   blockedLink={true}
                 />
@@ -345,42 +338,65 @@ export default function Home() {
         </div>
 
         {/* Latest News */}
-        <div className="xl:py-64 bg-white">
+        <div className="xl:py-64 bg-white latest-news-section">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-primary-900 mb-64">
-              <span className="text-2xl-light">Últimas</span> <span className="text-2xl-bold">novidades</span>
+            <h2 className="text-xl-bold mb-32 text-primary-900">
+              Últimas novidades
             </h2>
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
-              {['Articles/last-new1.svg', 'Articles/last-new2.svg', 'Articles/last-new3.svg'].map(
-                (img, i) => (
+              {[
+                {
+                  img: 'Articles/last-new1.svg',
+                  title: 'Webinar Developers e Data Scientists: Publicação e uso de dados abertos',
+                },
+                {
+                  img: 'Articles/last-new2.svg',
+                  title: 'NOVA DATA - Webinar Dados Abertos: Importância para as empresas',
+                },
+                {
+                  img: 'Articles/last-new3.svg',
+                  title: 'Webinar Developers e Data Scientists: Publicação e uso de dados abertos',
+                },
+              ].map((news, i) => (
+                <div className="latest-news-card-wrapper h-full">
                   <CardArticle
-                    key={i}
                     image={{
-                      src: `/${img}`,
-                      alt: `Novidade ${i + 1}`,
+                      src: `/${news.img}`,
+                      alt: news.title,
                     }}
-
                     subtitle="Publicado em 21 de novembro de 2024"
-                    title="Webinar Developers e Data Scientists: Publicação e uso de dados abertos"
-                    mainAnchor={{
-                      href: '/pages/article',
-                      target: '_self',
-                      title: 'Ver mais',
-                      hasIcon: true,
-                      iconOnly: true,
-                      leadingIcon: 'agora-line-arrow-right-circle',
-                      leadingIconHover: 'agora-solid-arrow-right-circle',
-                      variant: 'primary',
-                    }}
-                    blockedLink={true}
-                  />
-                )
-              )}
+                    title={news.title}
+                    blockedLink={false}
+                  >
+                    <div className="mt-auto pt-16">
+                      <Link href="/pages/article">
+                        <Button
+                          variant="primary"
+                          appearance="link"
+                          hasIcon={true}
+                          trailingIcon="agora-line-arrow-right-circle"
+                          trailingIconHover="agora-solid-arrow-right-circle"
+                          className="p-0! h-auto"
+                        >
+                          <span>anchor Link Default</span>
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardArticle>
+                </div>
+              ))}
             </div>
-            <div className="mt-64">
+            <div className="mt-32">
               <Link href="/pages/article">
-                <Button variant="primary" appearance="outline">
-                  Ver mais
+                <Button
+                  variant="primary"
+                  appearance="link"
+                  hasIcon={true}
+                  trailingIcon="agora-line-arrow-right-circle"
+                  trailingIconHover="agora-solid-arrow-right-circle"
+                  className="p-0! h-auto"
+                >
+                  <span>Ver todas as novidades</span>
                 </Button>
               </Link>
             </div>
