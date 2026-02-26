@@ -213,7 +213,7 @@ export default function Home() {
                             />
                             <span>{item.views} visualizações</span>
                           </div>
-                          <span className="text-m-regular text-neutral-800 line-clamp-3 mb-16">
+                          <span className="text-m-regular text-neutral-800 dataset-content-proper mb-16">
                             {item.desc}
                           </span>
                           <div className="flex items-center gap-8 text-primary-600 mt-auto">
@@ -277,11 +277,11 @@ export default function Home() {
         {/* Reuses */}
         <div className="xl:py-64 bg-primary-900">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl-bold text-white">
+            <h2 className="text-xl-bold text-white">
               Storytelling
             </h2>
             <p className="mt-16 mb-32 max-w-3xl text-white">
-              Storytellings mais populares
+              Precisa de uma descrição uma vez que é um titulo estrangeiro e novidade no dados.gov
             </p>
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {[
