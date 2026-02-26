@@ -52,36 +52,38 @@ export default function MiniCourseDetailClient({ slug }: Props) {
   return (
     <div className="flex flex-col font-sans text-neutral-900 bg-white min-h-screen">
       <main className="flex-grow bg-white">
-        <PageBanner
-          title={
-            <span className="text-brand-blue-primary font-bold text-[40px] leading-tight">
-              Minicurso sobre a<br />introdução aos dados abertos
-            </span>
-          }
-          variant="light"
-          breadcrumbItems={[
-            { label: 'Home', url: '/' },
-            { label: 'Minicursos', url: '/pages/mini-courses' },
-            { label: 'Minicurso sobre a introdução aos dados abertos', url: '#' }
-          ]}
-          image={{
-            src: "/minicourses/medal.png",
-            alt: "Mini-cursos",
-            className: "max-h-[350px] w-auto drop-shadow-2xl"
-          }}
-          subtitle={
-            <div className="mb-64">
-              <p className="leading-relaxed text-brand-blue-secondary">
-                Este minicurso apresenta as informações introdutórias fundamentais dos dados abertos, explicando o que são, para que servem e porque são importantes para a transparência, inovação e reutilização da informação.
-                <br /><br />
-                As imagens utilizadas são apenas ilustrativas e podem ser substituídas ou adaptadas conforme o contexto da apresentação.
-              </p>
-              <p className="text-brand-blue-secondary mt-64">
-                Atualizado em 30.09.2026
-              </p>
+        <div className="bg-[#F8F9FC] py-64">
+          <div className="container mx-auto px-4 lg:px-64">
+            <Breadcrumb
+              items={[
+                { label: 'Início', url: '/' },
+                { label: 'Minicursos', url: '/pages/mini-cursos' }
+              ]}
+              className="mb-64"
+            />
+            <div className="flex">
+              <div className="w-1/2 pr-32">
+                <h1 className="text-[40px] leading-[48px] font-bold text-primary-600 mb-16">
+                  Minicurso sobre a introdução aos dados abertos
+                </h1>
+
+                <div className="text-[18px] leading-[28px] space-y-16 w-[94%]">
+                  <p>
+                    Este mini curso apresenta as informações introdutórias fundamentais dos dados abertos, explicando o que são, para que servem e porque são importantes para a transparência, inovação e reutilização da informação.
+                    As imagens utilizadas são apenas ilustrativas e podem ser substituídas ou adaptadas conforme o contexto da apresentação.
+                  </p>
+                </div>
+
+                <div className="mt-64">
+                  Atualizado em 30.09.2025
+                </div>
+              </div>
+              <div className="img-container">
+                <img src="/minicourses/medal.png" alt="Minicursos" className="w-[446px] h-[428px] mt-[-85px] " />
+              </div>
             </div>
-          }
-        />
+          </div>
+        </div>
 
         <div className="container mx-auto px-4 py-64">
           {/* Specific Course Header Section */}

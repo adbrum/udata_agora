@@ -19,8 +19,8 @@ export default function MiniCoursesClient() {
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 ">
       <main className="flex-grow">
-        <div className="bg-[#F8F9FC] pb-[60px]">
-          <div className="container mx-auto px-4 lg:px-64">
+        <div className="bg-[#F8F9FC]">
+          <div className="container mx-auto px-4 my-64 lg:px-64">
             <Breadcrumb
               items={[
                 { label: 'Início', url: '/' },
@@ -30,7 +30,7 @@ export default function MiniCoursesClient() {
             />
             <div className="flex">
               <div className="w-1/2 pr-32">
-                <h1 className="text-[40px] leading-[48px] font-bold text-brand-blue-primary mb-32">
+                <h1 className="text-[40px] leading-[48px] font-bold text-primary-600 mb-32">
                   Minicursos
                 </h1>
 
