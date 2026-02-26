@@ -42,7 +42,7 @@ const PageBanner: React.FC<PageBannerProps> = ({
     >
       <div className="card-container">
         {/* Breadcrumbs Section */}
-        <div className="container mx-auto px-4 pt-32 relative z-10">
+        <div className="container mx-auto px-4 relative z-10">
           <Breadcrumb
             darkMode={!isLight}
             items={breadcrumbItems}
@@ -54,7 +54,7 @@ const PageBanner: React.FC<PageBannerProps> = ({
           <div className="title">
             <h1 className={`container mx-auto flex flex-col items-start leading-tight ${typeof title === 'string' ? (isLight ? 'text-primary-900' : 'text-white') : ''}`}>
               {typeof title === 'string' ? (
-                <span className="xl:text-3xl-bold md:text-3xl-bold xs:text-2xl-bold">{title}</span>
+                <span className="xs:text-xl-bold md:text-2xl-bold xl:text-2xl-bold">{title}</span>
               ) : (
                 title
               )}
@@ -77,7 +77,7 @@ const PageBanner: React.FC<PageBannerProps> = ({
         {(children || image) && (
           <div className="input-container">
             <div className="email-bar">
-              <div className="container mx-auto grid xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-2 pb-64 px-4">
+              <div className="container mx-auto grid xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-2 px-4">
                 <div className={`relative ${isLight ? 'text-neutral-900' : 'text-white'}`}>
                   {children}
                 </div>
