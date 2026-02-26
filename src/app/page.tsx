@@ -45,7 +45,7 @@ export default function Home() {
             </div>
             <div className="input-container">
               <div className="email-bar">
-                <div className="container mx-auto grid xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-2 pb-64">
+                <div className="container mx-auto grid xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-2 ">
                   <div className="relative text-white">
                     <InputSearchBar
                       label="O que procura no Portal?"
@@ -56,7 +56,7 @@ export default function Home() {
                       searchActionAltText="Pesquisar"
                       darkMode={true}
                     />
-                    <div className="mt-8 text-s-regular">
+                    <div className="mt-8 text-s-regular text-neutral-200">
                       Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
                     </div>
                     <div className="mt-64">

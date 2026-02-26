@@ -134,3 +134,7 @@ footer img {
 .card-general {
   height: 100%;
 }
+
+.pl-0 {
+  padding-left: 0;
+}

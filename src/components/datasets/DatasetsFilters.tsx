@@ -70,11 +70,10 @@ export const DatasetsFilters = () => {
 
   return (
     <div className="h-full">
-      <div className="mb-6">
-        <h2 className="font-bold text-xl text-neutral-900 pb-64">Filtros</h2>
-      </div>
+      <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[64px] pl-[64px]">Filtros</h2>
 
-      <Sidebar variant="filter">
+
+      <Sidebar variant="filter" className="pl-[64px]">
         {filterGroups.map((group, index) => {
           const searchQuery = searchQueries[group.name] || '';
           const filteredData = group.data?.filter(item =>
@@ -98,7 +97,7 @@ export const DatasetsFilters = () => {
               hasPill={group.name === 'Organização' && searchParams.getAll('org_id').length > 0}
               pillValue={group.name === 'Organização' ? searchParams.getAll('org_id').length : 0}
             >
-              <div className="px-6 py-4 bg-white border-t border-neutral-100">
+              <div>
                 {showSearch && (
                   <div className="mb-4 mt-8 relative">
                     <InputSearch
