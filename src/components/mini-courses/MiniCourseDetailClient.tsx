@@ -61,7 +61,7 @@ export default function MiniCourseDetailClient({ slug }: Props) {
               ]}
               className="mb-64"
             />
-            <div className="flex gap-[84px]">
+            <div className="flex  gap-[84px]">
               <div className="w-1/2 pr-32">
                 <h1 className="text-[40px] leading-[48px] font-bold text-primary-600 mb-16">
                   Minicurso sobre a introdução aos dados abertos
