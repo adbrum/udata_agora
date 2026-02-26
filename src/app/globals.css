@@ -138,3 +138,8 @@ footer img {
 .pl-0 {
   padding-left: 0;
 }
+
+/*Buttons*/
+.icon-white {
+  fill: var(--color-white);
+}

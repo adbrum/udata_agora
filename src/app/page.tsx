@@ -252,20 +252,20 @@ export default function Home() {
         {/* Utilizado diariamente por */}
         <div className="xl:pb-64 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="mb-32 text-neutral-700 mt-32">
+            <h2 className="mb-48 text-gray-medium mt-32 text-m-bold">
               Utilizado diariamente por:
             </h2>
-            <div className="grid grid-cols-5 md:grid-cols-5 gap-8 items-center justify-items-center">
+            <div className="flex flex-wrap items-center justify-between gap-x-32 gap-y-32">
               {['arte.svg', 'ADC.svg', 'IMPIC.svg', 'DSPA.svg', 'apa.svg'].map(
                 (logo, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-center w-full h-20"
+                    className="flex items-center justify-center"
                   >
                     <img
                       src={`/Logos/${logo}`}
                       alt={`Logo ${logo.replace('.svg', '')}`}
-                      className="max-h-12 max-w-[160px] object-contain"
+                      className="h-12 md:h-14 xl:h-16 w-auto object-contain"
                     />
                   </div>
                 )
@@ -326,10 +326,20 @@ export default function Home() {
                 />
               ))}
             </div>
-            <div className="mt-64 mt-12">
-              <Button variant="primary" appearance="outline" darkMode={true}>
-                Ver mais
-              </Button>
+            <div className="mt-32">
+              <Link href="#">
+                <Button
+                  variant="primary"
+                  appearance="link"
+                  hasIcon={true}
+                  trailingIcon="agora-line-arrow-right-circle"
+                  trailingIconHover="agora-solid-arrow-right-circle"
+                  className="p-0! h-auto icon-white"
+                  darkMode={false}
+                >
+                  <span className="text-white">Ver todas as Data Stories</span>
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
