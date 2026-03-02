@@ -250,14 +250,14 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                     </div>
 
                     <div className="bg-white p-24 rounded-lg">
-                      <div className="mb-24">
-                        <h3 className="text-sm font-bold tracking-wider mb-8">Última atualização</h3>
-                        <p className="font-medium text-neutral-900">{formatDate(reuse.last_modified)}</p>
-                      </div>
-                      <div className="mb-0">
-                        <h3 className="text-sm font-bold tracking-wider mb-8">Data de criação</h3>
-                        <p className="font-medium text-neutral-900">{formatDate(reuse.created_at)}</p>
-                      </div>
+                      <h3 className="text-sm font-bold tracking-wider mb-8">Última atualização</h3>
+                      <p className="font-medium text-neutral-900">{formatDate(reuse.last_modified)}</p>
+
+                    </div>
+
+                    <div className="bg-white p-24 rounded-lg">
+                      <h3 className="text-sm font-bold tracking-wider mb-8">Data de criação</h3>
+                      <p className="font-medium text-neutral-900">{formatDate(reuse.created_at)}</p>
                     </div>
 
                     <div className="bg-white p-24 rounded-lg">
