@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Breadcrumb, Button, Icon, Tag, Pill, Tabs, Tab, TabHeader, TabBody, CardGeneral } from '@ama-pt/agora-design-system';
+import { Breadcrumb, Button, Icon, Tag, Pill, Tabs, Tab, TabHeader, TabBody, CardGeneral, CardArticle } from '@ama-pt/agora-design-system';
 import { Reuse, Dataset } from '@/types/api';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -42,50 +42,47 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
       <section className="bg-white text-neutral-900 pt-24 pb-48 sm:pb-64">
         <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
           {/* Breadcrumbs & Actions */}
-          <div className="flex justify-between items-center gap-16 mb-32">
-            <Breadcrumb
-              darkMode={false}
-              items={[
-                { label: 'Home', url: '/' },
-                { label: 'Reutilizações', url: '/pages/reuses' },
-                { label: reuse.title, url: `/pages/reuses/${reuse.slug || reuse.id}` }
-              ]}
-            />
-            <div className="flex flex-wrap items-center gap-32 sm:gap-16">
-              <Button
-                variant="primary"
-                appearance="outline"
+          <div className="mb-24">
+            <div className="mb-24">
+              <Breadcrumb
                 darkMode={false}
-                hasIcon={true}
-                leadingIcon="agora-line-star"
-                leadingIconHover="agora-solid-star"
-              >
-                Adicionar aos favoritos
-              </Button>
-              <Button
-                variant="primary"
-                hasIcon={true}
-                trailingIcon="agora-line-external-link"
-                onClick={() => window.open(reuse.url, '_blank')}
-              >
-                Veja reutilização
-              </Button>
-              <Button
-                variant="primary"
-                appearance="outline"
-                darkMode={false}
-                hasIcon={true}
-                leadingIcon="agora-line-flag"
-                aria-label="Reportar"
+                items={[
+                  { label: 'Home', url: '/' },
+                  { label: 'Reutilizações', url: '/pages/reuses' },
+                  { label: reuse.title, url: `/pages/reuses/${reuse.slug || reuse.id}` }
+                ]}
               />
+            </div>
+            <div className="flex justify-end">
+              <div className="flex flex-wrap items-center gap-16">
+                <Button
+                  variant="primary"
+                  appearance="outline"
+                  darkMode={false}
+                  hasIcon={true}
+                  leadingIcon="agora-line-star"
+                  leadingIconHover="agora-solid-star"
+                >
+                  Adicionar aos favoritos
+                </Button>
+                <Button
+                  variant="primary"
+                  hasIcon={true}
+                  trailingIcon="agora-line-external-link"
+                  trailingIconHover="agora-line-external-link"
+                  onClick={() => window.open(reuse.url, '_blank')}
+                >
+                  Veja reutilização
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Hero Content */}
-          <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6">
             {/* Image Column */}
-            <div className="xl:col-span-8 xl:block md:pt-64">
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-neutral-100 border border-neutral-200">
+            <div className="xl:col-span-8">
+              <div className="relative aspect-[308/212] w-full overflow-hidden rounded-lg bg-neutral-100 border border-neutral-200 shadow-sm">
                 <img
                   src={reuse.image || '/laptop.png'}
                   alt={reuse.title}
@@ -94,55 +91,58 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
               </div>
             </div>
 
-            {/* Sidebar Card Column */}
-            <div className="xl:col-span-4 md:pt-64 ">
-              <div className="h-full bg-white text-neutral-900 rounded-lg p-32 flex flex-col gap-24 border border-neutral-200 shadow-sm">
-                {reuse.organization?.logo ? (
-                  <div className="w-fit px-12 py-6 bg-primary-50 rounded-8 border border-primary-200 flex items-center justify-center">
-                    <img
-                      src={reuse.organization.logo}
-                      alt={reuse.organization.name}
-                      className="h-24 object-contain"
-                    />
+            {/* Card Column */}
+            <div className="xl:col-span-4">
+              <CardArticle
+                className="h-full bg-[#F4F8FE]! border-none shadow-none"
+                title={reuse.title}
+                subtitle={
+                  <div className="flex flex-col gap-24 mb-16">
+                    {reuse.organization?.logo ? (
+                      <div className="w-fit px-12 py-6 bg-white rounded-8 border border-primary-200 flex items-center justify-center">
+                        <img
+                          src={reuse.organization.logo}
+                          alt={reuse.organization.name}
+                          className="h-[48px] object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-[144px] h-[48px] bg-white rounded-8 border border-dashed border-neutral-300 flex items-center justify-center text-neutral-400 text-xs font-bold uppercase tracking-wider">
+                        LOGOIPSUM
+                      </div>
+                    )}
+                    <div className="text-xs font-bold text-primary-600 uppercase tracking-widest">
+                      Tempo
+                    </div>
                   </div>
-                ) : (
-                  <div className="w-120 h-40 bg-neutral-100 rounded-8 border border-dashed border-neutral-300 flex items-center justify-center text-neutral-400 text-xs font-bold uppercase tracking-wider">
-                    LOGOIPSUM
-                  </div>
-                )}
-
-                <div>
-                  <div className="text-xs font-bold text-primary-600 uppercase tracking-widest mb-8">
-                    Tempo
-                  </div>
-                  <h1 className="text-2xl-bold leading-tight mb-16">
-                    {reuse.title}
-                  </h1>
+                }
+              >
+                <div className="flex flex-col gap-24 h-full">
                   <div className="flex items-center flex-wrap gap-16 text-sm">
-                    <span className="font-medium">{reuse.type || 'Aplicação'}</span>
+                    <span className="font-medium text-neutral-900">{reuse.type || 'Aplicação'}</span>
                     <div className="flex items-center gap-4 text-neutral-500">
-                      <Icon name="agora-line-eye" className="w-16 h-16" />
+                      <Icon name="agora-line-eye" className="w-20 h-20" />
                       <span>{reuse.metrics?.views ? (reuse.metrics.views >= 1000 ? (reuse.metrics.views / 1000).toFixed(0) + ' mil' : reuse.metrics.views) : '0'}</span>
                     </div>
                     <div className="flex items-center gap-4 text-neutral-500">
-                      <Icon name="agora-line-chart-bar" className="w-16 h-16" />
+                      <Icon name="agora-line-chart-bar" className="w-20 h-20" />
                       <span>217</span>
                     </div>
                   </div>
-                </div>
 
-                <div className="mt-auto">
-                  <a
-                    href={reuse.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary-700 font-bold hover:underline inline-flex items-center gap-8"
-                  >
-                    Veja reutilização
-                    <Icon name="agora-line-external-link" className="w-16 h-16" />
-                  </a>
+                  <div className="mt-auto pt-24">
+                    <a
+                      href={reuse.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary-700 font-bold hover:underline inline-flex items-center gap-8"
+                    >
+                      Veja reutilização
+                      <Icon name="agora-line-external-link" className="w-20 h-20" />
+                    </a>
+                  </div>
                 </div>
-              </div>
+              </CardArticle>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
             <Tab>
               <TabHeader>Descrição</TabHeader>
               {renderTabBody(
-                <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
+                <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6">
                   {/* Sidebar Metadata */}
                   <aside className="xl:col-span-8 xl:block md:pt-64 flex flex-col gap-24">
                     <div className="bg-white p-24 rounded-lg border border-neutral-200">
