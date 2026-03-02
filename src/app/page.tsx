@@ -115,21 +115,6 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* Item 2 */}
-                    <div className="flex items-center gap-24">
-                      <div className="stats-icon-wrapper text-[#CBFF3F] border-[#CBFF3F]">
-                        <Icon name="agora-line-document" aria-hidden="true" className="w-[24px] h-[24px]" />
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="flex items-baseline gap-8">
-                          <span className="text-2xl-semibold">2 456</span>
-                          <span className="text-l-bold ">mil</span>
-                        </div>
-                        <span>Organizações</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="xl:col-span-6 flex flex-col gap-48">
                     {/* Item 3 */}
                     <div className="flex items-center gap-24">
                       <div className="stats-icon-wrapper text-[#D600FF] border-[#D600FF]">
@@ -143,6 +128,21 @@ export default function Home() {
                           <span className="text-l-bold ">mil</span>
                         </div>
                         <span>Reutilizações</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="xl:col-span-6 flex flex-col gap-48">
+                    {/* Item 2 */}
+                    <div className="flex items-center gap-24">
+                      <div className="stats-icon-wrapper text-[#CBFF3F] border-[#CBFF3F]">
+                        <Icon name="agora-line-document" aria-hidden="true" className="w-[24px] h-[24px]" />
+                      </div>
+                      <div className="flex flex-col">
+                        <div className="flex items-baseline gap-8">
+                          <span className="text-2xl-semibold">2 456</span>
+                          <span className="text-l-bold ">mil</span>
+                        </div>
+                        <span>Organizações</span>
                       </div>
                     </div>
 
