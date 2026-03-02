@@ -71,6 +71,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                   trailingIcon="agora-line-external-link"
                   trailingIconHover="agora-line-external-link"
                   onClick={() => window.open(reuse.url, '_blank')}
+                  className="[&>span]:text-[#034AD8] [&_svg]:fill-[#034AD8]"
                 >
                   Veja reutilização
                 </Button>
@@ -82,24 +83,24 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
           <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6">
             {/* Image Column */}
             <div className="xl:col-span-8">
-              <div className="relative aspect-[308/212] w-full overflow-hidden rounded-lg bg-neutral-100 border border-neutral-200 shadow-sm">
+              <div className=" w-full">
                 <img
                   src={reuse.image || '/laptop.png'}
                   alt={reuse.title}
-                  className="h-full w-full object-cover"
+                  className=" max-h-[308px]"
                 />
               </div>
             </div>
 
             {/* Card Column */}
-            <div className="xl:col-span-4">
+            <div className="xl:col-span-4 card-article-3_2">
               <CardArticle
-                className="h-full bg-[#F4F8FE]! border-none shadow-none"
+                className="h-full bg-[#F2F6FF]! border-none shadow-none [&_.container-body]:p-32 [&_.container-body]:flex [&_.container-body]:flex-col [&_.container-body]:h-full"
                 title={reuse.title}
                 subtitle={
                   <div className="flex flex-col gap-24 mb-16">
                     {reuse.organization?.logo ? (
-                      <div className="w-fit px-12 py-6 bg-white rounded-8 border border-primary-200 flex items-center justify-center">
+                      <div className="w-fit px-16 py-8 rounded-8 border border-primary-100 flex items-center justify-center shadow-sm">
                         <img
                           src={reuse.organization.logo}
                           alt={reuse.organization.name}
@@ -107,26 +108,26 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                         />
                       </div>
                     ) : (
-                      <div className="w-[144px] h-[48px] bg-white rounded-8 border border-dashed border-neutral-300 flex items-center justify-center text-neutral-400 text-xs font-bold uppercase tracking-wider">
+                      <div className="w-[160px] h-[56px] bg-white rounded-8 border border-dashed border-neutral-300 flex items-center justify-center text-neutral-400 text-xs font-bold uppercase tracking-wider shadow-sm">
                         LOGOIPSUM
                       </div>
                     )}
-                    <div className="text-xs font-bold text-primary-600 uppercase tracking-widest">
+                    <div className="text-sm font-medium underline cursor-pointer">
                       Tempo
                     </div>
                   </div>
                 }
               >
                 <div className="flex flex-col gap-24 h-full">
-                  <div className="flex items-center flex-wrap gap-16 text-sm">
-                    <span className="font-medium text-neutral-900">{reuse.type || 'Aplicação'}</span>
-                    <div className="flex items-center gap-4 text-neutral-500">
-                      <Icon name="agora-line-eye" className="w-20 h-20" />
-                      <span>{reuse.metrics?.views ? (reuse.metrics.views >= 1000 ? (reuse.metrics.views / 1000).toFixed(0) + ' mil' : reuse.metrics.views) : '0'}</span>
+                  <div className="flex items-center flex-wrap gap-16 text-[15px]">
+                    <span className="font-semibold text-neutral-900">{reuse.type || 'Aplicação'}</span>
+                    <div className="flex items-center gap-8">
+                      <Icon name="agora-line-eye" className="w-20 h-20 fill-[var(--color-neutral-900)]" />
+                      <span className="text-neutral-900">{reuse.metrics?.views ? (reuse.metrics.views >= 1000 ? (reuse.metrics.views / 1000).toFixed(0) + ' mil' : reuse.metrics.views) : '0'}</span>
                     </div>
-                    <div className="flex items-center gap-4 text-neutral-500">
-                      <Icon name="agora-line-chart-bar" className="w-20 h-20" />
-                      <span>217</span>
+                    <div className="flex items-center gap-8">
+                      <Icon name="agora-line-calendar" className="w-20 h-20 fill-[var(--color-neutral-900)]" />
+                      <span className="text-neutral-900">217</span>
                     </div>
                   </div>
 
@@ -135,10 +136,10 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                       href={reuse.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary-700 font-bold hover:underline inline-flex items-center gap-8"
+                      className="text-[#034AD8] text-lg font-bold hover:underline inline-flex items-center gap-8"
                     >
                       Veja reutilização
-                      <Icon name="agora-line-external-link" className="w-20 h-20" />
+                      <Icon name="agora-line-external-link" className="w-24 h-24 fill-[#034AD8]" />
                     </a>
                   </div>
                 </div>
@@ -149,7 +150,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
       </section>
 
       {/* Tabs Section */}
-      <section className="bg-white border-b border-neutral-200 sticky top-0 z-20">
+      <section className="bg-white sticky top-0 z-20">
         <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
           <Tabs>
             <Tab>
@@ -157,7 +158,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
               {renderTabBody(
                 <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6">
                   {/* Sidebar Metadata */}
-                  <aside className="xl:col-span-8 xl:block md:pt-64 flex flex-col gap-24">
+                  <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-24">
                     <div className="bg-white p-24 rounded-lg border border-neutral-200">
                       <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Temático</h3>
                       <p className="font-medium text-neutral-900">Política e vida pública</p>
@@ -201,7 +202,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                   </aside>
 
                   {/* Main Content */}
-                  <div className="xl:col-span-4 md:pt-64 ">
+                  <div className="xl:col-span-8 md:pt-64 ">
                     <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed">
                       <h2 className="text-2xl-bold text-neutral-900 mb-24">Descrição</h2>
                       <div className="whitespace-pre-wrap mb-32">
@@ -242,7 +243,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
       </section>
 
       {/* Bottom Sections */}
-      <section className="bg-neutral-50 py-64">
+      <section className="bg-neutral-000 py-64">
         <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
           {/* Associated Datasets */}
           <div className="mb-80">
@@ -339,11 +340,11 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                             </div>
                             <div className="flex items-center gap-24 mt-8 text-[15px] font-medium text-primary-600">
                               <div className="flex items-center gap-8">
-                                <Icon name="agora-line-eye" className="w-[18px] h-[18px]" />
+                                <Icon name="agora-line-eye" className="w-[18px] h-[18px] fill-[var(--color-neutral-900)]" />
                                 {dataset.views}
                               </div>
                               <div className="flex items-center gap-8">
-                                <Icon name="agora-line-calendar-days" className="w-[18px] h-[18px]" />
+                                <Icon name="agora-line-calendar-days" className="w-[18px] h-[18px] fill-[var(--color-neutral-900)]" />
                                 {dataset.downloads}
                               </div>
                               <div className="flex items-center gap-8">
