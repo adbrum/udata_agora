@@ -79,6 +79,25 @@ footer img {
   background-color: var(--color-primary-100);
 }
 
+.tab-panel-content {
+  position: relative;
+  padding: 4rem;
+}
+
+.tab-panel-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: -100%;
+  right: -100%;
+  background-color: var(--color-primary-100);
+}
+
+.tab-panel-content>* {
+  position: relative;
+  z-index: 1;
+}
+
 /* Custom dataset reuse card layout */
 .dataset-reuse-card-wrapper .card-general,
 .dataset-reuse-card-wrapper .card-general>div {

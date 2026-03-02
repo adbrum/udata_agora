@@ -27,7 +27,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
           className="absolute inset-y-0 -mx-4 sm:-mx-8 md:-mx-16 lg:-mx-32 xl:-mx-64 bg-neutral-50 z-0"
           aria-hidden="true"
         />
-        <div className="relative z-10 py-32 sm:py-64">
+        <div className="relative z-10 ">
           <div className="container mx-auto">
             {content}
           </div>
@@ -71,7 +71,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                   trailingIcon="agora-line-external-link"
                   trailingIconHover="agora-line-external-link"
                   onClick={() => window.open(reuse.url, '_blank')}
-                  className="[&>span]:text-[#034AD8] [&_svg]:fill-[#034AD8]"
+                  className=""
                 >
                   Veja reutilização
                 </Button>
@@ -157,6 +157,35 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
               <TabHeader>Descrição</TabHeader>
               {renderTabBody(
                 <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6">
+                  {/* Main Content */}
+                  <div className="xl:col-span-8">
+                    <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed">
+                      <h2 className="text-2xl-bold text-neutral-900 mb-24">Descrição Carta do Regime de Uso do Solo</h2>
+                      <div className="whitespace-pre-wrap mb-32">
+                        {reuse.description}
+                      </div>
+
+                      {/* Featured image in content */}
+                      <div className="my-32 rounded-lg overflow-hidden">
+                        <img
+                          src="/fingermaps.svg"
+                          alt="Conteúdo da reutilização"
+                          className="max-h-[364px] w-full h-auto"
+                        />
+                      </div>
+
+                      <p>
+                        2015 marca o início de um período de alta densidade eleitoral ( em média, 1 eleição a cada 8 meses até 2017 ).
+                      </p>
+                      <p className="font-bold">
+                        O sete panneaux-election.fr destina-se a ativistas políticos e cidadãos responsáveis pela afixação de cartazes eleitorais para seus candidatos em locais oficiais.
+                      </p>
+                      <p>
+                        Os cartazes eleitorais, uma operação logística essencial durante uma campanha política, representam um investimento significativo de tempo e recursos para os ativistas. Com o panneaux-election.fr , os ativistas economizam recursos e seu trabalho é simplificado ; eles podem, assim, se concentrar no que mais importa: seu engajamento e a defesa de suas ideias.
+                      </p>
+                    </div>
+                  </div>
+
                   {/* Sidebar Metadata */}
                   <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-24">
                     <div className="bg-white p-24 rounded-lg border border-neutral-200">
@@ -200,35 +229,6 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                       <div className="text-xs text-neutral-400">desde julho de 2022</div>
                     </div>
                   </aside>
-
-                  {/* Main Content */}
-                  <div className="xl:col-span-8 md:pt-64 ">
-                    <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed">
-                      <h2 className="text-2xl-bold text-neutral-900 mb-24">Descrição</h2>
-                      <div className="whitespace-pre-wrap mb-32">
-                        {reuse.description}
-                      </div>
-
-                      {/* Featured image in content */}
-                      <div className="my-32 rounded-lg overflow-hidden border border-neutral-200">
-                        <img
-                          src="/womanlibrary.png"
-                          alt="Conteúdo da reutilização"
-                          className="w-full h-auto"
-                        />
-                      </div>
-
-                      <p>
-                        2015 marca o início de um período de alta densidade eleitoral ( em média, 1 eleição a cada 8 meses até 2017 ).
-                      </p>
-                      <p className="font-bold">
-                        O sete panneaux-election.fr destina-se a ativistas políticos e cidadãos responsáveis pela afixação de cartazes eleitorais para seus candidatos em locais oficiais.
-                      </p>
-                      <p>
-                        Os cartazes eleitorais, uma operação logística essencial durante uma campanha política, representam um investimento significativo de tempo e recursos para os ativistas. Com o panneaux-election.fr , os ativistas economizam recursos e seu trabalho é simplificado ; eles podem, assim, se concentrar no que mais importa: seu engajamento e a defesa de suas ideias.
-                      </p>
-                    </div>
-                  </div>
                 </div>
               )}
             </Tab>
@@ -242,7 +242,6 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
         </div>
       </section>
 
-      {/* Bottom Sections */}
       <section className="bg-neutral-000 py-64">
         <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
           {/* Associated Datasets */}
