@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Breadcrumb, Button, Icon, Tag, Pill, Tabs, Tab, TabHeader, TabBody, CardGeneral } from '@ama-pt/agora-design-system';
+import { Breadcrumb, Button, Icon, Tag, Pill, Tabs, Tab, TabHeader, TabBody, CardGeneral, CardArticle } from '@ama-pt/agora-design-system';
 import { Reuse, Dataset } from '@/types/api';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -27,7 +27,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
           className="absolute inset-y-0 -mx-4 sm:-mx-8 md:-mx-16 lg:-mx-32 xl:-mx-64 bg-neutral-50 z-0"
           aria-hidden="true"
         />
-        <div className="relative z-10 py-32 sm:py-64">
+        <div className="relative z-10 ">
           <div className="container mx-auto">
             {content}
           </div>
@@ -42,122 +42,152 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
       <section className="bg-white text-neutral-900 pt-24 pb-48 sm:pb-64">
         <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
           {/* Breadcrumbs & Actions */}
-          <div className="flex justify-between items-center gap-16 mb-32">
-            <Breadcrumb
-              darkMode={false}
-              items={[
-                { label: 'Home', url: '/' },
-                { label: 'Reutilizações', url: '/pages/reuses' },
-                { label: reuse.title, url: `/pages/reuses/${reuse.slug || reuse.id}` }
-              ]}
-            />
-            <div className="flex flex-wrap items-center gap-32 sm:gap-16">
-              <Button
-                variant="primary"
-                appearance="outline"
+          <div className="mb-24">
+            <div className="mb-24">
+              <Breadcrumb
                 darkMode={false}
-                hasIcon={true}
-                leadingIcon="agora-line-star"
-                leadingIconHover="agora-solid-star"
-              >
-                Adicionar aos favoritos
-              </Button>
-              <Button
-                variant="primary"
-                hasIcon={true}
-                trailingIcon="agora-line-external-link"
-                onClick={() => window.open(reuse.url, '_blank')}
-              >
-                Veja reutilização
-              </Button>
-              <Button
-                variant="primary"
-                appearance="outline"
-                darkMode={false}
-                hasIcon={true}
-                leadingIcon="agora-line-flag"
-                aria-label="Reportar"
+                items={[
+                  { label: 'Home', url: '/' },
+                  { label: 'Reutilizações', url: '/pages/reuses' },
+                  { label: reuse.title, url: `/pages/reuses/${reuse.slug || reuse.id}` }
+                ]}
               />
+            </div>
+            <div className="flex justify-end">
+              <div className="flex flex-wrap items-center gap-16">
+                <Button
+                  variant="primary"
+                  appearance="outline"
+                  darkMode={false}
+                  hasIcon={true}
+                  leadingIcon="agora-line-star"
+                  leadingIconHover="agora-solid-star"
+                >
+                  Adicionar aos favoritos
+                </Button>
+                <Button
+                  variant="primary"
+                  hasIcon={true}
+                  trailingIcon="agora-line-external-link"
+                  trailingIconHover="agora-line-external-link"
+                  onClick={() => window.open(reuse.url, '_blank')}
+                  className=""
+                >
+                  Veja reutilização
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Hero Content */}
-          <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6">
             {/* Image Column */}
-            <div className="xl:col-span-8 xl:block md:pt-64">
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-neutral-100 border border-neutral-200">
+            <div className="xl:col-span-8">
+              <div className=" w-full">
                 <img
                   src={reuse.image || '/laptop.png'}
                   alt={reuse.title}
-                  className="h-full w-full object-cover"
+                  className=" max-h-[308px]"
                 />
               </div>
             </div>
 
-            {/* Sidebar Card Column */}
-            <div className="xl:col-span-4 md:pt-64 ">
-              <div className="h-full bg-white text-neutral-900 rounded-lg p-32 flex flex-col gap-24 border border-neutral-200 shadow-sm">
-                {reuse.organization?.logo ? (
-                  <div className="w-fit px-12 py-6 bg-primary-50 rounded-8 border border-primary-200 flex items-center justify-center">
-                    <img
-                      src={reuse.organization.logo}
-                      alt={reuse.organization.name}
-                      className="h-24 object-contain"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-120 h-40 bg-neutral-100 rounded-8 border border-dashed border-neutral-300 flex items-center justify-center text-neutral-400 text-xs font-bold uppercase tracking-wider">
-                    LOGOIPSUM
-                  </div>
-                )}
-
-                <div>
-                  <div className="text-xs font-bold text-primary-600 uppercase tracking-widest mb-8">
-                    Tempo
-                  </div>
-                  <h1 className="text-2xl-bold leading-tight mb-16">
-                    {reuse.title}
-                  </h1>
-                  <div className="flex items-center flex-wrap gap-16 text-sm">
-                    <span className="font-medium">{reuse.type || 'Aplicação'}</span>
-                    <div className="flex items-center gap-4 text-neutral-500">
-                      <Icon name="agora-line-eye" className="w-16 h-16" />
-                      <span>{reuse.metrics?.views ? (reuse.metrics.views >= 1000 ? (reuse.metrics.views / 1000).toFixed(0) + ' mil' : reuse.metrics.views) : '0'}</span>
-                    </div>
-                    <div className="flex items-center gap-4 text-neutral-500">
-                      <Icon name="agora-line-chart-bar" className="w-16 h-16" />
-                      <span>217</span>
+            {/* Card Column */}
+            <div className="xl:col-span-4 card-article-3_2">
+              <CardArticle
+                className="h-full bg-[#F2F6FF]! border-none shadow-none [&_.container-body]:p-32 [&_.container-body]:flex [&_.container-body]:flex-col [&_.container-body]:h-full"
+                title={reuse.title}
+                subtitle={
+                  <div className="flex flex-col gap-24 mb-16">
+                    {reuse.organization?.logo ? (
+                      <div className="w-fit px-16 py-8 rounded-8 border border-primary-100 flex items-center justify-center shadow-sm">
+                        <img
+                          src={reuse.organization.logo}
+                          alt={reuse.organization.name}
+                          className="h-[48px] object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-[160px] h-[56px] bg-white rounded-8 border border-dashed border-neutral-300 flex items-center justify-center text-neutral-400 text-xs font-bold uppercase tracking-wider shadow-sm">
+                        LOGOIPSUM
+                      </div>
+                    )}
+                    <div className="text-sm font-medium underline cursor-pointer">
+                      Tempo
                     </div>
                   </div>
-                </div>
+                }
+              >
+                <div className="flex flex-col gap-24 h-full">
+                  <div className="flex items-center flex-wrap gap-16 text-[15px]">
+                    <span className="font-semibold text-neutral-900">{reuse.type || 'Aplicação'}</span>
+                    <div className="flex items-center gap-8">
+                      <Icon name="agora-line-eye" className="w-20 h-20 fill-[var(--color-neutral-900)]" />
+                      <span className="text-neutral-900">{reuse.metrics?.views ? (reuse.metrics.views >= 1000 ? (reuse.metrics.views / 1000).toFixed(0) + ' mil' : reuse.metrics.views) : '0'}</span>
+                    </div>
+                    <div className="flex items-center gap-8">
+                      <Icon name="agora-line-calendar" className="w-20 h-20 fill-[var(--color-neutral-900)]" />
+                      <span className="text-neutral-900">217</span>
+                    </div>
+                  </div>
 
-                <div className="mt-auto">
-                  <a
-                    href={reuse.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary-700 font-bold hover:underline inline-flex items-center gap-8"
-                  >
-                    Veja reutilização
-                    <Icon name="agora-line-external-link" className="w-16 h-16" />
-                  </a>
+                  <div className="mt-auto pt-24">
+                    <a
+                      href={reuse.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#034AD8] text-lg font-bold hover:underline inline-flex items-center gap-8"
+                    >
+                      Veja reutilização
+                      <Icon name="agora-line-external-link" className="w-24 h-24 fill-[#034AD8]" />
+                    </a>
+                  </div>
                 </div>
-              </div>
+              </CardArticle>
             </div>
           </div>
         </div>
       </section>
 
       {/* Tabs Section */}
-      <section className="bg-white border-b border-neutral-200 sticky top-0 z-20">
+      <section className="bg-white sticky top-0 z-20">
         <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
           <Tabs>
             <Tab>
               <TabHeader>Descrição</TabHeader>
               {renderTabBody(
-                <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
+                <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6">
+                  {/* Main Content */}
+                  <div className="xl:col-span-8">
+                    <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed">
+                      <h2 className="text-2xl-bold text-neutral-900 mb-24">Descrição Carta do Regime de Uso do Solo</h2>
+                      <div className="whitespace-pre-wrap mb-32">
+                        {reuse.description}
+                      </div>
+
+                      {/* Featured image in content */}
+                      <div className="my-32 rounded-lg overflow-hidden">
+                        <img
+                          src="/fingermaps.svg"
+                          alt="Conteúdo da reutilização"
+                          className="max-h-[364px] w-full h-auto"
+                        />
+                      </div>
+
+                      <p>
+                        2015 marca o início de um período de alta densidade eleitoral ( em média, 1 eleição a cada 8 meses até 2017 ).
+                      </p>
+                      <p className="font-bold">
+                        O sete panneaux-election.fr destina-se a ativistas políticos e cidadãos responsáveis pela afixação de cartazes eleitorais para seus candidatos em locais oficiais.
+                      </p>
+                      <p>
+                        Os cartazes eleitorais, uma operação logística essencial durante uma campanha política, representam um investimento significativo de tempo e recursos para os ativistas. Com o panneaux-election.fr , os ativistas economizam recursos e seu trabalho é simplificado ; eles podem, assim, se concentrar no que mais importa: seu engajamento e a defesa de suas ideias.
+                      </p>
+                    </div>
+                  </div>
+
                   {/* Sidebar Metadata */}
-                  <aside className="xl:col-span-8 xl:block md:pt-64 flex flex-col gap-24">
+                  <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-24">
                     <div className="bg-white p-24 rounded-lg border border-neutral-200">
                       <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Temático</h3>
                       <p className="font-medium text-neutral-900">Política e vida pública</p>
@@ -199,35 +229,6 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                       <div className="text-xs text-neutral-400">desde julho de 2022</div>
                     </div>
                   </aside>
-
-                  {/* Main Content */}
-                  <div className="xl:col-span-4 md:pt-64 ">
-                    <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed">
-                      <h2 className="text-2xl-bold text-neutral-900 mb-24">Descrição</h2>
-                      <div className="whitespace-pre-wrap mb-32">
-                        {reuse.description}
-                      </div>
-
-                      {/* Featured image in content */}
-                      <div className="my-32 rounded-lg overflow-hidden border border-neutral-200">
-                        <img
-                          src="/womanlibrary.png"
-                          alt="Conteúdo da reutilização"
-                          className="w-full h-auto"
-                        />
-                      </div>
-
-                      <p>
-                        2015 marca o início de um período de alta densidade eleitoral ( em média, 1 eleição a cada 8 meses até 2017 ).
-                      </p>
-                      <p className="font-bold">
-                        O sete panneaux-election.fr destina-se a ativistas políticos e cidadãos responsáveis pela afixação de cartazes eleitorais para seus candidatos em locais oficiais.
-                      </p>
-                      <p>
-                        Os cartazes eleitorais, uma operação logística essencial durante uma campanha política, representam um investimento significativo de tempo e recursos para os ativistas. Com o panneaux-election.fr , os ativistas economizam recursos e seu trabalho é simplificado ; eles podem, assim, se concentrar no que mais importa: seu engajamento e a defesa de suas ideias.
-                      </p>
-                    </div>
-                  </div>
                 </div>
               )}
             </Tab>
@@ -241,8 +242,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
         </div>
       </section>
 
-      {/* Bottom Sections */}
-      <section className="bg-neutral-50 py-64">
+      <section className="bg-neutral-000 py-64">
         <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
           {/* Associated Datasets */}
           <div className="mb-80">
@@ -339,11 +339,11 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                             </div>
                             <div className="flex items-center gap-24 mt-8 text-[15px] font-medium text-primary-600">
                               <div className="flex items-center gap-8">
-                                <Icon name="agora-line-eye" className="w-[18px] h-[18px]" />
+                                <Icon name="agora-line-eye" className="w-[18px] h-[18px] fill-[var(--color-neutral-900)]" />
                                 {dataset.views}
                               </div>
                               <div className="flex items-center gap-8">
-                                <Icon name="agora-line-calendar-days" className="w-[18px] h-[18px]" />
+                                <Icon name="agora-line-calendar-days" className="w-[18px] h-[18px] fill-[var(--color-neutral-900)]" />
                                 {dataset.downloads}
                               </div>
                               <div className="flex items-center gap-8">

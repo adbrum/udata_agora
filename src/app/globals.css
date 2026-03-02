@@ -74,12 +74,28 @@ footer img {
 }
 
 /* Tabs - Overrides */
-.agora-tabs.desktop.vertically .tab-panel.current-neutral {
-  background-color: var(--color-secondary-50);
+.agora-tabs.desktop .tab-panel.current-neutral,
+.agora-tabs.desktop .tab-list.desktop .tab-list-item.active.current-neutral {
+  background-color: var(--color-primary-100);
 }
 
-.agora-tabs.desktop.vertically .tab-list .tab-list-item.active.current-neutral {
-  background-color: var(--color-secondary-50);
+.tab-panel-content {
+  position: relative;
+  padding: 4rem;
+}
+
+.tab-panel-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: -100%;
+  right: -100%;
+  background-color: var(--color-primary-100);
+}
+
+.tab-panel-content>* {
+  position: relative;
+  z-index: 1;
 }
 
 /* Custom dataset reuse card layout */
@@ -188,4 +204,11 @@ footer img {
 
 .homepage .latest-news-section .agora-card-article.default {
   gap: 0px;
+}
+
+
+/*PageDetail 3*/
+.card-article-3_2 .agora-card-article .container-body {
+  padding: 32px;
+  border-radius: 4px;
 }
