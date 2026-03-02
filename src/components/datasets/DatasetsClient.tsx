@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button, InputSearchBar, Icon, CardGeneral, CardLinks, InputSelect, DropdownSection, DropdownOption, Pill, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
@@ -21,6 +22,7 @@ export default function DatasetsClient({
   initialData,
   currentPage,
 }: DatasetsClientProps) {
+  const router = useRouter();
   const { data: datasets, total, page_size } = initialData;
 
   return (
@@ -80,7 +82,6 @@ export default function DatasetsClient({
               <DatasetsFilters />
             </div>
 
-
             {/* Results Area */}
             <div className="xl:col-span-8 mt-[36px]">
               <div>
@@ -109,6 +110,8 @@ export default function DatasetsClient({
                     datasets.map((dataset) => (
                       <div key={dataset.id} className="h-full">
                         <CardLinks
+                          onClick={() => router.push(`/pages/datasets/${dataset.slug}`)}
+                          className="cursor-pointer text-neutral-900"
                           variant="white"
                           image={{
                             src: dataset.organization?.logo || '/images/placeholders/organization.png',
@@ -118,16 +121,16 @@ export default function DatasetsClient({
                           title={dataset.title}
                           description={
                             <div className="flex flex-col gap-12">
-                              <p className="text-sm line-clamp-3 leading-relaxed text-neutral-600">
+                              <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px]">
                                 {dataset.description}
                               </p>
-                              <div className="flex flex-wrap gap-8 items-center">
-                                <Pill appearance="solid" variant="warning" className="w-fit h-fit inline-flex items-center">
+                              <div className="flex flex-wrap gap-8 items-center mt-[8px]">
+                                <span className="text-sm font-medium text-neutral-900">
                                   Metadados: 35%
-                                </Pill>
+                                </span>
                               </div>
-                              <div className="flex items-center flex-wrap gap-16 text-xs mt-8 text-neutral-500">
-                                <div className="flex items-center gap-4" title="Visualizações">
+                              <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-neutral-500 mb-[32px]">
+                                <div className="flex items-center gap-8" title="Visualizações">
                                   <Icon name="agora-line-eye" className="w-16 h-16" aria-hidden="true" />
                                   <span>
                                     {dataset.metrics?.views
@@ -139,7 +142,7 @@ export default function DatasetsClient({
                                       : '0'}
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-4" title="Downloads">
+                                <div className="flex items-center gap-8" title="Downloads">
                                   <Icon name="agora-line-download" className="w-16 h-16" aria-hidden="true" />
                                   <span>
                                     {dataset.metrics?.downloads
@@ -149,9 +152,19 @@ export default function DatasetsClient({
                                       : '0'}
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-4" title="Reutilizações">
-                                  <Icon name="agora-line-chart-bar" className="w-16 h-16" aria-hidden="true" />
+                                <div className="flex items-center gap-8" title="Reutilizações">
+                                  <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
                                   <span>{dataset.metrics?.reuses || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-8" title="Favoritos">
+                                  <img src="/Icons/favorite.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                  <span>
+                                    {dataset.metrics?.followers
+                                      ? dataset.metrics.followers >= 1000
+                                        ? (dataset.metrics.followers / 1000).toFixed(0) + ' mil'
+                                        : dataset.metrics.followers
+                                      : '0'}
+                                  </span>
                                 </div>
                               </div>
                             </div>
@@ -163,11 +176,7 @@ export default function DatasetsClient({
                             </Link>
                           }
                           blockedLink={true}
-                          topics={dataset.tags?.slice(0, 3).map(tag => (
-                            <Pill key={tag} appearance="outline" variant="primary" className="text-[10px] py-2 px-6 h-auto">
-                              {tag}
-                            </Pill>
-                          ))}
+
                         />
                       </div>
                     ))
