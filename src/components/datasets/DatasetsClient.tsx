@@ -32,7 +32,7 @@ export default function DatasetsClient({
           title="Conjunto de dados"
           backgroundImageUrl="/Banner/hero-bg.png"
           backgroundPosition="center right"
-          containerClassName="dataset"
+          //containerClassName="dataset"
           breadcrumbItems={[
             { label: 'Home', url: '/' },
             { label: 'Conjunto de dados', url: '/pages/datasets' }
@@ -76,7 +76,7 @@ export default function DatasetsClient({
         {/* Main Content - Full Width Layout Wrapper */}
         {/* Main Content */}
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
-          <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
             {/* Sidebar */}
             <div className="xl:col-span-4 xl:block bg-primary-100 p-32 pl-0">
               <DatasetsFilters />
@@ -85,8 +85,8 @@ export default function DatasetsClient({
             {/* Results Area */}
             <div className="xl:col-span-8 mt-[36px]">
               <div>
-                <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center">
-                  <span className="text-neutral-900 font-medium text-base xl:col-span-6 ">
+                <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
+                  <span className="text-neutral-900 font-medium text-base xl:col-span-6 mt-[32px]">
                     {total.toLocaleString('pt-PT')} resultados
                   </span>
                   <div className="w-full md:w-auto xl:col-span-6 ">
@@ -105,7 +105,7 @@ export default function DatasetsClient({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-32">
+                <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-filters">
                   {datasets.length > 0 ? (
                     datasets.map((dataset) => (
                       <div key={dataset.id} className="h-full">
@@ -129,7 +129,7 @@ export default function DatasetsClient({
                                   Metadados: 35%
                                 </span>
                               </div>
-                              <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-neutral-500 mb-[32px]">
+                              <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
                                 <div className="flex items-center gap-8" title="Visualizações">
                                   <Icon name="agora-line-eye" className="w-16 h-16" aria-hidden="true" />
                                   <span>
@@ -169,10 +169,10 @@ export default function DatasetsClient({
                               </div>
                             </div>
                           }
-                          date={`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })}`}
+                          date={<span className="font-[300]">{`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })}`}</span>}
                           mainLink={
                             <Link href={`/pages/datasets/${dataset.slug}`}>
-                              {dataset.title}
+                              <span className="underline">{dataset.title}</span>
                             </Link>
                           }
                           blockedLink={true}
