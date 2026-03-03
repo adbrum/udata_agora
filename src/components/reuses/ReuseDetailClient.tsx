@@ -87,7 +87,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                 <img
                   src={reuse.image || '/laptop.png'}
                   alt={reuse.title}
-                  className=" max-h-[308px]"
+                  className=" max-h-[308px] w-full object-cover"
                 />
               </div>
             </div>
@@ -100,11 +100,11 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                 subtitle={
                   <div className="flex flex-col gap-24 mb-16">
                     {reuse.organization?.logo ? (
-                      <div className="w-fit px-16 py-8 rounded-8 border border-primary-100 flex items-center justify-center shadow-sm">
+                      <div className="w-fit h-[48px] card-article-3_2-img py-8 rounded-8 border-2 border-primary-300 flex items-center justify-center">
                         <img
                           src={reuse.organization.logo}
                           alt={reuse.organization.name}
-                          className="h-[48px] object-contain"
+                          className=""
                         />
                       </div>
                     ) : (
@@ -136,7 +136,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                       href={reuse.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#034AD8] text-lg font-bold hover:underline inline-flex items-center gap-8"
+                      className="text-[#034AD8] text-lg hover:underline inline-flex items-center gap-8"
                     >
                       Veja reutilização
                       <Icon name="agora-line-external-link" className="w-24 h-24 fill-[#034AD8]" />
@@ -227,7 +227,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                   </div>
 
                   {/* Sidebar Metadata */}
-                  <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-24">
+                  <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-16">
                     <div className="bg-white p-24 rounded-lg">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Temático</h3>
                       <p className="font-medium text-neutral-900">Política e vida pública</p>
@@ -235,12 +235,13 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
 
                     <div className="bg-white p-24 rounded-lg">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Tipo</h3>
-                      <p className="font-medium text-neutral-900">{reuse.type || 'Aplicação'}</p>
+                      <p className="font-medium text-neutral-900">Aplicação</p>
                     </div>
 
                     <div className="bg-white p-24 rounded-lg">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Tags</h3>
-                      <div className="flex flex-wrap gap-8">
+                      <p className="font-medium text-neutral-900 mb-16">Aplicação</p>
+                      <div className="flex flex-col items-start gap-8">
                         {(reuse.tags || ['mapeamento', 'dataconnexions-6', 'eleição', 'noivado', 'demonstração de impacto', 'percorrer']).map(tag => (
                           <Pill key={tag} appearance="solid" variant="primary" className="bg-primary-100 text-primary-700 h-auto py-4 px-8 text-xs font-semibold">
                             {tag}
