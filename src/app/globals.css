@@ -225,24 +225,24 @@ footer img {
   height: 48px;
 }
 
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters {
+/*Cards Links*/
+.agora-card-links .top-container .content .image-content img {
+  max-height: 216px;
+}
+
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets {
   padding-bottom: 16px;
 }
 
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters .agora-card-links {
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets .agora-card-links {
   padding: 24px 64px;
 }
 
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters .agora-card-links .image-content img {
-  width: inherit;
-  height: 160px !important;
-}
-
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters .agora-card-links .title h2 {
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets .agora-card-links .title h2 {
   text-decoration: underline;
 }
 
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters>div:first-child .agora-card-links {
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets>div:first-child .agora-card-links {
   border-top: 1px solid #E1E4EA !important;
 }
 
@@ -256,7 +256,7 @@ footer img {
   background-color: var(--color-primary-50);
 }
 
-/*Pagination*/
+/*Pagination width background*/
 .pagination-filters {
   position: relative;
   z-index: 0;

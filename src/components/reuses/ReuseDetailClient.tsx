@@ -291,10 +291,11 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
               5 conjuntos de dados associados
             </h2>
             <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
-              <div className="xl:col-span-8 xl:col-start-5 grid grid-cols-1 md:grid-cols-2 agora-card-links-filters gap-x-32 pt-0">
+              <div className="xl:col-span-8 xl:col-start-5 grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-x-32 pt-0">
                 {[
                   {
                     org: 'Agência Portuguesa do Ambiente',
+                    logo: 'https://dados.gov.pt/s/avatars/ae/74fb78abd9473b91d317822952654d-original.png',
                     updated: 'Actualizado há 3 dias',
                     title: 'Qualidade da Água',
                     desc: 'Relatório sobre a qualidade da água em rios e lagos, com dados de vários pontos de monitorização.',
@@ -307,6 +308,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                   },
                   {
                     org: 'Instituto de Conservação da Natureza',
+                    logo: 'https://dados.gov.pt/s/avatars/fe/45fd7d612740428e8d8b8d0d91d68e-original.png',
                     updated: 'Actualizado há 1 mês',
                     title: 'Biodiversidade em Portugal',
                     desc: 'Dados sobre espécies em perigo e áreas protegidas no território nacional.',
@@ -319,6 +321,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                   },
                   {
                     org: 'Instituto Nacional de Estatística',
+                    logo: 'https://dados.gov.pt/s/avatars/85/a712a01eb646c4aad73fb59a2b3987-original.jpg',
                     updated: 'Actualizado há 5 dias',
                     title: 'Censo Populacional',
                     desc: 'Dados detalhados sobre a população, incluindo idade, género e localização geográfica.',
@@ -331,6 +334,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                   },
                   {
                     org: 'Direção-Geral de Energia e Geologia',
+                    logo: 'https://dados.gov.pt/s/avatars/6b/fd6834e24d429dbcfb003c837849f4-original.png',
                     updated: 'Actualizado há 2 semanas',
                     title: 'Análise do Setor Energético',
                     desc: 'Relato sobre a evolução do consumo e produção de energia em Portugal.',
@@ -343,6 +347,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                   },
                   {
                     org: 'Banco de Portugal',
+                    logo: 'https://dados.gov.pt/s/avatars/85/a712a01eb646c4aad73fb59a2b3987-original.jpg',
                     updated: 'Actualizado há 15 dias',
                     title: 'Relatório Económico Trimestral',
                     desc: 'Análise das principais variáveis económicas, incluindo PIB e inflação, com dados comparativos.',
@@ -360,7 +365,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                       className="cursor-pointer text-neutral-900"
                       variant="white"
                       image={{
-                        src: '/Logos/logo-ipsum.svg',
+                        src: dataset.logo,
                         alt: `Logo - ${dataset.org}`,
                       }}
                       category={dataset.org}
