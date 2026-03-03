@@ -224,6 +224,10 @@ footer img {
 .card-article-3_2 .agora-card-article .container-body img {
   height: 48px;
 }
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets {
+  border-top: 1px solid #e1e4ea !important;
+  padding: 24px 0 0 0;
+}
 
 /*Cards Links*/
 .agora-card-links .top-container .content .image-content img {
@@ -237,6 +241,14 @@ footer img {
 .grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets .agora-card-links {
   padding: 24px 64px;
 }
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets .agora-card-links {
+  padding: 24px 64px;
+}
+
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets .agora-card-links .image-content img {
+  width: inherit;
+  height: 160px !important;
+}
 
 .grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets .agora-card-links .title h2 {
   text-decoration: underline;
@@ -245,7 +257,6 @@ footer img {
 .grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets>div:first-child .agora-card-links {
   border-top: 1px solid #E1E4EA !important;
 }
-
 
 .agora-card-links .card-links-container {
   border-bottom: 1px solid #E1E4EA !important;
