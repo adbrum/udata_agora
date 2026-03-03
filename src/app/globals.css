@@ -220,3 +220,89 @@ footer img {
   min-height: 60px;
   padding: 16px;
 }
+/* Pagination Custom Styles - Figma Based */
+.agora-search-pagination .nav-pages .search-page {
+  color: #034ad8 !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.agora-search-pagination .nav-pages .search-page.current {
+  background-color: #034ad8 !important;
+  color: white !important;
+}
+
+.agora-search-pagination .nav-pages .search-page:hover:not(:disabled) {
+  background-color: #034ad8 !important;
+  color: white !important;
+}
+
+.agora-search-pagination .nav-pages .search-page:hover:not(:disabled) *,
+.agora-search-pagination .nav-pages .search-page.current * {
+  color: white !important;
+}
+
+/* Pagination Arrows */
+.agora-search-pagination .nav-arrows {
+  border: 2px solid #034ad8 !important;
+  border-radius: 50% !important;
+  color: #034ad8 !important;
+  background-color: white !important;
+  transition: all 0.2s ease-in-out;
+  padding: 8px !important;
+  width: 48px !important;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.agora-search-pagination .nav-arrows svg {
+  fill: #034ad8 !important;
+}
+
+.agora-search-pagination .nav-arrows:hover:not(:disabled) {
+  background-color: #034ad8 !important;
+  color: white !important;
+}
+
+.agora-search-pagination .nav-arrows:hover:not(:disabled) svg {
+  fill: white !important;
+}
+
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters {
+  padding-bottom: 16px;
+}
+
+
+
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters .agora-card-links {
+  padding: 24px 64px;
+}
+
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters .agora-card-links .image-content img {
+  width: inherit;
+  height: 160px !important;
+}
+
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters .agora-card-links .title h2 {
+  text-decoration: underline;
+}
+
+.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters>div:first-child .agora-card-links {
+  border-top: 1px solid #E1E4EA !important;
+}
+
+
+.agora-card-links .card-links-container {
+  border-bottom: 1px solid #E1E4EA !important;
+}
+
+.grid-filters {
+  gap: 104px;
+  background-color: var(--color-primary-50);
+}
+
+.underline {
+  text-decoration: underline !important
+}

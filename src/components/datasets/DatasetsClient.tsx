@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button, InputSearchBar, Icon, CardGeneral, CardLinks, InputSelect, DropdownSection, DropdownOption, Pill, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
@@ -21,6 +22,7 @@ export default function DatasetsClient({
   initialData,
   currentPage,
 }: DatasetsClientProps) {
+  const router = useRouter();
   const { data: datasets, total, page_size } = initialData;
 
   return (
@@ -30,7 +32,7 @@ export default function DatasetsClient({
           title="Conjunto de dados"
           backgroundImageUrl="/Banner/hero-bg.png"
           backgroundPosition="center right"
-          containerClassName="dataset"
+          //containerClassName="dataset"
           breadcrumbItems={[
             { label: 'Home', url: '/' },
             { label: 'Conjunto de dados', url: '/pages/datasets' }
@@ -74,18 +76,17 @@ export default function DatasetsClient({
         {/* Main Content - Full Width Layout Wrapper */}
         {/* Main Content */}
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
-          <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
             {/* Sidebar */}
             <div className="xl:col-span-4 xl:block bg-primary-100 p-32 pl-0">
               <DatasetsFilters />
             </div>
 
-
             {/* Results Area */}
             <div className="xl:col-span-8 mt-[36px]">
               <div>
-                <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center">
-                  <span className="text-neutral-900 font-medium text-base xl:col-span-6 ">
+                <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
+                  <span className="text-neutral-900 font-medium text-base xl:col-span-6 mt-[32px]">
                     {total.toLocaleString('pt-PT')} resultados
                   </span>
                   <div className="w-full md:w-auto xl:col-span-6 ">
@@ -104,11 +105,13 @@ export default function DatasetsClient({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-32">
+                <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-filters">
                   {datasets.length > 0 ? (
                     datasets.map((dataset) => (
                       <div key={dataset.id} className="h-full">
                         <CardLinks
+                          onClick={() => router.push(`/pages/datasets/${dataset.slug}`)}
+                          className="cursor-pointer text-neutral-900"
                           variant="white"
                           image={{
                             src: dataset.organization?.logo || '/images/placeholders/organization.png',
@@ -118,16 +121,16 @@ export default function DatasetsClient({
                           title={dataset.title}
                           description={
                             <div className="flex flex-col gap-12">
-                              <p className="text-sm line-clamp-3 leading-relaxed text-neutral-600">
+                              <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px]">
                                 {dataset.description}
                               </p>
-                              <div className="flex flex-wrap gap-8 items-center">
-                                <Pill appearance="solid" variant="warning" className="w-fit h-fit inline-flex items-center">
+                              <div className="flex flex-wrap gap-8 items-center mt-[8px]">
+                                <span className="text-sm font-medium text-neutral-900">
                                   Metadados: 35%
-                                </Pill>
+                                </span>
                               </div>
-                              <div className="flex items-center flex-wrap gap-16 text-xs mt-8 text-neutral-500">
-                                <div className="flex items-center gap-4" title="Visualizações">
+                              <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
+                                <div className="flex items-center gap-8" title="Visualizações">
                                   <Icon name="agora-line-eye" className="w-16 h-16" aria-hidden="true" />
                                   <span>
                                     {dataset.metrics?.views
@@ -139,7 +142,7 @@ export default function DatasetsClient({
                                       : '0'}
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-4" title="Downloads">
+                                <div className="flex items-center gap-8" title="Downloads">
                                   <Icon name="agora-line-download" className="w-16 h-16" aria-hidden="true" />
                                   <span>
                                     {dataset.metrics?.downloads
@@ -149,25 +152,31 @@ export default function DatasetsClient({
                                       : '0'}
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-4" title="Reutilizações">
-                                  <Icon name="agora-line-chart-bar" className="w-16 h-16" aria-hidden="true" />
+                                <div className="flex items-center gap-8" title="Reutilizações">
+                                  <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
                                   <span>{dataset.metrics?.reuses || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-8" title="Favoritos">
+                                  <img src="/Icons/favorite.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                  <span>
+                                    {dataset.metrics?.followers
+                                      ? dataset.metrics.followers >= 1000
+                                        ? (dataset.metrics.followers / 1000).toFixed(0) + ' mil'
+                                        : dataset.metrics.followers
+                                      : '0'}
+                                  </span>
                                 </div>
                               </div>
                             </div>
                           }
-                          date={`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })}`}
+                          date={<span className="font-[300]">{`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })}`}</span>}
                           mainLink={
                             <Link href={`/pages/datasets/${dataset.slug}`}>
-                              {dataset.title}
+                              <span className="underline">{dataset.title}</span>
                             </Link>
                           }
                           blockedLink={true}
-                          topics={dataset.tags?.slice(0, 3).map(tag => (
-                            <Pill key={tag} appearance="outline" variant="primary" className="text-[10px] py-2 px-6 h-auto">
-                              {tag}
-                            </Pill>
-                          ))}
+
                         />
                       </div>
                     ))

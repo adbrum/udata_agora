@@ -73,7 +73,7 @@ export const DatasetsFilters = () => {
       <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[64px] pl-[64px]">Filtros</h2>
 
 
-      <Sidebar variant="filter" className="pl-[64px]">
+      <Sidebar variant="filter" className="pl-[64px] font-bold">
         {filterGroups.map((group, index) => {
           const searchQuery = searchQueries[group.name] || '';
           const filteredData = group.data?.filter(item =>
@@ -87,7 +87,7 @@ export const DatasetsFilters = () => {
               key={index}
               variant="filter"
               item={{
-                children: group.name,
+                children: <span className="font-bold">{group.name}</span>,
                 hasIcon: true,
                 collapsedIconTrailing: 'agora-line-minus-circle',
                 collapsedIconHoverTrailing: 'agora-solid-minus-circle',
@@ -123,6 +123,7 @@ export const DatasetsFilters = () => {
                         <Checkbox
                           key={org.id}
                           label={org.name}
+                          className="font-bold"
                           value={org.id}
                           name="org_id"
                           checked={searchParams.getAll('org_id').includes(org.id)}
@@ -132,8 +133,8 @@ export const DatasetsFilters = () => {
                     )
                   ) : (
                     <>
-                      <Checkbox label="Opção 1" value="opt1" />
-                      <Checkbox label="Opção 2" value="opt2" />
+                      <Checkbox label="Opção 1" value="opt1" className="font-bold" />
+                      <Checkbox label="Opção 2" value="opt2" className="font-bold" />
                     </>
                   )}
                 </div>
