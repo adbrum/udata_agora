@@ -221,10 +221,13 @@ footer img {
   padding: 16px;
 }
 
+.card-article-3_2 .agora-card-article .container-body img {
+  height: 48px;
+}
+
 .grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters {
   padding-bottom: 16px;
 }
-
 
 .grid.grid-cols-1.md\:grid-cols-2.agora-card-links-filters .agora-card-links {
   padding: 24px 64px;
@@ -262,16 +265,12 @@ footer img {
 .pagination-filters::before {
   content: "";
   position: absolute;
-
   top: 0;
   bottom: 0;
-
   left: 0%;
   width: 100vw;
   transform: translateX(-50%);
-
   background: var(--color-primary-50);
-
   z-index: -1;
 }
 

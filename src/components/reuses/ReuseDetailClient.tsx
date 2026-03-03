@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Breadcrumb, Button, Icon, Tag, Pill, Tabs, Tab, TabHeader, TabBody, CardGeneral, CardArticle } from '@ama-pt/agora-design-system';
+import { Breadcrumb, Button, Icon, Tag, Pill, Tabs, Tab, TabHeader, TabBody, CardArticle, CardLinks } from '@ama-pt/agora-design-system';
 import { Reuse, Dataset } from '@/types/api';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -291,7 +291,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
               5 conjuntos de dados associados
             </h2>
             <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
-              <div className="xl:col-span-8 xl:col-start-5 flex flex-col pt-0">
+              <div className="xl:col-span-8 xl:col-start-5 grid grid-cols-1 md:grid-cols-2 agora-card-links-filters gap-x-32 pt-0">
                 {[
                   {
                     org: 'Agência Portuguesa do Ambiente',
@@ -303,6 +303,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                     downloads: '150 mil',
                     chart: '180',
                     stars: '412',
+                    slug: 'qualidade-da-agua'
                   },
                   {
                     org: 'Instituto de Conservação da Natureza',
@@ -314,6 +315,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                     downloads: '400 mil',
                     chart: '220',
                     stars: '350',
+                    slug: 'biodiversidade-em-portugal'
                   },
                   {
                     org: 'Instituto Nacional de Estatística',
@@ -325,6 +327,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                     downloads: '600 mil',
                     chart: '250',
                     stars: '512',
+                    slug: 'censo-populacional'
                   },
                   {
                     org: 'Direção-Geral de Energia e Geologia',
@@ -336,6 +339,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                     downloads: '800 mil',
                     chart: '300',
                     stars: '250',
+                    slug: 'analise-do-setor-energetico'
                   },
                   {
                     org: 'Banco de Portugal',
@@ -347,59 +351,58 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                     downloads: '1 M',
                     chart: '350',
                     stars: '600',
+                    slug: 'relatorio-economico-trimestral'
                   }
                 ].map((dataset, i) => (
-                  <div key={i} className={`pb-32 ${i !== 0 ? 'border-t border-[#E1E4EA] pt-32' : ''}`}>
-                    <div className="dataset-reuse-card-wrapper h-full [&>div]:h-full [&>div]:min-h-[260px]">
-                      <CardGeneral
-                        isCardHorizontal={true}
-                        variant="white"
-                        image={{
-                          src: '/Logos/logo-ipsum.svg',
-                          alt: `Logo - ${dataset.org}`,
-                        }}
-                        subtitleText={''}
-                        titleText={(
-                          <div className="flex flex-col gap-12 font-sans mb-16">
-                            <div className="flex flex-col gap-8 text-sm text-neutral-600">
-                              <span>{dataset.org}</span>
-                              <span>{dataset.updated}</span>
-                            </div>
-                            <h3 className="text-xl font-bold text-[#000032] border-b-[3px] border-[#000032] inline-block w-fit pb-2">
-                              {dataset.title}
-                            </h3>
+                  <div key={i} className="h-full">
+                    <CardLinks
+                      onClick={() => { }}
+                      className="cursor-pointer text-neutral-900"
+                      variant="white"
+                      image={{
+                        src: '/Logos/logo-ipsum.svg',
+                        alt: `Logo - ${dataset.org}`,
+                      }}
+                      category={dataset.org}
+                      title={dataset.title}
+                      description={
+                        <div className="flex flex-col gap-12">
+                          <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px]">
+                            {dataset.desc}
+                          </p>
+                          <div className="flex flex-wrap gap-8 items-center mt-[8px]">
+                            <span className="text-sm font-medium text-neutral-900">
+                              {dataset.meta}
+                            </span>
                           </div>
-                        ) as unknown as string}
-                        descriptionText={(
-                          <div className="flex flex-col gap-16 h-full justify-between">
-                            <div>
-                              <p className="text-[15px] text-neutral-800 leading-relaxed max-w-2xl line-clamp-2 min-h-[48px]">
-                                {dataset.desc}
-                              </p>
-                              <span className="text-[15px] text-neutral-800 block mt-8">{dataset.meta}</span>
+                          <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
+                            <div className="flex items-center gap-8" title="Visualizações">
+                              <Icon name="agora-line-eye" className="w-16 h-16" aria-hidden="true" />
+                              <span>{dataset.views}</span>
                             </div>
-                            <div className="flex items-center gap-24 mt-8 text-[15px] font-medium text-primary-600">
-                              <div className="flex items-center gap-8">
-                                <Icon name="agora-line-eye" className="w-[18px] h-[18px] fill-[var(--color-neutral-900)]" />
-                                {dataset.views}
-                              </div>
-                              <div className="flex items-center gap-8">
-                                <Icon name="agora-line-calendar-days" className="w-[18px] h-[18px] fill-[var(--color-neutral-900)]" />
-                                {dataset.downloads}
-                              </div>
-                              <div className="flex items-center gap-8">
-                                <Icon name="agora-line-chart-bar" className="w-[18px] h-[18px]" />
-                                {dataset.chart}
-                              </div>
-                              <div className="flex items-center gap-8">
-                                <Icon name="agora-line-star" className="w-[18px] h-[18px]" />
-                                {dataset.stars}
-                              </div>
+                            <div className="flex items-center gap-8" title="Downloads">
+                              <Icon name="agora-line-download" className="w-16 h-16" aria-hidden="true" />
+                              <span>{dataset.downloads}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Reutilizações">
+                              <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                              <span>{dataset.chart}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Favoritos">
+                              <img src="/Icons/favorite.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                              <span>{dataset.stars}</span>
                             </div>
                           </div>
-                        ) as unknown as string}
-                      />
-                    </div>
+                        </div>
+                      }
+                      date={<span className="font-[300]">{dataset.updated}</span>}
+                      mainLink={
+                        <Link href={`/pages/datasets/${dataset.slug}`}>
+                          <span className="underline">{dataset.title}</span>
+                        </Link>
+                      }
+                      blockedLink={true}
+                    />
                   </div>
                 ))}
               </div>
