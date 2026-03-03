@@ -27,7 +27,7 @@ export default function DatasetsClient({
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters dataset">
-      <main className="flex-grow bg-white">
+      <main className="flex-grow bg-primary-50">
         <PageBanner
           title="Conjunto de dados"
           backgroundImageUrl="/Banner/hero-bg.png"
@@ -198,7 +198,7 @@ export default function DatasetsClient({
                   )}
                 </div>
 
-                <div className="mt-64 flex justify-center pb-64">
+                <div className="pt-64 flex justify-center pb-64 pagination-filters">
                   <Pagination
                     currentPage={currentPage}
                     totalItems={total}
