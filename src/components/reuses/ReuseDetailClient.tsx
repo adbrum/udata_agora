@@ -228,17 +228,17 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
 
                   {/* Sidebar Metadata */}
                   <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-16">
-                    <div className="bg-white p-24 rounded-lg">
+                    <div className="bg-white p-32 rounded-4">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Temático</h3>
                       <p className="font-medium text-neutral-900">Política e vida pública</p>
                     </div>
 
-                    <div className="bg-white p-24 rounded-lg">
+                    <div className="bg-white p-32 rounded-4">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Tipo</h3>
                       <p className="font-medium text-neutral-900">Aplicação</p>
                     </div>
 
-                    <div className="bg-white p-24 rounded-lg">
+                    <div className="bg-white p-32 rounded-4">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Tags</h3>
                       <p className="font-medium text-neutral-900 mb-16">Aplicação</p>
                       <div className="flex flex-col items-start gap-8">
@@ -250,18 +250,18 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                       </div>
                     </div>
 
-                    <div className="bg-white p-24 rounded-lg">
+                    <div className="bg-white p-32 rounded-4">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Última atualização</h3>
                       <p className="font-medium text-neutral-900">{formatDate(reuse.last_modified)}</p>
 
                     </div>
 
-                    <div className="bg-white p-24 rounded-lg">
+                    <div className="bg-white p-32 rounded-4">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Data de criação</h3>
                       <p className="font-medium text-neutral-900">{formatDate(reuse.created_at)}</p>
                     </div>
 
-                    <div className="bg-white p-24 rounded-lg">
+                    <div className="bg-white p-32 rounded-4">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Vistas</h3>
                       <div className="text-2xl font-bold text-neutral-900 mb-8">
                         {reuse.metrics?.views ? (reuse.metrics.views / 1000).toLocaleString('pt-PT') + ' mil' : '1,68 mil'}
