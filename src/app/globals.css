@@ -1,4 +1,5 @@
 @import url("@ama-pt/agora-design-system/artifacts/dist/tailwind.css");
+
 @import url("@ama-pt/agora-design-system/artifacts/dist/style.css");
 
 @tailwind base;
@@ -211,4 +212,11 @@ footer img {
 .card-article-3_2 .agora-card-article .container-body {
   padding: 32px;
   border-radius: 4px;
+}
+
+.card-article-3_2 .agora-card-article .card-article-3_2-img {
+  border-radius: 8px;
+  min-width: 60px;
+  min-height: 60px;
+  padding: 16px;
 }

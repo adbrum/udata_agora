@@ -87,7 +87,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                 <img
                   src={reuse.image || '/laptop.png'}
                   alt={reuse.title}
-                  className=" max-h-[308px]"
+                  className=" max-h-[308px] w-full object-cover"
                 />
               </div>
             </div>
@@ -100,11 +100,11 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                 subtitle={
                   <div className="flex flex-col gap-24 mb-16">
                     {reuse.organization?.logo ? (
-                      <div className="w-fit px-16 py-8 rounded-8 border border-primary-100 flex items-center justify-center shadow-sm">
+                      <div className="w-fit h-[48px] card-article-3_2-img py-8 rounded-8 border-2 border-primary-300 flex items-center justify-center">
                         <img
                           src={reuse.organization.logo}
                           alt={reuse.organization.name}
-                          className="h-[48px] object-contain"
+                          className=""
                         />
                       </div>
                     ) : (
@@ -136,7 +136,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                       href={reuse.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#034AD8] text-lg font-bold hover:underline inline-flex items-center gap-8"
+                      className="text-[#034AD8] text-lg hover:underline inline-flex items-center gap-8"
                     >
                       Veja reutilização
                       <Icon name="agora-line-external-link" className="w-24 h-24 fill-[#034AD8]" />
@@ -160,9 +160,14 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                   {/* Main Content */}
                   <div className="xl:col-span-8">
                     <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed">
-                      <h2 className="text-2xl-bold text-neutral-900 mb-24">Descrição Carta do Regime de Uso do Solo</h2>
-                      <div className="whitespace-pre-wrap mb-32">
-                        {reuse.description}
+                      <h2 className="text-l-bold text-neutral-900 mb-32">Descrição</h2>
+                      <div className="mb-32">
+                        <p className="mb-16 text-neutral-900">
+                          Geolocalização dos locais oficiais de exibição de material eleitoral (atualizada em 31 de agosto de 2015) e rotas otimizadas de exibição entre esses locais.
+                        </p>
+                        <p className="text-neutral-900 text-m-bold">
+                          Exibições de roteiros otimizadas em termos de tempo, quilômetros e impacto ambiental reduzido.
+                        </p>
                       </div>
 
                       {/* Featured image in content */}
@@ -170,37 +175,73 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                         <img
                           src="/fingermaps.svg"
                           alt="Conteúdo da reutilização"
-                          className="max-h-[364px] w-full h-auto"
+                          className="max-h-[364px] w-full h-auto object-cover"
                         />
                       </div>
 
-                      <p>
+                      <p className="mb-16 text-neutral-900">
                         2015 marca o início de um período de alta densidade eleitoral ( em média, 1 eleição a cada 8 meses até 2017 ).
                       </p>
-                      <p className="font-bold">
-                        O sete panneaux-election.fr destina-se a ativistas políticos e cidadãos responsáveis pela afixação de cartazes eleitorais para seus candidatos em locais oficiais.
+                      <p className="mb-16 text-neutral-900">
+                        <a href="https://panneaux-election.fr" target="_blank" rel="noopener noreferrer" className="font-bold underline decoration-1 underline-offset-4">
+                          O site panneaux-election.fr
+                        </a>
+                        {" "}<span className="font-bold">destina-se a ativistas políticos e cidadãos responsáveis pela afixação de cartazes eleitorais para seus candidatos em locais oficiais.</span>
                       </p>
-                      <p>
+                      <p className="text-neutral-900">
                         Os cartazes eleitorais, uma operação logística essencial durante uma campanha política, representam um investimento significativo de tempo e recursos para os ativistas. Com o panneaux-election.fr , os ativistas economizam recursos e seu trabalho é simplificado ; eles podem, assim, se concentrar no que mais importa: seu engajamento e a defesa de suas ideias.
                       </p>
+
+                      <div className="mt-16  space-y-24">
+                        <div className="space-y-16">
+                          <p className="text-neutral-900 font-bold">Ao entrar em <span className="underline decoration-1 underline-offset-4 font-bold">panneaux-election.fr</span>:</p>
+                          <ul className="list-disc pl-24 space-y-8 text-neutral-900 mt-16">
+                            <li>Os ativistas retornam ao seu cantão, e a rota otimizada que conecta os diferentes locais de exibição é utilizada.</li>
+                            <li>Exporte a rota para um GPS ou imprima-a.</li>
+                          </ul>
+                        </div>
+
+                        <p className="text-neutral-900 mt-32">
+                          O benefício (tempo, km, pegada ecológica) é medido diretamente no site e o usuário pode ver o impacto instantaneamente.
+                        </p>
+
+                        <p className="text-neutral-900 mt-16 mb-32 font-bold">
+                          A utilização também se estende aos serviços municipais, que também podem se beneficiar de deslocamentos económicos e com baixas emissões de CO2 para a instalação/desinstalação e manutenção dos painéis.
+                        </p>
+
+                        <div className="space-y-16">
+                          <p className="text-neutral-900 mb-16">Panneaux-election.fr em números:</p>
+                          <ul className="list-disc pl-24 space-y-8 text-neutral-900">
+                            <li>91 departamentos mapeados</li>
+                            <li>35.000 km economizados graças a rotas otimizadas.</li>
+                            <li>700 horas poupadas para ativistas e serviços municipais.</li>
+                            <li>192 chamadas telefônicas para coletar os dados</li>
+                          </ul>
+                        </div>
+
+                        <p className="text-neutral-900 mt-32">
+                          Desenvolvimento do Quorum Impact (aplicativo web e mobile para gestão de campanhas) e do Mapotempo (software web para mapeamento digital, planejamento e otimização de rotas).
+                        </p>
+                      </div>
                     </div>
                   </div>
 
                   {/* Sidebar Metadata */}
-                  <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-24">
-                    <div className="bg-white p-24 rounded-lg border border-neutral-200">
-                      <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Temático</h3>
+                  <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-16">
+                    <div className="bg-white p-32 rounded-4">
+                      <h3 className="text-sm font-bold tracking-wider mb-8">Temático</h3>
                       <p className="font-medium text-neutral-900">Política e vida pública</p>
                     </div>
 
-                    <div className="bg-white p-24 rounded-lg border border-neutral-200">
-                      <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Tipo</h3>
-                      <p className="font-medium text-neutral-900">{reuse.type || 'Aplicação'}</p>
+                    <div className="bg-white p-32 rounded-4">
+                      <h3 className="text-sm font-bold tracking-wider mb-8">Tipo</h3>
+                      <p className="font-medium text-neutral-900">Aplicação</p>
                     </div>
 
-                    <div className="bg-white p-24 rounded-lg border border-neutral-200">
-                      <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Tags</h3>
-                      <div className="flex flex-wrap gap-8">
+                    <div className="bg-white p-32 rounded-4">
+                      <h3 className="text-sm font-bold tracking-wider mb-8">Tags</h3>
+                      <p className="font-medium text-neutral-900 mb-16">Aplicação</p>
+                      <div className="flex flex-col items-start gap-8">
                         {(reuse.tags || ['mapeamento', 'dataconnexions-6', 'eleição', 'noivado', 'demonstração de impacto', 'percorrer']).map(tag => (
                           <Pill key={tag} appearance="solid" variant="primary" className="bg-primary-100 text-primary-700 h-auto py-4 px-8 text-xs font-semibold">
                             {tag}
@@ -209,24 +250,24 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                       </div>
                     </div>
 
-                    <div className="bg-white p-24 rounded-lg border border-neutral-200">
-                      <div className="mb-24">
-                        <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Última atualização</h3>
-                        <p className="font-medium text-neutral-900">{formatDate(reuse.last_modified)}</p>
-                      </div>
-                      <div className="mb-0">
-                        <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Data de criação</h3>
-                        <p className="font-medium text-neutral-900">{formatDate(reuse.created_at)}</p>
-                      </div>
+                    <div className="bg-white p-32 rounded-4">
+                      <h3 className="text-sm font-bold tracking-wider mb-8">Última atualização</h3>
+                      <p className="font-medium text-neutral-900">{formatDate(reuse.last_modified)}</p>
+
                     </div>
 
-                    <div className="bg-white p-24 rounded-lg border border-neutral-200">
-                      <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-8">Vistas</h3>
+                    <div className="bg-white p-32 rounded-4">
+                      <h3 className="text-sm font-bold tracking-wider mb-8">Data de criação</h3>
+                      <p className="font-medium text-neutral-900">{formatDate(reuse.created_at)}</p>
+                    </div>
+
+                    <div className="bg-white p-32 rounded-4">
+                      <h3 className="text-sm font-bold tracking-wider mb-8">Vistas</h3>
                       <div className="text-2xl font-bold text-neutral-900 mb-8">
                         {reuse.metrics?.views ? (reuse.metrics.views / 1000).toLocaleString('pt-PT') + ' mil' : '1,68 mil'}
                       </div>
                       <Pill variant="success" appearance="outline" className="mb-8 h-auto">+31,25mil em janeiro de 2026</Pill>
-                      <div className="text-xs text-neutral-400">desde julho de 2022</div>
+                      <div className="text-xs">desde julho de 2022</div>
                     </div>
                   </aside>
                 </div>
