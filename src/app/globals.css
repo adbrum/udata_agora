@@ -1,14 +1,40 @@
 @import url("@ama-pt/agora-design-system/artifacts/dist/tailwind.css");
-
 @import url("@ama-pt/agora-design-system/artifacts/dist/style.css");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+  =============================================================================
+  TABLE OF CONTENTS
+  =============================================================================
+  1. DESIGN TOKENS (VARIABLES) ........................................ [01]
+  2. BASE STYLES ...................................................... [02]
+  3. UI COMPONENTS .................................................... [03]
+     3.1 Newsletter
+     3.2 Icons & Containers
+     3.3 Tabs Overrides
+     3.4 Cards (General)
+  4. FEATURE-SPECIFIC COMPONENTS ...................................... [04]
+     4.1 Dataset Reuse Card
+     4.2 Community Stats
+  5. PAGE STYLES ...................................................... [05]
+     5.1 Homepage (Datasets, Storytelling, News)
+     5.2 Page Detail & Links
+  6. NAVIGATION & FILTERS ............................................. [06]
+     6.1 Footer
+     6.2 Pagination & Grid Filters
+  7. UTILITIES ........................................................ [07]
+  =============================================================================
+*/
+
+/*
+  [01] DESIGN TOKENS (VARIABLES)
+  --------------------------------------------------------------------------- */
 :root {
   /* Brand Colors */
-  --color-brand-blue-dark: #021C51;
+  --color-brand-blue-dark: var(--color-primary-900);
   --color-brand-blue-dark-rgb: 2, 28, 81;
   --color-brand-blue-primary: #0C02CB;
   --color-brand-blue-primary-rgb: 12, 2, 203;
@@ -18,21 +44,26 @@
   /* Accent/Neutral Colors */
   --color-accent-light: #F7F7FF;
   --color-accent-light-rgb: 247, 247, 255;
-  --color-gray-medium: #64718B;
+  --color-gray-medium: var(--color-neutral-700);
 
   /* Sizes & Spacing */
   --size-32: 32px;
   --size-64: 64px;
 }
 
-/* Base Styles */
+/*
+  [02] BASE STYLES
+  --------------------------------------------------------------------------- */
 html,
 body {
   height: 100%;
 }
 
+/*
+  [03] UI COMPONENTS
+  --------------------------------------------------------------------------- */
 
-/* Newsletter */
+/* 3.1 Newsletter */
 .agora-card-highlight-newsletter {
   user-select: text !important;
 }
@@ -58,7 +89,7 @@ body {
   background: linear-gradient(90deg, var(--color-brand-blue-dark) 0%, rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%, rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%);
 }
 
-/* Icon Container */
+/* 3.2 Icons & Containers */
 .icon-container {
   border-radius: 50%;
   border-width: 2px;
@@ -69,12 +100,12 @@ body {
   justify-content: center;
 }
 
-/* Footer */
-footer img {
-  height: 30px;
+.icon-white svg,
+.homepage .agora-btn-link-primary:hover:not(:disabled).icon-white svg {
+  fill: var(--color-white);
 }
 
-/* Tabs - Overrides */
+/* 3.3 Tabs Overrides */
 .agora-tabs.desktop .tab-panel.current-neutral,
 .agora-tabs.desktop .tab-list.desktop .tab-list-item.active.current-neutral {
   background-color: var(--color-primary-100);
@@ -99,7 +130,16 @@ footer img {
   z-index: 1;
 }
 
-/* Custom dataset reuse card layout */
+/* 3.4 Cards (General) */
+.card-general {
+  height: 100%;
+}
+
+/*
+  [04] FEATURE-SPECIFIC COMPONENTS
+  --------------------------------------------------------------------------- */
+
+/* 4.1 Dataset Reuse Card Layout */
 .dataset-reuse-card-wrapper .card-general,
 .dataset-reuse-card-wrapper .card-general>div {
   height: 100% !important;
@@ -128,7 +168,7 @@ footer img {
   flex: 1 !important;
 }
 
-/* Community Stats Section Custom Styles */
+/* 4.2 Community Stats Section */
 .stats-icon-wrapper {
   display: flex;
   align-items: center;
@@ -147,22 +187,11 @@ footer img {
   fill: currentColor;
 }
 
-/*Card General*/
-.card-general {
-  height: 100%;
-}
+/*
+  [05] PAGE STYLES
+  --------------------------------------------------------------------------- */
 
-.pl-0 {
-  padding-left: 0;
-}
-
-/*Icones*/
-.icon-white svg,
-.homepage .agora-btn-link-primary:hover:not(:disabled).icon-white svg {
-  fill: var(--color-white);
-}
-
-/*Home - Datasets */
+/* 5.1 Homepage (Datasets, Storytelling, News) */
 .dataset-content-proper {
   height: 112px;
   word-wrap: break-word;
@@ -173,7 +202,6 @@ footer img {
   -webkit-box-orient: vertical;
 }
 
-/*Home - StoryTellings*/
 .dataset-card-home .card-general .title-text {
   min-height: 64px;
 }
@@ -192,7 +220,6 @@ footer img {
   padding-bottom: 32px;
 }
 
-/*Home - News*/
 .latest-news-section .agora-card-article .anchor-container {
   margin-top: auto;
 }
@@ -207,8 +234,7 @@ footer img {
   gap: 0px;
 }
 
-
-/*PageDetail 3*/
+/* 5.2 Page Detail & Links */
 .card-article-3_2 .agora-card-article .container-body {
   padding: 32px;
   border-radius: 4px;
@@ -224,50 +250,44 @@ footer img {
 .card-article-3_2 .agora-card-article .container-body img {
   height: 48px;
 }
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets {
-  border-top: 1px solid #e1e4ea !important;
-  padding: 24px 0 0 0;
-}
 
-/*Cards Links*/
+/*Cards Links - Datasets*/
+
 .agora-card-links .top-container .content .image-content img {
   max-height: 216px;
 }
 
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets {
+.agora-card-links-datasets {
   padding-bottom: 16px;
 }
 
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets .agora-card-links {
-  padding: 24px 64px;
-}
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets .agora-card-links {
-  padding: 24px 64px;
+.agora-card-links-datasets .agora-card-links {
+  padding: 16px 64px;
 }
 
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets .agora-card-links .image-content img {
-  width: inherit;
-  height: 160px !important;
-}
-
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets .agora-card-links .title h2 {
+agora-card-links-datasets .agora-card-links .title h2 {
   text-decoration: underline;
 }
 
-.grid.grid-cols-1.md\:grid-cols-2.agora-card-links-datasets>div:first-child .agora-card-links {
-  border-top: 1px solid #E1E4EA !important;
-}
-
 .agora-card-links .card-links-container {
-  border-bottom: 1px solid #E1E4EA !important;
+  border-bottom: 1px solid var(--color-neutral-200);
 }
 
+/*
+  [06] NAVIGATION & FILTERS
+  --------------------------------------------------------------------------- */
+
+/* 6.1 Footer */
+footer img {
+  height: 30px;
+}
+
+/* 6.2 Pagination & Grid Filters */
 .grid-filters {
   gap: 104px;
   background-color: var(--color-primary-50);
 }
 
-/*Pagination width background*/
 .pagination-filters {
   position: relative;
   z-index: 0;
@@ -285,8 +305,6 @@ footer img {
   z-index: -1;
 }
 
-/**Pagination Agora**/
-
 .agora-search-pagination {
   padding-left: 50px;
   padding-right: 50px;
@@ -294,4 +312,11 @@ footer img {
 
 .agora-search-pagination .nav-arrows {
   border-color: var(--color-primary-600);
+}
+
+/*
+  [07] UTILITIES
+  --------------------------------------------------------------------------- */
+.pl-0 {
+  padding-left: 0;
 }
