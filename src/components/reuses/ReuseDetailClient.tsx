@@ -87,7 +87,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                 <img
                   src={reuse.image || '/laptop.png'}
                   alt={reuse.title}
-                  className=" max-h-[308px] w-full object-cover"
+                  className=" max-h-[308px] w-full object-cover rounded-[4px]]"
                 />
               </div>
             </div>
@@ -151,7 +151,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
 
       {/* Tabs Section */}
       <section className="bg-white sticky top-0 z-20">
-        <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
+        <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64 mb-24">
           <Tabs>
             <Tab>
               <TabHeader>Descrição</TabHeader>
