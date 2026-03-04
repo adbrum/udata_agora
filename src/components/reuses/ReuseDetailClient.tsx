@@ -80,14 +80,14 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
           </div>
 
           {/* Hero Content */}
-          <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6">
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6 mb-24">
             {/* Image Column */}
             <div className="xl:col-span-8">
               <div className=" w-full">
                 <img
                   src={reuse.image || '/laptop.png'}
                   alt={reuse.title}
-                  className=" max-h-[308px] w-full object-cover rounded-[4px]]"
+                  className=" max-h-[308px] w-full object-cover rounded-[4px]"
                 />
               </div>
             </div>
