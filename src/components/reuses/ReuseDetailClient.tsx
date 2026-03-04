@@ -158,7 +158,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
               {renderTabBody(
                 <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6">
                   {/* Main Content */}
-                  <div className="xl:col-span-8">
+                  <div className="xl:col-span-8 max-w-ch">
                     <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed">
                       <h2 className="text-l-bold text-neutral-900 mb-32">Descrição</h2>
                       <div className="mb-32">
@@ -195,7 +195,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                       <div className="mt-16  space-y-24">
                         <div className="space-y-16">
                           <p className="text-neutral-900 font-bold">Ao entrar em <span className="underline decoration-1 underline-offset-4 font-bold">panneaux-election.fr</span>:</p>
-                          <ul className="list-disc pl-24 space-y-8 text-neutral-900 mt-16 ">
+                          <ul className="list-disc space-y-8 text-neutral-900 mt-16 pl-32 ">
                             <li>Os ativistas retornam ao seu cantão, e a rota otimizada que conecta os diferentes locais de exibição é utilizada.</li>
                             <li>Exporte a rota para um GPS ou imprima-a.</li>
                           </ul>
@@ -211,7 +211,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
 
                         <div className="space-y-16">
                           <p className="text-neutral-900 mb-16">Panneaux-election.fr em números:</p>
-                          <ul className="list-disc pl-24 space-y-8 text-neutral-900">
+                          <ul className="list-disc space-y-8 text-neutral-900 pl-32">
                             <li>91 departamentos mapeados</li>
                             <li>35.000 km economizados graças a rotas otimizadas.</li>
                             <li>700 horas poupadas para ativistas e serviços municipais.</li>
@@ -382,19 +382,19 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                           </div>
                           <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
                             <div className="flex items-center gap-8" title="Visualizações">
-                              <Icon name="agora-line-eye" className="w-16 h-16" aria-hidden="true" />
+                              <Icon name="agora-line-eye" className="" aria-hidden="true" />
                               <span>{dataset.views}</span>
                             </div>
                             <div className="flex items-center gap-8" title="Downloads">
-                              <Icon name="agora-line-download" className="w-16 h-16" aria-hidden="true" />
+                              <Icon name="agora-line-download" className="" aria-hidden="true" />
                               <span>{dataset.downloads}</span>
                             </div>
                             <div className="flex items-center gap-8" title="Reutilizações">
-                              <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                              <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
                               <span>{dataset.chart}</span>
                             </div>
                             <div className="flex items-center gap-8" title="Favoritos">
-                              <img src="/Icons/favorite.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                              <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
                               <span>{dataset.stars}</span>
                             </div>
                           </div>

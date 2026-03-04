@@ -267,7 +267,7 @@ body {
   padding: 16px 64px;
 }
 
-agora-card-links-datasets .agora-card-links .title h2 {
+.agora-card-links-datasets .agora-card-links .title h2 {
   text-decoration: underline;
 }
 
@@ -325,4 +325,11 @@ footer img {
   --------------------------------------------------------------------------- */
 .pl-0 {
   padding-left: 0;
+}
+
+p.max-w-ch,
+.max-w-ch p,
+li.max-w-ch,
+.max-w-ch li {
+  max-width: 65ch;
 }

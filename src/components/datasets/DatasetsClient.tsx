@@ -131,7 +131,7 @@ export default function DatasetsClient({
                               </div>
                               <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
                                 <div className="flex items-center gap-8" title="Visualizações">
-                                  <Icon name="agora-line-eye" className="w-16 h-16" aria-hidden="true" />
+                                  <Icon name="agora-line-eye" className="" aria-hidden="true" />
                                   <span>
                                     {dataset.metrics?.views
                                       ? dataset.metrics.views >= 1000000
@@ -143,7 +143,7 @@ export default function DatasetsClient({
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-8" title="Downloads">
-                                  <Icon name="agora-line-download" className="w-16 h-16" aria-hidden="true" />
+                                  <Icon name="agora-line-download" className="" aria-hidden="true" />
                                   <span>
                                     {dataset.metrics?.downloads
                                       ? dataset.metrics.downloads >= 1000
@@ -153,11 +153,11 @@ export default function DatasetsClient({
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-8" title="Reutilizações">
-                                  <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                  <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
                                   <span>{dataset.metrics?.reuses || 0}</span>
                                 </div>
                                 <div className="flex items-center gap-8" title="Favoritos">
-                                  <img src="/Icons/favorite.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                  <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
                                   <span>
                                     {dataset.metrics?.followers
                                       ? dataset.metrics.followers >= 1000

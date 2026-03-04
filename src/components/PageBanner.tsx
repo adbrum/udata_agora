@@ -77,8 +77,8 @@ const PageBanner: React.FC<PageBannerProps> = ({
         {(children || image) && (
           <div className="input-container">
             <div className="email-bar">
-              <div className="container mx-auto grid xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-2 px-4">
-                <div className={`relative ${isLight ? 'text-neutral-900' : 'text-white'}`}>
+              <div className="container mx-auto grid xs:grid-cols-4 md:grid-cols-8 xl:grid-cols-12 gap-32 px-4">
+                <div className="xs:col-span-4 md:col-span-7 xl:col-span-7">
                   {children}
                 </div>
                 {image && (
