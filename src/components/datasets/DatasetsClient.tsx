@@ -104,7 +104,7 @@ export default function DatasetsClient({
                     </InputSelect>
                   </div>
                 </div>
-
+                <div className="divider-neutral-200 mt-[14px] mb-24" />
                 <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets">
                   {datasets.length > 0 ? (
                     datasets.map((dataset) => (

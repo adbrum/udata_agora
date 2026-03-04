@@ -256,6 +256,7 @@ body {
 
 .agora-card-links .top-container .content .image-content img {
   max-height: 216px;
+  object-fit: contain;
 }
 
 .agora-card-links-datasets {
@@ -271,7 +272,11 @@ agora-card-links-datasets .agora-card-links .title h2 {
 }
 
 .agora-card-links .card-links-container {
-  border-bottom: 1px solid var(--color-neutral-200);
+  border-bottom: 2px solid var(--color-neutral-200);
+}
+
+.divider-neutral-200 {
+  border-bottom: 2px solid var(--color-neutral-200);
 }
 
 /*

@@ -87,7 +87,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                 <img
                   src={reuse.image || '/laptop.png'}
                   alt={reuse.title}
-                  className=" max-h-[308px] w-full object-cover rounded-[4px]"
+                  className="w-full object-cover rounded-[4px]"
                 />
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                       <div className="mt-16  space-y-24">
                         <div className="space-y-16">
                           <p className="text-neutral-900 font-bold">Ao entrar em <span className="underline decoration-1 underline-offset-4 font-bold">panneaux-election.fr</span>:</p>
-                          <ul className="list-disc pl-24 space-y-8 text-neutral-900 mt-16">
+                          <ul className="list-disc pl-24 space-y-8 text-neutral-900 mt-16 ">
                             <li>Os ativistas retornam ao seu cantão, e a rota otimizada que conecta os diferentes locais de exibição é utilizada.</li>
                             <li>Exporte a rota para um GPS ou imprima-a.</li>
                           </ul>
