@@ -242,13 +242,14 @@ body {
 
 .card-article-3_2 .agora-card-article .card-article-3_2-img {
   border-radius: 8px;
-  min-width: 60px;
+  min-width: 163px;
   min-height: 60px;
   padding: 16px;
 }
 
-.card-article-3_2 .agora-card-article .container-body img {
-  height: 48px;
+
+.card-article-3_2 .agora-card-article .card-article-3_2-img img {
+  max-height: 48px;
 }
 
 /*Cards Links - Datasets*/
