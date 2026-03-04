@@ -16,10 +16,10 @@ export default function ThemesPage() {
       >
         <div className="subtitle">
           <p className="text-primary-100 mb-8 max-w-4xl text-lg leading-relaxed">
-            Esta página tem como objetivo listar os principais conjuntos de dados relacionados à cultura disponíveis em dados.gov.pt. Ela não é exaustiva e <a href="#" className="underline font-bold hover:text-primary-200 transition-colors">está aberta a contribuições</a>.
+            Esta página tem como objetivo listar os principais conjuntos de dados relacionados à cultura disponíveis em dados.gov.pt. Ela não é exaustiva e <a href="#" className="underline hover:text-primary-200 transition-colors">está aberta a contribuições</a>.
           </p>
           <p className="text-primary-100 max-w-4xl text-lg leading-relaxed">
-            Você pode descobrir todos os dados relacionados à cultura em <a href="#" className="underline font-bold hover:text-primary-200 transition-colors">culture.data.gouv.fr</a>, a plataforma dedicada a referenciar, promover e divulgar dados culturais públicos na França.
+            Você pode descobrir todos os dados relacionados à cultura em <a href="#" className="underline hover:text-primary-200 transition-colors">culture.data.gouv.fr</a>, a plataforma dedicada a referenciar, promover e divulgar dados culturais públicos na França.
           </p>
         </div>
       </PageBanner>

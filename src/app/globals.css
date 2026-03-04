@@ -256,6 +256,7 @@ body {
 
 .agora-card-links .top-container .content .image-content img {
   max-height: 216px;
+  object-fit: contain;
 }
 
 .agora-card-links-datasets {
@@ -266,12 +267,16 @@ body {
   padding: 16px 64px;
 }
 
-agora-card-links-datasets .agora-card-links .title h2 {
+.agora-card-links-datasets .agora-card-links .title h2 {
   text-decoration: underline;
 }
 
 .agora-card-links .card-links-container {
-  border-bottom: 1px solid var(--color-neutral-200);
+  border-bottom: 2px solid var(--color-neutral-200);
+}
+
+.divider-neutral-200 {
+  border-bottom: 2px solid var(--color-neutral-200);
 }
 
 /*
@@ -320,4 +325,11 @@ footer img {
   --------------------------------------------------------------------------- */
 .pl-0 {
   padding-left: 0;
+}
+
+p.max-w-ch,
+.max-w-ch p,
+li.max-w-ch,
+.max-w-ch li {
+  max-width: 65ch;
 }

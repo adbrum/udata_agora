@@ -30,7 +30,7 @@ export default function ReusesClient({
             { label: 'Reutilizações', url: '/pages/reuses' }
           ]}
           subtitle={
-            <p className="text-primary-100 mb-8 max-w-3xl">
+            <p className="text-primary-100 mb-8 max-w-ch">
               Descubra como os dados abertos estão a ser utilizados para criar valor.
               Existem {total.toLocaleString('pt-PT')} reutilizações publicadas.
             </p>

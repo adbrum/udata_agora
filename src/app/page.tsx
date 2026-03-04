@@ -36,7 +36,7 @@ export default function Home() {
                 </h1>
               </div>
               <div className="subtitle">
-                <div className="container mx-auto text-left">
+                <div className="container mx-auto text-left max-w-ch">
                   Aceda, explore e reutilize dados públicos de forma transparente e acessível. Milhares de
                   <br />
                   conjuntos de dados ao seu dispor.
@@ -45,8 +45,8 @@ export default function Home() {
             </div>
             <div className="input-container">
               <div className="email-bar">
-                <div className="container mx-auto grid xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-2 ">
-                  <div className="relative text-white">
+                <div className="container mx-auto grid xs:grid-cols-4 md:grid-cols-8 xl:grid-cols-12 gap-32 ">
+                  <div className="xs:col-span-4 md:col-span-7 xl:col-span-7">
                     <InputSearchBar
                       label="O que procura no Portal?"
                       placeholder="Pesquisar datasets, organizações, temas..."
