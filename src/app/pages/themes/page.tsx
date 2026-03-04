@@ -32,21 +32,21 @@ export default function ThemesPage() {
             <div className="sticky top-120">
               <div className="mb-40 flex justify-center md:justify-start">
                 <img
-                  src="/culture-illustration.png"
+                  src="/man_sound.svg"
                   alt="Ilustração de Cultura"
-                  className="w-full max-w-[180px] h-auto grayscale opacity-80"
+                  className="w-[232px] h-[250px] object-contain"
                 />
               </div>
 
-              <div className="flex flex-col border-t border-neutral-200 pt-16">
-                <div className="py-16 px-16 border-b border-neutral-200">
+              <div className="flex flex-col pt-16">
+                <div className="py-16">
                   <a href="#" className="text-neutral-900 font-bold hover:text-primary-700 transition-colors flex items-center justify-between">
                     Observações preliminares
                   </a>
                 </div>
 
                 <AccordionGroup>
-                  <Accordion headingTitle="Ofertas e espaços culturais" headingLevel="h3" defaultExpanded={true}>
+                  <Accordion headingTitle="Ofertas e espaços culturais" headingLevel="h3">
                     <div className="pl-16 flex flex-col gap-8 text-sm text-neutral-600 pb-12">
                       <a href="#heranca" className="hover:text-primary-700 transition-colors">Herança</a>
                       <a href="#livros" className="hover:text-primary-700 transition-colors">Livros e leitura</a>
