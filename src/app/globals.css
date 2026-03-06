@@ -267,6 +267,10 @@ body {
   padding: 16px 64px;
 }
 
+.agora-card-links-datasets-px0 .agora-card-links:not(:last-child) {
+  padding: 12px 0px 32px;
+}
+
 .agora-card-links-datasets .agora-card-links .title h2 {
   text-decoration: underline;
 }
@@ -318,6 +322,16 @@ footer img {
 
 .agora-search-pagination .nav-arrows {
   border-color: var(--color-primary-600);
+}
+
+/* 6.3 Toggle Overrides for Organizations Filters */
+.organizations-filters .agora-toggle {
+  width: 100%;
+}
+
+.organizations-filters .agora-toggle.agora-toggle-icon {
+  width: 100%;
+  justify-content: flex-start;
 }
 
 /*
