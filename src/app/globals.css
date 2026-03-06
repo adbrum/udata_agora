@@ -334,6 +334,12 @@ footer img {
   justify-content: flex-start;
 }
 
+/* Custom Icon for Reutilizações */
+.organizations-filters .agora-toggle .agora-toggle-icon-container img {
+  width: 20px;
+  height: 20px;
+}
+
 
 /*
   [07] UTILITIES

@@ -29,13 +29,14 @@ export const OrganizationsFilters = () => {
           value="reutilizacoes"
           appearance="icon"
           variant="primary"
-          hasIcon
-          leadingIcon="agora-line-layers-menu"
+          hasIcon={true}
+          leadingIcon={activeTab === 'reutilizacoes' ? "/Icons/bar_char_white.svg" : "/Icons/bar_chart.svg"}
+          leadingIconHover="/Icons/bar_char_white.svg"
           checked={activeTab === 'reutilizacoes'}
           onChange={() => setActiveTab('reutilizacoes')}
           iconOnly={false}
           fullWidth={true}
-          className="w-full"
+          className="w-full agora-toggle agora-toggle-icon agora-toggle-icon-primary full-width has-icon"
         >
           <div className="flex items-center gap-12 font-bold text-sm">
             <span className={activeTab === 'reutilizacoes' ? 'text-primary-600 font-bold' : 'text-neutral-900 font-bold'}>
@@ -58,7 +59,7 @@ export const OrganizationsFilters = () => {
           name="org-filter-type"
           value="datasets"
           appearance="icon"
-          variant="neutral"
+          variant="primary"
           hasIcon
           leadingIcon="agora-line-hardware-settings"
           leadingIconHover="agora-solid-hardware-settings"
@@ -89,7 +90,7 @@ export const OrganizationsFilters = () => {
           name="org-filter-type"
           value="apis"
           appearance="icon"
-          variant="neutral"
+          variant="primary"
           hasIcon
           leadingIcon="agora-line-star"
           leadingIconHover="agora-solid-star"

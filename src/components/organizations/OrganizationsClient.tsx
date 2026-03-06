@@ -108,7 +108,7 @@ export default function OrganizationsClient({
                             alt: org.name,
                           }}
                           category="Organização"
-                          title={org.name}
+                          title={<div className="underline text-xl-bold">{org.name}</div>}
                           description={
                             <div className="flex flex-col gap-12">
                               {org.description && (
