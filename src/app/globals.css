@@ -320,6 +320,16 @@ footer img {
   border-color: var(--color-primary-600);
 }
 
+/* 6.3 Toggle Overrides for Organizations Filters */
+.organizations-filters .agora-toggle {
+  width: 100%;
+}
+
+.organizations-filters .agora-toggle.agora-toggle-icon {
+  width: 100%;
+  justify-content: flex-start;
+}
+
 /*
   [07] UTILITIES
   --------------------------------------------------------------------------- */
