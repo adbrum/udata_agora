@@ -247,6 +247,30 @@ body {
   padding: 16px;
 }
 
+.agora-card-article .container-body {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.agora-card-no-results .main-content {
+  margin: inherit;
+}
+
+.agora-card-no-results .title {
+  font-weight: 600;
+}
+
+.agora-card-no-results .subtitle {
+  font-size: 16px !important;
+  font-weight: 700;
+  color: #2B363C;
+}
+
+.agora-card-no-results .description {
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
 
 .card-article-3_2 .agora-card-article .card-article-3_2-img img {
   max-height: 48px;
@@ -320,4 +344,13 @@ footer img {
   --------------------------------------------------------------------------- */
 .pl-0 {
   padding-left: 0;
+}
+
+.agora-card-no-results {
+  padding: 64px 128px;
+}
+
+.agora-card-no-results .icon-container {
+  margin: 0 auto 16px;
+  border-width: inherit;
 }

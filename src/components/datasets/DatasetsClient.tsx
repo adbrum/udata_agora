@@ -183,8 +183,8 @@ export default function DatasetsClient({
                   ) : (
                     <div>
                       <CardNoResults
-                        icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />}
-                        title="Não encontrou o que procurava?"
+                        icon={<Icon name="agora-line-search" className="justify-center" />}
+                        title="Não encontrou o que procurava?" className="font-bold"
                         subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
                         description="Você também pode visualizar as solicitações atuais e enviar as suas próprias em nosso fórum dedicado à pesquisa de dados e ao acesso aberto."
                         position="center"
