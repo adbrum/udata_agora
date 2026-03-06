@@ -334,6 +334,10 @@ footer img {
   justify-content: flex-start;
 }
 
+.organizations-filters .agora-toggle.agora-toggle-icon:not(.checked) {
+  border: 2px solid #034AD8;
+}
+
 /*
   [07] UTILITIES
   --------------------------------------------------------------------------- */

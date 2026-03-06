@@ -15,9 +15,7 @@ export const OrganizationsFilters = () => {
   };
 
   const filterGroups = [
-    { name: 'Tipo de organização', type: 'static' },
-    { name: 'Temático', type: 'static' },
-    { name: 'Cobertura espacial', type: 'static' },
+    { name: 'Organização', type: 'static' }
   ];
 
   return (
@@ -63,6 +61,7 @@ export const OrganizationsFilters = () => {
           variant="neutral"
           hasIcon
           leadingIcon="agora-line-hardware-settings"
+          leadingIconHover="agora-solid-hardware-settings"
           checked={activeTab === 'datasets'}
           onChange={() => setActiveTab('datasets')}
           iconOnly={false}
