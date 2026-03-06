@@ -108,7 +108,7 @@ export default function OrganizationsClient({
                             alt: org.name,
                           }}
                           category="Organização"
-                          title={org.name}
+                          title={<div className="underline text-xl-bold">{org.name}</div>}
                           description={
                             <div className="flex flex-col gap-12">
                               {org.description && (
@@ -118,19 +118,19 @@ export default function OrganizationsClient({
                               )}
                               <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
                                 <div className="flex items-center gap-8" title="Visualizações">
-                                  <Icon name="agora-line-eye" className="w-16 h-16" aria-hidden="true" />
+                                  <Icon name="agora-line-eye" className="" aria-hidden="true" />
                                   <span>2 M</span>
                                 </div>
                                 <div className="flex items-center gap-8" title="Datasets">
-                                  <Icon name="agora-line-calendar" className="w-16 h-16" aria-hidden="true" />
+                                  <Icon name="agora-line-calendar" className="" aria-hidden="true" />
                                   <span>{Math.floor(Math.random() * 1000)} mil</span>
                                 </div>
                                 <div className="flex items-center gap-8" title="Reutilizações">
-                                  <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                  <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
                                   <span>{Math.floor(Math.random() * 200)}</span>
                                 </div>
                                 <div className="flex items-center gap-8" title="Favoritos">
-                                  <img src="/Icons/favorite.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                  <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
                                   <span>412</span>
                                 </div>
                               </div>
@@ -164,7 +164,7 @@ export default function OrganizationsClient({
                   )}
                 </div>
 
-                <div className="pb-64 flex justify-center">
+                <div className="pb-64 mt-8 flex justify-center">
                   <Pagination
                     currentPage={currentPage}
                     totalItems={total}
