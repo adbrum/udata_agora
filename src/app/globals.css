@@ -224,6 +224,18 @@ body {
   margin-top: auto;
 }
 
+.agora-btn .children-wrapper {
+  display: flex;
+}
+
+button.flex.items-center.justify-center.content-center.agora-btn.agora-btn-solid-primary.bg-primary-600.p-16.rounded-8.h-auto.gap-8 {
+  margin-top: 32px;
+}
+
+.agora-btn .children-wrapper svg {
+  margin: 3px 8px;
+}
+
 .homepage .latest-news-section .container-body {
   background: var(--color-primary-100);
   padding-top: 32px;

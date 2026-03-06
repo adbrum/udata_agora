@@ -181,19 +181,25 @@ export default function DatasetsClient({
                       </div>
                     ))
                   ) : (
-                    <div>
+                    <div className="flex flex-col items-center">
                       <CardNoResults
                         icon={<Icon name="agora-line-search" className="justify-center" />}
                         title="Não encontrou o que procurava?" className="font-bold"
                         subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
                         description="Você também pode visualizar as solicitações atuais e enviar as suas próprias em nosso fórum dedicado à pesquisa de dados e ao acesso aberto."
                         position="center"
-                        hasAnchor={true}
-                        valueAnchor="Redefir filtros"
-                        anchorHref="/pages/datasets"
-                        anchorTrailingIcon="agora-line-arrow-right-circle"
-                        anchorTrailingIconHover="agora-solid-arrow-right-circle"
+                        hasAnchor={false}
                       />
+                      <div className="mt-[-48px] mb-64">
+                        <Button
+                          variant="primary"
+                          className="bg-primary-600 p-16 rounded-8 h-auto flex items-center gap-8"
+                          onClick={() => router.push('/pages/datasets')}
+                        >
+                          <span className="text-white font-medium">Redefir filtros</span>
+                          <Icon name="agora-line-arrow-right-circle" className="w-24 h-24 text-white" />
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
