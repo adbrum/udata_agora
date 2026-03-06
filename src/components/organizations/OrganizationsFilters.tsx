@@ -23,7 +23,7 @@ export const OrganizationsFilters = () => {
   return (
     <div className="h-full organizations-filters">
       {/* Sidebar Type selection as seen in Figma */}
-      <div className="mb-64 pr-32 pl-[64px] max-w-[592px] flex flex-col gap-16 mt-[32px]">
+      <div className="mb-64 pr-32 max-w-[592px] flex flex-col gap-16 mt-[32px]">
         {/* Reutilizações */}
         <Toggle
           id="reutilizacoes"
@@ -116,11 +116,11 @@ export const OrganizationsFilters = () => {
         </Toggle>
       </div>
 
-      <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[64px] pl-[64px]">Filtros</h2>
+      <h2 className="font-bold text-xl text-neutral-900 mt-64 mb-32">Filtros</h2>
 
 
 
-      <Sidebar variant="filter" className="pl-[64px] font-bold">
+      <Sidebar variant="filter" className="font-bold">
         {filterGroups.map((group, index) => {
           return (
             <SidebarItem

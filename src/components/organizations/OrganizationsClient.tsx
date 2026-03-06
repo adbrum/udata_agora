@@ -95,14 +95,14 @@ export default function OrganizationsClient({
 
                 <div className="divider-neutral-200 mt-[14px] mb-24" />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets">
+                <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets-px0">
                   {organizations.length > 0 ? (
                     organizations.map((org) => (
                       <div key={org.id} className="h-full">
                         <CardLinks
                           onClick={() => router.push(`/pages/organizations/${org.slug}`)}
                           className="cursor-pointer text-neutral-900"
-                          variant="white"
+                          variant="transparent"
                           image={{
                             src: org.logo || '/images/placeholders/organization.png',
                             alt: org.name,
@@ -164,7 +164,7 @@ export default function OrganizationsClient({
                   )}
                 </div>
 
-                <div className="pt-64 flex justify-center pb-64 pagination-filters">
+                <div className="pb-64 flex justify-center">
                   <Pagination
                     currentPage={currentPage}
                     totalItems={total}

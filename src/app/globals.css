@@ -267,6 +267,10 @@ body {
   padding: 16px 64px;
 }
 
+.agora-card-links-datasets-px0 .agora-card-links:not(:last-child) {
+  padding: 12px 0px 32px;
+}
+
 .agora-card-links-datasets .agora-card-links .title h2 {
   text-decoration: underline;
 }
