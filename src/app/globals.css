@@ -288,6 +288,11 @@ button.flex.items-center.justify-center.content-center.agora-btn.agora-btn-solid
   max-height: 48px;
 }
 
+.storytellings .agora-card-article .container-body {
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
 /*Cards Links - Datasets*/
 
 .agora-card-links .top-container .content .image-content img {
@@ -392,6 +397,7 @@ footer img {
   margin: 0 auto 16px;
   border-width: inherit;
 }
+
 p.max-w-ch,
 .max-w-ch p,
 li.max-w-ch,
