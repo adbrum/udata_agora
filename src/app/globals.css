@@ -224,6 +224,18 @@ body {
   margin-top: auto;
 }
 
+.agora-btn .children-wrapper {
+  display: flex;
+}
+
+button.flex.items-center.justify-center.content-center.agora-btn.agora-btn-solid-primary.bg-primary-600.p-16.rounded-8.h-auto.gap-8 {
+  margin-top: 32px;
+}
+
+.agora-btn .children-wrapper svg {
+  margin: 3px 8px;
+}
+
 .homepage .latest-news-section .container-body {
   background: var(--color-primary-100);
   padding-top: 32px;
@@ -245,6 +257,30 @@ body {
   min-width: 163px;
   min-height: 60px;
   padding: 16px;
+}
+
+.agora-card-article .container-body {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.agora-card-no-results .main-content {
+  margin: inherit;
+}
+
+.agora-card-no-results .title {
+  font-weight: 600;
+}
+
+.agora-card-no-results .subtitle {
+  font-size: 16px !important;
+  font-weight: 700;
+  color: #2B363C;
+}
+
+.agora-card-no-results .description {
+  font-weight: 400;
+  margin-bottom: 0;
 }
 
 
@@ -348,6 +384,14 @@ footer img {
   padding-left: 0;
 }
 
+.agora-card-no-results {
+  padding: 64px 128px;
+}
+
+.agora-card-no-results .icon-container {
+  margin: 0 auto 16px;
+  border-width: inherit;
+}
 p.max-w-ch,
 .max-w-ch p,
 li.max-w-ch,
