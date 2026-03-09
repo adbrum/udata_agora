@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
-import { CardArticle, InputSearchBar } from '@ama-pt/agora-design-system';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { CardLinks, InputSearchBar, Icon, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { APIResponse, Reuse } from '@/types/api';
 import { format } from 'date-fns';
@@ -18,6 +20,7 @@ export default function ReusesClient({
   initialData,
   currentPage,
 }: ReusesClientProps) {
+  const router = useRouter();
   const { data: reuses, total, page_size } = initialData;
 
   return (
@@ -51,31 +54,87 @@ export default function ReusesClient({
         </PageBanner>
 
         {/* Main Content - Grid of Reuses */}
-        <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
-          <div className="py-64">
-            <div className="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-32">
-              {reuses.map((reuse) => (
-                <CardArticle
-                  key={reuse.id}
-                  image={{
-                    src: reuse.image_thumbnail || reuse.image || '/laptop.png',
-                    alt: reuse.title,
-                  }}
-                  subtitle={`Publicado a ${format(new Date(reuse.created_at), 'dd MM yyyy', { locale: pt })}`}
-                  title={reuse.title}
-                  mainAnchor={{
-                    href: `/pages/reuses/${reuse.slug}`,
-                    target: '_self',
-                    title: 'Ver mais',
-                    hasIcon: true,
-                    iconOnly: true,
-                    leadingIcon: 'agora-line-arrow-right-circle',
-                    leadingIconHover: 'agora-solid-arrow-right-circle',
-                    variant: 'primary',
-                  }}
-                  blockedLink={true}
-                />
-              ))}
+        <div className="container mx-auto md:gap-32 xl:gap-64">
+          <div className="pt-32 pb-64">
+            <div className="flex items-center mb-16 mt-[12px]">
+              <span className="text-neutral-900 font-medium text-base">
+                {total.toLocaleString('pt-PT')} Resultados
+              </span>
+            </div>
+
+            <div className="divider-neutral-200 mt-[14px] mb-24" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets-px0 gap-32">
+              {reuses.length > 0 ? (
+                reuses.map((reuse) => (
+                  <div key={reuse.id} className="h-full">
+                    <CardLinks
+                      onClick={() => router.push(`/pages/reuses/${reuse.slug}`)}
+                      className="cursor-pointer text-neutral-900"
+                      variant="transparent"
+                      image={{
+                        src: reuse.image_thumbnail || reuse.image || '/laptop.png',
+                        alt: reuse.title,
+                      }}
+                      category={reuse.organization?.name || 'Reutilização'}
+                      title={<div className="underline text-xl-bold">{reuse.title}</div>}
+                      description={
+                        <div className="flex flex-col gap-12">
+                          {reuse.description && (
+                            <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                              {reuse.description}
+                            </p>
+                          )}
+                          <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
+                            <div className="flex items-center gap-8" title="Visualizações">
+                              <Icon name="agora-line-eye" className="" aria-hidden="true" />
+                              <span>{reuse.metrics?.views?.toLocaleString('pt-PT') || '0'}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Datasets">
+                              <Icon name="agora-line-calendar" className="" aria-hidden="true" />
+                              <span>{reuse.datasets?.length || 0} associados</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Métricas">
+                              <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
+                              <span>{reuse.metrics?.reuses || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Favoritos">
+                              <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
+                              <span>{reuse.metrics?.followers || 0}</span>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                      date={
+                        <span className="font-[300]">
+                          Atualizado {format(new Date(reuse.last_modified || reuse.created_at), 'dd MM yyyy', { locale: pt })}
+                        </span>
+                      }
+                      mainLink={
+                        <Link href={`/pages/reuses/${reuse.slug}`}>
+                          <span className="underline">{reuse.title}</span>
+                        </Link>
+                      }
+                      blockedLink={true}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-2">
+                  <CardNoResults
+                    icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />}
+                    title="Não encontrou nenhuma reutilização?"
+                    subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
+                    description="Explore a nossa lista completa de reutilizações de dados abertos."
+                    position="center"
+                    hasAnchor={true}
+                    valueAnchor="Redefinir filtros"
+                    anchorHref="/pages/reuses"
+                    anchorTrailingIcon="agora-line-arrow-right-circle"
+                    anchorTrailingIconHover="agora-solid-arrow-right-circle"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Pagination */}
