@@ -25,7 +25,7 @@ export default function LoginClient() {
 
   return (
     <main className="flex-grow bg-white min-h-screen">
-      <div className="container mx-auto px-16 py-32 max-w-7xl login-page">
+      <div className="container mx-auto px-16 pt-32 pb-64 max-w-7xl login-page">
         {/* Breadcrumb */}
         <div>
           <Breadcrumb items={breadcrumbItems} />
@@ -55,14 +55,14 @@ export default function LoginClient() {
                         <Icon name="agora-line-user" className="w-24 h-24 text-brand-blue-primary" />
                       </div>
                       <div>
-                        <h2 className="text-24 font-bold text-brand-blue-dark mb-8">Para se autenticar</h2>
-                        <p className="text-neutral-700">
+                        <h2 className="text-xl-bold text-brand-blue-dark mb-8">Para se autenticar</h2>
+                        <p className="text-[#2B363C]">
                           Precisa do código PIN da sua CMD e do telemóvel que lhe está associado.
                         </p>
                       </div>
                     </div>
                     <div className="xs:col-span-4 md:col-span-3 xl:col-span-5 flex items-center justify-start md:justify-end">
-                      <div className="w-[278px] md:flex md:justify-end xl:flex xl:justify-end">
+                      <div className="w-[278px] md:flex md:justify-end xl:flex xl:justify-end mt-32">
                         <NextImage
                           src="/Logos/autenticacao_gov.svg"
                           alt="Autenticação.gov"
@@ -79,17 +79,17 @@ export default function LoginClient() {
                   <div className="flex flex-col gap-24">
                     <div className="flex flex-col gap-16">
                       <RadioButton
-                        label="Cidadão nacional"
+                        label="Cidadã/o nacional"
                         id="nacional"
                         name="citizen-type"
                         defaultChecked
-                        className="text-lg"
+                        className="text-lg text-neutral-900"
                       />
                       <RadioButton
-                        label="Cidadão estrangeiro"
+                        label="Cidadã/o estrangeira/o"
                         id="estrangeiro"
                         name="citizen-type"
-                        className="text-lg"
+                        className="text-lg text-neutral-900"
                       />
                     </div>
 
@@ -136,7 +136,7 @@ export default function LoginClient() {
                       </div>
                     </div>
                     <div className="xs:col-span-4 md:col-span-3 xl:col-span-5 flex items-center justify-start md:justify-end">
-                      <div className="w-[278px] md:flex md:justify-end xl:flex xl:justify-end">
+                      <div className="w-[278px] md:flex md:justify-end xl:flex xl:justify-end mt-32">
                         <NextImage
                           src="/Logos/autenticacao_gov.svg"
                           alt="Autenticação.gov"
