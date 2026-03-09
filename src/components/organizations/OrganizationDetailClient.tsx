@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Icon, Breadcrumb, Pill, ProgressBar } from '@ama-pt/agora-design-system';
+import Link from 'next/link';
+import { formatDistanceToNow } from 'date-fns';
+import { pt } from 'date-fns/locale';
+import { Button, Icon, Tag, Breadcrumb, Pill, ProgressBar, CardArticle } from '@ama-pt/agora-design-system';
 import { Organization } from '@/types/api';
 import { OrganizationTabs } from './OrganizationTabs';
 
@@ -46,7 +49,7 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
                         {/* Title & Header */}
                         <div className="flex flex-col gap-4">
                             <div className="flex justify-between items-start">
-                                <h1 className="text-xl-bold text-primary-900 leading-tight mb-24">
+                                <h1 className="text-xl-bold text-primary-900 leading-tight mb-24 max-w-[592px]">
                                     {organization.name}
                                 </h1>
                             </div>
@@ -74,8 +77,8 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
 
                                 <div className="mt-auto flex justify-center">
                                     <a href={organization.uri || '#'} target="_blank" rel="noopener noreferrer" className="flex items-center gap-8 text-primary-600 cursor-pointer hover:underline mb-[24px] mt-[24px]">
-                                        Leia mais no portal original
-                                        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon icon-m fill-[var(--color-primary-600)] w-32 h-32" aria-hidden="true" role="img"><path d="M11.2929 8.70711C10.9024 8.31658 10.9024 7.68342 11.2929 7.29289C11.6834 6.90237 12.3166 6.90237 12.7071 7.29289L16.7071 11.2929C17.0976 11.6834 17.0976 12.3166 16.7071 12.7071L12.7071 16.7071C12.3166 17.0976 11.6834 17.0976 11.2929 16.7071C10.9024 16.3166 10.9024 15.6834 11.2929 15.2929L13.5858 13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H13.5858L11.2929 8.70711Z"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z"></path></svg>
+                                        Leia mais
+                                        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon icon-m fill-[var(--color-primary-600)] w-32 h-32" aria-hidden="true" role="img"><path d="M11.2929 8.70711C10.9024 8.31658 10.9024 7.68342 11.2929 7.29289C11.6834 6.90237 12.3166 6.90237 12.7071 7.29289L16.7071 11.2929C17.0976 11.6834 17.0976 12.3166 16.7071 12.7071L12.7071 16.7071C12.3166 17.0976 11.6834 17.0976 11.2929 16.7071C10.9024 16.3166 10.9024 15.6834 11.2929 15.2929L13.5858 13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H13.5858L11.2929 8.70711Z"></path><path fillRule="evenodd" clip-rule="evenodd" d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z"></path></svg>
                                     </a>
                                 </div>
                             </div>
@@ -84,56 +87,73 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
 
                     <div className="xl:col-span-6">
                         <div className="flex flex-col h-fit">
-                            <div className="flex flex-col gap-16 bg-[#F2F6FF] rounded-4 p-32 mb-16">
-                                {organization.logo ? (
-                                    <div className="w-fit h-[48px] card-article-3_2-img py-8 rounded-8 border-2 border-primary-300 flex items-center justify-center">
-                                        <img
-                                            src={organization.logo}
-                                            alt={organization.name}
-                                            className="max-h-full max-w-full object-contain"
-                                        />
+                            <CardArticle
+                                className="card-detail-info border-none shadow-none mb-16 bg-[#F2F6FF] p-32"
+                                subtitle={
+                                    <div className="flex flex-col gap-16">
+                                        {organization.logo ? (
+                                            <div className="w-fit h-[48px] card-article-3_2-img py-8 rounded-8 border-2 border-primary-300 flex items-center justify-center">
+                                                <img
+                                                    src={organization.logo}
+                                                    alt={organization.name}
+                                                    className="max-h-full max-w-full object-contain"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="w-fit px-12 py-6 bg-neutral-100 rounded-8 border border-neutral-200 flex items-center justify-center text-neutral-400">
+                                                <Icon name="agora-line-building" className="w-6 h-6" />
+                                            </div>
+                                        )}
+                                        <div className="text-neutral-900 text-m-light mb-[8px]">
+                                            Organização
+                                        </div>
                                     </div>
-                                ) : (
-                                    <div className="w-fit px-12 py-6 bg-neutral-100 rounded-8 border border-neutral-200 flex items-center justify-center text-neutral-400">
-                                        <Icon name="agora-line-building" className="w-12 h-12" />
-                                    </div>
-                                )}
-
-                                {/* Main Information */}
-                                <div className="space-y-16">
-                                    <div className="text-neutral-900 text-m-light mb-[8px]">
-                                        Organização
-                                    </div>
+                                }
+                                title={
                                     <div className="text-l-semibold text-neutral-900 leading-tight mb-[8px]">
                                         {organization.name}
                                     </div>
+                                }
+                            >
+                                <div className="space-y-16">
                                     <div className="text-neutral-900 text-sm mb-[16px]">
-                                        <span className="text-m-semibold">Tipo:</span> Publicador Oficial
+                                        <span className="text-m-semibold">Última atualização:</span>{' '}
+                                        {/* Fallback to current date or handle undefined specifically if needed */}
+                                        {new Date().toLocaleDateString('pt-PT', {
+                                            day: 'numeric',
+                                            month: 'long',
+                                            year: 'numeric'
+                                        })}
+                                    </div>
+                                    <div className="pt-8">
+                                        <div className="text-neutral-900 text-sm font-medium">
+                                            <span className="text-m-semibold">Tipo:</span> Publicador Oficial
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </CardArticle>
 
                             {/* Metrics Box */}
                             <div className="grid grid-cols-2 gap-16 mb-16">
                                 <div className="bg-[#F2F6FF] rounded-4 p-32">
-                                    <div className="text-sm mb-[8px]">Conjuntos de Dados</div>
+                                    <div className="text-sm mb-[8px]">Visualizações</div>
                                     <div className="text-l-semibold font-bold text-neutral-900 mb-[8px]">
                                         {organization.metrics?.datasets || '0'}
                                     </div>
                                     <div className="flex items-center gap-1 mb-[8px]">
-                                        <Pill appearance="outline" variant="success" className="h-auto">+2</Pill>
+                                        <Pill appearance="outline" variant="success" className="h-auto">+31,25mil em janeiro de 2026</Pill>
                                     </div>
-                                    <div className="text-xs text-neutral-900 mt-1">Este mês</div>
+                                    <div className="text-xs text-neutral-900 mt-1">desde julho de 2022</div>
                                 </div>
                                 <div className="bg-[#F2F6FF] rounded-4 p-32">
-                                    <div className="text-sm mb-[8px]">Seguidores</div>
+                                    <div className="text-sm mb-[8px]">Downloads</div>
                                     <div className="text-l-semibold font-bold text-neutral-900 mb-[8px]">
                                         {organization.metrics?.followers || '0'}
                                     </div>
                                     <div className="flex items-center gap-1 mb-[8px]">
-                                        <Pill appearance="outline" variant="success" className="h-auto">+5</Pill>
+                                        <Pill appearance="outline" variant="success" className="h-auto">+31,25mil em janeiro de 2026</Pill>
                                     </div>
-                                    <div className="text-xs text-neutral-900 mt-1">Total</div>
+                                    <div className="text-xs text-neutral-900 mt-1">desde julho de 2022</div>
                                 </div>
                             </div>
 
@@ -152,6 +172,21 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div className="bg-primary-100 p-32 rounded-lg mb-[8px]">
+                    <h3 className="text-l-semibold font-bold text-neutral-900 mb-24 max-w-[592px]">
+                        Está à procura do preço de venda de um imóvel ou terreno?
+                    </h3>
+                    <div className="flex flex-col gap-4">
+                        <p className="font-semibold mb-[16px]">
+                            O aplicativo "Dados de Valorização de Terrenos (DVF)" permite acessar informações claras sobre imóveis vendidos a partir do banco de dados da Direção Geral de Finanças Públicas.
+                        </p>
+                        <a href="#" className="text-xs text-primary-600 hover:underline inline-flex items-center gap-8 mr-4 max-w-[592px]">
+                            Consulte o aplicativo "Dados de Valor de Terreno (DVF)"
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon icon-m fill-[var(--color-primary-600)] w-32 h-32" aria-hidden="true" role="img"><path d="M11.2929 8.70711C10.9024 8.31658 10.9024 7.68342 11.2929 7.29289C11.6834 6.90237 12.3166 6.90237 12.7071 7.29289L16.7071 11.2929C17.0976 11.6834 17.0976 12.3166 16.7071 12.7071L12.7071 16.7071C12.3166 17.0976 11.6834 17.0976 11.2929 16.7071C10.9024 16.3166 10.9024 15.6834 11.2929 15.2929L13.5858 13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H13.5858L11.2929 8.70711Z"></path><path fillRule="evenodd" clip-rule="evenodd" d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z"></path></svg>
+                        </a>
                     </div>
                 </div>
 
