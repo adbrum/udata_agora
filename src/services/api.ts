@@ -92,6 +92,22 @@ export async function fetchOrganizations(
     };
   }
 }
+export async function fetchOrganization(slug: string): Promise<Organization> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/organizations/${slug}/`, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch organization: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching organization:', error);
+    throw error;
+  }
+}
 export async function fetchReuses(
   page: number = 1,
   pageSize: number = 20,
