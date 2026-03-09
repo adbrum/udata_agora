@@ -111,12 +111,12 @@ body {
   background-color: var(--color-primary-100);
 }
 
-.tab-panel-content {
+.agora-tabs.desktop.vertically .tab-panel-content {
   position: relative;
   padding: 4rem;
 }
 
-.tab-panel-content::before {
+.agora-tabs.desktop.vertically .tab-panel-content::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -125,9 +125,13 @@ body {
   background-color: var(--color-primary-100);
 }
 
-.tab-panel-content>* {
+.agora-tabs.desktop.vertically .tab-panel-content>* {
   position: relative;
   z-index: 1;
+}
+
+.login-page .agora-tabs.desktop.vertically .tab-panel-content:before {
+  display: none;
 }
 
 /* 3.4 Cards (General) */

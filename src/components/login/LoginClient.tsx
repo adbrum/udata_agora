@@ -23,7 +23,7 @@ export default function LoginClient() {
 
   return (
     <main className="flex-grow bg-white min-h-screen">
-      <div className="container mx-auto px-16 py-32 max-w-7xl">
+      <div className="container mx-auto px-16 py-32 max-w-7xl login-page">
         {/* Breadcrumb */}
         <div>
           <Breadcrumb items={breadcrumbItems} />
