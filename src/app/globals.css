@@ -34,12 +34,13 @@
   --------------------------------------------------------------------------- */
 :root {
   /* Brand Colors */
-  --color-brand-blue-dark: var(--color-primary-900);
   --color-brand-blue-dark-rgb: 2, 28, 81;
   --color-brand-blue-primary: #0C02CB;
   --color-brand-blue-primary-rgb: 12, 2, 203;
   --color-brand-blue-secondary: #050157;
   --color-brand-blue-secondary-rgb: 5, 1, 87;
+  --color-brand-blue-dark: var(--color-primary-900);
+  --color-brand-blue-dark-rgb: 2, 28, 81;
 
   /* Accent/Neutral Colors */
   --color-accent-light: #F7F7FF;
@@ -111,12 +112,12 @@ body {
   background-color: var(--color-primary-100);
 }
 
-.agora-tabs.desktop.vertically .tab-panel-content {
+.tab-panel-content {
   position: relative;
   padding: 4rem;
 }
 
-.agora-tabs.desktop.vertically .tab-panel-content::before {
+.tab-panel-content::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -125,10 +126,25 @@ body {
   background-color: var(--color-primary-100);
 }
 
-.agora-tabs.desktop.vertically .tab-panel-content>* {
+.tab-panel-content>* {
   position: relative;
   z-index: 1;
 }
+
+.agora-tabs.desktop.vertically .tab-panel.current-neutral {
+  background-color: var(--color-primary-100);
+}
+
+@media (min-width: 1280px) {
+  .agora-tabs.desktop .tab-panel .tab-panel-content {
+    max-width: 1280px;
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+
+}
+
+/*Login*/
 
 .login-page .agora-tabs.desktop.vertically .tab-panel-content:before {
   display: none;
