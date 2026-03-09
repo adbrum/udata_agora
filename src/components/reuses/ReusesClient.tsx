@@ -64,7 +64,7 @@ export default function ReusesClient({
 
             <div className="divider-neutral-200 mt-[14px] mb-24" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets-px0 gap-32">
+            <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-32">
               {reuses.length > 0 ? (
                 reuses.map((reuse) => (
                   <div key={reuse.id} className="h-full">
@@ -92,7 +92,7 @@ export default function ReusesClient({
                             </div>
                             <div className="flex items-center gap-8" title="Datasets">
                               <Icon name="agora-line-calendar" className="" aria-hidden="true" />
-                              <span>{reuse.datasets?.length || 0} associados</span>
+                              <span>{reuse.datasets?.length || 0} mil</span>
                             </div>
                             <div className="flex items-center gap-8" title="Métricas">
                               <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
