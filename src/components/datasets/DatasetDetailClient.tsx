@@ -87,7 +87,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
 
           <div className="xl:col-span-6">
             <div className="flex flex-col h-fit">
-              <div className="flex flex-col gap-16 bg-[#F2F6FF] rounded-4 p-32 mb-16">
+              <div className="flex flex-col gap-16 bg-[#F2F6FF] rounded-4 p-32 mb-16 card-article-3_2">
                 {dataset.organization?.logo ? (
                   <div className="w-fit h-[48px] card-article-3_2-img py-8 rounded-8 border-2 border-primary-300 flex items-center justify-center">
                     <img
