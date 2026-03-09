@@ -292,6 +292,7 @@ button.flex.items-center.justify-center.content-center.agora-btn.agora-btn-solid
 
 .agora-card-links .top-container .content .image-content img {
   max-height: 216px;
+  object-fit: contain;
 }
 
 .agora-card-links-datasets {
@@ -302,12 +303,20 @@ button.flex.items-center.justify-center.content-center.agora-btn.agora-btn-solid
   padding: 16px 64px;
 }
 
-agora-card-links-datasets .agora-card-links .title h2 {
+.agora-card-links-datasets-px0 .agora-card-links {
+  padding: 12px 0px;
+}
+
+.agora-card-links-datasets .agora-card-links .title h2 {
   text-decoration: underline;
 }
 
 .agora-card-links .card-links-container {
-  border-bottom: 1px solid var(--color-neutral-200);
+  border-bottom: 2px solid var(--color-neutral-200);
+}
+
+.divider-neutral-200 {
+  border-bottom: 2px solid var(--color-neutral-200);
 }
 
 /*
@@ -351,6 +360,23 @@ footer img {
   border-color: var(--color-primary-600);
 }
 
+/* 6.3 Toggle Overrides for Organizations Filters */
+.organizations-filters .agora-toggle {
+  width: 100%;
+}
+
+.organizations-filters .agora-toggle.agora-toggle-icon {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+/* Custom Icon for Reutilizações */
+.organizations-filters .agora-toggle .agora-toggle-icon-container img {
+  width: 20px;
+  height: 20px;
+}
+
+
 /*
   [07] UTILITIES
   --------------------------------------------------------------------------- */
@@ -365,4 +391,10 @@ footer img {
 .agora-card-no-results .icon-container {
   margin: 0 auto 16px;
   border-width: inherit;
+}
+p.max-w-ch,
+.max-w-ch p,
+li.max-w-ch,
+.max-w-ch li {
+  max-width: 65ch;
 }

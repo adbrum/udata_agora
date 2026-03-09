@@ -71,6 +71,22 @@ O portal suporta quatro idiomas:
 
 ## 🛠️ Comandos Úteis
 
+### NPM Scripts
 - `npm run dev`: Inicia o servidor de desenvolvimento.
 - `npm run build`: Gera o build de produção.
 - `npm run lint`: Executa a verificação de linting.
+
+### PM2 (Gerenciamento de Processos)
+- `pm2 start npm --name "agora-app" -- run start`: Inicia a aplicação em produção via PM2.
+- `pm2 start npm --name "agora-dev" -- run dev`: Inicia a aplicação em modo de desenvolvimento via PM2.
+- `pm2 start node_modules/.bin/next --name "agora-app" -- start`: Inicia a aplicação diretamente pelo binário do Next.js.
+- `pm2 delete all`: Remove todos os processos (útil para limpar processos que falharam).
+
+### Firewall
+- `sudo firewall-cmd --permanent --add-service=https`: Adiciona o serviço HTTPS ao firewall.
+- `sudo firewall-cmd --reload`: Recarrega o firewall.
+- `sudo firewall-cmd --list-all`: Lista todos os serviços do firewall.
+
+Exemplo:
+- `sudo firewall-cmd --zone=public --add-port=3000/tcp --permanent`: Adiciona a porta 3000 ao firewall.
+- `sudo firewall-cmd --reload`: Recarrega o firewall.
