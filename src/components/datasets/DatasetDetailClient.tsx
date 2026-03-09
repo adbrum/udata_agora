@@ -86,9 +86,9 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
           </div>
 
           <div className="xl:col-span-6">
-            <div className="flex flex-col h-fit">
+            <div className="flex flex-col h-fit card-article-3_2">
               <CardArticle
-                className="card-detail-info border-none shadow-none mb-16 bg-[#F2F6FF] p-32"
+                className="card-detail-info border-none shadow-none mb-16 bg-[#F2F6FF] p-32 "
                 subtitle={
                   <div className="flex flex-col gap-16">
                     {dataset.organization?.logo ? (
@@ -180,7 +180,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
                 <ProgressBar
                   value={100}
                 />
-                <div className="text-xs text-neutral-500 mt-8">
+                <div className="text-xs text-neutral-700 mt-8">
                   100% (Descrição)
                 </div>
                 <div className="flex justify-start items-center text-sm text-primary-600 mt-[24px]">
