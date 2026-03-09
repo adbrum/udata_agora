@@ -27,7 +27,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
         <div className="mt-64">
             <Tabs>
                 <Tab>
-                    <TabHeader>Conjuntos de dados ({organization.metrics?.datasets || 0})</TabHeader>
+                    <TabHeader>Ficheiros ({organization.metrics?.datasets || 0})</TabHeader>
                     {renderTabBody(
                         <div className="text-neutral-500">
                             Lista de conjuntos de dados publicados por esta organização.
@@ -35,7 +35,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                     )}
                 </Tab>
                 <Tab>
-                    <TabHeader>Reutilizações ({organization.metrics?.reuses || 0})</TabHeader>
+                    <TabHeader>Reutilizações e APIs ({organization.metrics?.reuses || 0})</TabHeader>
                     {renderTabBody(
                         <div className="text-neutral-500">
                             Reutilizações associadas aos dados desta organização.
@@ -47,6 +47,25 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                     {renderTabBody(
                         <div className="text-neutral-500">
                             Conversas e discussões comunitárias.
+                        </div>
+                    )}
+                </Tab>
+                <Tab>
+                    <TabHeader>Recursos comunitários</TabHeader>
+                    {renderTabBody(
+                        <div className="flex flex-col gap-16">
+                            <h4 className="text-l-semibold text-neutral-900 font-bold">Resumo da Organização</h4>
+                            <p className="text-neutral-700">{organization.description || 'Sem descrição detalhada disponível.'}</p>
+                            <div className="grid grid-cols-2 gap-32 mt-16">
+                                <div>
+                                    <span className="text-sm font-semibold text-neutral-500 block">ID</span>
+                                    <span className="text-neutral-900">{organization.id}</span>
+                                </div>
+                                <div>
+                                    <span className="text-sm font-semibold text-neutral-500 block">Slug</span>
+                                    <span className="text-neutral-900">{organization.slug}</span>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </Tab>

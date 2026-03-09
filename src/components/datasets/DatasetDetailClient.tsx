@@ -58,12 +58,12 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
             {/* Description Section */}
             <div className="prose max-w-none text-neutral-700 text-lg leading-relaxed mb-12">
               <h2 className="text-xl font-bold text-neutral-900 mb-4 hidden">Descrição</h2>
-              <p className="text-neutral-900 text-m-light mb-[24px]">{dataset.description}</p>
+              <p className="text-neutral-900 text-m-light mb-[24px] max-w-[592px]">{dataset.description}</p>
 
               {/* Example of extra content structure to match screenshot "Observações preliminares" */}
               <div className="mt-8">
                 <h3 className="text-xl font-bold text-primary-900 mb-[16px]">Observações preliminares</h3>
-                <p className="text-neutral-900 mb-[16px]">
+                <p className="text-neutral-900 mb-[16px] max-w-[592px]">
                   Este relatório aborda as tendências demográficas e económicas do país, baseando-se em dados recolhidos ao longo do ano.
                 </p>
               </div>
@@ -71,7 +71,7 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
               {/* Example of extra content structure to match screenshot "O que é DVF?" */}
               <div className="mt-8">
                 <h3 className="text-xl font-bold text-primary-900 mb-[16px]">O que é DVF?</h3>
-                <p className="text-neutral-900 mb-[24px]">
+                <p className="text-neutral-900 mb-[24px] max-w-[592px]">
                   Este conjunto de dados "Pedidos de Valores de Terrenos", publicado e produzido pela Direção Geral das Finanças Públicas, fornece informações sobre transações imobiliárias realizadas nos últimos cinco anos na França metropolitana e nos departamentos e territórios ultramarinos franceses, com exceção da Alsácia, Mosela e Mayotte. Os dados que contém provêm de escrituras notariais e informações cadastrais.
                 </p>
 
