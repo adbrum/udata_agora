@@ -52,6 +52,10 @@
   --size-64: 64px;
 }
 
+@theme {
+  --radius-8: 8px;
+}
+
 /*
   [02] BASE STYLES
   --------------------------------------------------------------------------- */
@@ -145,6 +149,11 @@ body {
 }
 
 /*Login*/
+
+.login-page .agora-tabs.desktop.vertically .tab-panel.current-neutral,
+.login-page .agora-tabs.desktop.vertically .tab-list.desktop .tab-list-item.active.current-neutral {
+  background-color: #F5FBFF;
+}
 
 .login-page .agora-tabs.desktop.vertically .tab-panel-content:before {
   display: none;
