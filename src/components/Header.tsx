@@ -273,7 +273,13 @@ export const Header = () => {
 
           <NavigationRoot label="Conhecimento">
             <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+              <a
+                href="/pages/about-open-data"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLinkClick(e, '/pages/about-open-data');
+                }}
+              >
                 Sobre dados abertos
               </a>
             </NavigationLink>

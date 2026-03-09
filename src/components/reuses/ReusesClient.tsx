@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { CardLinks, InputSearchBar, Icon, CardNoResults } from '@ama-pt/agora-design-system';
+import { CardLinks, InputSearchBar, Icon, CardNoResults, InputSelect, DropdownSection, DropdownOption, Button } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { APIResponse, Reuse } from '@/types/api';
 import { format } from 'date-fns';
@@ -56,15 +56,40 @@ export default function ReusesClient({
         {/* Main Content - Grid of Reuses */}
         <div className="container mx-auto md:gap-32 xl:gap-64">
           <div className="pt-32 pb-64">
-            <div className="flex items-center mb-16 mt-[12px]">
-              <span className="text-neutral-900 font-medium text-base">
+            <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
+              <span className="text-neutral-900 font-medium text-base xl:col-span-7 mt-[32px]">
                 {total.toLocaleString('pt-PT')} Resultados
               </span>
+              <div className="w-full md:w-auto xl:col-span-5 flex items-end gap-16 justify-end">
+                <Button
+                  variant="primary"
+                  appearance="link"
+                  hasIcon={true}
+                  trailingIcon="agora-line-settings"
+                  trailingIconHover="agora-solid-settings"
+                >
+                  Filtrar
+                </Button>
+                <div className="flex-grow max-w-[240px]">
+                  <InputSelect
+                    label="Ordenar por :"
+                    id="sort-reuses"
+                    defaultValue="reutilizacoes"
+                    className="selectReuse"
+                  >
+                    <DropdownSection name="order">
+                      <DropdownOption value="reutilizacoes">Número de reutilizações</DropdownOption>
+                      <DropdownOption value="recentes">Mais recentes</DropdownOption>
+                      <DropdownOption value="visualizados">Mais visualizados</DropdownOption>
+                    </DropdownSection>
+                  </InputSelect>
+                </div>
+              </div>
             </div>
 
             <div className="divider-neutral-200 mt-[14px] mb-24" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets-px0 gap-32">
+            <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-32">
               {reuses.length > 0 ? (
                 reuses.map((reuse) => (
                   <div key={reuse.id} className="h-full">
@@ -92,7 +117,7 @@ export default function ReusesClient({
                             </div>
                             <div className="flex items-center gap-8" title="Datasets">
                               <Icon name="agora-line-calendar" className="" aria-hidden="true" />
-                              <span>{reuse.datasets?.length || 0} associados</span>
+                              <span>{reuse.datasets?.length || 0} mil</span>
                             </div>
                             <div className="flex items-center gap-8" title="Métricas">
                               <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
