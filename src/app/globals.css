@@ -441,3 +441,7 @@ li.max-w-ch,
   }
 
 }
+
+.rounded-8 {
+  border-radius: 8px;
+}
