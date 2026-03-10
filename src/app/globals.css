@@ -365,6 +365,18 @@ footer img {
   border-color: var(--color-primary-600);
 }
 
+:has(.agora-card-no-results) .pagination-filters:before {
+  display: none;
+}
+
+.agora-card-no-results .icon-container {
+  border-width: 0px;
+}
+
+.agora-card-no-results .description {
+  font-weight: 400;
+}
+
 /* 6.3 Toggle Overrides for Organizations Filters */
 .organizations-filters .agora-toggle {
   width: 100%;
@@ -380,6 +392,8 @@ footer img {
   width: 20px;
   height: 20px;
 }
+
+
 
 
 /*

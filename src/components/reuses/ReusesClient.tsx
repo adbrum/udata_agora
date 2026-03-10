@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
-import { CardArticle, Button, InputSearchBar } from '@ama-pt/agora-design-system';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { CardLinks, InputSearchBar, Button, InputSelect, DropdownSection, DropdownOption, Icon, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { APIResponse, Reuse } from '@/types/api';
 import { format } from 'date-fns';
@@ -18,10 +20,11 @@ export default function ReusesClient({
   initialData,
   currentPage,
 }: ReusesClientProps) {
+  const router = useRouter();
   const { data: reuses, total, page_size } = initialData;
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50">
+    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 reuse">
       <main className="flex-grow bg-white">
         <PageBanner
           title="Reutilizações"
@@ -208,17 +211,7 @@ export default function ReusesClient({
                 pageSize={page_size}
                 baseUrl="/pages/reuses"
               />
-            ))}
-          </div>
-
-          {/* Pagination */}
-          <div className="mt-64 flex justify-center pb-12">
-            <Pagination
-              currentPage={currentPage}
-              totalItems={total}
-              pageSize={page_size}
-              baseUrl="/pages/reuses"
-            />
+            </div>
           </div>
         </div>
       </main>
