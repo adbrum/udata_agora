@@ -283,7 +283,7 @@ export default function Home() {
             <p className="mt-16 mb-32 max-w-3xl text-white">
               Precisa de uma descrição uma vez que é um titulo estrangeiro e novidade no dados.gov
             </p>
-            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32 storytellings">
               {[
                 {
                   img: 'Storytellings/storytelling1.svg',
@@ -348,17 +348,20 @@ export default function Home() {
                 {
                   img: 'Articles/last-new1.svg',
                   title: 'Webinar Developers e Data Scientists: Publicação e uso de dados abertos',
+                  slug: 'webinar-developers-data-scientists',
                 },
                 {
                   img: 'Articles/last-new2.svg',
                   title: 'NOVA DATA - Webinar Dados Abertos: Importância para as empresas',
+                  slug: 'nova-data-webinar-empresas',
                 },
                 {
                   img: 'Articles/last-new3.svg',
                   title: 'Webinar Developers e Data Scientists: Publicação e uso de dados abertos',
+                  slug: 'workshop-visualizacao-dados',
                 },
               ].map((news, i) => (
-                <div className="latest-news-card-wrapper h-full">
+                <div key={i} className="latest-news-card-wrapper h-full">
                   <CardArticle
                     image={{
                       src: `/${news.img}`,
@@ -369,7 +372,7 @@ export default function Home() {
                     blockedLink={false}
                   >
                     <div className="mt-auto pt-16">
-                      <Link href="/pages/article">
+                      <Link href={`/pages/article/${news.slug}`}>
                         <Button
                           variant="primary"
                           appearance="link"
@@ -378,7 +381,7 @@ export default function Home() {
                           trailingIconHover="agora-solid-arrow-right-circle"
                           className="p-0! h-auto"
                         >
-                          <span>anchor Link Default</span>
+                          <span>Saber mais</span>
                         </Button>
                       </Link>
                     </div>
