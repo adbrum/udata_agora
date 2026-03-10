@@ -28,16 +28,12 @@ export default function ReusesClient({
       <main className="flex-grow bg-white">
         <PageBanner
           title="Reutilizações"
+          backgroundImageUrl="/Banner/hero-bg.png"
+          backgroundPosition="center right"
           breadcrumbItems={[
             { label: 'Home', url: '/' },
             { label: 'Reutilizações', url: '/pages/reuses' }
           ]}
-          subtitle={
-            <p className="text-primary-100 mb-8 max-w-[592px]">
-              Descubra como os dados abertos estão a ser utilizados para criar valor.
-              Existem {total.toLocaleString('pt-PT')} reutilizações publicadas.
-            </p>
-          }
         >
           <InputSearchBar
             label="O que procura nas reutilizações?"
@@ -48,17 +44,13 @@ export default function ReusesClient({
             searchActionAltText="Pesquisar"
             darkMode={true}
           />
-          <div className="mt-64">
-            <Button
-              variant="primary"
-              hasIcon={false}
-              className="!bg-[#7BB2FF] !text-[#002D72] px-24 py-16 rounded-8 h-auto [&_svg]:!fill-black"
-            >
-              <span className="text-lg font-medium">
-                Publicar <span className="font-bold">dados gov</span>
-              </span>
-            </Button>
+          <div className="mt-8 text-s-regular text-neutral-200">
+            Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
           </div>
+          <div className="mt-[32px] text-white">
+            <span>Conteúdo atualizados a 23.2.2026</span>
+          </div>
+          <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
         </PageBanner>
 
         {/* Main Content - Grid of Reuses */}
