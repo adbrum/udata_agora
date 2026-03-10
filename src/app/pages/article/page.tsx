@@ -1,5 +1,11 @@
-import ArticleDetail from '@/components/articles/ArticleDetail';
+import ArticleClient from '@/components/articles/ArticleClient';
+import { Metadata } from 'next';
 
-export default function ArticleDetailPage() {
-    return <ArticleDetail />;
+export const metadata: Metadata = {
+    title: 'Últimas novidades - dados.gov',
+    description: 'Acompanhe as últimas novidades, eventos e publicações sobre dados abertos em Portugal.',
+};
+
+export default function ArticleListPage() {
+    return <ArticleClient />;
 }

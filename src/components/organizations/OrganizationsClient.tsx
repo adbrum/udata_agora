@@ -45,7 +45,7 @@ export default function OrganizationsClient({
           ]}
         >
           <InputSearchBar
-            label="O que procura no Portal?"
+            label="O que procura nas organizações?"
             placeholder="Pesquisar datasets, organizações, temas..."
             id="datasets-search"
             hasVoiceActionButton={true}
