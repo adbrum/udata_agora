@@ -277,8 +277,7 @@ button.flex.items-center.justify-center.content-center.agora-btn.agora-btn-solid
 
 .homepage .latest-news-section .container-body {
   background: var(--color-primary-100);
-  padding-top: 32px;
-  padding-bottom: 32px;
+  padding: 32px;
 }
 
 .homepage .latest-news-section .agora-card-article.default {

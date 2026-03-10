@@ -36,7 +36,7 @@ export default function ReusesClient({
           ]}
         >
           <InputSearchBar
-            label="O que procura no Portal?"
+            label="O que procura nas reutilizações?"
             placeholder="Pesquisar datasets, organizações, temas..."
             id="reuses-search"
             hasVoiceActionButton={true}
