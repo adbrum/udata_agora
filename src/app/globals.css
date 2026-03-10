@@ -320,6 +320,7 @@ button.flex.items-center.justify-center.content-center.agora-btn.agora-btn-solid
 .agora-card-no-results .description {
   font-weight: 400;
   margin-bottom: 0;
+  max-width: 65ch;
 }
 
 
@@ -402,6 +403,10 @@ footer img {
 
 .agora-search-pagination .nav-arrows {
   border-color: var(--color-primary-600);
+}
+
+:has(.agora-card-no-results) .pagination-filters:before {
+  display: none;
 }
 
 /* 6.3 Toggle Overrides for Organizations Filters */
