@@ -149,3 +149,26 @@ export async function fetchOrganization(slug: string): Promise<Organization> {
     throw error;
   }
 }
+
+export async function fetchCsrfToken(): Promise<string> {
+  const response = await fetch('/csrf');
+  if (!response.ok) {
+    throw new Error('Failed to fetch CSRF token');
+  }
+  const data = await response.json();
+  return data.csrf_token;
+}
+
+export async function login(formData: FormData): Promise<any> {
+  const res = await fetch('/login', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.message || 'Ocorreu um erro ao tentar iniciar sessão.');
+  }
+
+  return await res.json();
+}

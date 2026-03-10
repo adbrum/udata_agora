@@ -376,6 +376,7 @@ footer img {
 .agora-card-no-results .description {
   font-weight: 400;
   margin-bottom: 32px;
+  max-width: 65ch;
 }
 
 /* 6.3 Toggle Overrides for Organizations Filters */
@@ -409,4 +410,34 @@ p.max-w-ch,
 li.max-w-ch,
 .max-w-ch li {
   max-width: 65ch;
+}
+
+
+/*Login*/
+.login-page .agora-tabs.desktop .tab-panel-content::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  width: calc(40vw - 50%);
+  background: var(--color-secondary-50);
+}
+
+.login-page .agora-tabs.desktop.vertically .tab-panel.current-neutral,
+.login-page .agora-tabs.desktop.vertically .tab-list.desktop .tab-list-item.active.current-neutral {
+  background-color: var(--color-secondary-50);
+}
+
+.login-page .agora-tabs.desktop.vertically .tab-panel-content:before {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .agora-tabs.desktop .tab-panel .tab-panel-content {
+    max-width: 1280px;
+    padding-left: 6rem;
+    padding-right: 6rem;
+  }
+
 }

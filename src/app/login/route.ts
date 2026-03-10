@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_BASE?.replace("/api/1", "") || "http://dev.local:7000";
+  process.env.NEXT_PUBLIC_API_BASE?.replace("/api/1", "") || "http://127.0.0.1:7000";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
