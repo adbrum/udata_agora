@@ -142,8 +142,8 @@ body {
 @media (min-width: 1280px) {
   .agora-tabs.desktop .tab-panel .tab-panel-content {
     max-width: 1280px;
-    padding-left: 4rem;
-    padding-right: 4rem;
+    padding-left: 6rem;
+    padding-right: 6rem;
   }
 
 }
@@ -152,11 +152,21 @@ body {
 
 .login-page .agora-tabs.desktop.vertically .tab-panel.current-neutral,
 .login-page .agora-tabs.desktop.vertically .tab-list.desktop .tab-list-item.active.current-neutral {
-  background-color: #F5FBFF;
+  background-color: var(--color-secondary-50);
 }
 
 .login-page .agora-tabs.desktop.vertically .tab-panel-content:before {
   display: none;
+}
+
+.login-page .agora-tabs.desktop .tab-panel-content::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  width: calc(40vw - 50%);
+  background: var(--color-secondary-50);
 }
 
 /* 3.4 Cards (General) */
