@@ -104,37 +104,70 @@ export default function ReusesClient({
                       category={reuse.organization?.name || 'Reutilização'}
                       title={<div className="underline text-xl-bold">{reuse.title}</div>}
                       description={
-                        <div className="flex flex-col gap-12">
-                          {reuse.description && (
-                            <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
-                              {reuse.description}
-                            </p>
-                          )}
-                          <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
-                            <div className="flex items-center gap-8" title="Visualizações">
-                              <Icon name="agora-line-eye" className="" aria-hidden="true" />
-                              <span>{reuse.metrics?.views?.toLocaleString('pt-PT') || '0'}</span>
-                            </div>
-                            <div className="flex items-center gap-8" title="Datasets">
-                              <Icon name="agora-line-calendar" className="" aria-hidden="true" />
-                              <span>{reuse.datasets?.length || 0} mil</span>
-                            </div>
-                            <div className="flex items-center gap-8" title="Métricas">
-                              <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
-                              <span>{reuse.metrics?.reuses || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-8" title="Favoritos">
-                              <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
-                              <span>{reuse.metrics?.followers || 0}</span>
-                            </div>
-                          </div>
-                        </div>
+                        reuse.description ? (
+                          <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                            {reuse.description}
+                          </p>
+                        ) : undefined
                       }
                       date={
                         <span className="font-[300]">
                           Atualizado {format(new Date(reuse.last_modified || reuse.created_at), 'dd MM yyyy', { locale: pt })}
                         </span>
                       }
+                      links={[
+                        {
+                          href: '#',
+                          hasIcon: true,
+                          leadingIcon: 'agora-line-eye',
+                          leadingIconHover: 'agora-solid-eye',
+                          trailingIcon: '',
+                          trailingIconHover: '',
+                          trailingIconActive: '',
+                          children: reuse.metrics?.views?.toLocaleString('pt-PT') || '0',
+                          title: 'Visualizações',
+                          onClick: (e: React.MouseEvent) => e.preventDefault(),
+                          className: 'text-[#034AD8]',
+                        },
+                        {
+                          href: '#',
+                          hasIcon: true,
+                          leadingIcon: 'agora-line-calendar',
+                          leadingIconHover: 'agora-solid-calendar',
+                          trailingIcon: '',
+                          trailingIconHover: '',
+                          trailingIconActive: '',
+                          children: `${reuse.datasets?.length || 0} mil`,
+                          title: 'Datasets',
+                          onClick: (e: React.MouseEvent) => e.preventDefault(),
+                          className: 'text-[#034AD8]',
+                        },
+                        {
+                          href: '#',
+                          hasIcon: false,
+                          children: (
+                            <span className="flex items-center gap-8">
+                              <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
+                              <span>{reuse.metrics?.reuses || 0}</span>
+                            </span>
+                          ),
+                          title: 'Métricas',
+                          onClick: (e: React.MouseEvent) => e.preventDefault(),
+                        },
+                        {
+                          href: '#',
+                          hasIcon: true,
+                          leadingIcon: 'agora-line-star',
+                          leadingIconHover: 'agora-solid-star',
+                          trailingIcon: '',
+                          trailingIconHover: '',
+                          trailingIconActive: '',
+                          children: reuse.metrics?.followers || 0,
+                          title: 'Favoritos',
+                          onClick: (e: React.MouseEvent) => e.preventDefault(),
+                          className: 'text-[#034AD8]',
+                        },
+                      ]}
                       mainLink={
                         <Link href={`/pages/reuses/${reuse.slug}`}>
                           <span className="underline">{reuse.title}</span>

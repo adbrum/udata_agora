@@ -6,6 +6,13 @@ export const metadata: Metadata = {
     description: 'Acompanhe as últimas novidades, eventos e publicações sobre dados abertos em Portugal.',
 };
 
-export default function ArticleListPage() {
-    return <ArticleClient />;
+export default async function ArticleListPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ page?: string }>;
+}) {
+    const resolvedSearchParams = await searchParams;
+    const page = Number(resolvedSearchParams?.page) || 1;
+
+    return <ArticleClient currentPage={page} />;
 }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CardLinks, InputSearchBar, Button, InputSelect, DropdownSection, DropdownOption, Icon } from '@ama-pt/agora-design-system';
 import PageBanner from '@/components/PageBanner';
+import { Pagination } from '@/components/Pagination';
 
 // Mock data for articles
 const MOCK_ARTICLES = [
@@ -54,7 +55,7 @@ const MOCK_ARTICLES = [
   }
 ];
 
-export default function ArticleClient() {
+export default function ArticleClient({ currentPage }: { currentPage: number }) {
   const router = useRouter();
 
   return (
@@ -132,45 +133,86 @@ export default function ArticleClient() {
                     category={article.organization}
                     title={<div className="underline text-xl-bold">{article.title}</div>}
                     description={
-                      <div className="flex flex-col gap-12">
-                        <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px]">
-                          {article.description}
-                        </p>
-                        <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
-                          <div className="flex items-center gap-8" title="Visualizações">
-                            <Icon name="agora-line-eye" className="" aria-hidden="true" />
-                            <span>{article.views}</span>
-                          </div>
-                          <div className="flex items-center gap-8" title="Datasets">
-                            <Icon name="agora-line-calendar" className="" aria-hidden="true" />
-                            <span>0 mil</span>
-                          </div>
-                          <div className="flex items-center gap-8" title="Métricas">
-                            <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
-                            <span>0</span>
-                          </div>
-                          <div className="flex items-center gap-8" title="Favoritos">
-                            <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
-                            <span>{article.comments}</span>
-                          </div>
-                        </div>
-                      </div>
+                      <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px]">
+                        {article.description}
+                      </p>
                     }
                     date={
                       <span className="font-[300]">
                         {article.date}
                       </span>
                     }
+                    links={[
+                      {
+                        href: '#',
+                        hasIcon: true,
+                        leadingIcon: 'agora-line-eye',
+                        leadingIconHover: 'agora-solid-eye',
+                        trailingIcon: '',
+                        trailingIconHover: '',
+                        trailingIconActive: '',
+                        children: article.views,
+                        title: 'Visualizações',
+                        onClick: (e: React.MouseEvent) => e.preventDefault(),
+                        className: 'text-[#034AD8]',
+                      },
+                      {
+                        href: '#',
+                        hasIcon: true,
+                        leadingIcon: 'agora-line-calendar',
+                        leadingIconHover: 'agora-solid-calendar',
+                        trailingIcon: '',
+                        trailingIconHover: '',
+                        trailingIconActive: '',
+                        children: '0 mil',
+                        title: 'Data',
+                        onClick: (e: React.MouseEvent) => e.preventDefault(),
+                        className: 'text-[#034AD8]',
+                      },
+                      {
+                        href: '#',
+                        hasIcon: false,
+                        children: (
+                          <span className="flex items-center gap-8">
+                            <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
+                            <span>0</span>
+                          </span>
+                        ),
+                        title: 'Métricas',
+                        onClick: (e: React.MouseEvent) => e.preventDefault(),
+                      },
+                      {
+                        href: '#',
+                        hasIcon: true,
+                        leadingIcon: 'agora-line-star',
+                        leadingIconHover: 'agora-solid-star',
+                        trailingIcon: '',
+                        trailingIconHover: '',
+                        trailingIconActive: '',
+                        children: article.comments,
+                        title: 'Favoritos',
+                        onClick: (e: React.MouseEvent) => e.preventDefault(),
+                        className: 'text-[#034AD8]',
+                      },
+                    ]}
                     mainLink={
                       <Link href={`/pages/article/${article.slug}`}>
                         <span className="underline">{article.title}</span>
                       </Link>
                     }
                     blockedLink={true}
-
                   />
                 </div>
               ))}
+            </div>
+
+            <div className="pb-64 mt-8 flex justify-center">
+              <Pagination
+                currentPage={currentPage}
+                totalItems={24} // Mock total for visual demonstration
+                pageSize={12}
+                baseUrl="/pages/article"
+              />
             </div>
           </div>
         </div>
