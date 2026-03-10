@@ -185,13 +185,21 @@ export default function OrganizationsClient({
                         icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />}
                         title="Não encontrou nenhuma organização?"
                         subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
-                        description="Explore a nossa lista completa de publicadores de dados abertos."
+                        description={<div className="max-w-[592px] mx-auto">Explore a nossa lista completa de publicadores de dados abertos.</div>}
                         position="center"
-                        hasAnchor={true}
-                        valueAnchor="Redefinir filtros"
-                        anchorHref="/pages/organizations"
-                        anchorTrailingIcon="agora-line-arrow-right-circle"
-                        anchorTrailingIconHover="agora-solid-arrow-right-circle"
+                        hasAnchor={false}
+                        extraDescription={
+                          <div className="mt-32">
+                            <Button
+                              variant="primary"
+                              onClick={() => router.push('/pages/organizations')}
+                              trailingIcon="agora-line-arrow-right-circle"
+                              trailingIconHover="agora-solid-arrow-right-circle"
+                            >
+                              Redefinir filtros
+                            </Button>
+                          </div>
+                        }
                       />
                     </div>
                   )}

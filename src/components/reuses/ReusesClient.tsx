@@ -33,7 +33,7 @@ export default function ReusesClient({
             { label: 'Reutilizações', url: '/pages/reuses' }
           ]}
           subtitle={
-            <p className="text-primary-100 mb-8 max-w-ch">
+            <p className="text-primary-100 mb-8 max-w-[592px]">
               Descubra como os dados abertos estão a ser utilizados para criar valor.
               Existem {total.toLocaleString('pt-PT')} reutilizações publicadas.
             </p>
@@ -191,13 +191,21 @@ export default function ReusesClient({
                     icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />}
                     title="Não encontrou nenhuma reutilização?"
                     subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
-                    description="Explore a nossa lista completa de reutilizações de dados abertos."
+                    description={<div className="max-w-[592px] mx-auto">Explore a nossa lista completa de reutilizações de dados abertos.</div>}
                     position="center"
-                    hasAnchor={true}
-                    valueAnchor="Redefinir filtros"
-                    anchorHref="/pages/reuses"
-                    anchorTrailingIcon="agora-line-arrow-right-circle"
-                    anchorTrailingIconHover="agora-solid-arrow-right-circle"
+                    hasAnchor={false}
+                    extraDescription={
+                      <div className="mt-24">
+                        <Button
+                          variant="primary"
+                          onClick={() => router.push('/pages/reuses')}
+                          trailingIcon="agora-line-arrow-right-circle"
+                          trailingIconHover="agora-solid-arrow-right-circle"
+                        >
+                          Redefinir filtros
+                        </Button>
+                      </div>
+                    }
                   />
                 </div>
               )}

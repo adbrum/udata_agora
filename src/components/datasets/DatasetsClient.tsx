@@ -38,7 +38,7 @@ export default function DatasetsClient({
             { label: 'Conjunto de dados', url: '/pages/datasets' }
           ]}
           subtitle={
-            <p className="text-primary-100 max-w-3xl">
+            <p className="text-primary-100 max-w-[592px]">
               Pesquise através de {total.toLocaleString('pt-PT')} conjuntos
               de dados em dados.gov
             </p>
@@ -121,7 +121,7 @@ export default function DatasetsClient({
                           title={dataset.title}
                           description={
                             <div className="flex flex-col gap-12">
-                              <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px]">
+                              <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
                                 {dataset.description}
                               </p>
                               <div className="flex flex-wrap gap-8 items-center mt-[8px]">
@@ -186,13 +186,21 @@ export default function DatasetsClient({
                         icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500 icon-xl" />}
                         title="Não encontrou o que procurava?"
                         subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
-                        description="Você também pode visualizar as solicitações atuais e enviar as suas próprias em nosso fórum dedicado à pesquisa de dados e ao acesso aberto."
+                        description={<div className="max-w-[592px] mx-auto">Você também pode visualizar as solicitações atuais e enviar as suas próprias em nosso fórum dedicado à pesquisa de dados e ao acesso aberto.</div>}
                         position="center"
-                        hasAnchor={true}
-                        valueAnchor="Redefir filtros"
-                        anchorHref="/pages/datasets"
-                        anchorTrailingIcon="agora-line-arrow-right-circle"
-                        anchorTrailingIconHover="agora-solid-arrow-right-circle"
+                        hasAnchor={false}
+                        extraDescription={
+                          <div className="mt-24">
+                            <Button
+                              variant="primary"
+                              onClick={() => router.push('/pages/datasets')}
+                              trailingIcon="agora-line-arrow-right-circle"
+                              trailingIconHover="agora-solid-arrow-right-circle"
+                            >
+                              Redefinir filtros
+                            </Button>
+                          </div>
+                        }
                       />
                     </div>
                   )}
