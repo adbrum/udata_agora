@@ -121,10 +121,13 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
 
             <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-32">
               {MOCK_ARTICLES.map((article) => (
-                <div key={article.id} className="h-full">
+                <div
+                  key={article.id}
+                  className="h-full cursor-pointer group"
+                  onClick={() => router.push(`/pages/article/${article.slug}`)}
+                >
                   <CardLinks
-                    onClick={() => router.push(`/pages/article/${article.slug}`)}
-                    className="cursor-pointer text-neutral-900"
+                    className="text-neutral-900 transition-all group-hover:shadow-md"
                     variant="transparent"
                     image={{
                       src: article.image || '/laptop.png',
