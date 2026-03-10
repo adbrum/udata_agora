@@ -181,25 +181,31 @@ export default function DatasetsClient({
                       </div>
                     ))
                   ) : (
-                    <div className="flex flex-col items-center">
+                    <div className="col-span-2">
                       <CardNoResults
-                        icon={<Icon name="agora-line-search" className="justify-center" />}
-                        title="Não encontrou o que procurava?" className="font-bold"
+                        icon={<Icon name="agora-line-search" className="justify-center icon-xl" />}
+                        title="Não encontrou o que procurava?"
+                        className="font-bold"
                         subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
                         description="Você também pode visualizar as solicitações atuais e enviar as suas próprias em nosso fórum dedicado à pesquisa de dados e ao acesso aberto."
                         position="center"
                         hasAnchor={false}
+                        extraDescription={
+                          <div className="mt-32">
+                            <Button
+                              variant="primary"
+                              appearance="solid"
+                              hasIcon={true}
+                              trailingIcon="agora-line-arrow-right-circle"
+                              trailingIconHover="agora-solid-arrow-right-circle"
+                              className="h-auto mt-32"
+                              onClick={() => router.push('/pages/datasets')}
+                            >
+                              Redefinir filtros
+                            </Button>
+                          </div>
+                        }
                       />
-                      <div className="mt-[-48px] mb-64">
-                        <Button
-                          variant="primary"
-                          className="bg-primary-600 p-16 rounded-8 h-auto flex items-center gap-8"
-                          onClick={() => router.push('/pages/datasets')}
-                        >
-                          <span className="text-white font-medium">Redefir filtros</span>
-                          <Icon name="agora-line-arrow-right-circle" className="w-24 h-24 text-white" />
-                        </Button>
-                      </div>
                     </div>
                   )}
                 </div>

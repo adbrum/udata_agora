@@ -97,6 +97,10 @@ export const Header = () => {
     }
   };
 
+  if (pathname?.startsWith('/pages/admin')) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-sticky">
       <AgoraHeader ref={headerRef}>
