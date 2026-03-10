@@ -358,7 +358,7 @@ export default function Home() {
                   title: 'Webinar Developers e Data Scientists: Publicação e uso de dados abertos',
                 },
               ].map((news, i) => (
-                <div className="latest-news-card-wrapper h-full">
+                <div key={i} className="latest-news-card-wrapper h-full">
                   <CardArticle
                     image={{
                       src: `/${news.img}`,

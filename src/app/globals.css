@@ -395,6 +395,10 @@ footer img {
   z-index: -1;
 }
 
+.sidebar-index {
+  padding: 32px 64px 32px 32px;
+}
+
 .agora-search-pagination {
   padding-left: 50px;
   padding-right: 50px;

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Icon, Accordion, AccordionGroup, CardLinks, ButtonGroup, Button, InputSearchBar } from '@ama-pt/agora-design-system';
+import { Icon, Accordion, AccordionGroup, CardLinks, ToggleGroup, Toggle, InputSearchBar } from '@ama-pt/agora-design-system';
 import PageBanner from '@/components/PageBanner';
 
 const FAQ_DATA = [
@@ -106,15 +106,17 @@ const FAQ_DATA = [
 ];
 
 const SupportPage = () => {
+  const [activeItem, setActiveItem] = React.useState('Nesta página');
+
   return (
-    <main className="flex-grow bg-white pb-64">
+    <main id="nesta-pagina" className="flex-grow bg-white pb-64">
       <PageBanner
         title={
           <>
-            <span className="xs:text-xl-light md:text-2xl-light xl:text-2xl-light text-white">
+            <span className="text-[32px] text-white font-[500] mb-[10px]">
               Bem-vindo à página de suporte da
             </span>
-            <span className="xs:text-xl-light md:text-2xl-light xl:text-2xl-light text-white">
+            <span className="text-[32px] text-white font-[500]">
               plataforma data.gov
             </span>
           </>
@@ -124,7 +126,8 @@ const SupportPage = () => {
           { label: 'Apoiar', url: '#' }
         ]}
         backgroundImageUrl="/Banner/hero-bg.png"
-        backgroundPosition="center right"
+        backgroundPosition="inherit"
+        height="480px"
         subtitle={
           <>
             <label className="block text-[20px] font-bold text-white mt-[48px]">Antes de nos contactar, consulte o fórum e os nossos guias:<br />poderá já encontrar a resposta à sua pergunta lá!</label>
@@ -151,84 +154,138 @@ const SupportPage = () => {
         }
       />
 
-
-
       <div className="container mx-auto px-4 py-64">
-        <div className="grid md:grid-cols-2 gap-32 mb-64">
-        </div>
+        <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
 
-        {/* FAQ Section */}
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl-bold mb-48">Perguntas frequentes</h2>
+          <div className="xl:col-span-8 xl:block max-w-ch">
+            {/* FAQ Section */}
+            <div id="faq" className="max-w-4xl mx-auto scroll-mt-32">
+              <p className="text-sm text-neutral-700 mb-[32px]">Conteúdos atualizado a 23.2.2026</p>
+              <h2 className="text-xl-semibold mb-[32px] text-primary-900">Perguntas frequentes</h2>
 
-          <div className="space-y-48">
-            {FAQ_DATA.map((category, idx) => (
-              <section key={idx}>
-                <h3 className="text-lg-bold text-primary-700 mb-24">{category.category}</h3>
-                <AccordionGroup>
-                  {category.items.map((item, itemIdx) => (
-                    <Accordion
-                      key={itemIdx}
-                      headingTitle={item.question}
-                      headingLevel="h4"
-                      defaultExpanded={item.defaultExpanded}
+              <div className="space-y-48">
+                {FAQ_DATA.map((category, idx) => (
+                  <section
+                    key={idx}
+                    id={category.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-').replace(/[^\w-]/g, '')}
+                    className={`${category.category !== "Negócios" ? "mt-[32px]" : ""} scroll-mt-32`}
+                  >
+                    <h3 className="text-[20px] font-bold text-[#021C51] mb-[16px]">{category.category}</h3>
+                    <AccordionGroup>
+                      {category.items.map((item, itemIdx) => (
+                        <Accordion
+                          key={itemIdx}
+                          headingTitle={<span className="text-[#2B363C] font-bold mr-[16px]">{item.question}</span>}
+                          headingLevel="h4"
+                          defaultExpanded={item.defaultExpanded}
+                        >
+                          <div className="py-16 mr-[16px] text-neutral-900 leading-relaxed">
+                            {item.answer}
+                          </div>
+                        </Accordion>
+                      ))}
+                    </AccordionGroup>
+                  </section>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom Support Options */}
+
+          </div>
+
+          <div className="xl:col-span-4 xl:block self-start sticky top-[190px] h-fit">
+            <div className="sidebar-index pr-64 border-l border-neutral-700">
+              <ul>
+                <li
+                  className="mb-[16px] cursor-pointer"
+                  onClick={() => setActiveItem('Nesta página')}
+                >
+                  <a
+                    href="#nesta-pagina"
+                    className={`text-neutral-900 ${activeItem === 'Nesta página' ? 'text-m-bold font-bold' : 'text-m-regular'}`}
+                    style={activeItem === 'Nesta página' ? { fontWeight: 700 } : {}}
+                  >
+                    Nesta página
+                  </a>
+                </li>
+                {FAQ_DATA.map((category) => {
+                  const slug = category.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+                  return (
+                    <li
+                      key={slug}
+                      className="mb-[8px] cursor-pointer"
+                      onClick={() => setActiveItem(category.category)}
                     >
-                      <div className="py-16 text-neutral-700 leading-relaxed">
-                        {item.answer}
-                      </div>
-                    </Accordion>
-                  ))}
-                </AccordionGroup>
-              </section>
-            ))}
+                      <a
+                        href={`#${slug}`}
+                        className={`text-neutral-900 ${activeItem === category.category ? 'text-m-bold font-bold' : 'text-m-regular'}`}
+                        style={activeItem === category.category ? { fontWeight: 700 } : {}}
+                      >
+                        {category.category}
+                      </a>
+                    </li>
+                  );
+                })}
+                <li
+                  className="cursor-pointer"
+                  onClick={() => setActiveItem('Ajuda')}
+                >
+                  <a
+                    href="#ajuda"
+                    className={`text-primary-900 ${activeItem === 'Ajuda' ? 'text-m-bold font-bold' : 'text-m-regular'}`}
+                    style={activeItem === 'Ajuda' ? { fontWeight: 700 } : {}}
+                  >
+                    Ajuda
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        {/* Bottom Support Options */}
-        <div className="mt-80 pt-64 border-t border-neutral-200">
-          <h2 className="text-2xl-bold mb-16">Ajuda</h2>
-          <h3 className="text-xl-bold mb-48">Não encontrou o que procurava??</h3>
+        <div id="ajuda" className="mt-80 pt-64 border-neutral-200 scroll-mt-32">
+          <h2 className="text-[24px] font-bold text-[#021C51] mb-[24px]">Ajuda</h2>
+          <h3 className="text-[20px] font-[500] text-[#021C51] mb-[16px]">Não encontrou o que procurava?</h3>
 
-          <ButtonGroup fullWidth={true}>
-            <Button
-              variant="primary"
-              appearance="outline"
+          <ToggleGroup>
+            <Toggle
+              value="question"
               leadingIcon="agora-line-question-mark"
               leadingIconHover="agora-solid-question-mark"
               hasIcon={true}
             >
               Tenho uma pergunta
-            </Button>
-            <Button
-              variant="primary"
-              appearance="outline"
+            </Toggle>
+            <Toggle
+              value="data"
               leadingIcon="agora-line-help-support"
               leadingIconHover="agora-solid-help-support"
               hasIcon={true}
             >
               Solicitação de Dados
-            </Button>
-            <Button
-              variant="primary"
-              appearance="outline"
+            </Toggle>
+            <Toggle
+              value="bug"
               leadingIcon="agora-line-alert-triangle"
               leadingIconHover="agora-solid-alert-triangle"
               hasIcon={true}
             >
               Enviar um bug
-            </Button>
-            <Button
-              variant="primary"
-              appearance="outline"
+            </Toggle>
+            <Toggle
+              value="feedback"
               leadingIcon="agora-line-chat"
               leadingIconHover="agora-solid-chat"
               hasIcon={true}
             >
               Envie seu feedback em data.gov.pt
-            </Button>
-          </ButtonGroup>
+            </Toggle>
+          </ToggleGroup>
         </div>
       </div>
+
+
     </main>
   );
 };
