@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 
   // 302 = registration succeeded (backend redirects)
   if (backendResponse.status === 302) {
-    const redirectLocation = backendResponse.headers.get("location") || "/login";
+    const redirectLocation = backendResponse.headers.get("location") || "/";
     const requireEmailConfirmation =
       process.env.NEXT_PUBLIC_REQUIRE_EMAIL_CONFIRMATION === "true";
 

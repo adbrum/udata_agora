@@ -70,7 +70,7 @@ export default function RegisterClient() {
                     'Registo efetuado com sucesso. Verifique o seu email para confirmar a conta.'
                 );
             } else {
-                router.push(response.redirect || '/login');
+                router.push(response.redirect || '/');
             }
         } catch (err: any) {
             console.error('Registration error:', err);
