@@ -38,6 +38,44 @@ const nextConfig: NextConfig = {
           source: "/reset/:token",
           destination: `${BACKEND_URL}/reset/:token`,
         },
+        // SAML / Autenticação.gov routes
+        {
+          source: "/saml/login",
+          destination: `${BACKEND_URL}/saml/login`,
+        },
+        {
+          source: "/saml/sso",
+          destination: `${BACKEND_URL}/saml/sso`,
+        },
+        {
+          source: "/saml/register",
+          destination: `${BACKEND_URL}/saml/register`,
+        },
+        {
+          source: "/saml/logout",
+          destination: `${BACKEND_URL}/saml/logout`,
+        },
+        {
+          source: "/saml/sso_logout",
+          destination: `${BACKEND_URL}/saml/sso_logout`,
+        },
+        // eIDAS routes
+        {
+          source: "/saml/eidas/login",
+          destination: `${BACKEND_URL}/saml/eidas/login`,
+        },
+        {
+          source: "/saml/eidas/sso",
+          destination: `${BACKEND_URL}/saml/eidas/sso`,
+        },
+        {
+          source: "/saml/eidas/logout",
+          destination: `${BACKEND_URL}/saml/eidas/logout`,
+        },
+        {
+          source: "/saml/eidas/sso_logout",
+          destination: `${BACKEND_URL}/saml/eidas/sso_logout`,
+        },
       ],
       afterFiles: [],
       fallback: [
