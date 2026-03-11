@@ -41,7 +41,12 @@ export async function login(formData: FormData): Promise<{ message: string; redi
  */
 export async function register(
   formData: FormData
-): Promise<{ status: string; error?: string; redirect?: string; requireEmailConfirmation?: boolean }> {
+): Promise<{
+  status: string;
+  error?: string;
+  redirect?: string;
+  requireEmailConfirmation?: boolean;
+}> {
   const res = await fetch("/register", {
     method: "POST",
     body: new URLSearchParams(formData as any),
@@ -208,6 +213,15 @@ export async function fetchReuse(rid: string): Promise<Reuse> {
   }
 }
 
+// export async function fetchOrganization(slug: string): Promise<Organization> {
+//   try {
+//     const res = await fetch(`${API_BASE_URL}/organizations/${slug}/`, {
+//       cache: 'no-store',
+//     });
+
+//     if (!res.ok) {
+//       throw new Error(`Failed to fetch organization: ${res.statusText}`);
+
 export async function fetchSiteInfo(): Promise<SiteInfo> {
   try {
     const res = await fetch(`${API_BASE_URL}/site/`, {
@@ -229,14 +243,11 @@ export async function fetchSiteInfo(): Promise<SiteInfo> {
   }
 }
 
-export async function fetchFeaturedDatasets(
-  pageSize: number = 3,
-): Promise<APIResponse<Dataset>> {
+export async function fetchFeaturedDatasets(pageSize: number = 3): Promise<APIResponse<Dataset>> {
   try {
-    const res = await fetch(
-      `${API_BASE_URL}/datasets/?featured=true&page_size=${pageSize}`,
-      { cache: "no-store" },
-    );
+    const res = await fetch(`${API_BASE_URL}/datasets/?featured=true&page_size=${pageSize}`, {
+      cache: "no-store",
+    });
 
     if (!res.ok) {
       throw new Error(`Failed to fetch featured datasets: ${res.statusText}`);
@@ -256,14 +267,11 @@ export async function fetchFeaturedDatasets(
   }
 }
 
-export async function fetchFeaturedReuses(
-  pageSize: number = 3,
-): Promise<APIResponse<Reuse>> {
+export async function fetchFeaturedReuses(pageSize: number = 3): Promise<APIResponse<Reuse>> {
   try {
-    const res = await fetch(
-      `${API_BASE_URL}/reuses/?featured=true&page_size=${pageSize}`,
-      { cache: "no-store" },
-    );
+    const res = await fetch(`${API_BASE_URL}/reuses/?featured=true&page_size=${pageSize}`, {
+      cache: "no-store",
+    });
 
     if (!res.ok) {
       throw new Error(`Failed to fetch featured reuses: ${res.statusText}`);
@@ -283,14 +291,11 @@ export async function fetchFeaturedReuses(
   }
 }
 
-export async function fetchLatestDatasets(
-  pageSize: number = 3,
-): Promise<APIResponse<Dataset>> {
+export async function fetchLatestDatasets(pageSize: number = 3): Promise<APIResponse<Dataset>> {
   try {
-    const res = await fetch(
-      `${API_BASE_URL}/datasets/?sort=-created&page_size=${pageSize}`,
-      { cache: "no-store" },
-    );
+    const res = await fetch(`${API_BASE_URL}/datasets/?sort=-created&page_size=${pageSize}`, {
+      cache: "no-store",
+    });
 
     if (!res.ok) {
       throw new Error(`Failed to fetch latest datasets: ${res.statusText}`);
@@ -310,14 +315,11 @@ export async function fetchLatestDatasets(
   }
 }
 
-export async function fetchLatestReuses(
-  pageSize: number = 3,
-): Promise<APIResponse<Reuse>> {
+export async function fetchLatestReuses(pageSize: number = 3): Promise<APIResponse<Reuse>> {
   try {
-    const res = await fetch(
-      `${API_BASE_URL}/reuses/?sort=-created&page_size=${pageSize}`,
-      { cache: "no-store" },
-    );
+    const res = await fetch(`${API_BASE_URL}/reuses/?sort=-created&page_size=${pageSize}`, {
+      cache: "no-store",
+    });
 
     if (!res.ok) {
       throw new Error(`Failed to fetch latest reuses: ${res.statusText}`);
@@ -339,13 +341,12 @@ export async function fetchLatestReuses(
 
 export async function fetchPosts(
   page: number = 1,
-  pageSize: number = 3,
+  pageSize: number = 3
 ): Promise<APIResponse<Post>> {
   try {
-    const res = await fetch(
-      `${API_BASE_URL}/posts/?page=${page}&page_size=${pageSize}`,
-      { cache: "no-store" },
-    );
+    const res = await fetch(`${API_BASE_URL}/posts/?page=${page}&page_size=${pageSize}`, {
+      cache: "no-store",
+    });
 
     if (!res.ok) {
       throw new Error(`Failed to fetch posts: ${res.statusText}`);
@@ -365,16 +366,15 @@ export async function fetchPosts(
   }
 }
 
-
 export async function searchDatasets(
   query: string,
   page: number = 1,
-  pageSize: number = 10,
+  pageSize: number = 10
 ): Promise<APIResponse<Dataset>> {
   try {
     const res = await fetch(
       `${API_BASE_URL}/datasets/?q=${encodeURIComponent(query)}&page=${page}&page_size=${pageSize}`,
-      { cache: "no-store" },
+      { cache: "no-store" }
     );
     if (!res.ok) {
       throw new Error(`Failed to search datasets: ${res.statusText}`);
@@ -396,17 +396,15 @@ export async function searchDatasets(
 export async function searchOrganizations(
   query: string,
   page: number = 1,
-  pageSize: number = 10,
+  pageSize: number = 10
 ): Promise<APIResponse<Organization>> {
   try {
     const res = await fetch(
       `${API_BASE_URL}/organizations/?q=${encodeURIComponent(query)}&page=${page}&page_size=${pageSize}`,
-      { cache: "no-store" },
+      { cache: "no-store" }
     );
     if (!res.ok) {
-      throw new Error(
-        `Failed to search organizations: ${res.statusText}`,
-      );
+      throw new Error(`Failed to search organizations: ${res.statusText}`);
     }
     return await res.json();
   } catch (error) {
@@ -425,12 +423,12 @@ export async function searchOrganizations(
 export async function searchReuses(
   query: string,
   page: number = 1,
-  pageSize: number = 10,
+  pageSize: number = 10
 ): Promise<APIResponse<Reuse>> {
   try {
     const res = await fetch(
       `${API_BASE_URL}/reuses/?q=${encodeURIComponent(query)}&page=${page}&page_size=${pageSize}`,
-      { cache: "no-store" },
+      { cache: "no-store" }
     );
     if (!res.ok) {
       throw new Error(`Failed to search reuses: ${res.statusText}`);
@@ -451,12 +449,12 @@ export async function searchReuses(
 
 export async function suggestGlobalSearch(
   query: string,
-  size: number = 5,
+  size: number = 5
 ): Promise<GlobalSearchSuggestion[]> {
   try {
     const res = await fetch(
       `${API_BASE_URL}/datasets/suggest/?q=${encodeURIComponent(query)}&size=${size}`,
-      { cache: "no-store" },
+      { cache: "no-store" }
     );
 
     if (!res.ok) {

@@ -1,20 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Button,
-  Icon,
-  CardArticle,
-  CardGeneral,
-} from "@ama-pt/agora-design-system";
+import { Button, Icon, CardArticle, CardGeneral } from "@ama-pt/agora-design-system";
 import Link from "next/link";
 import SearchDropdown from "@/components/search/SearchDropdown";
-import {
-  fetchLatestDatasets,
-  fetchLatestReuses,
-  fetchPosts,
-  fetchSiteInfo,
-} from "@/services/api";
+import { fetchLatestDatasets, fetchLatestReuses, fetchPosts, fetchSiteInfo } from "@/services/api";
 import { Dataset, Post, Reuse, SiteInfo } from "@/types/api";
 import { formatDistanceToNow, format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -91,8 +81,8 @@ export default function Home() {
               </div>
               <div className="subtitle">
                 <div className="container mx-auto text-left max-w-ch">
-                  Aceda, explore e reutilize dados públicos de forma
-                  transparente e acessível. Milhares de
+                  Aceda, explore e reutilize dados públicos de forma transparente e acessível.
+                  Milhares de
                   <br />
                   conjuntos de dados ao seu dispor.
                 </div>
@@ -110,8 +100,8 @@ export default function Home() {
                       placeholder="Pesquisar datasets, organizações, temas..."
                     />
                     <div className="mt-8 text-s-regular text-neutral-200">
-                      Exemplos: &quot;educação&quot;, &quot;saúde
-                      pública&quot;, &quot;ambiente&quot;
+                      Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;,
+                      &quot;ambiente&quot;
                     </div>
                     <div className="mt-64">
                       <Button
@@ -121,8 +111,7 @@ export default function Home() {
                         className="px-24 py-16 rounded-8 h-auto"
                       >
                         <span className="text-lg font-medium">
-                          Publicar{" "}
-                          <span className="font-bold">dados.gov</span>
+                          Publicar <span className="font-bold">dados.gov</span>
                         </span>
                       </Button>
                     </div>
@@ -148,8 +137,8 @@ export default function Home() {
                   </span>
                 </h2>
                 <p className="text-m-regular max-w-sm">
-                  Partilhe a utilização e a troca de dados entre produtores e
-                  reutilizadores de dados.
+                  Partilhe a utilização e a troca de dados entre produtores e reutilizadores de
+                  dados.
                 </p>
               </div>
 
@@ -295,9 +284,7 @@ export default function Home() {
         {/* Featured Datasets */}
         <div className="xl:pt-64 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-xl-bold mb-32 text-primary-900 ">
-              Conjunto de dados
-            </h2>
+            <h2 className="text-xl-bold mb-32 text-primary-900 ">Conjunto de dados</h2>
 
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {isLoading ? (
@@ -315,15 +302,13 @@ export default function Home() {
                       variant="white"
                       pillText={
                         dataset.last_modified
-                          ? formatDistanceToNow(
-                              new Date(dataset.last_modified),
-                              { locale: pt, addSuffix: true },
-                            )
+                          ? formatDistanceToNow(new Date(dataset.last_modified), {
+                              locale: pt,
+                              addSuffix: true,
+                            })
                           : "Desconhecido"
                       }
-                      subtitleText={
-                        dataset.organization?.name || "Sem Organização"
-                      }
+                      subtitleText={dataset.organization?.name || "Sem Organização"}
                       titleText={dataset.title}
                       descriptionText={
                         (
@@ -334,9 +319,7 @@ export default function Home() {
                                 className="w-8 h-8 text-primary-600"
                                 aria-hidden="true"
                               />
-                              <span>
-                                {dataset.metrics?.views || 0} visualizações
-                              </span>
+                              <span>{dataset.metrics?.views || 0} visualizações</span>
                             </div>
                             <span className="text-m-regular text-neutral-800 dataset-content-proper mb-16 line-clamp-3">
                               {dataset.description}
@@ -384,24 +367,17 @@ export default function Home() {
         {/* Utilizado diariamente por */}
         <div className="xl:pb-64 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="mb-48 text-gray-medium mt-32 text-m-bold">
-              Utilizado diariamente por:
-            </h2>
+            <h2 className="mb-48 text-gray-medium mt-32 text-m-bold">Utilizado diariamente por:</h2>
             <div className="flex flex-wrap items-center justify-between gap-x-32 gap-y-32">
-              {["arte.svg", "ADC.svg", "IMPIC.svg", "DSPA.svg", "apa.svg"].map(
-                (logo, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-center"
-                  >
-                    <img
-                      src={`/Logos/${logo}`}
-                      alt={`Logo ${logo.replace(".svg", "")}`}
-                      className="h-12 md:h-14 xl:h-16 w-auto object-contain"
-                    />
-                  </div>
-                ),
-              )}
+              {["arte.svg", "ADC.svg", "IMPIC.svg", "DSPA.svg", "apa.svg"].map((logo, i) => (
+                <div key={i} className="flex items-center justify-center">
+                  <img
+                    src={`/Logos/${logo}`}
+                    alt={`Logo ${logo.replace(".svg", "")}`}
+                    className="h-12 md:h-14 xl:h-16 w-auto object-contain"
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -411,8 +387,7 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <h2 className="text-xl-bold text-white">Storytelling</h2>
             <p className="mt-16 mb-32 max-w-3xl text-white">
-              Precisa de uma descrição uma vez que é um titulo estrangeiro e
-              novidade no dados.gov
+              Precisa de uma descrição uma vez que é um titulo estrangeiro e novidade no dados.gov
             </p>
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32 storytellings">
               {isLoading ? (
@@ -457,9 +432,7 @@ export default function Home() {
                   className="p-0! h-auto icon-white"
                   darkMode={false}
                 >
-                  <span className="text-white">
-                    Ver todas as Data Stories
-                  </span>
+                  <span className="text-white">Ver todas as Data Stories</span>
                 </Button>
               </Link>
             </div>
@@ -469,9 +442,7 @@ export default function Home() {
         {/* Latest News */}
         <div className="xl:py-64 bg-white latest-news-section">
           <div className="container mx-auto px-4">
-            <h2 className="text-xl-bold mb-32 text-primary-900">
-              Últimas novidades
-            </h2>
+            <h2 className="text-xl-bold mb-32 text-primary-900">Últimas novidades</h2>
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {isLoading ? (
                 <div className="xl:col-span-3 text-center py-32 text-neutral-500">

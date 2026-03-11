@@ -34,26 +34,21 @@
   --------------------------------------------------------------------------- */
 :root {
   /* Brand Colors */
+  --color-brand-blue-dark: var(--color-primary-900);
   --color-brand-blue-dark-rgb: 2, 28, 81;
-  --color-brand-blue-primary: #0C02CB;
+  --color-brand-blue-primary: #0c02cb;
   --color-brand-blue-primary-rgb: 12, 2, 203;
   --color-brand-blue-secondary: #050157;
   --color-brand-blue-secondary-rgb: 5, 1, 87;
-  --color-brand-blue-dark: var(--color-primary-900);
-  --color-brand-blue-dark-rgb: 2, 28, 81;
 
   /* Accent/Neutral Colors */
-  --color-accent-light: #F7F7FF;
+  --color-accent-light: #f7f7ff;
   --color-accent-light-rgb: 247, 247, 255;
   --color-gray-medium: var(--color-neutral-700);
 
   /* Sizes & Spacing */
   --size-32: 32px;
   --size-64: 64px;
-}
-
-@theme {
-  --radius-8: 8px;
 }
 
 /*
@@ -91,7 +86,12 @@ body {
 }
 
 .agora-card-highlight-newsletter .card-container:before {
-  background: linear-gradient(90deg, var(--color-brand-blue-dark) 0%, rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%, rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--color-brand-blue-dark) 0%,
+    rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%,
+    rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%
+  );
 }
 
 /* 3.2 Icons & Containers */
@@ -130,43 +130,9 @@ body {
   background-color: var(--color-primary-100);
 }
 
-.tab-panel-content>* {
+.tab-panel-content > * {
   position: relative;
   z-index: 1;
-}
-
-.agora-tabs.desktop.vertically .tab-panel.current-neutral {
-  background-color: var(--color-primary-100);
-}
-
-@media (min-width: 1280px) {
-  .agora-tabs.desktop .tab-panel .tab-panel-content {
-    max-width: 1280px;
-    padding-left: 6rem;
-    padding-right: 6rem;
-  }
-
-}
-
-/*Login*/
-
-.login-page .agora-tabs.desktop.vertically .tab-panel.current-neutral,
-.login-page .agora-tabs.desktop.vertically .tab-list.desktop .tab-list-item.active.current-neutral {
-  background-color: var(--color-secondary-50);
-}
-
-.login-page .agora-tabs.desktop.vertically .tab-panel-content:before {
-  display: none;
-}
-
-.login-page .agora-tabs.desktop .tab-panel-content::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 100%;
-  width: calc(40vw - 50%);
-  background: var(--color-secondary-50);
 }
 
 /* 3.4 Cards (General) */
@@ -180,7 +146,7 @@ body {
 
 /* 4.1 Dataset Reuse Card Layout */
 .dataset-reuse-card-wrapper .card-general,
-.dataset-reuse-card-wrapper .card-general>div {
+.dataset-reuse-card-wrapper .card-general > div {
   height: 100% !important;
   display: flex !important;
   overflow: hidden !important;
@@ -285,18 +251,6 @@ body {
   margin-top: auto;
 }
 
-.agora-btn .children-wrapper {
-  display: flex;
-}
-
-button.flex.items-center.justify-center.content-center.agora-btn.agora-btn-solid-primary.bg-primary-600.p-16.rounded-8.h-auto.gap-8 {
-  margin-top: 32px;
-}
-
-.agora-btn .children-wrapper svg {
-  margin: 3px 8px;
-}
-
 .homepage .latest-news-section .container-body {
   background: var(--color-primary-100);
   padding: 32px;
@@ -319,39 +273,8 @@ button.flex.items-center.justify-center.content-center.agora-btn.agora-btn-solid
   padding: 16px;
 }
 
-.agora-card-article .container-body {
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.agora-card-no-results .main-content {
-  margin: inherit;
-}
-
-.agora-card-no-results .title {
-  font-weight: 600;
-}
-
-.agora-card-no-results .subtitle {
-  font-size: 16px !important;
-  font-weight: 700;
-  color: #2B363C;
-}
-
-.agora-card-no-results .description {
-  font-weight: 400;
-  margin-bottom: 0;
-  max-width: 65ch;
-}
-
-
 .card-article-3_2 .agora-card-article .card-article-3_2-img img {
   max-height: 48px;
-}
-
-.storytellings .agora-card-article .container-body {
-  padding-left: 32px;
-  padding-right: 32px;
 }
 
 /*Cards Links - Datasets*/
@@ -395,7 +318,7 @@ button.flex.items-center.justify-center.content-center.agora-btn.agora-btn-solid
 .reuse .agora-card-links .bottom-container svg,
 .article .agora-card-links .bottom-container svg,
 .organization .agora-card-links .bottom-container svg {
-  fill: #034AD8;
+  fill: #034ad8;
 }
 
 .reuse .agora-card-links .bottom-container .agora-anchor,
@@ -404,7 +327,7 @@ button.flex.items-center.justify-center.content-center.agora-btn.agora-btn-solid
 .article .agora-card-links .bottom-container .agora-anchor:hover,
 .organization .agora-card-links .bottom-container .agora-anchor,
 .organization .agora-card-links .bottom-container .agora-anchor:hover {
-  color: #034AD8;
+  color: #034ad8;
 }
 
 /* Hide default trailing icon from links (all states including empty boxes and hover) */
@@ -472,6 +395,16 @@ footer img {
   display: none;
 }
 
+.agora-card-no-results .icon-container {
+  border-width: 0px;
+}
+
+.agora-card-no-results .description {
+  font-weight: 400;
+  margin-bottom: 32px;
+  max-width: 65ch;
+}
+
 /* 6.3 Toggle Overrides for Organizations Filters */
 .organizations-filters .agora-toggle {
   width: 100%;
@@ -488,7 +421,6 @@ footer img {
   height: 20px;
 }
 
-
 /*
   [07] UTILITIES
   --------------------------------------------------------------------------- */
@@ -496,18 +428,41 @@ footer img {
   padding-left: 0;
 }
 
-.agora-card-no-results {
-  padding: 64px 128px;
-}
-
-.agora-card-no-results .icon-container {
-  margin: 0 auto 16px;
-  border-width: inherit;
-}
-
 p.max-w-ch,
 .max-w-ch p,
 li.max-w-ch,
 .max-w-ch li {
   max-width: 65ch;
+}
+
+/*Login*/
+.login-page .agora-tabs.desktop .tab-panel-content::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  width: calc(40vw - 50%);
+  background: var(--color-secondary-50);
+}
+
+.login-page .agora-tabs.desktop.vertically .tab-panel.current-neutral,
+.login-page .agora-tabs.desktop.vertically .tab-list.desktop .tab-list-item.active.current-neutral {
+  background-color: var(--color-secondary-50);
+}
+
+.login-page .agora-tabs.desktop.vertically .tab-panel-content:before {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .agora-tabs.desktop .tab-panel .tab-panel-content {
+    max-width: 1280px;
+    padding-left: 6rem;
+    padding-right: 6rem;
+  }
+}
+
+.rounded-8 {
+  border-radius: 8px;
 }

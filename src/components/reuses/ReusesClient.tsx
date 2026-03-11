@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { CardLinks, InputSearchBar, Icon, CardNoResults, InputSelect, DropdownSection, DropdownOption, Button } from '@ama-pt/agora-design-system';
+import { CardLinks, InputSearchBar, Button, InputSelect, DropdownSection, DropdownOption, Icon, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { APIResponse, Reuse } from '@/types/api';
 import { format } from 'date-fns';
@@ -24,8 +24,8 @@ export default function ReusesClient({
   const { data: reuses, total, page_size } = initialData;
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters reuse">
-      <main className="flex-grow bg-primary-50">
+    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 reuse">
+      <main className="flex-grow bg-white">
         <PageBanner
           title="Reutilizações"
           backgroundImageUrl="/Banner/hero-bg.png"
@@ -183,13 +183,21 @@ export default function ReusesClient({
                     icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />}
                     title="Não encontrou nenhuma reutilização?"
                     subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
-                    description="Explore a nossa lista completa de reutilizações de dados abertos."
+                    description={<div className="max-w-[592px] mx-auto">Explore a nossa lista completa de reutilizações de dados abertos.</div>}
                     position="center"
-                    hasAnchor={true}
-                    valueAnchor="Redefinir filtros"
-                    anchorHref="/pages/reuses"
-                    anchorTrailingIcon="agora-line-arrow-right-circle"
-                    anchorTrailingIconHover="agora-solid-arrow-right-circle"
+                    hasAnchor={false}
+                    extraDescription={
+                      <div className="mt-24">
+                        <Button
+                          variant="primary"
+                          onClick={() => router.push('/pages/reuses')}
+                          trailingIcon="agora-line-arrow-right-circle"
+                          trailingIconHover="agora-solid-arrow-right-circle"
+                        >
+                          Redefinir filtros
+                        </Button>
+                      </div>
+                    }
                   />
                 </div>
               )}

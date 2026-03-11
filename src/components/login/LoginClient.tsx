@@ -86,7 +86,6 @@ export default function LoginClient() {
             serviços e funcionalidades online.
           </p>
         </div>
-
         {/* Main Content with Vertical Tabs */}
         <Tabs vertically className="mt-24">
           <Tab>
@@ -123,9 +122,7 @@ export default function LoginClient() {
                       </div>
                     </div>
                   </div>
-
                   <div className="w-full h-[2px] bg-neutral-400 mt-32 mb-16"></div>
-
                   <div className="flex flex-col gap-24">
                     <div className="flex flex-col gap-16">
                       <RadioButton
@@ -142,7 +139,6 @@ export default function LoginClient() {
                         className="text-lg text-neutral-900"
                       />
                     </div>
-
                     <div className="mt-8">
                       <Checkbox
                         label="Declaro que li e aceito os termos e condições para o tratamento dos meus dados pessoais no acesso e utilização da Área Reservada do dadosgov.pt"
@@ -151,7 +147,6 @@ export default function LoginClient() {
                       />
                     </div>
                   </div>
-
                   <div className="mt-16">
                     <Button
                       variant="primary"
@@ -208,9 +203,7 @@ export default function LoginClient() {
                       </div>
                     </div>
                   </div>
-
                   <div className="w-full h-[2px] bg-neutral-400 mt-32 mb-16"></div>
-
                   <div className="flex flex-col gap-24">
                     <div className="mt-8">
                       <Checkbox
@@ -220,7 +213,6 @@ export default function LoginClient() {
                       />
                     </div>
                   </div>
-
                   <div className="mt-16">
                     <Button
                       variant="primary"
@@ -291,7 +283,6 @@ export default function LoginClient() {
                         name="remember-me"
                       />
                     </div>
-
                     <div className="mt-8">
                       <Button
                         variant="primary"
