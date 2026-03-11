@@ -273,7 +273,13 @@ export const Header = () => {
               </a>
             </NavigationLink>
             <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
+              <a
+                href="/pages/datastories"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLinkClick(e, '/pages/datastories');
+                }}
+              >
                 Data Stories
               </a>
             </NavigationLink>
