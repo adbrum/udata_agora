@@ -42,7 +42,7 @@ const PageBanner: React.FC<PageBannerProps> = ({
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="card-container">
+      <div className="card-container h-full">
         {/* Breadcrumbs Section */}
         <div className="container mx-auto px-4 relative z-10">
           <Breadcrumb
