@@ -86,9 +86,9 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
           </div>
 
           <div className="xl:col-span-6">
-            <div className="flex flex-col h-fit card-article-3_2">
+            <div className="flex flex-col h-fit card-article-3_2 organization_detail">
               <CardArticle
-                className="card-detail-info border-none shadow-none mb-16 bg-[#F2F6FF] p-32"
+                className="card-detail-info border-none shadow-none mb-16 bg-[#F2F6FF] p-32 rounded-4"
                 subtitle={
                   <div className="flex flex-col gap-16">
                     {organization.logo ? (
