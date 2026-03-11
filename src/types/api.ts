@@ -4,13 +4,6 @@ export interface Organization {
   slug: string;
   logo: string | null;
   description: string | null;
-  metrics?: {
-    datasets?: number;
-    followers?: number;
-    views?: number;
-    reuses?: number;
-  };
-  uri?: string;
 }
 
 export interface Metric {
@@ -62,6 +55,37 @@ export interface Reuse {
   url: string;
   tags: string[];
   datasets?: Dataset[];
+}
+
+export interface SiteInfo {
+  id: string;
+  title?: string;
+  metrics: {
+    datasets: number;
+    organizations: number;
+    reuses: number;
+    users: number;
+  };
+}
+
+export interface Post {
+  id: string;
+  name: string;
+  slug: string;
+  headline: string;
+  content: string;
+  body_type: string;
+  image: string | null;
+  image_thumbnail: string | null;
+  created_at: string;
+  last_modified: string;
+  tags: string[];
+}
+
+export interface GlobalSearchSuggestion {
+  title: string;
+  slug: string;
+  score: number;
 }
 
 export interface APIResponse<T> {

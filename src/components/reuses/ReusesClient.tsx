@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { CardLinks, InputSearchBar, Icon, CardNoResults, InputSelect, DropdownSection, DropdownOption, Button } from '@ama-pt/agora-design-system';
+import { CardLinks, InputSearchBar, Button, InputSelect, DropdownSection, DropdownOption, Icon, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { APIResponse, Reuse } from '@/types/api';
 import { format } from 'date-fns';
@@ -24,8 +24,8 @@ export default function ReusesClient({
   const { data: reuses, total, page_size } = initialData;
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters reuse">
-      <main className="flex-grow bg-primary-50">
+    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 reuse">
+      <main className="flex-grow bg-white">
         <PageBanner
           title="Reutilizações"
           backgroundImageUrl="/Banner/hero-bg.png"
@@ -36,7 +36,7 @@ export default function ReusesClient({
           ]}
         >
           <InputSearchBar
-            label="O que procura no Portal?"
+            label="O que procura nas reutilizações?"
             placeholder="Pesquisar datasets, organizações, temas..."
             id="reuses-search"
             hasVoiceActionButton={true}
@@ -104,37 +104,70 @@ export default function ReusesClient({
                       category={reuse.organization?.name || 'Reutilização'}
                       title={<div className="underline text-xl-bold">{reuse.title}</div>}
                       description={
-                        <div className="flex flex-col gap-12">
-                          {reuse.description && (
-                            <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
-                              {reuse.description}
-                            </p>
-                          )}
-                          <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
-                            <div className="flex items-center gap-8" title="Visualizações">
-                              <Icon name="agora-line-eye" className="" aria-hidden="true" />
-                              <span>{reuse.metrics?.views?.toLocaleString('pt-PT') || '0'}</span>
-                            </div>
-                            <div className="flex items-center gap-8" title="Datasets">
-                              <Icon name="agora-line-calendar" className="" aria-hidden="true" />
-                              <span>{reuse.datasets?.length || 0} mil</span>
-                            </div>
-                            <div className="flex items-center gap-8" title="Métricas">
-                              <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
-                              <span>{reuse.metrics?.reuses || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-8" title="Favoritos">
-                              <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
-                              <span>{reuse.metrics?.followers || 0}</span>
-                            </div>
-                          </div>
-                        </div>
+                        reuse.description ? (
+                          <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                            {reuse.description}
+                          </p>
+                        ) : undefined
                       }
                       date={
                         <span className="font-[300]">
                           Atualizado {format(new Date(reuse.last_modified || reuse.created_at), 'dd MM yyyy', { locale: pt })}
                         </span>
                       }
+                      links={[
+                        {
+                          href: '#',
+                          hasIcon: true,
+                          leadingIcon: 'agora-line-eye',
+                          leadingIconHover: 'agora-solid-eye',
+                          trailingIcon: '',
+                          trailingIconHover: '',
+                          trailingIconActive: '',
+                          children: reuse.metrics?.views?.toLocaleString('pt-PT') || '0',
+                          title: 'Visualizações',
+                          onClick: (e: React.MouseEvent) => e.preventDefault(),
+                          className: 'text-[#034AD8]',
+                        },
+                        {
+                          href: '#',
+                          hasIcon: true,
+                          leadingIcon: 'agora-line-calendar',
+                          leadingIconHover: 'agora-solid-calendar',
+                          trailingIcon: '',
+                          trailingIconHover: '',
+                          trailingIconActive: '',
+                          children: `${reuse.datasets?.length || 0} mil`,
+                          title: 'Datasets',
+                          onClick: (e: React.MouseEvent) => e.preventDefault(),
+                          className: 'text-[#034AD8]',
+                        },
+                        {
+                          href: '#',
+                          hasIcon: false,
+                          children: (
+                            <span className="flex items-center gap-8">
+                              <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
+                              <span>{reuse.metrics?.reuses || 0}</span>
+                            </span>
+                          ),
+                          title: 'Métricas',
+                          onClick: (e: React.MouseEvent) => e.preventDefault(),
+                        },
+                        {
+                          href: '#',
+                          hasIcon: true,
+                          leadingIcon: 'agora-line-star',
+                          leadingIconHover: 'agora-solid-star',
+                          trailingIcon: '',
+                          trailingIconHover: '',
+                          trailingIconActive: '',
+                          children: reuse.metrics?.followers || 0,
+                          title: 'Favoritos',
+                          onClick: (e: React.MouseEvent) => e.preventDefault(),
+                          className: 'text-[#034AD8]',
+                        },
+                      ]}
                       mainLink={
                         <Link href={`/pages/reuses/${reuse.slug}`}>
                           <span className="underline">{reuse.title}</span>
@@ -150,13 +183,21 @@ export default function ReusesClient({
                     icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />}
                     title="Não encontrou nenhuma reutilização?"
                     subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
-                    description="Explore a nossa lista completa de reutilizações de dados abertos."
+                    description={<div className="max-w-[592px] mx-auto">Explore a nossa lista completa de reutilizações de dados abertos.</div>}
                     position="center"
-                    hasAnchor={true}
-                    valueAnchor="Redefinir filtros"
-                    anchorHref="/pages/reuses"
-                    anchorTrailingIcon="agora-line-arrow-right-circle"
-                    anchorTrailingIconHover="agora-solid-arrow-right-circle"
+                    hasAnchor={false}
+                    extraDescription={
+                      <div className="mt-24">
+                        <Button
+                          variant="primary"
+                          onClick={() => router.push('/pages/reuses')}
+                          trailingIcon="agora-line-arrow-right-circle"
+                          trailingIconHover="agora-solid-arrow-right-circle"
+                        >
+                          Redefinir filtros
+                        </Button>
+                      </div>
+                    }
                   />
                 </div>
               )}
