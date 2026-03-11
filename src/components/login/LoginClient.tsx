@@ -25,6 +25,18 @@ export default function LoginClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const samlEnabled = process.env.NEXT_PUBLIC_SAML_ENABLED === "true";
+
+  const handleSamlLogin = () => {
+    // Full-page redirect required for SAML 2.0 HTTP-POST/Redirect binding
+    window.location.href = "/saml/login";
+  };
+
+  const handleEidasLogin = () => {
+    // Full-page redirect required for eIDAS SAML flow
+    window.location.href = "/saml/eidas/login";
+  };
+
   const breadcrumbItems = [
     { label: "Home", url: "/" },
     { label: "Autenticação", url: "#" },
@@ -159,6 +171,8 @@ export default function LoginClient() {
                       }
                       onMouseEnter={() => setIsHovered(true)}
                       onMouseLeave={() => setIsHovered(false)}
+                      onClick={samlEnabled ? handleSamlLogin : undefined}
+                      disabled={!samlEnabled}
                     >
                       Autenticar com CMD
                     </Button>
@@ -225,6 +239,8 @@ export default function LoginClient() {
                       }
                       onMouseEnter={() => setIsHoveredEidas(true)}
                       onMouseLeave={() => setIsHoveredEidas(false)}
+                      onClick={samlEnabled ? handleEidasLogin : undefined}
+                      disabled={!samlEnabled}
                     >
                       Autenticar com eIDAS
                     </Button>
