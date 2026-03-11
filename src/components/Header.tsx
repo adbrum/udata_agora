@@ -18,6 +18,8 @@ import {
   NavigationBar,
   NavigationLink,
   NavigationRoot,
+  CardGeneral,
+  Icon,
 } from '@ama-pt/agora-design-system';
 import SearchDropdown from '@/components/search/SearchDropdown';
 
@@ -196,147 +198,530 @@ export const Header = () => {
         >
           <NavigationRoot label="Contribuir">
             <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                Novo Conjunto de Dados
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                Nova API
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                Nova Reutilização
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                Nova Organização
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a
-                href="/pages/support"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLinkClick(e, '/pages/support');
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-layers-menu"
+                iconHover="agora-solid-layers-menu"
+                titleText="Novo Conjunto de Dados"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Pesquisar e explorar dados</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
                 }}
-              >
-                Contactar
-              </a>
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-plus-circle"
+                iconHover="agora-solid-plus-circle"
+                titleText="Nova API"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Explorar as APIs</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-book-open"
+                iconHover="agora-solid-book-open"
+                titleText="Nova Reutilização"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Casos de uso</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-star"
+                iconHover="agora-solid-star"
+                titleText="Nova Organização"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Entidades</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-user-group"
+                iconHover="agora-solid-user-group"
+                titleText="Contactar"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Fale connosco</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '/pages/support',
+                  onClick: (e: any) => {
+                    e.preventDefault();
+                    handleLinkClick(e, '/pages/support');
+                  },
+                }}
+              />
             </NavigationLink>
           </NavigationRoot>
 
           <NavigationRoot label="Explorar">
             <NavigationLink appearance="link">
-              <a
-                href="/pages/datasets"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLinkClick(e, '/pages/datasets');
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-layers-menu"
+                iconHover="agora-solid-layers-menu"
+                titleText="Conjuntos de dados"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Explore os dados</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '/pages/datasets',
+                  onClick: (e: any) => {
+                    e.preventDefault();
+                    handleLinkClick(e, '/pages/datasets');
+                  },
                 }}
-              >
-                Conjuntos de dados
-              </a>
+              />
             </NavigationLink>
             <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                HVDs
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                APIs
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a
-                href="/pages/reuses"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLinkClick(e, '/pages/reuses');
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-eye"
+                iconHover="agora-solid-eye"
+                titleText="Visualizações"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Ver dados visualmente</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
                 }}
-              >
-                Reutilizações
-              </a>
+              />
             </NavigationLink>
             <NavigationLink appearance="link">
-              <a
-                href="/pages/organizations"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLinkClick(e, '/pages/organizations');
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-document"
+                titleText="HVDs"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">High Value Datasets</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
                 }}
-              >
-                Organizações
-              </a>
+              />
             </NavigationLink>
             <NavigationLink appearance="link">
-              <a
-                href="/pages/datastories"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLinkClick(e, '/pages/datastories');
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-plus-circle"
+                iconHover="agora-solid-plus-circle"
+                titleText="APIs"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Consulte as APIs</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
                 }}
-              >
-                Data Stories
-              </a>
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-file"
+                iconHover="agora-solid-file"
+                titleText="Acesso Catalogo via SPARQL"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Query de dados</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-plus-circle"
+                iconHover="agora-solid-plus-circle"
+                titleText="Reutilizações"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Casos de uso</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '/pages/reuses',
+                  onClick: (e: any) => {
+                    e.preventDefault();
+                    handleLinkClick(e, '/pages/reuses');
+                  },
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-star"
+                iconHover="agora-solid-star"
+                titleText="Organizações"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Entidades públicas</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '/pages/organizations',
+                  onClick: (e: any) => {
+                    e.preventDefault();
+                    handleLinkClick(e, '/pages/organizations');
+                  },
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-user-group"
+                iconHover="agora-solid-user-group"
+                titleText="Data Stories"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Histórias com dados</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '/pages/datastories',
+                  onClick: (e: any) => {
+                    e.preventDefault();
+                    handleLinkClick(e, '/pages/datastories');
+                  },
+                }}
+              />
             </NavigationLink>
           </NavigationRoot>
 
           <NavigationRoot label="Conhecimento">
             <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                Sobre dados abertos
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                Como publicar dados?
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                Como reutilizar dados?
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                O que é o dados.gov
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                Desenvolvimento
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a href="#" onClick={(e) => handleLinkClick(e, '#')}>
-                Publicações
-              </a>
-            </NavigationLink>
-            <NavigationLink appearance="link">
-              <a
-                href="/pages/article"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLinkClick(e, '/pages/article');
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-star"
+                iconHover="agora-solid-star"
+                titleText="Sobre dados abertos"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Informação geral</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
                 }}
-              >
-                Notícias
-              </a>
+              />
             </NavigationLink>
             <NavigationLink appearance="link">
-              <a
-                href="/pages/mini-courses"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLinkClick(e, '/pages/mini-courses');
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-plus-circle"
+                iconHover="agora-solid-plus-circle"
+                titleText="Como publicar dados?"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Guia de publicação</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
                 }}
-              >
-                Minicursos
-              </a>
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-book-open"
+                iconHover="agora-solid-book-open"
+                titleText="Como reutilizar dados?"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Guia de reutilização</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-plus-circle"
+                iconHover="agora-solid-plus-circle"
+                titleText="O que é o dados.gov"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Sobre o portal</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-plus-circle"
+                iconHover="agora-solid-plus-circle"
+                titleText="API Tutorial"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Aprenda a usar a API</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-plus-circle"
+                iconHover="agora-solid-plus-circle"
+                titleText="Referência da API"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Documentação técnica</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-user-group"
+                iconHover="agora-solid-user-group"
+                titleText="Desenvolvimento"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Plataforma e código</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-user-group"
+                iconHover="agora-solid-user-group"
+                titleText="Publicações"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Relatórios e estudos</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-plus-circle"
+                iconHover="agora-solid-plus-circle"
+                titleText="Pub. Relatórios/Estudos"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Submeter estudos</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-plus-circle"
+                iconHover="agora-solid-plus-circle"
+                titleText="Guias"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Tutoriais e manuais</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '#',
+                  onClick: (e: any) => handleLinkClick(e, '#'),
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-file"
+                iconHover="agora-solid-file"
+                titleText="Notícias"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Últimas novidades</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '/pages/article',
+                  onClick: (e: any) => {
+                    e.preventDefault();
+                    handleLinkClick(e, '/pages/article');
+                  },
+                }}
+              />
+            </NavigationLink>
+            <NavigationLink appearance="link">
+              <CardGeneral
+                isCardHorizontal={true}
+                isBlockedLink={true}
+                variant="neutral-100"
+                iconDefault="agora-line-file"
+                iconHover="agora-solid-file"
+                titleText="Minicursos"
+                descriptionText={(
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-neutral-700">Formação online</span>
+                    <Icon name="agora-line-arrow-right-circle" className="w-8 h-8 text-primary-600 ml-auto" />
+                  </div>
+                ) as unknown as string}
+                anchor={{
+                  href: '/pages/mini-courses',
+                  onClick: (e: any) => {
+                    e.preventDefault();
+                    handleLinkClick(e, '/pages/mini-courses');
+                  },
+                }}
+              />
             </NavigationLink>
           </NavigationRoot>
         </NavigationBar>

@@ -478,3 +478,60 @@ li.max-w-ch,
 .agora-card-highlight-newsletter.bg-white .card-container:before {
   display: none;
 }
+
+/*Header*/
+@media (min-width: 1280px) {
+  .agora-header .navigation-links-layout .links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.agora-header .icon-container {
+  border-width: 0;
+  border-radius: 0%;
+  padding: 0px;
+  display: flex;
+  align-items: baseline;
+}
+
+.agora-header .card-general-neutral-100 .icon-set {
+  border-width: 2px;
+  border-color: var(--color-primary-600);
+  background-color: var(--color-primary-600);
+  padding: 14px;
+}
+
+.agora-header .card-general-neutral-100 .icon-set img {
+  width: 32px;
+  height: 32px;
+  filter: brightness(0) invert(1);
+}
+
+/* Target icons that SHOULD be white */
+.agora-header .icon-set svg.icon.icon-m,
+.agora-languages svg.icon.icon-m,
+.agora-unauthenticated svg.icon.icon-m,
+.agora-header .agora-areas svg.icon.icon-m {
+  fill: #FFFFFF;
+}
+
+/* Ensure the arrow icon in the card anchor remains blue */
+.agora-header .card-general-neutral-100 .anchor-container .trailing-icon svg.icon.icon-m {
+  fill: var(--color-primary-600);
+}
+
+.agora-header .card-general-neutral-100 .icon-container,
+.agora-header .card-general-neutral-100 .content {
+  background: transparent;
+}
+
+.agora-header .card-general {
+  width: 100%;
+}
+
+
+.agora-header .card-general .title-text {
+  margin-bottom: 4px;
+  font-size: 1rem;
+  line-height: 1rem;
+}
