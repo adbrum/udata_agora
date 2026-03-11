@@ -16,7 +16,7 @@ interface PageBannerProps {
     alt: string;
     className?: string;
   };
-  height?: string;
+  className?: string;
 }
 
 const PageBanner: React.FC<PageBannerProps> = ({
@@ -28,21 +28,18 @@ const PageBanner: React.FC<PageBannerProps> = ({
   backgroundImageUrl,
   backgroundPosition = 'center',
   image,
-  height,
+  className = '',
 }) => {
   const isLight = variant === 'light';
 
   return (
     <div
-      className={`agora-card-highlight-newsletter ${isLight ? 'bg-accent-light' : 'bg-primary-900'}`}
-      style={{
-        ...(isLight ? {} : {
-          backgroundImage: `url("${backgroundImageUrl}")`,
-          backgroundSize: 'cover',
-          backgroundPosition: backgroundPosition,
-          backgroundRepeat: 'no-repeat'
-        }),
-        ...(height ? { height } : {})
+      className={`agora-card-highlight-newsletter ${!className.includes('bg-') ? (isLight ? 'bg-accent-light' : 'bg-primary-900') : ''} ${className}`}
+      style={isLight || className.includes('bg-white') ? {} : {
+        backgroundImage: `url("${backgroundImageUrl}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: backgroundPosition,
+        backgroundRepeat: 'no-repeat'
       }}
     >
       <div className="card-container h-full">

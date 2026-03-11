@@ -86,12 +86,10 @@ body {
 }
 
 .agora-card-highlight-newsletter .card-container:before {
-  background: linear-gradient(
-    90deg,
-    var(--color-brand-blue-dark) 0%,
-    rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%,
-    rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%
-  );
+  background: linear-gradient(90deg,
+      var(--color-brand-blue-dark) 0%,
+      rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%,
+      rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%);
 }
 
 /* 3.2 Icons & Containers */
@@ -130,7 +128,7 @@ body {
   background-color: var(--color-primary-100);
 }
 
-.tab-panel-content > * {
+.tab-panel-content>* {
   position: relative;
   z-index: 1;
 }
@@ -146,7 +144,7 @@ body {
 
 /* 4.1 Dataset Reuse Card Layout */
 .dataset-reuse-card-wrapper .card-general,
-.dataset-reuse-card-wrapper .card-general > div {
+.dataset-reuse-card-wrapper .card-general>div {
   height: 100% !important;
   display: flex !important;
   overflow: hidden !important;
@@ -211,7 +209,7 @@ body {
   min-height: 64px;
 }
 
-.dataset-card-home > * {
+.dataset-card-home>* {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -446,7 +444,7 @@ li.max-w-ch,
   top: 0;
   bottom: 0;
   left: 100%;
-  width: calc(40vw - 50%);
+  width: calc(38vw - 50%);
   background: var(--color-secondary-50);
 }
 
@@ -460,7 +458,7 @@ li.max-w-ch,
 }
 
 @media (min-width: 1280px) {
-  .agora-tabs.desktop .tab-panel .tab-panel-content {
+  .login-page .agora-tabs.desktop .tab-panel .tab-panel-content {
     max-width: 1280px;
     padding-left: 6rem;
     padding-right: 6rem;
@@ -469,4 +467,14 @@ li.max-w-ch,
 
 .rounded-8 {
   border-radius: 8px;
+}
+
+
+/*Banner White*/
+.agora-card-highlight-newsletter.bg-white .card-container {
+  padding: 32px 64px;
+}
+
+.agora-card-highlight-newsletter.bg-white .card-container:before {
+  display: none;
 }

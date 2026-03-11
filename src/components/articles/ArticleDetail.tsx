@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Breadcrumb, Icon } from "@ama-pt/agora-design-system";
+import PageBanner from "@/components/PageBanner";
 import { useRouter } from "next/navigation";
 
 // Mock data for articles (including more for the sidebar)
@@ -129,164 +130,170 @@ export default function ArticleDetail({ rid }: ArticleDetailProps) {
   return (
     <div className="flex flex-col bg-white min-h-screen font-sans text-neutral-900 pb-128">
       {/* Main Content Area */}
-      <main className="container mx-auto px-16 sm:px-32 lg:px-64 pt-32">
-        {/* Breadcrumbs */}
-        <div className="mb-48">
-          <Breadcrumb
-            items={[
-              { label: "Início", url: "/" },
-              { label: "Artigos", url: "/pages/article" },
-              { label: displayTitle, url: "#" },
-            ]}
-          />
-        </div>
-
-        {/* Article Header */}
-        <div className="mb-40">
-          <span className="text-neutral-600 text-m-regular block mb-16">
-            Publicado em {displayDate}
-          </span>
-          <h1 className="text-2xl-bold md:text-3xl-bold text-primary-900 mb-24 leading-tight">
-            {displayTitle}
-          </h1>
-          <p className="text-xl-light text-neutral-700 max-w-[592px]">{displayDescription}</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-80 bg-neutral-50 full-width-bg">
-          {/* Left Column: Content */}
-          <div className="lg:col-span-8 flex flex-col gap-48">
-            <div className="max-w-[592px] whitespace-pre-wrap text-m-regular text-neutral-800 leading-relaxed">
-              <h2 className="text-l-bold text-primary-900 mt-0 mb-16">
-                Três meses de acontecimentos para reviver
-              </h2>
-
-              <p className="mb-16">
-                O período de volta às aulas ocorreu de setembro a dezembro de 2025 e utilizou
-                diversos formatos:
-              </p>
-
-              <ul className="list-disc pl-24 space-y-8 mb-24">
-                <li>
-                  Mesas-redondas para refletir sobre os desafios dos dados abertos e compartilhar
-                  experiências concretas;
-                </li>
-                <li>
-                  Sessões de perguntas e respostas e tempo para discussão com as equipas da
-                  plataforma e as partes interessadas no ecossistema;
-                </li>
-                <li>
-                  Workshops práticos e demonstrações para desenvolver habilidades em ferramentas,
-                  APIs e melhores práticas;
-                </li>
-                <li>Webinários temáticos ;</li>
-                <li>Hackathon sobre projeções climáticas , coorganizado com a Météo-France.</li>
-              </ul>
-
-              <h2 className="text-l-bold text-primary-900 mt-32 mb-16">
-                Todas as gravações já estão disponíveis
-              </h2>
-
-              <p className="mb-16">
-                Boas notícias: todos os webinars e sessões gravadas estão disponíveis para
-                reprodução ! Se você perdeu alguma sessão ou deseja aprofundar-se em tópicos
-                específicos, pode assisti-los (ou reassisti-los) a qualquer momento.
-              </p>
-
-              <p className="mb-32">
-                <Link
-                  href="#"
-                  className="text-primary-600 underline hover:text-primary-700 transition-colors"
-                >
-                  Encontre as gravações dos webinars na página dedicada
-                </Link>
-                .
-              </p>
-
-              {/* Image box from Figma */}
-              <div className="my-40 rounded-8 overflow-hidden bg-neutral-100">
-                <img
-                  src="/Articles/retrospectiva-inner.svg"
-                  alt="Retropectiva"
-                  className="w-full object-cover aspect-[16/9]"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "https://picsum.photos/1200/800?random=1";
-                  }}
-                />
-              </div>
-
-              <h2 className="text-l-bold text-primary-900 mt-32 mb-16">Quer ir mais longe?</h2>
-
-              <p className="mb-32">
-                <Link
-                  href="#"
-                  className="text-primary-600 underline hover:text-primary-700 transition-colors"
-                >
-                  Assine a
-                </Link>{" "}
-                newsletter do data.gouv.fr para receber os próximos eventos diretamente na sua caixa
-                de entrada.
-              </p>
-            </div>
-
-            {/* Partilhar section */}
-            <div className="pt-32 border-t border-neutral-200 max-w-[592px]">
-              <span className="text-s-regular text-neutral-600 block mb-24">
-                Partilhar esta notícia
+      <main className="flex-grow">
+        <PageBanner
+          title={
+            <div className="flex flex-col gap-12 max-w-[592px]">
+              <span className="text-primary-900 text-[20px] mb-8">
+                Publicado em {displayDate}
               </span>
-              <div className="flex flex-wrap gap-24 md:gap-40">
-                {socialLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className="flex items-center gap-8 text-primary-600 hover:text-primary-700 transition-colors group"
-                  >
-                    {link.icon ? (
-                      <Icon name={link.icon as any} className="w-20 h-20" aria-hidden="true" />
-                    ) : (
-                      <img src={link.customIcon} alt="" className="w-20 h-20" />
-                    )}
-                    <span className="text-s-bold">{link.name}</span>
-                  </Link>
-                ))}
-              </div>
+              <span className="block text-primary-900 xs:text-xl-semibold md:text-2xl-semibold xl:text-2xl-semibold">
+                {displayTitle}
+              </span>
             </div>
-          </div>
+          }
+          variant="light"
+          className="bg-white"
+          breadcrumbItems={[
+            { label: "Início", url: "/" },
+            { label: "Artigos", url: "/pages/article" },
+            { label: displayTitle, url: "#" },
+          ]}
+          subtitle={
+            <p className="text-neutral-700 text-lg leading-relaxed max-w-[592px]">
+              {displayDescription}
+            </p>
+          }
+        />
 
-          {/* Right Column: Sidebar (Other Relatated Articles) */}
-          <aside className="lg:col-span-4">
-            <div className="sticky top-32">
-              <h3 className="text-l-regular text-neutral-800 mb-24">
-                Outros <span className="font-bold">artigos</span> relacionados
-              </h3>
-              <div className="flex flex-col gap-24">
-                {relatedArticlesRaw.map((rel, idx) => (
-                  <div
-                    key={idx}
-                    className="flex justify-between gap-16 items-start pb-24 border-b border-neutral-100 last:border-0 cursor-pointer group"
-                    onClick={() => router.push(`/pages/article/${rel.slug}`)}
+        <div className="container mx-auto px-16 sm:px-32 lg:px-64 pt-64 full-width-bg">
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-80 bg-neutral-50 ">
+            {/* Left Column: Content */}
+            <div className="lg:col-span-8 flex flex-col gap-48">
+              <div className="max-w-[592px] whitespace-pre-wrap text-m-regular text-neutral-800 leading-relaxed">
+                <h2 className="text-l-bold text-primary-900 mt-0 mb-16">
+                  Três meses de acontecimentos para reviver
+                </h2>
+
+                <p className="mb-16">
+                  O período de volta às aulas ocorreu de setembro a dezembro de 2025 e utilizou
+                  diversos formatos:
+                </p>
+
+                <ul className="list-disc pl-24 space-y-8 mb-24">
+                  <li>
+                    Mesas-redondas para refletir sobre os desafios dos dados abertos e compartilhar
+                    experiências concretas;
+                  </li>
+                  <li>
+                    Sessões de perguntas e respostas e tempo para discussão com as equipas da
+                    plataforma e as partes interessadas no ecossistema;
+                  </li>
+                  <li>
+                    Workshops práticos e demonstrações para desenvolver habilidades em ferramentas,
+                    APIs e melhores práticas;
+                  </li>
+                  <li>Webinários temáticos ;</li>
+                  <li>Hackathon sobre projeções climáticas , coorganizado com a Météo-France.</li>
+                </ul>
+
+                <h2 className="text-l-bold text-primary-900 mt-32 mb-16">
+                  Todas as gravações já estão disponíveis
+                </h2>
+
+                <p className="mb-16">
+                  Boas notícias: todos os webinars e sessões gravadas estão disponíveis para
+                  reprodução ! Se você perdeu alguma sessão ou deseja aprofundar-se em tópicos
+                  específicos, pode assisti-los (ou reassisti-los) a qualquer momento.
+                </p>
+
+                <p className="mb-32">
+                  <Link
+                    href="#"
+                    className="text-primary-600 underline hover:text-primary-700 transition-colors"
                   >
-                    <div className="flex flex-col gap-8 flex-grow">
-                      <span className="text-xs text-neutral-500">{rel.date}</span>
-                      <h4 className="text-s-bold text-primary-900 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
-                        {rel.title}
-                      </h4>
-                    </div>
-                    <div className="w-[124px] h-[70px] flex-shrink-0 bg-neutral-100 rounded-4 overflow-hidden shadow-sm">
-                      <img
-                        src={rel.image}
-                        alt={rel.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            `https://picsum.photos/300/200?random=${idx}`;
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                    Encontre as gravações dos webinars na página dedicada
+                  </Link>
+                  .
+                </p>
+
+                {/* Image box from Figma */}
+                <div className="my-40 rounded-8 overflow-hidden bg-neutral-100">
+                  <img
+                    src="/Articles/retrospectiva-inner.svg"
+                    alt="Retropectiva"
+                    className="w-full object-cover aspect-[16/9]"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://picsum.photos/1200/800?random=1";
+                    }}
+                  />
+                </div>
+
+                <h2 className="text-l-bold text-primary-900 mt-32 mb-16">Quer ir mais longe?</h2>
+
+                <p className="mb-32">
+                  <Link
+                    href="#"
+                    className="text-primary-600 underline hover:text-primary-700 transition-colors"
+                  >
+                    Assine a
+                  </Link>{" "}
+                  newsletter do data.gouv.fr para receber os próximos eventos diretamente na sua caixa
+                  de entrada.
+                </p>
+              </div>
+
+              {/* Partilhar section */}
+              <div className="pt-32 border-t border-neutral-200 max-w-[592px]">
+                <span className="text-s-regular text-neutral-600 block mb-24">
+                  Partilhar esta notícia
+                </span>
+                <div className="flex flex-wrap gap-24 md:gap-40">
+                  {socialLinks.map((link) => (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className="flex items-center gap-8 text-primary-600 hover:text-primary-700 transition-colors group"
+                    >
+                      {link.icon ? (
+                        <Icon name={link.icon as any} className="w-20 h-20" aria-hidden="true" />
+                      ) : (
+                        <img src={link.customIcon} alt="" className="w-20 h-20" />
+                      )}
+                      <span className="text-s-bold">{link.name}</span>
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
-          </aside>
+
+            {/* Right Column: Sidebar (Other Relatated Articles) */}
+            <aside className="lg:col-span-4">
+              <div className="sticky top-32">
+                <h3 className="text-l-regular text-neutral-800 mb-24">
+                  Outros <span className="font-bold">artigos</span> relacionados
+                </h3>
+                <div className="flex flex-col gap-24">
+                  {relatedArticlesRaw.map((rel, idx) => (
+                    <div
+                      key={idx}
+                      className="flex justify-between gap-16 items-start pb-24 border-b border-neutral-100 last:border-0 cursor-pointer group"
+                      onClick={() => router.push(`/pages/article/${rel.slug}`)}
+                    >
+                      <div className="flex flex-col gap-8 flex-grow">
+                        <span className="text-xs text-neutral-500">{rel.date}</span>
+                        <h4 className="text-s-bold text-primary-900 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
+                          {rel.title}
+                        </h4>
+                      </div>
+                      <div className="w-[124px] h-[70px] flex-shrink-0 bg-neutral-100 rounded-4 overflow-hidden shadow-sm">
+                        <img
+                          src={rel.image}
+                          alt={rel.title}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              `https://picsum.photos/300/200?random=${idx}`;
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </aside>
+          </div>
         </div>
       </main>
     </div>
