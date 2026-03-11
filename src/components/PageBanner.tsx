@@ -16,6 +16,7 @@ interface PageBannerProps {
     alt: string;
     className?: string;
   };
+  className?: string;
 }
 
 const PageBanner: React.FC<PageBannerProps> = ({
@@ -27,13 +28,14 @@ const PageBanner: React.FC<PageBannerProps> = ({
   backgroundImageUrl,
   backgroundPosition = 'center',
   image,
+  className = '',
 }) => {
   const isLight = variant === 'light';
 
   return (
     <div
-      className={`agora-card-highlight-newsletter ${isLight ? 'bg-accent-light' : 'bg-primary-900'}`}
-      style={isLight ? {} : {
+      className={`agora-card-highlight-newsletter ${!className.includes('bg-') ? (isLight ? 'bg-accent-light' : 'bg-primary-900') : ''} ${className}`}
+      style={isLight || className.includes('bg-white') ? {} : {
         backgroundImage: `url("${backgroundImageUrl}")`,
         backgroundSize: 'cover',
         backgroundPosition: backgroundPosition,
