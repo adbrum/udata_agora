@@ -1,58 +1,70 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { CardLinks, InputSearchBar, Button, InputSelect, DropdownSection, DropdownOption, Icon } from '@ama-pt/agora-design-system';
-import PageBanner from '@/components/PageBanner';
-import { Pagination } from '@/components/Pagination';
+import React from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  CardLinks,
+  InputSearchBar,
+  Button,
+  InputSelect,
+  DropdownSection,
+  DropdownOption,
+  Icon,
+} from "@ama-pt/agora-design-system";
+import PageBanner from "@/components/PageBanner";
+import { Pagination } from "@/components/Pagination";
 
 // Mock data for articles
 const MOCK_ARTICLES = [
   {
-    id: '1',
-    slug: 'webinar-developers-data-scientists',
-    title: 'Webinar Developers e Data Scientists: Publicação e uso de dados abertos',
-    description: 'Participe no nosso próximo webinar focado em ferramentas e APIs para a comunidade técnica. Saiba como tirar o melhor partido dos dados abertos portugueses.',
-    date: '21 de novembro de 2024',
-    organization: 'Portal Dados Abertos',
-    image: '/Articles/last-new1.svg',
-    views: '1 234',
-    comments: '12'
+    id: "1",
+    slug: "webinar-developers-data-scientists",
+    title: "Webinar Developers e Data Scientists: Publicação e uso de dados abertos",
+    description:
+      "Participe no nosso próximo webinar focado em ferramentas e APIs para a comunidade técnica. Saiba como tirar o melhor partido dos dados abertos portugueses.",
+    date: "21 de novembro de 2024",
+    organization: "Portal Dados Abertos",
+    image: "/Articles/last-new1.svg",
+    views: "1 234",
+    comments: "12",
   },
   {
-    id: '2',
-    slug: 'nova-data-webinar-empresas',
-    title: 'NOVA DATA - Webinar Dados Abertos: Importância para as empresas',
-    description: 'Devido à elevada procura, agendámos uma nova data para o webinar sobre o impacto económico e social da abertura de dados no setor empresarial.',
-    date: '15 de novembro de 2024',
-    organization: 'Ministério da Economia',
-    image: '/Articles/last-new2.svg',
-    views: '856',
-    comments: '5'
+    id: "2",
+    slug: "nova-data-webinar-empresas",
+    title: "NOVA DATA - Webinar Dados Abertos: Importância para as empresas",
+    description:
+      "Devido à elevada procura, agendámos uma nova data para o webinar sobre o impacto económico e social da abertura de dados no setor empresarial.",
+    date: "15 de novembro de 2024",
+    organization: "Ministério da Economia",
+    image: "/Articles/last-new2.svg",
+    views: "856",
+    comments: "5",
   },
   {
-    id: '3',
-    slug: 'workshop-visualizacao-dados',
-    title: 'Workshop Prático: Visualização de Dados para o Cidadão',
-    description: 'Aprenda a criar visualizações impactantes a partir de conjuntos de dados públicos utilizando ferramentas gratuitas e acessíveis.',
-    date: '10 de novembro de 2024',
-    organization: 'Laboratório de Inovação',
-    image: '/Articles/last-new3.svg',
-    views: '2 105',
-    comments: '24'
+    id: "3",
+    slug: "workshop-visualizacao-dados",
+    title: "Workshop Prático: Visualização de Dados para o Cidadão",
+    description:
+      "Aprenda a criar visualizações impactantes a partir de conjuntos de dados públicos utilizando ferramentas gratuitas e acessíveis.",
+    date: "10 de novembro de 2024",
+    organization: "Laboratório de Inovação",
+    image: "/Articles/last-new3.svg",
+    views: "2 105",
+    comments: "24",
   },
   {
-    id: '4',
-    slug: 'retrospectiva-temporada',
-    title: 'Uma retrospectiva da temporada de volta às aulas do data.gouv.fr',
-    description: '3 meses de eventos focados em dados públicos. Encontre todos os replays desde o início da nova temporada.',
-    date: '18 de dezembro de 2025',
-    organization: 'ADMIN',
-    image: '/Banner/cubes.svg',
-    views: '3 420',
-    comments: '45'
-  }
+    id: "4",
+    slug: "retrospectiva-temporada",
+    title: "Uma retrospectiva da temporada de volta às aulas do data.gouv.fr",
+    description:
+      "3 meses de eventos focados em dados públicos. Encontre todos os replays desde o início da nova temporada.",
+    date: "18 de dezembro de 2025",
+    organization: "ADMIN",
+    image: "/Banner/cubes.svg",
+    views: "3 420",
+    comments: "45",
+  },
 ];
 
 export default function ArticleClient({ currentPage }: { currentPage: number }) {
@@ -66,8 +78,8 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
           backgroundImageUrl="/Banner/hero-bg.png"
           backgroundPosition="center right"
           breadcrumbItems={[
-            { label: 'Home', url: '/' },
-            { label: 'Últimas novidades', url: '/pages/article' }
+            { label: "Home", url: "/" },
+            { label: "Últimas novidades", url: "/pages/article" },
           ]}
         >
           <InputSearchBar
@@ -130,7 +142,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                     className="text-neutral-900 transition-all group-hover:shadow-md"
                     variant="transparent"
                     image={{
-                      src: article.image || '/laptop.png',
+                      src: article.image || "/laptop.png",
                       alt: article.title,
                     }}
                     category={article.organization}
@@ -140,40 +152,36 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                         {article.description}
                       </p>
                     }
-                    date={
-                      <span className="font-[300]">
-                        {article.date}
-                      </span>
-                    }
+                    date={<span className="font-[300]">{article.date}</span>}
                     links={[
                       {
-                        href: '#',
+                        href: "#",
                         hasIcon: true,
-                        leadingIcon: 'agora-line-eye',
-                        leadingIconHover: 'agora-solid-eye',
-                        trailingIcon: '',
-                        trailingIconHover: '',
-                        trailingIconActive: '',
+                        leadingIcon: "agora-line-eye",
+                        leadingIconHover: "agora-solid-eye",
+                        trailingIcon: "",
+                        trailingIconHover: "",
+                        trailingIconActive: "",
                         children: article.views,
-                        title: 'Visualizações',
+                        title: "Visualizações",
                         onClick: (e: React.MouseEvent) => e.preventDefault(),
-                        className: 'text-[#034AD8]',
+                        className: "text-[#034AD8]",
                       },
                       {
-                        href: '#',
+                        href: "#",
                         hasIcon: true,
-                        leadingIcon: 'agora-line-calendar',
-                        leadingIconHover: 'agora-solid-calendar',
-                        trailingIcon: '',
-                        trailingIconHover: '',
-                        trailingIconActive: '',
-                        children: '0 mil',
-                        title: 'Data',
+                        leadingIcon: "agora-line-calendar",
+                        leadingIconHover: "agora-solid-calendar",
+                        trailingIcon: "",
+                        trailingIconHover: "",
+                        trailingIconActive: "",
+                        children: "0 mil",
+                        title: "Data",
                         onClick: (e: React.MouseEvent) => e.preventDefault(),
-                        className: 'text-[#034AD8]',
+                        className: "text-[#034AD8]",
                       },
                       {
-                        href: '#',
+                        href: "#",
                         hasIcon: false,
                         children: (
                           <span className="flex items-center gap-8">
@@ -181,21 +189,21 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                             <span>0</span>
                           </span>
                         ),
-                        title: 'Métricas',
+                        title: "Métricas",
                         onClick: (e: React.MouseEvent) => e.preventDefault(),
                       },
                       {
-                        href: '#',
+                        href: "#",
                         hasIcon: true,
-                        leadingIcon: 'agora-line-star',
-                        leadingIconHover: 'agora-solid-star',
-                        trailingIcon: '',
-                        trailingIconHover: '',
-                        trailingIconActive: '',
+                        leadingIcon: "agora-line-star",
+                        leadingIconHover: "agora-solid-star",
+                        trailingIcon: "",
+                        trailingIconHover: "",
+                        trailingIconActive: "",
                         children: article.comments,
-                        title: 'Favoritos',
+                        title: "Favoritos",
                         onClick: (e: React.MouseEvent) => e.preventDefault(),
-                        className: 'text-[#034AD8]',
+                        className: "text-[#034AD8]",
                       },
                     ]}
                     mainLink={

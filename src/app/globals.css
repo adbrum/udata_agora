@@ -36,13 +36,13 @@
   /* Brand Colors */
   --color-brand-blue-dark: var(--color-primary-900);
   --color-brand-blue-dark-rgb: 2, 28, 81;
-  --color-brand-blue-primary: #0C02CB;
+  --color-brand-blue-primary: #0c02cb;
   --color-brand-blue-primary-rgb: 12, 2, 203;
   --color-brand-blue-secondary: #050157;
   --color-brand-blue-secondary-rgb: 5, 1, 87;
 
   /* Accent/Neutral Colors */
-  --color-accent-light: #F7F7FF;
+  --color-accent-light: #f7f7ff;
   --color-accent-light-rgb: 247, 247, 255;
   --color-gray-medium: var(--color-neutral-700);
 
@@ -86,7 +86,12 @@ body {
 }
 
 .agora-card-highlight-newsletter .card-container:before {
-  background: linear-gradient(90deg, var(--color-brand-blue-dark) 0%, rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%, rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--color-brand-blue-dark) 0%,
+    rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%,
+    rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%
+  );
 }
 
 /* 3.2 Icons & Containers */
@@ -125,7 +130,7 @@ body {
   background-color: var(--color-primary-100);
 }
 
-.tab-panel-content>* {
+.tab-panel-content > * {
   position: relative;
   z-index: 1;
 }
@@ -141,7 +146,7 @@ body {
 
 /* 4.1 Dataset Reuse Card Layout */
 .dataset-reuse-card-wrapper .card-general,
-.dataset-reuse-card-wrapper .card-general>div {
+.dataset-reuse-card-wrapper .card-general > div {
   height: 100% !important;
   display: flex !important;
   overflow: hidden !important;
@@ -206,6 +211,28 @@ body {
   min-height: 64px;
 }
 
+.dataset-card-home > * {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.dataset-card-home a {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.dataset-card-home .container-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .homepage .agora-card-article.indented .container-body {
   background: transparent;
   border: 2px solid var(--color-white);
@@ -245,7 +272,6 @@ body {
   min-height: 60px;
   padding: 16px;
 }
-
 
 .card-article-3_2 .agora-card-article .card-article-3_2-img img {
   max-height: 48px;
@@ -292,7 +318,7 @@ body {
 .reuse .agora-card-links .bottom-container svg,
 .article .agora-card-links .bottom-container svg,
 .organization .agora-card-links .bottom-container svg {
-  fill: #034AD8;
+  fill: #034ad8;
 }
 
 .reuse .agora-card-links .bottom-container .agora-anchor,
@@ -301,7 +327,7 @@ body {
 .article .agora-card-links .bottom-container .agora-anchor:hover,
 .organization .agora-card-links .bottom-container .agora-anchor,
 .organization .agora-card-links .bottom-container .agora-anchor:hover {
-  color: #034AD8;
+  color: #034ad8;
 }
 
 /* Hide default trailing icon from links (all states including empty boxes and hover) */
@@ -395,9 +421,6 @@ footer img {
   height: 20px;
 }
 
-
-
-
 /*
   [07] UTILITIES
   --------------------------------------------------------------------------- */
@@ -411,7 +434,6 @@ li.max-w-ch,
 .max-w-ch li {
   max-width: 65ch;
 }
-
 
 /*Login*/
 .login-page .agora-tabs.desktop .tab-panel-content::after {
@@ -439,7 +461,6 @@ li.max-w-ch,
     padding-left: 6rem;
     padding-right: 6rem;
   }
-
 }
 
 .rounded-8 {

@@ -5,8 +5,7 @@ const BACKEND_URL =
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
-  const contentType =
-    request.headers.get("content-type") || "application/x-www-form-urlencoded";
+  const contentType = request.headers.get("content-type") || "application/x-www-form-urlencoded";
 
   const backendResponse = await fetch(`${BACKEND_URL}/login/`, {
     method: "POST",

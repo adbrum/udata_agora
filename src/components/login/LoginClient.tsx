@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from "react";
@@ -14,7 +13,7 @@ import {
   TabHeader,
   TabBody,
   InputText,
-  InputPassword
+  InputPassword,
 } from "@ama-pt/agora-design-system";
 import { fetchCsrfToken, login } from "@/services/api";
 import { useRouter } from "next/navigation";
@@ -176,7 +175,6 @@ export default function LoginClient() {
                   <div className="grid gap-32 xs:grid-cols-4 md:grid-cols-8 xl:grid-cols-12">
                     <div className="xs:col-span-4 md:col-span-5 xl:col-span-7">
                       <div className="bg-[#E9EBFF] rounded-8 w-fit p-16 mb-32">
-
                         <Icon
                           name="agora-line-globe"
                           className="w-24 h-24 text-brand-blue-primary"
@@ -292,7 +290,6 @@ export default function LoginClient() {
                         className="px-48 h-56 text-lg font-bold shadow-md hover:shadow-lg transition-all"
                         disabled={isLoading}
                       >
-
                         {isLoading ? "A iniciar sessão..." : "Iniciar sessão"}
                       </Button>
                     </div>
@@ -301,7 +298,6 @@ export default function LoginClient() {
                       <span className="text-sm text-neutral-900">
                         Esqueceu-se da palavra-passe?
                       </span>
-
                       <Button
                         variant="primary"
                         appearance="link"
