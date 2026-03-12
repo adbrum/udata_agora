@@ -1,9 +1,13 @@
 import type { NextConfig } from "next";
 
 const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_BASE?.replace("/api/1", "") || "http://localhost:7000";
+  process.env.NEXT_PUBLIC_API_BASE?.replace("/api/1", "") || "http://127.0.0.1:7000";
 
 const nextConfig: NextConfig = {
+  // Prevent Next.js from stripping trailing slashes on proxied routes,
+  // which causes redirect loops with Flask (Flask adds trailing slash,
+  // Next.js removes it → 308 loop).
+  skipTrailingSlashRedirect: true,
   compress: true,
   productionBrowserSourceMaps: false,
   images: {
@@ -48,10 +52,6 @@ const nextConfig: NextConfig = {
           destination: `${BACKEND_URL}/saml/sso`,
         },
         {
-          source: "/saml/register",
-          destination: `${BACKEND_URL}/saml/register`,
-        },
-        {
           source: "/saml/logout",
           destination: `${BACKEND_URL}/saml/logout`,
         },
@@ -76,14 +76,15 @@ const nextConfig: NextConfig = {
           source: "/saml/eidas/sso_logout",
           destination: `${BACKEND_URL}/saml/eidas/sso_logout`,
         },
-      ],
-      afterFiles: [],
-      fallback: [
+        // API routes — must be in beforeFiles to avoid redirect loops
+        // when Flask returns 308 trailing-slash redirects
         {
           source: "/api/:path*",
           destination: `${BACKEND_URL}/api/:path*`,
         },
       ],
+      afterFiles: [],
+      fallback: [],
     };
   },
   // TODO: Install @sentry/nextjs and configure
