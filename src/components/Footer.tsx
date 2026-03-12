@@ -62,11 +62,11 @@ const usefulLinksData = [
 const FooterNavigation = () => {
   return (
     <div className="container mx-auto px-4 py-12 xl:py-64">
-      <h3 className="text-lg font-bold mb-8 text-white mb-[32px]">Mais para descobrir no portal</h3>
+      <h3 className="text-l-bold mb-8 text-white mb-[32px]">Mais para descobrir no portal</h3>
       <div className="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 gap-32">
         {linkColumns.map((column, idx) => (
           <div key={idx}>
-            <h4 className="font-bold text-white mb-[16px]">{column.title}</h4>
+            <h4 className="text-m-semibold text-white mb-[16px]">{column.title}</h4>
             <ul className="space-y-2">
               {column.links.map((link, linkIdx) => (
                 <li className="mb-[16px] gap-32" key={linkIdx}>
