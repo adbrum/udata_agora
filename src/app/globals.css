@@ -259,6 +259,14 @@ body {
   gap: 0px;
 }
 
+.agora-card-article img.card-image.w-full {
+  border-radius: 4px;
+  height: 208px;
+  object-fit: cover;
+  display: flex;
+  align-self: stretch;
+}
+
 /* 5.2 Page Detail & Links */
 .card-article-3_2 .agora-card-article .container-body {
   padding: 32px;

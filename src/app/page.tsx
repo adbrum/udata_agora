@@ -303,9 +303,9 @@ export default function Home() {
                       pillText={
                         dataset.last_modified
                           ? formatDistanceToNow(new Date(dataset.last_modified), {
-                              locale: pt,
-                              addSuffix: true,
-                            })
+                            locale: pt,
+                            addSuffix: true,
+                          })
                           : "Desconhecido"
                       }
                       subtitleText={dataset.organization?.name || "Sem Organização"}
