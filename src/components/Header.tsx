@@ -93,15 +93,20 @@ export const Header = () => {
       }
 
       // Apply styles if submenu is active
-      if (submenu === 'desenvolvimento') {
+      const submenuTitles: Record<string, string> = {
+        desenvolvimento: "Desenvolvimento",
+        publicacoes: "Publicações",
+      };
+
+      if (submenu && submenuTitles[submenu]) {
         document.querySelectorAll('.navigation-links-layout').forEach((el) => {
           const titleEl = el.querySelector(':scope > .title') as HTMLElement | null;
           if (!titleEl || titleEl.textContent !== 'Conhecimento') return;
 
           const htmlEl = el as HTMLElement;
-          htmlEl.setAttribute('data-submenu', 'desenvolvimento');
+          htmlEl.setAttribute('data-submenu', submenu);
           titleEl.dataset.originalTitle = 'Conhecimento';
-          titleEl.textContent = 'Desenvolvimento';
+          titleEl.textContent = submenuTitles[submenu];
         });
       }
     };
@@ -182,7 +187,20 @@ export const Header = () => {
             href: "#",
           },
         ]
-      : [
+      : submenu === "publicacoes"
+        ? [
+            { type: "back", key: "voltar" },
+            {
+              type: "card",
+              key: "pub-guias",
+              iconDefault: "agora-line-book-open",
+              iconHover: "agora-solid-book-open",
+              title: "Guias",
+              description: "Guias e manuais",
+              href: "#",
+            },
+          ]
+        : [
           {
             type: "card",
             key: "sobre",
@@ -237,6 +255,7 @@ export const Header = () => {
             title: "Publicações",
             description: "Relatórios e estudos",
             href: "#",
+            isSubmenuTrigger: true,
           },
           {
             type: "card",
@@ -511,12 +530,12 @@ export const Header = () => {
                       onClickCapture={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        setSubmenu("desenvolvimento");
+                        setSubmenu(item.key);
                       }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          setSubmenu("desenvolvimento");
+                          setSubmenu(item.key);
                         }
                       }}
                       className="cursor-pointer"
@@ -530,7 +549,7 @@ export const Header = () => {
                         onLinkClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          setSubmenu("desenvolvimento");
+                          setSubmenu(item.key);
                         }}
                       />
                     </div>
