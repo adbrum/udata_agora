@@ -547,13 +547,29 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   border-width: 2px;
   border-color: var(--color-primary-600);
   background-color: var(--color-primary-600);
-  padding: 14px;
+  padding: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .agora-header .card-general-neutral-100 .icon-set img {
-  width: 32px;
-  height: 32px;
+  width: 16px;
+  height: 16px;
   filter: brightness(0) invert(1);
+}
+
+.agora-header .card-general-neutral-100 .icon-set svg.icon {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+}
+
+.agora-header .content.content-hover .p-16 {
+  padding-top: 0;
 }
 
 /* Target icons that SHOULD be white */
