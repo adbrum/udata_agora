@@ -176,6 +176,7 @@ export const Header = () => {
 
   type KnowledgeItem =
     | { type: "back"; key: string }
+    | { type: "title"; key: string; label: string }
     | {
       type: "card";
       key: string;
@@ -231,7 +232,7 @@ export const Header = () => {
             iconHover: "agora-solid-star",
             title: "Sobre dados abertos",
             description: "Informação geral",
-            href: "#",
+            href: "/pages/about-open-data",
           },
           {
             type: "card",
@@ -500,45 +501,29 @@ export const Header = () => {
 
           <NavigationRoot label="Conhecimento">
             {conhecimentoItems.map((item) => {
-
               if (item.type === "back") {
-
                 return (
                   <NavigationLink key={item.key} appearance="link">
                     <div
-
                       onClickCapture={(e) => {
-
                         e.stopPropagation();
-
                         e.preventDefault();
-
                         setSubmenu(null);
-
                       }}
                     >
                       <Button
-
                         appearance="link"
-
                         hasIcon
-
                         leadingIcon="agora-line-arrow-left-anchor"
-
                         leadingIconHover="agora-solid-arrow-left-anchor"
                       >
-
                         Voltar
                       </Button>
                     </div>
                   </NavigationLink>
-
                 );
-
               }
-
-              if (item.isSubmenuTrigger) {
-
+              if (item.type === "title") {
                 return (
                   <NavigationLink key={item.key} appearance="link">
                     <div
@@ -592,35 +577,44 @@ export const Header = () => {
                           setSubmenu(item.key);
 
                         }}
-
-                      />
-                    </div>
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setSubmenu(item.key);
+                          }
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <HeaderCard
+                          iconDefault={item.iconDefault}
+                          iconHover={item.iconHover}
+                          title={item.title}
+                          description={item.description}
+                          href={item.href}
+                          onLinkClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setSubmenu(item.key);
+                          }}
+                        />
+                      </div>
+                    </NavigationLink>
+                  );
+                }
+                return (
+                  <NavigationLink key={item.key} appearance="link">
+                    <HeaderCard
+                      iconDefault={item.iconDefault}
+                      iconHover={item.iconHover}
+                      title={item.title}
+                      description={item.description}
+                      href={item.href}
+                      onLinkClick={handleLinkClick}
+                    />
                   </NavigationLink>
-
                 );
-
               }
-
-              return (
-                <NavigationLink key={item.key} appearance="link">
-                  <HeaderCard
-
-                    iconDefault={item.iconDefault}
-
-                    iconHover={item.iconHover}
-
-                    title={item.title}
-
-                    description={item.description}
-
-                    href={item.href}
-
-                    onLinkClick={handleLinkClick}
-
-                  />
-                </NavigationLink>
-
-              );
+              return <></>;
 
             })}
 
