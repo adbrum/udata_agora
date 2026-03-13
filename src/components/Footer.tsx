@@ -96,7 +96,7 @@ const FooterInstitutional = () => {
           </p>
           <div className="flex items-center gap-32">
             <img src="/Logos/NextGenerationEU.svg" alt="NextGenerationEU" />
-            <img src="/Logos/República Portuguesa.svg" alt="República Portuguesa" />
+            <img src="/Logos/republica-portuguesa.svg" alt="República Portuguesa" />
             <img src="/Logos/ARTE.svg" alt="ARTE" />
           </div>
         </div>

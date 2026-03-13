@@ -24,6 +24,21 @@ export default function LoginClient() {
   const [isHoveredEidas, setIsHoveredEidas] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [citizenType, setCitizenType] = useState<string | null>(null);
+  const [termsCmdAccepted, setTermsCmdAccepted] = useState(false);
+  const [termsEidasAccepted, setTermsEidasAccepted] = useState(false);
+
+  const samlEnabled = process.env.NEXT_PUBLIC_SAML_ENABLED === "true";
+
+  const handleSamlLogin = () => {
+    // Full-page redirect required for SAML 2.0 HTTP-POST/Redirect binding
+    window.location.href = "/saml/login";
+  };
+
+  const handleEidasLogin = () => {
+    // Full-page redirect required for eIDAS SAML flow
+    window.location.href = "/saml/eidas/login";
+  };
 
   const breadcrumbItems = [
     { label: "Home", url: "/" },
@@ -129,14 +144,15 @@ export default function LoginClient() {
                         label="Cidadã/o nacional"
                         id="nacional"
                         name="citizen-type"
-                        defaultChecked
                         className="text-lg text-neutral-900"
+                        onChange={() => setCitizenType("nacional")}
                       />
                       <RadioButton
                         label="Cidadã/o estrangeira/o"
                         id="estrangeiro"
                         name="citizen-type"
                         className="text-lg text-neutral-900"
+                        onChange={() => setCitizenType("estrangeiro")}
                       />
                     </div>
                     <div className="mt-8">
@@ -144,6 +160,7 @@ export default function LoginClient() {
                         label="Declaro que li e aceito os termos e condições para o tratamento dos meus dados pessoais no acesso e utilização da Área Reservada do dadosgov.pt"
                         id="terms-cmd"
                         className="text-sm text-neutral-700 leading-relaxed"
+                        onChange={(e) => setTermsCmdAccepted(e.target.checked)}
                       />
                     </div>
                   </div>
@@ -159,6 +176,8 @@ export default function LoginClient() {
                       }
                       onMouseEnter={() => setIsHovered(true)}
                       onMouseLeave={() => setIsHovered(false)}
+                      onClick={handleSamlLogin}
+                      disabled={!samlEnabled || !citizenType || !termsCmdAccepted}
                     >
                       Autenticar com CMD
                     </Button>
@@ -210,6 +229,7 @@ export default function LoginClient() {
                         label="Declaro que li e aceito os termos e condições para o tratamento dos meus dados pessoais no acesso e utilização da Área Reservada do dadosgov.pt"
                         id="terms-eidas"
                         className="text-sm text-neutral-700 leading-relaxed"
+                        onChange={(e) => setTermsEidasAccepted(e.target.checked)}
                       />
                     </div>
                   </div>
@@ -225,6 +245,8 @@ export default function LoginClient() {
                       }
                       onMouseEnter={() => setIsHoveredEidas(true)}
                       onMouseLeave={() => setIsHoveredEidas(false)}
+                      onClick={handleEidasLogin}
+                      disabled={!samlEnabled || !termsEidasAccepted}
                     >
                       Autenticar com eIDAS
                     </Button>
