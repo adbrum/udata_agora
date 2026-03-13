@@ -169,7 +169,7 @@ export const Footer = () => {
         caption="Plataforma aberta de dados públicos portugueses"
         partnersLogos={[
           { image: { src: '/Logos/NextGenerationEU.svg', alt: 'NextGenerationEU' } },
-          { image: { src: '/Logos/República Portuguesa.svg', alt: 'República Portuguesa' } },
+          { image: { src: '/Logos/republica-portuguesa.svg', alt: 'República Portuguesa' } },
           { image: { src: '/Logos/ARTE.svg', alt: 'ARTE' } },
         ]}
         socialsLink={socialLinksData.map((s) => ({

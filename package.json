@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ama-pt/agora-design-system": "^3.4.2",
+    "claude": "^0.1.1",
     "date-fns": "^4.1.0",
     "next": "16.1.6",
     "react": "19.2.3",
