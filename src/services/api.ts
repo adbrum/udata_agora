@@ -3,6 +3,7 @@ import {
   Dataset,
   DatasetBadges,
   DatasetFilters,
+  DatasetSuggestion,
   FormatSuggestion,
   Frequency,
   GlobalSearchSuggestion,
@@ -528,6 +529,27 @@ export async function suggestTags(query: string, size: number = 10): Promise<Tag
     return await res.json();
   } catch (error) {
     console.error("Error suggesting tags:", error);
+    return [];
+  }
+}
+
+export async function suggestDatasets(
+  query: string,
+  size: number = 5
+): Promise<DatasetSuggestion[]> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/datasets/suggest/?q=${encodeURIComponent(query)}&size=${size}`,
+      { cache: "no-store" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch dataset suggestions: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching dataset suggestions:", error);
     return [];
   }
 }

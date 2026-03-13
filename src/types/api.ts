@@ -88,6 +88,15 @@ export interface GlobalSearchSuggestion {
   score: number;
 }
 
+export interface DatasetSuggestion {
+  id: string;
+  title: string;
+  slug: string;
+  acronym: string | null;
+  image_url: string | null;
+  page: string;
+}
+
 export interface License {
   id: string;
   title: string;
