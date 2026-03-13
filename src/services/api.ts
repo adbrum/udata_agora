@@ -4,6 +4,8 @@ import {
   DatasetBadges,
   DatasetFilters,
   DatasetSuggestion,
+  Discussion,
+
   FormatSuggestion,
   Frequency,
   GlobalSearchSuggestion,
@@ -176,11 +178,15 @@ export async function fetchOrganizations(
     };
   }
 }
-export async function fetchOrganization(slug: string): Promise<Organization> {
+export async function fetchOrganization(slugOrId: string): Promise<Organization | null> {
   try {
-    const res = await fetch(`${API_BASE_URL}/organizations/${slug}/`, {
+    const res = await fetch(`${API_BASE_URL}/organizations/${slugOrId}/`, {
       cache: "no-store",
     });
+
+    if (res.status === 404) {
+      return null;
+    }
 
     if (!res.ok) {
       throw new Error(`Failed to fetch organization: ${res.statusText}`);
@@ -190,6 +196,69 @@ export async function fetchOrganization(slug: string): Promise<Organization> {
   } catch (error) {
     console.error("Error fetching organization:", error);
     throw error;
+  }
+}
+
+export async function fetchOrgDatasets(
+  org: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Dataset>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/organizations/${org}/datasets/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch organization datasets: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching organization datasets:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchOrgReuses(org: string): Promise<Reuse[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/organizations/${org}/reuses/`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch organization reuses: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching organization reuses:", error);
+    return [];
+  }
+}
+
+export async function fetchOrgDiscussions(org: string): Promise<Discussion[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/organizations/${org}/discussions/`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch organization discussions: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching organization discussions:", error);
+    return [];
   }
 }
 export async function fetchReuses(
