@@ -611,6 +611,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 
 .agora-header .navigation-links-layout .card-general .p-16 {
   padding-top: 0;
+  flex: 1;
 }
 
 .agora-header .card-general .anchor {
@@ -625,48 +626,12 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   margin-right: 0;
 }
 
-/* Disable card-level hover in header — card ignores pointer so only wrapper triggers hover */
-.agora-header .card-general {
-  pointer-events: none;
-}
-
-/* Re-enable pointer events on the blocked-link anchor so the card is clickable */
-.agora-header .card-general .anchor.anchor-blockedLink {
-  pointer-events: auto;
-}
-
+/* Hide card-level hover visuals (background/border) but keep icon hover working */
 .agora-header .card-general-neutral-100.card-general-hover:hover:not(:active),
 .agora-header .card-general-neutral-100:hover .content-hover {
   border-color: transparent !important;
-}
-
-/* Wrapper receives all pointer events and triggers hover */
-.agora-header .link-wrapper {
-  pointer-events: auto;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.2s ease;
-}
-
-.agora-header .link-wrapper:hover {
-  background-color: var(--color-neutral-200, #e5e7eb);
-}
-
-.agora-header .link-wrapper:hover .icon-set-hover .leading-icon-default {
-  display: none !important;
-}
-
-.agora-header .link-wrapper:hover .icon-set-hover .leading-icon-hover {
-  display: block !important;
-}
-
-.agora-header .link-wrapper:active .icon-set-hover .leading-icon-default {
-  display: block !important;
-}
-
-.agora-header .link-wrapper:active .icon-set-hover .leading-icon-hover,
-.agora-header .link-wrapper:active .icon-set-hover .leading-icon-active {
-  display: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
 /* Hide navigation panel titles, show only in submenu */
@@ -703,6 +668,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 
 .navigation-links-layout .agora-link-wrapper:has(.card-general) {
   padding: 12px 32px;
+  display: block;
 }
 
 .agora-header .card-general .description {

@@ -43,7 +43,7 @@ export const HeaderCard = ({
     >
       <CardGeneral
         isCardHorizontal={true}
-        isBlockedLink={false}
+        isBlockedLink={true}
         variant="neutral-100"
         iconDefault={iconDefault}
         iconHover={iconHover}
