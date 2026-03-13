@@ -92,18 +92,29 @@ export const Header = () => {
         }
       }
 
-      // Apply styles if submenu is active
-      if (submenu === 'desenvolvimento') {
-        document.querySelectorAll('.navigation-links-layout').forEach((el) => {
-          const titleEl = el.querySelector(':scope > .title') as HTMLElement | null;
-          if (!titleEl || titleEl.textContent !== 'Conhecimento') return;
+      // Mark the Conhecimento panel and apply submenu title
+      const submenuTitles: Record<string, string> = {
+        desenvolvimento: 'Desenvolvimento',
+        publicacoes: 'Publicações',
+      };
 
-          const htmlEl = el as HTMLElement;
-          htmlEl.setAttribute('data-submenu', 'desenvolvimento');
+      document.querySelectorAll('.navigation-links-layout').forEach((el) => {
+        const titleEl = el.querySelector(':scope > .title') as HTMLElement | null;
+        if (!titleEl) return;
+        const isConhecimento =
+          titleEl.textContent === 'Conhecimento' ||
+          titleEl.dataset.originalTitle === 'Conhecimento';
+        if (!isConhecimento) return;
+
+        const htmlEl = el as HTMLElement;
+        htmlEl.setAttribute('data-conhecimento', '');
+
+        if (submenu && submenuTitles[submenu]) {
+          htmlEl.setAttribute('data-submenu', submenu);
           titleEl.dataset.originalTitle = 'Conhecimento';
-          titleEl.textContent = 'Desenvolvimento';
-        });
-      }
+          titleEl.textContent = submenuTitles[submenu];
+        }
+      });
     };
 
     requestAnimationFrame(() => {
@@ -147,24 +158,6 @@ export const Header = () => {
         { type: "back", key: "voltar" },
         {
           type: "card",
-          key: "dev-sparql",
-          iconDefault: "agora-line-file",
-          iconHover: "agora-solid-file",
-          title: "Acesso Catalogo via SPARQL",
-          description: "Query de dados",
-          href: "#",
-        },
-        {
-          type: "card",
-          key: "dev-api-tutorial",
-          iconDefault: "agora-line-plus-circle",
-          iconHover: "agora-solid-plus-circle",
-          title: "API Tutorial",
-          description: "Aprenda a usar a API",
-          href: "#",
-        },
-        {
-          type: "card",
           key: "dev-api-ref",
           iconDefault: "agora-line-plus-circle",
           iconHover: "agora-solid-plus-circle",
@@ -177,95 +170,100 @@ export const Header = () => {
           key: "dev-pub",
           iconDefault: "agora-line-document",
           iconHover: "agora-solid-document",
-          title: "Pub. Relatórios/Estudos",
+          title: "Relatórios/Estudos",
           description: "Submeter estudos",
           href: "#",
         },
       ]
-      : [
-        {
-          type: "card",
-          key: "sobre",
-          iconDefault: "agora-line-star",
-          iconHover: "agora-solid-star",
-          title: "Sobre dados abertos",
-          description: "Informação geral",
-          href: "#",
-        },
-        {
-          type: "card",
-          key: "publicar",
-          iconDefault: "agora-line-plus-circle",
-          iconHover: "agora-solid-plus-circle",
-          title: "Publicar dados?",
-          description: "Guia de publicação",
-          href: "#",
-        },
-        {
-          type: "card",
-          key: "reutilizar",
-          iconDefault: "agora-line-book-open",
-          iconHover: "agora-solid-book-open",
-          title: "Reutilizar dados?",
-          description: "Guia de reutilização",
-          href: "#",
-        },
-        {
-          type: "card",
-          key: "dados-gov",
-          iconDefault: "agora-line-plus-circle",
-          iconHover: "agora-solid-plus-circle",
-          title: "O que é o dados.gov",
-          description: "Sobre o portal",
-          href: "#",
-        },
-        {
-          type: "card",
-          key: "desenvolvimento",
-          iconDefault: "agora-line-user-group",
-          iconHover: "agora-solid-user-group",
-          title: "Desenvolvimento",
-          description: "Plataforma e código",
-          href: "#",
-          isSubmenuTrigger: true,
-        },
-        {
-          type: "card",
-          key: "publicacoes",
-          iconDefault: "agora-line-user-group",
-          iconHover: "agora-solid-user-group",
-          title: "Publicações",
-          description: "Relatórios e estudos",
-          href: "#",
-        },
-        {
-          type: "card",
-          key: "noticias",
-          iconDefault: "agora-line-file",
-          iconHover: "agora-solid-file",
-          title: "Notícias",
-          description: "Últimas novidades",
-          href: "/pages/article",
-        },
-        {
-          type: "card",
-          key: "minicursos",
-          iconDefault: "agora-line-file",
-          iconHover: "agora-solid-file",
-          title: "Minicursos",
-          description: "Formação online",
-          href: "/pages/mini-courses",
-        },
-        {
-          type: "card",
-          key: "visualizacoes",
-          iconDefault: "agora-line-eye",
-          iconHover: "agora-solid-eye",
-          title: "Visualizações",
-          description: "Dashboards e mapas",
-          href: "#",
-        },
-      ];
+      : submenu === "publicacoes"
+        ? [
+          { type: "back", key: "voltar" },
+          {
+            type: "card",
+            key: "pub-guias",
+            iconDefault: "agora-line-book-open",
+            iconHover: "agora-solid-book-open",
+            title: "Relatórios/Estudos",
+            description: "Relatórios e estudos",
+            href: "#",
+          },
+        ]
+        : [
+          {
+            type: "card",
+            key: "sobre",
+            iconDefault: "agora-line-star",
+            iconHover: "agora-solid-star",
+            title: "Sobre dados abertos",
+            description: "Informação geral",
+            href: "#",
+          },
+          {
+            type: "card",
+            key: "publicar",
+            iconDefault: "agora-line-plus-circle",
+            iconHover: "agora-solid-plus-circle",
+            title: "Como publicar dados?",
+            description: "Guia de publicação",
+            href: "#",
+          },
+          {
+            type: "card",
+            key: "reutilizar",
+            iconDefault: "agora-line-book-open",
+            iconHover: "agora-solid-book-open",
+            title: "Como reutilizar dados?",
+            description: "Guia de reutilização",
+            href: "#",
+          },
+          {
+            type: "card",
+            key: "dados-gov",
+            iconDefault: "agora-line-plus-circle",
+            iconHover: "agora-solid-plus-circle",
+            title: "O que é o dados.gov",
+            description: "Sobre o portal",
+            href: "#",
+          },
+          {
+            type: "card",
+            key: "desenvolvimento",
+            iconDefault: "agora-line-user-group",
+            iconHover: "agora-solid-user-group",
+            title: "Desenvolvimento",
+            description: "Plataforma e código",
+            href: "#",
+            isSubmenuTrigger: true,
+          },
+          {
+            type: "card",
+            key: "publicacoes",
+            iconDefault: "agora-line-user-group",
+            iconHover: "agora-solid-user-group",
+            title: "Publicações",
+            description: "Relatórios e estudos",
+            href: "#",
+            isSubmenuTrigger: true,
+          },
+          {
+            type: "card",
+            key: "noticias",
+            iconDefault: "agora-line-file",
+            iconHover: "agora-solid-file",
+            title: "Notícias",
+            description: "Últimas novidades",
+            href: "/pages/article",
+          },
+          {
+            type: "card",
+            key: "minicursos",
+            iconDefault: "agora-line-file",
+            iconHover: "agora-solid-file",
+            title: "Minicursos",
+            description: "Formação online",
+            href: "/pages/mini-courses",
+          },
+        ];
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     // Force close the menu immediately
@@ -394,13 +392,6 @@ export const Header = () => {
                 href: "#",
               },
               {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "Nova API",
-                description: "Explorar as APIs",
-                href: "#",
-              },
-              {
                 iconDefault: "agora-line-book-open",
                 iconHover: "agora-solid-book-open",
                 title: "Nova Reutilização",
@@ -441,13 +432,6 @@ export const Header = () => {
                 iconDefault: "agora-line-document",
                 title: "HVDs",
                 description: "High Value Datasets",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "APIs",
-                description: "Consulte as APIs",
                 href: "#",
               },
               {
@@ -533,7 +517,7 @@ export const Header = () => {
 
                         e.preventDefault();
 
-                        setSubmenu("desenvolvimento");
+                        setSubmenu(item.key);
 
                       }}
 
@@ -543,7 +527,7 @@ export const Header = () => {
 
                           e.preventDefault();
 
-                          setSubmenu("desenvolvimento");
+                          setSubmenu(item.key);
 
                         }
 
@@ -569,7 +553,7 @@ export const Header = () => {
 
                           e.stopPropagation();
 
-                          setSubmenu("desenvolvimento");
+                          setSubmenu(item.key);
 
                         }}
 

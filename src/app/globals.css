@@ -561,20 +561,27 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   filter: brightness(0) invert(1);
 }
 
+.agora-header .card-general-neutral-100 .icon-set svg.icon {
+  height: 16px;
+  min-height: 16px;
+  width: 16px;
+  min-width: 16px;
+}
+
 .agora-header .content.content-hover .p-16 {
   padding-top: 0;
 }
 
 /* Target icons that SHOULD be white */
-.agora-header .icon-set svg.icon.icon-m,
-.agora-languages svg.icon.icon-m,
-.agora-unauthenticated svg.icon.icon-m,
-.agora-header .agora-areas svg.icon.icon-m {
+.agora-header .icon-set svg.icon,
+.agora-languages svg.icon,
+.agora-unauthenticated svg.icon,
+.agora-header .agora-areas svg.icon {
   fill: #FFFFFF;
 }
 
 /* Ensure the arrow icon in the card anchor remains blue */
-.agora-header .card-general-neutral-100 .anchor-container .trailing-icon svg.icon.icon-m {
+.agora-header .card-general-neutral-100 .anchor-container .trailing-icon svg.icon {
   fill: var(--color-primary-600);
 }
 
@@ -602,23 +609,70 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   margin-right: 0;
 }
 
-.agora-header .card-general:active .icon-set-hover .leading-icon-default {
-  display: block !important;
+/* Disable card-level hover in header — card ignores pointer so only wrapper triggers hover */
+.agora-header .card-general {
+  pointer-events: none;
 }
 
-.agora-header .card-general:active .icon-set-hover .leading-icon-hover,
-.agora-header .card-general:active .icon-set-hover .leading-icon-active {
+.agora-header .card-general-neutral-100.card-general-hover:hover:not(:active),
+.agora-header .card-general-neutral-100:hover .content-hover {
+  border-color: transparent !important;
+}
+
+/* Wrapper receives all pointer events and triggers hover */
+.agora-header .link-wrapper {
+  pointer-events: auto;
+}
+
+.agora-header .link-wrapper:hover .icon-set-hover .leading-icon-default {
   display: none !important;
 }
 
-/* Submenu: back button above title, container needs position context */
+.agora-header .link-wrapper:hover .icon-set-hover .leading-icon-hover {
+  display: block !important;
+}
+
+.agora-header .link-wrapper:active .icon-set-hover .leading-icon-default {
+  display: block !important;
+}
+
+.agora-header .link-wrapper:active .icon-set-hover .leading-icon-hover,
+.agora-header .link-wrapper:active .icon-set-hover .leading-icon-active {
+  display: none !important;
+}
+
+/* Hide navigation panel titles, show only in submenu */
+.agora-header .navigation-links-layout>.title {
+  display: none;
+}
+
+.navigation-links-layout[data-submenu]>.title {
+  display: block;
+}
+
+/* Submenu: back button above title */
 .navigation-links-layout[data-submenu] {
   position: relative;
+  padding-top: 80px;
 }
 
 .navigation-links-layout[data-submenu]>.links>.link-wrapper:first-child {
   grid-column: 1 / -1 !important;
   position: absolute;
-  top: -48px;
+  top: 16px;
+  left: 0;
+  right: 0;
+  max-width: 1216px;
+  margin-left: auto;
+  margin-right: auto;
   z-index: 1;
+}
+
+.navigation-links-layout[data-submenu]>.links>.link-wrapper:first-child .agora-btn {
+  padding: 8px 0;
+  font-weight: 600;
+}
+
+.navigation-links-layout .agora-link-wrapper:has(.card-general) {
+  padding: 12px 32px;
 }
