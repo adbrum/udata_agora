@@ -1,9 +1,49 @@
+export interface UserRef {
+  id: string;
+  slug: string;
+  first_name: string;
+  last_name: string;
+  avatar: string | null;
+  avatar_thumbnail: string | null;
+  uri: string;
+  page: string;
+}
+
+export interface OrganizationMember {
+  user: UserRef;
+  role: string;
+  since: string;
+}
+
+export interface Badge {
+  kind: string;
+}
+
+export interface OrganizationMetrics {
+  datasets: number;
+  followers: number;
+  members: number;
+  reuses: number;
+  views: number;
+}
+
 export interface Organization {
   id: string;
   name: string;
+  acronym: string | null;
   slug: string;
   logo: string | null;
+  logo_thumbnail: string | null;
   description: string | null;
+  url: string | null;
+  business_number_id: string | null;
+  members: OrganizationMember[];
+  badges: Badge[];
+  metrics: OrganizationMetrics;
+  created_at: string;
+  last_modified: string;
+  page: string;
+  uri: string;
 }
 
 export interface Metric {
