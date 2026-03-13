@@ -580,10 +580,6 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   min-width: 16px;
 }
 
-.agora-header .content.content-hover .p-16 {
-  padding-top: 0;
-}
-
 /* Target icons that SHOULD be white */
 .agora-header .icon-set svg.icon,
 .agora-languages svg.icon,
@@ -609,8 +605,16 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 
 .agora-header .card-general .title-text {
   margin-bottom: 4px;
-  font-size: 1rem;
-  line-height: 1rem;
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.agora-header .navigation-links-layout .card-general .p-16 {
+  padding-top: 0;
+}
+
+.agora-header .card-general .anchor {
+  margin-right: unset;
 }
 
 .agora-header .card-general .content {
@@ -699,4 +703,9 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 
 .navigation-links-layout .agora-link-wrapper:has(.card-general) {
   padding: 12px 32px;
+}
+
+.agora-header .card-general .description {
+  font-size: 14px;
+  line-height: 24px;
 }
