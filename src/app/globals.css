@@ -67,6 +67,12 @@ body {
 /* 3.1 Newsletter */
 .agora-card-highlight-newsletter {
   user-select: text !important;
+  overflow: visible !important;
+}
+
+.agora-card-highlight-newsletter .card-container,
+.agora-card-highlight-newsletter .card-container .input-container .email-bar {
+  overflow: visible;
 }
 
 .agora-card-highlight-newsletter .card-container {
@@ -83,7 +89,13 @@ body {
 .agora-card-highlight-newsletter .card-container .input-container {
   grid-template-columns: none;
   position: relative;
-  z-index: 1;
+  z-index: 30;
+  overflow: visible;
+}
+
+.publish-dropdown-wrapper .agora-dropdown {
+  top: 100% !important;
+  margin-top: 8px;
 }
 
 .agora-card-highlight-newsletter .card-container:before {
@@ -614,6 +626,11 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   pointer-events: none;
 }
 
+/* Re-enable pointer events on the blocked-link anchor so the card is clickable */
+.agora-header .card-general .anchor.anchor-blockedLink {
+  pointer-events: auto;
+}
+
 .agora-header .card-general-neutral-100.card-general-hover:hover:not(:active),
 .agora-header .card-general-neutral-100:hover .content-hover {
   border-color: transparent !important;
@@ -622,6 +639,13 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 /* Wrapper receives all pointer events and triggers hover */
 .agora-header .link-wrapper {
   pointer-events: auto;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.agora-header .link-wrapper:hover {
+  background-color: var(--color-neutral-200, #e5e7eb);
 }
 
 .agora-header .link-wrapper:hover .icon-set-hover .leading-icon-default {

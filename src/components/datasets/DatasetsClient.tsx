@@ -4,7 +4,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button, InputSearchBar, Icon, CardGeneral, CardLinks, InputSelect, Dropdown, DropdownSection, DropdownOption, Pill, CardNoResults } from '@ama-pt/agora-design-system';
+import { Button, InputSearchBar, Icon, CardGeneral, CardLinks, InputSelect, DropdownSection, DropdownOption, Pill, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { DatasetsFilters } from '@/components/datasets/DatasetsFilters';
 import { APIResponse, Dataset } from '@/types/api';
@@ -22,7 +22,21 @@ export default function DatasetsClient({
   initialData,
   currentPage,
 }: DatasetsClientProps) {
+  const publishDropdownRef = React.useRef<HTMLDivElement>(null);
   const [showPublishDropdown, setShowPublishDropdown] = React.useState(false);
+
+  React.useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (publishDropdownRef.current && !publishDropdownRef.current.contains(e.target as Node)) {
+        setShowPublishDropdown(false);
+      }
+    }
+    if (showPublishDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showPublishDropdown]);
+
   const router = useRouter();
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const { data: datasets, total, page_size } = initialData;
@@ -77,7 +91,7 @@ export default function DatasetsClient({
           <div className="mt-8 text-s-regular text-neutral-200">
             Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
           </div>
-          <div className="mt-[32px] relative">
+          <div className="mt-[32px] relative" ref={publishDropdownRef}>
             <Button
               variant="primary"
               darkMode={true}
@@ -92,20 +106,24 @@ export default function DatasetsClient({
               </span>
             </Button>
             {showPublishDropdown && (
-              <div className="absolute top-full left-0 mt-8 z-50">
-                <Dropdown
-                  type="text"
-                  hideSectionNames
-                  showDropdown={true}
-                  onChange={() => setShowPublishDropdown(false)}
-                >
-                  <DropdownSection name="publicar">
-                    <DropdownOption value="dataset">Um conjunto de dados</DropdownOption>
-                    <DropdownOption value="reuse">Uma reutilização</DropdownOption>
-                    <DropdownOption value="harvester">Um harvester</DropdownOption>
-                    <DropdownOption value="organization">Uma organização</DropdownOption>
-                  </DropdownSection>
-                </Dropdown>
+              <div
+                className="absolute top-full left-0 mt-8 z-[9999] bg-white rounded shadow-lg min-w-[220px] py-8"
+                style={{ border: '1px solid var(--color-neutral-200)' }}
+              >
+                {[
+                  { label: 'Um conjunto de dados', value: 'dataset' },
+                  { label: 'Uma reutilização', value: 'reuse' },
+                  { label: 'Um harvester', value: 'harvester' },
+                  { label: 'Uma organização', value: 'organization' },
+                ].map((item) => (
+                  <button
+                    key={item.value}
+                    className="w-full text-left px-16 py-12 text-m-regular text-neutral-900 hover:bg-primary-50 transition-colors"
+                    onClick={() => setShowPublishDropdown(false)}
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
             )}
           </div>
