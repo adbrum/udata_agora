@@ -591,3 +591,25 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 .agora-header .card-general .anchor.anchor-blockedLink {
   margin-right: 0;
 }
+
+/* Keep default icon on card active/click state (don't swap to active icon) */
+.agora-header .card-general:active .icon-set-hover .leading-icon-default {
+  display: block !important;
+}
+
+.agora-header .card-general:active .icon-set-hover .leading-icon-hover,
+.agora-header .card-general:active .icon-set-hover .leading-icon-active {
+  display: none !important;
+}
+
+/* Submenu: back button above title, container needs position context */
+.navigation-links-layout[data-submenu] {
+  position: relative;
+}
+
+.navigation-links-layout[data-submenu] > .links > .link-wrapper:first-child {
+  grid-column: 1 / -1 !important;
+  position: absolute;
+  top: -48px;
+  z-index: 1;
+}
