@@ -46,9 +46,9 @@ const linkColumns = [
 ];
 
 const socialLinksData = [
-  { icon: 'agora-line-facebook', href: 'https://facebook.com', label: 'Facebook' },
-  { icon: 'agora-line-linkedin', href: 'https://linkedin.com', label: 'LinkedIn' },
-  { icon: 'agora-line-twitter', href: 'https://twitter.com', label: 'X (Twitter)' },
+  { icon: 'agora-line-facebook', iconHover: 'agora-solid-facebook', href: 'https://facebook.com', label: 'Facebook' },
+  { icon: 'agora-line-linkedin', iconHover: 'agora-solid-linkedin', href: 'https://linkedin.com', label: 'LinkedIn' },
+  { icon: 'agora-line-twitter-x', iconHover: 'agora-solid-twitter-x', href: 'https://twitter.com', label: 'X (Twitter)' },
 ];
 
 const usefulLinksData = [
@@ -174,6 +174,7 @@ export const Footer = () => {
         ]}
         socialsLink={socialLinksData.map((s) => ({
           icon: s.icon,
+          iconHover: s.iconHover,
           link: { href: s.href, 'aria-label': s.label },
         }))}
         usefulLinks={usefulLinksData.map((l) => ({
