@@ -75,29 +75,39 @@ export const Header = () => {
     []
   );
 
-  // Apply submenu data attribute on DOM (NavigationRoot doesn't forward className/styles)
+  // Apply submenu styles directly on DOM (NavigationRoot doesn't forward className/styles)
+  // Only targets the Conhecimento panel via data attribute marker
   React.useEffect(() => {
-    const applySubmenuAttr = () => {
+    const applySubmenuStyles = () => {
       // Clean up any previously modified panel
       const modified = document.querySelector(
         '.navigation-links-layout[data-submenu]'
       ) as HTMLElement | null;
       if (modified) {
+        const titleEl = modified.querySelector(':scope > .title') as HTMLElement | null;
         modified.removeAttribute('data-submenu');
+        if (titleEl && titleEl.dataset.originalTitle) {
+          titleEl.textContent = titleEl.dataset.originalTitle;
+          delete titleEl.dataset.originalTitle;
+        }
       }
 
-      if (submenu) {
+      // Apply styles if submenu is active
+      if (submenu === 'desenvolvimento') {
         document.querySelectorAll('.navigation-links-layout').forEach((el) => {
           const titleEl = el.querySelector(':scope > .title') as HTMLElement | null;
           if (!titleEl || titleEl.textContent !== 'Conhecimento') return;
-          (el as HTMLElement).setAttribute('data-submenu', submenu);
+
+          const htmlEl = el as HTMLElement;
+          htmlEl.setAttribute('data-submenu', 'desenvolvimento');
+          titleEl.dataset.originalTitle = 'Conhecimento';
+          titleEl.textContent = 'Desenvolvimento';
         });
       }
     };
 
-    applySubmenuAttr();
     requestAnimationFrame(() => {
-      requestAnimationFrame(applySubmenuAttr);
+      requestAnimationFrame(applySubmenuStyles);
     });
   }, [submenu]);
 
@@ -120,159 +130,142 @@ export const Header = () => {
 
   type KnowledgeItem =
     | { type: "back"; key: string }
-    | { type: "title"; key: string; label: string }
     | {
-        type: "card";
-        key: string;
-        iconDefault: string;
-        iconHover?: string;
-        title: string;
-        description: string;
-        href: string;
-        isSubmenuTrigger?: boolean;
-      };
+      type: "card";
+      key: string;
+      iconDefault: string;
+      iconHover?: string;
+      title: string;
+      description: string;
+      href: string;
+      isSubmenuTrigger?: boolean;
+    };
 
   const conhecimentoItems: KnowledgeItem[] =
     submenu === "desenvolvimento"
       ? [
-          { type: "back", key: "voltar" },
-          { type: "title", key: "title-dev", label: "Desenvolvimento" },
-          {
-            type: "card",
-            key: "dev-sparql",
-            iconDefault: "agora-line-file",
-            iconHover: "agora-solid-file",
-            title: "Acesso Catalogo via SPARQL",
-            description: "Query de dados",
-            href: "#",
-          },
-          {
-            type: "card",
-            key: "dev-api-tutorial",
-            iconDefault: "agora-line-plus-circle",
-            iconHover: "agora-solid-plus-circle",
-            title: "API Tutorial",
-            description: "Aprenda a usar a API",
-            href: "#",
-          },
-          {
-            type: "card",
-            key: "dev-api-ref",
-            iconDefault: "agora-line-plus-circle",
-            iconHover: "agora-solid-plus-circle",
-            title: "Referência da API",
-            description: "Documentação técnica",
-            href: "#",
-          },
-          {
-            type: "card",
-            key: "dev-pub",
-            iconDefault: "agora-line-document",
-            iconHover: "agora-solid-document",
-            title: "Pub. Relatórios/Estudos",
-            description: "Submeter estudos",
-            href: "#",
-          },
-        ]
-      : submenu === "publicacoes"
-        ? [
-            { type: "back", key: "voltar" },
-            { type: "title", key: "title-pub", label: "Publicações" },
-            {
-              type: "card",
-              key: "pub-guias",
-              iconDefault: "agora-line-book-open",
-              iconHover: "agora-solid-book-open",
-              title: "Guias",
-              description: "Guias e manuais",
-              href: "#",
-            },
-          ]
-        : [
-          {
-            type: "card",
-            key: "sobre",
-            iconDefault: "agora-line-star",
-            iconHover: "agora-solid-star",
-            title: "Sobre dados abertos",
-            description: "Informação geral",
-            href: "#",
-          },
-          {
-            type: "card",
-            key: "publicar",
-            iconDefault: "agora-line-plus-circle",
-            iconHover: "agora-solid-plus-circle",
-            title: "Publicar dados?",
-            description: "Guia de publicação",
-            href: "#",
-          },
-          {
-            type: "card",
-            key: "reutilizar",
-            iconDefault: "agora-line-book-open",
-            iconHover: "agora-solid-book-open",
-            title: "Reutilizar dados?",
-            description: "Guia de reutilização",
-            href: "#",
-          },
-          {
-            type: "card",
-            key: "dados-gov",
-            iconDefault: "agora-line-plus-circle",
-            iconHover: "agora-solid-plus-circle",
-            title: "O que é o dados.gov",
-            description: "Sobre o portal",
-            href: "#",
-          },
-          {
-            type: "card",
-            key: "desenvolvimento",
-            iconDefault: "agora-line-user-group",
-            iconHover: "agora-solid-user-group",
-            title: "Desenvolvimento",
-            description: "Plataforma e código",
-            href: "#",
-            isSubmenuTrigger: true,
-          },
-          {
-            type: "card",
-            key: "publicacoes",
-            iconDefault: "agora-line-user-group",
-            iconHover: "agora-solid-user-group",
-            title: "Publicações",
-            description: "Relatórios e estudos",
-            href: "#",
-            isSubmenuTrigger: true,
-          },
-          {
-            type: "card",
-            key: "noticias",
-            iconDefault: "agora-line-file",
-            iconHover: "agora-solid-file",
-            title: "Notícias",
-            description: "Últimas novidades",
-            href: "/pages/article",
-          },
-          {
-            type: "card",
-            key: "minicursos",
-            iconDefault: "agora-line-file",
-            iconHover: "agora-solid-file",
-            title: "Minicursos",
-            description: "Formação online",
-            href: "/pages/mini-courses",
-          },
-          {
-            type: "card",
-            key: "visualizacoes",
-            iconDefault: "agora-line-eye",
-            iconHover: "agora-solid-eye",
-            title: "Visualizações",
-            description: "Dashboards e mapas",
-            href: "#",
-          },
-        ];
+        { type: "back", key: "voltar" },
+        {
+          type: "card",
+          key: "dev-sparql",
+          iconDefault: "agora-line-file",
+          iconHover: "agora-solid-file",
+          title: "Acesso Catalogo via SPARQL",
+          description: "Query de dados",
+          href: "#",
+        },
+        {
+          type: "card",
+          key: "dev-api-tutorial",
+          iconDefault: "agora-line-plus-circle",
+          iconHover: "agora-solid-plus-circle",
+          title: "API Tutorial",
+          description: "Aprenda a usar a API",
+          href: "#",
+        },
+        {
+          type: "card",
+          key: "dev-api-ref",
+          iconDefault: "agora-line-plus-circle",
+          iconHover: "agora-solid-plus-circle",
+          title: "Referência da API",
+          description: "Documentação técnica",
+          href: "#",
+        },
+        {
+          type: "card",
+          key: "dev-pub",
+          iconDefault: "agora-line-document",
+          iconHover: "agora-solid-document",
+          title: "Pub. Relatórios/Estudos",
+          description: "Submeter estudos",
+          href: "#",
+        },
+      ]
+      : [
+        {
+          type: "card",
+          key: "sobre",
+          iconDefault: "agora-line-star",
+          iconHover: "agora-solid-star",
+          title: "Sobre dados abertos",
+          description: "Informação geral",
+          href: "#",
+        },
+        {
+          type: "card",
+          key: "publicar",
+          iconDefault: "agora-line-plus-circle",
+          iconHover: "agora-solid-plus-circle",
+          title: "Publicar dados?",
+          description: "Guia de publicação",
+          href: "#",
+        },
+        {
+          type: "card",
+          key: "reutilizar",
+          iconDefault: "agora-line-book-open",
+          iconHover: "agora-solid-book-open",
+          title: "Reutilizar dados?",
+          description: "Guia de reutilização",
+          href: "#",
+        },
+        {
+          type: "card",
+          key: "dados-gov",
+          iconDefault: "agora-line-plus-circle",
+          iconHover: "agora-solid-plus-circle",
+          title: "O que é o dados.gov",
+          description: "Sobre o portal",
+          href: "#",
+        },
+        {
+          type: "card",
+          key: "desenvolvimento",
+          iconDefault: "agora-line-user-group",
+          iconHover: "agora-solid-user-group",
+          title: "Desenvolvimento",
+          description: "Plataforma e código",
+          href: "#",
+          isSubmenuTrigger: true,
+        },
+        {
+          type: "card",
+          key: "publicacoes",
+          iconDefault: "agora-line-user-group",
+          iconHover: "agora-solid-user-group",
+          title: "Publicações",
+          description: "Relatórios e estudos",
+          href: "#",
+        },
+        {
+          type: "card",
+          key: "noticias",
+          iconDefault: "agora-line-file",
+          iconHover: "agora-solid-file",
+          title: "Notícias",
+          description: "Últimas novidades",
+          href: "/pages/article",
+        },
+        {
+          type: "card",
+          key: "minicursos",
+          iconDefault: "agora-line-file",
+          iconHover: "agora-solid-file",
+          title: "Minicursos",
+          description: "Formação online",
+          href: "/pages/mini-courses",
+        },
+        {
+          type: "card",
+          key: "visualizacoes",
+          iconDefault: "agora-line-eye",
+          iconHover: "agora-solid-eye",
+          title: "Visualizações",
+          description: "Dashboards e mapas",
+          href: "#",
+        },
+      ];
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     // Force close the menu immediately
@@ -486,96 +479,131 @@ export const Header = () => {
           </NavigationRoot>
 
           <NavigationRoot label="Conhecimento">
-            {[
-              {
-                iconDefault: "agora-line-star",
-                iconHover: "agora-solid-star",
-                title: "Sobre dados abertos",
-                description: "Informação geral",
-                href: "/pages/about-open-data",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "Como publicar dados?",
-                description: "Guia de publicação",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-book-open",
-                iconHover: "agora-solid-book-open",
-                title: "Como reutilizar dados?",
-                description: "Guia de reutilização",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "O que é o dados.gov",
-                description: "Sobre o portal",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "API Tutorial",
-                description: "Aprenda a usar a API",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "Referência da API",
-                description: "Documentação técnica",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-user-group",
-                iconHover: "agora-solid-user-group",
-                title: "Desenvolvimento",
-                description: "Plataforma e código",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-user-group",
-                iconHover: "agora-solid-user-group",
-                title: "Publicações",
-                description: "Relatórios e estudos",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "Pub. Relatórios/Estudos",
-                description: "Submeter estudos",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "Guias",
-                description: "Tutoriais e manuais",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-file",
-                iconHover: "agora-solid-file",
-                title: "Notícias",
-                description: "Últimas novidades",
-                href: "/pages/article",
-              },
-              {
-                iconDefault: "agora-line-file",
-                iconHover: "agora-solid-file",
-                title: "Minicursos",
-                description: "Formação online",
-                href: "/pages/mini-courses",
-              },
-            ].map((card) => (
-              <NavigationLink key={card.title} appearance="link">
-                <HeaderCard {...card} onLinkClick={handleLinkClick} />
-              </NavigationLink>
-            ))}
+            {conhecimentoItems.map((item) => {
+
+              if (item.type === "back") {
+
+                return (
+                  <NavigationLink key={item.key} appearance="link">
+                    <div
+
+                      onClickCapture={(e) => {
+
+                        e.stopPropagation();
+
+                        e.preventDefault();
+
+                        setSubmenu(null);
+
+                      }}
+                    >
+                      <Button
+
+                        appearance="link"
+
+                        hasIcon
+
+                        leadingIcon="agora-line-arrow-left-anchor"
+
+                        leadingIconHover="agora-solid-arrow-left-anchor"
+                      >
+
+                        Voltar
+                      </Button>
+                    </div>
+                  </NavigationLink>
+
+                );
+
+              }
+
+              if (item.isSubmenuTrigger) {
+
+                return (
+                  <NavigationLink key={item.key} appearance="link">
+                    <div
+
+                      role="button"
+
+                      tabIndex={0}
+
+                      onClickCapture={(e) => {
+
+                        e.stopPropagation();
+
+                        e.preventDefault();
+
+                        setSubmenu("desenvolvimento");
+
+                      }}
+
+                      onKeyDown={(e) => {
+
+                        if (e.key === "Enter" || e.key === " ") {
+
+                          e.preventDefault();
+
+                          setSubmenu("desenvolvimento");
+
+                        }
+
+                      }}
+
+                      className="cursor-pointer"
+                    >
+                      <HeaderCard
+
+                        iconDefault={item.iconDefault}
+
+                        iconHover={item.iconHover}
+
+                        title={item.title}
+
+                        description={item.description}
+
+                        href={item.href}
+
+                        onLinkClick={(e) => {
+
+                          e.preventDefault();
+
+                          e.stopPropagation();
+
+                          setSubmenu("desenvolvimento");
+
+                        }}
+
+                      />
+                    </div>
+                  </NavigationLink>
+
+                );
+
+              }
+
+              return (
+                <NavigationLink key={item.key} appearance="link">
+                  <HeaderCard
+
+                    iconDefault={item.iconDefault}
+
+                    iconHover={item.iconHover}
+
+                    title={item.title}
+
+                    description={item.description}
+
+                    href={item.href}
+
+                    onLinkClick={handleLinkClick}
+
+                  />
+                </NavigationLink>
+
+              );
+
+            })}
+
           </NavigationRoot>
         </NavigationBar>
       </AgoraHeader>
