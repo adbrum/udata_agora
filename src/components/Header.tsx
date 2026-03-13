@@ -32,10 +32,10 @@ export const Header = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('pt');
   const [submenu, setSubmenu] = useState<string | null>(null);
   const [selectedArea, setSelectedArea] = useState(
-    pathname === '/pages/login' || pathname === '/pages/register' ? '2' : '1'
+    pathname === '/pages/login' || pathname === '/pages/loginregister' ? '2' : '1'
   );
   React.useEffect(() => {
-    if (pathname === '/pages/login' || pathname === '/pages/register') {
+    if (pathname === '/pages/login' || pathname === '/pages/loginregister') {
       setSelectedArea('2');
     } else {
       setSelectedArea('1');
@@ -61,6 +61,41 @@ export const Header = () => {
     // Small timeout to ensure the route change has started and the DOM is accessible
     const timer = setTimeout(closeMenu, 100);
     setSubmenu(null);
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
+  // Apply hover styles to "Inscrever-se" button when on loginregister page
+  React.useEffect(() => {
+    if (pathname !== '/pages/loginregister') return;
+
+    const applyActiveStyles = () => {
+      const btn = document.querySelector('.unauthenticated-panel-menu > .agora-btn') as HTMLElement;
+      if (!btn) return;
+
+      // Text color
+      const childrenWrapper = btn.querySelector('.children-wrapper') as HTMLElement;
+      if (childrenWrapper) childrenWrapper.style.color = 'var(--color-primary-600)';
+
+      // Underline
+      btn.style.textDecorationLine = 'underline';
+      btn.style.textDecorationStyle = 'solid';
+      btn.style.textDecorationThickness = '0.094rem';
+      btn.style.textUnderlineOffset = '0.388rem';
+      btn.style.textDecorationColor = 'var(--color-primary-600)';
+
+      // Icon swap: hide line, show solid
+      const lineIcon = btn.querySelector('.icon-wrapper .line') as HTMLElement;
+      const solidIcon = btn.querySelector('.icon-wrapper .solid') as HTMLElement;
+      if (lineIcon) lineIcon.style.display = 'none';
+      if (solidIcon) solidIcon.style.display = 'block';
+
+      // Icon fill
+      const svgs = btn.querySelectorAll('.icon-wrapper svg');
+      svgs.forEach((svg) => ((svg as HTMLElement).style.fill = 'var(--color-primary-600)'));
+    };
+
+    // Wait for design system to render
+    const timer = setTimeout(applyActiveStyles, 150);
     return () => clearTimeout(timer);
   }, [pathname]);
 
@@ -369,7 +404,7 @@ export const Header = () => {
               leadingIcon="agora-line-user"
               leadingIconHover="agora-solid-user"
             >
-              <Link href="/pages/register">Inscrever-se</Link>
+              <Link href="/pages/loginregister">Inscrever-se</Link>
             </UnauthenticatedLink>
           </Unauthenticated>
         </GeneralBar>

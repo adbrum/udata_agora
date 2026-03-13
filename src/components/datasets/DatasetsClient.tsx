@@ -4,7 +4,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button, InputSearchBar, Icon, CardGeneral, CardLinks, InputSelect, DropdownSection, DropdownOption, Pill, CardNoResults } from '@ama-pt/agora-design-system';
+import { Button, InputSearchBar, Icon, CardGeneral, CardLinks, InputSelect, Dropdown, DropdownSection, DropdownOption, Pill, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { DatasetsFilters } from '@/components/datasets/DatasetsFilters';
 import { APIResponse, Dataset } from '@/types/api';
@@ -22,6 +22,7 @@ export default function DatasetsClient({
   initialData,
   currentPage,
 }: DatasetsClientProps) {
+  const [showPublishDropdown, setShowPublishDropdown] = React.useState(false);
   const router = useRouter();
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const { data: datasets, total, page_size } = initialData;
@@ -76,17 +77,37 @@ export default function DatasetsClient({
           <div className="mt-8 text-s-regular text-neutral-200">
             Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
           </div>
-          <div className="mt-[32px]">
+          <div className="mt-[32px] relative">
             <Button
               variant="primary"
               darkMode={true}
-              hasIcon={false}
+              hasIcon={true}
+              trailingIcon="agora-line-arrow-down"
+              trailingIconHover="agora-solid-arrow-down"
               className="px-24 py-16 rounded-8 h-auto"
+              onClick={() => setShowPublishDropdown((v) => !v)}
             >
               <span className="text-lg font-medium">
                 Publicar <span className="font-bold">dados.gov</span>
               </span>
             </Button>
+            {showPublishDropdown && (
+              <div className="absolute top-full left-0 mt-8 z-50">
+                <Dropdown
+                  type="text"
+                  hideSectionNames
+                  showDropdown={true}
+                  onChange={() => setShowPublishDropdown(false)}
+                >
+                  <DropdownSection name="publicar">
+                    <DropdownOption value="dataset">Um conjunto de dados</DropdownOption>
+                    <DropdownOption value="reuse">Uma reutilização</DropdownOption>
+                    <DropdownOption value="harvester">Um harvester</DropdownOption>
+                    <DropdownOption value="organization">Uma organização</DropdownOption>
+                  </DropdownSection>
+                </Dropdown>
+              </div>
+            )}
           </div>
           <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
         </PageBanner>

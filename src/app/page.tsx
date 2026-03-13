@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Icon, CardArticle, CardGeneral } from "@ama-pt/agora-design-system";
+import { Button, Icon, CardArticle, CardGeneral, Dropdown, DropdownSection, DropdownOption } from "@ama-pt/agora-design-system";
 import Link from "next/link";
 import SearchDropdown from "@/components/search/SearchDropdown";
 import { fetchLatestDatasets, fetchLatestReuses, fetchPosts, fetchSiteInfo } from "@/services/api";
@@ -27,6 +27,7 @@ export default function Home() {
   const [latestReuses, setFeaturedReuses] = useState<Reuse[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showPublishDropdown, setShowPublishDropdown] = useState(false);
 
   useEffect(() => {
     async function loadHomepageData() {
@@ -103,17 +104,37 @@ export default function Home() {
                       Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;,
                       &quot;ambiente&quot;
                     </div>
-                    <div className="mt-64">
+                    <div className="mt-64 relative">
                       <Button
                         variant="primary"
                         darkMode={true}
-                        hasIcon={false}
+                        hasIcon={true}
+                        trailingIcon="agora-line-arrow-down"
+                        trailingIconHover="agora-solid-arrow-down"
                         className="px-24 py-16 rounded-8 h-auto"
+                        onClick={() => setShowPublishDropdown((v) => !v)}
                       >
                         <span className="text-lg font-medium">
                           Publicar <span className="font-bold">dados.gov</span>
                         </span>
                       </Button>
+                      {showPublishDropdown && (
+                        <div className="absolute top-full left-0 mt-8 z-50">
+                          <Dropdown
+                            type="text"
+                            hideSectionNames
+                            showDropdown={true}
+                            onChange={() => setShowPublishDropdown(false)}
+                          >
+                            <DropdownSection name="publicar">
+                              <DropdownOption value="dataset">Um conjunto de dados</DropdownOption>
+                              <DropdownOption value="reuse">Uma reutilização</DropdownOption>
+                              <DropdownOption value="harvester">Um harvester</DropdownOption>
+                              <DropdownOption value="organization">Uma organização</DropdownOption>
+                            </DropdownSection>
+                          </Dropdown>
+                        </div>
+                      )}
                     </div>
                     <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
                   </div>
