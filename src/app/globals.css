@@ -265,6 +265,7 @@ body {
   object-fit: cover;
   display: flex;
   align-self: stretch;
+  background-color: white;
 }
 
 /* 5.2 Page Detail & Links */
