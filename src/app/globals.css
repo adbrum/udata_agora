@@ -265,6 +265,7 @@ body {
   object-fit: cover;
   display: flex;
   align-self: stretch;
+  background-color: white;
 }
 
 /* 5.2 Page Detail & Links */
@@ -606,43 +607,4 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 
 .agora-header .card-general .anchor.anchor-blockedLink {
   margin-right: 0;
-}
-
-/* Keep default icon on card active/click state (don't swap to active icon) */
-.agora-header .card-general:active .icon-set-hover .leading-icon-default {
-  display: block !important;
-}
-
-.agora-header .card-general:active .icon-set-hover .leading-icon-hover,
-.agora-header .card-general:active .icon-set-hover .leading-icon-active {
-  display: none !important;
-}
-
-/* Hide all navigation panel titles */
-.navigation-links-layout>.title {
-  display: none !important;
-}
-
-/* Submenu: position context for back button */
-.navigation-links-layout[data-submenu] {
-  position: relative;
-}
-
-/* Back button: above the grid */
-.navigation-links-layout[data-submenu]>.links>.link-wrapper:first-child {
-  grid-column: 1 / -1 !important;
-  position: absolute;
-  top: -48px;
-  z-index: 1;
-}
-
-/* Submenu title: full width row */
-.navigation-links-layout[data-submenu]>.links>.link-wrapper:nth-child(2) {
-  grid-column: 1 / -1 !important;
-}
-
-/* Submenu title text size */
-.navigation-links-layout[data-submenu]>.links>.link-wrapper:nth-child(2) .children-wrapper {
-  font-size: 24px !important;
-  font-weight: 700 !important;
 }
