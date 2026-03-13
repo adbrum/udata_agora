@@ -26,6 +26,7 @@
      6.1 Footer
      6.2 Pagination & Grid Filters
   7. UTILITIES ........................................................ [07]
+  8. ADMIN LAYOUT ..................................................... [08]
   =============================================================================
 */
 
@@ -674,4 +675,453 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 .agora-header .card-general .description {
   font-size: 14px;
   line-height: 24px;
+}
+
+/*
+  [08] ADMIN LAYOUT
+  --------------------------------------------------------------------------- */
+
+/* Hide root header and footer when inside admin pages */
+body:has(.admin-wrapper) > div > header.sticky {
+  display: none;
+}
+
+body:has(.admin-wrapper) > div > div.grow > footer,
+body:has(.admin-wrapper) footer:last-child {
+  display: none;
+}
+
+/* Admin wrapper fills full height */
+.admin-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Admin Header */
+.admin-header {
+  background-color: var(--color-brand-blue-secondary);
+  height: 60px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.admin-header__content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 0 112px;
+}
+
+.admin-header__options {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: 100%;
+}
+
+.admin-header__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  height: 60px;
+  padding: 0;
+}
+
+.admin-header__option-label {
+  font-size: 16px;
+  line-height: 28px;
+  color: var(--color-primary-300, #bbb8ff);
+}
+
+.admin-header__option-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.admin-header__option-icon,
+.admin-header__option-icon svg.icon,
+.admin-header__option-icon svg,
+.admin-header__option-icon svg path,
+.admin-header__lang-icon svg.icon,
+.admin-header__lang-icon svg,
+.admin-header__lang-icon svg path {
+  fill: #BBB8FF !important;
+}
+
+.admin-header__lang-wrapper {
+  position: relative;
+}
+
+.admin-header__lang-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  min-width: 160px;
+  overflow: hidden;
+}
+
+.admin-header__lang-item {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 16px;
+  line-height: 28px;
+  color: var(--color-neutral-900);
+  cursor: pointer;
+}
+
+.admin-header__lang-item:hover {
+  background-color: var(--color-neutral-100);
+}
+
+.admin-header__lang-item--active {
+  font-weight: 600;
+  color: var(--color-primary-600);
+}
+
+.admin-header__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-primary-300, #bbb8ff);
+}
+
+.admin-header__search .agora-search-bar,
+.admin-header__search .header-search-wrapper {
+  background: transparent;
+}
+
+.admin-header__search svg,
+.admin-header__search svg path {
+  fill: var(--color-primary-300, #bbb8ff);
+}
+
+/* Avatar */
+.admin-header__avatar-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-header__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-header__avatar-initials {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 28px;
+  color: var(--color-primary-500, #0e02f2);
+  text-align: center;
+}
+
+.admin-header__notification {
+  position: absolute;
+  top: 2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--color-danger-600, #d12332);
+  border: 2px solid var(--color-brand-blue-secondary);
+}
+
+/* Admin layout: sidebar + content */
+.admin-layout {
+  display: flex;
+  flex: 1;
+}
+
+/* Side Navigation */
+.admin-side-nav {
+  background-color: var(--color-brand-blue-secondary);
+  width: 112px;
+  min-height: 100%;
+  flex-shrink: 0;
+}
+
+.admin-side-nav__items {
+  display: flex;
+  flex-direction: column;
+  padding-top: 64px;
+}
+
+.admin-side-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  min-height: 60px;
+  text-decoration: none;
+  border-left: 4px solid transparent;
+  transition: background-color 0.2s;
+}
+
+.admin-side-nav__item:hover {
+  background-color: rgba(3, 56, 162, 0.5);
+}
+
+.admin-side-nav__item--active {
+  background-color: #0338a2;
+  border-left-color: var(--color-white);
+}
+
+.admin-side-nav__icon {
+  width: 24px;
+  height: 24px;
+}
+
+.admin-side-nav__icon svg,
+.admin-side-nav__icon svg path {
+  fill: var(--color-white);
+}
+
+.admin-side-nav__label {
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--color-white);
+  text-align: center;
+}
+
+.admin-layout__content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Datasets Admin Page */
+.datasets-admin-page {
+  padding: 32px 112px 64px 104px;
+  max-width: 1224px;
+}
+
+.datasets-admin-page__breadcrumb {
+  margin-bottom: 64px;
+}
+
+.datasets-admin-page__title {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 48px;
+  color: var(--color-brand-blue-secondary);
+  margin-bottom: 64px;
+}
+
+.datasets-admin-page__step-header {
+  margin-bottom: 20px;
+}
+
+.datasets-admin-page__step-text {
+  font-size: 20px;
+  line-height: 32px;
+}
+
+.datasets-admin-page__progress {
+  background-color: var(--color-neutral-100);
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 32px;
+}
+
+.datasets-admin-page__progress-bar {
+  display: flex;
+  width: 100%;
+  height: 4px;
+  background-color: var(--color-neutral-200);
+  margin-bottom: 8px;
+}
+
+.datasets-admin-page__progress-fill {
+  width: 30%;
+  height: 100%;
+  background-color: var(--color-primary-900);
+}
+
+.datasets-admin-page__progress-label {
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--color-neutral-700);
+}
+
+.datasets-admin-page__body {
+  display: flex;
+  gap: 32px;
+}
+
+.datasets-admin-page__form-area {
+  flex: 0 0 592px;
+  max-width: 592px;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+.datasets-admin-page__info-card {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  background-color: var(--color-informative-50, #e5f6ff);
+  border-radius: 4px;
+}
+
+.datasets-admin-page__info-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--color-informative-600, #00598c);
+}
+
+.datasets-admin-page__info-icon svg {
+  fill: var(--color-informative-600, #00598c);
+}
+
+.datasets-admin-page__info-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 28px;
+  color: var(--color-neutral-900);
+}
+
+.datasets-admin-page__info-description {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+  color: var(--color-neutral-900);
+}
+
+.datasets-admin-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.datasets-admin-page__section-title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 32px;
+  color: var(--color-primary-900);
+}
+
+.datasets-admin-page__fields-group {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.datasets-admin-page__org-card {
+  background-color: var(--color-neutral-100);
+  border-radius: 4px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.datasets-admin-page__org-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 32px;
+  color: var(--color-neutral-900);
+}
+
+.datasets-admin-page__org-card-description {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+  color: var(--color-neutral-900);
+}
+
+.datasets-admin-page__org-card-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-primary-600);
+  font-size: 16px;
+  line-height: 28px;
+  text-decoration: none;
+}
+
+.datasets-admin-page__org-card-link:hover {
+  text-decoration: underline;
+}
+
+.datasets-admin-page__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Auxiliar sidebar */
+.datasets-admin-page__auxiliar {
+  flex: 1;
+  min-width: 0;
+}
+
+.datasets-admin-page__auxiliar-inner {
+  background-color: var(--color-neutral-100);
+  padding: 64px;
+  position: sticky;
+  top: 80px;
+}
+
+.datasets-admin-page__auxiliar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.datasets-admin-page__auxiliar-header svg {
+  fill: var(--color-primary-600);
+}
+
+.datasets-admin-page__auxiliar-title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 32px;
+  color: var(--color-primary-900);
+}
+
+@media (max-width: 1024px) {
+  .datasets-admin-page {
+    padding: 32px 24px;
+  }
+
+  .datasets-admin-page__body {
+    flex-direction: column;
+  }
+
+  .datasets-admin-page__form-area {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  .admin-side-nav {
+    width: 80px;
+  }
+
+  .admin-side-nav__label {
+    font-size: 11px;
+  }
+
+  .admin-header__content {
+    padding: 0 24px;
+  }
 }
