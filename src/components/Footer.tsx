@@ -7,32 +7,15 @@ const linkColumns = [
   {
     title: 'Dados abertos',
     links: [
-      { href: '/pages/themes', label: 'Temas' },
-      { href: '#', label: 'Dados de referência' },
       { href: '#', label: 'Catálogo de dados' },
-      { href: '#', label: 'Acompanhe a abertura dos dados' },
-      { href: '#', label: 'Portal de dados' },
+      { href: '#', label: 'Portal de dados da empresa' },
     ],
   },
   {
     title: 'Plataforma',
     links: [
-      { href: '#', label: 'Guias' },
-      { href: '#', label: 'Roteiro e novos desenvolvimentos' },
-      { href: '/pages/support', label: 'Escreva-nos' },
-      { href: '#', label: 'Interaja com a comunidade' },
-      { href: '#', label: 'Estatísticas' },
-    ],
-  },
-  {
-    title: 'Recursos',
-    links: [
-      { href: 'https://loremipsum.dados.gov.pt', label: 'loremipsum.dados.gov.pt' },
-      { href: 'https://loremipsum.dados.gov.pt', label: 'loremipsum.dados.gov.pt' },
-      { href: 'https://loremipsum.dados.gov.pt', label: 'loremipsum.dados.gov.pt' },
-      { href: 'https://loremipsum.dados.gov.pt', label: 'loremipsum.dados.gov.pt' },
-      { href: 'https://loremipsum.dados.gov.pt', label: 'loremipsum.dados.gov.pt' },
-
+      { href: '#', label: 'Sobre nós' },
+      { href: '#', label: 'Termos de utilização' },
     ],
   },
   {
@@ -63,7 +46,7 @@ const FooterNavigation = () => {
   return (
     <div className="container mx-auto px-4 py-12 xl:py-64">
       <h3 className="text-l-bold mb-8 text-white mb-[32px]">Mais para descobrir no portal</h3>
-      <div className="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 gap-32">
+      <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-32">
         {linkColumns.map((column, idx) => (
           <div key={idx}>
             <h4 className="text-m-semibold text-white mb-[16px]">{column.title}</h4>
@@ -168,9 +151,9 @@ export const Footer = () => {
         }}
         caption="Plataforma aberta de dados públicos portugueses"
         partnersLogos={[
-          { image: { src: '/Logos/NextGenerationEU.svg', alt: 'NextGenerationEU' } },
-          { image: { src: '/Logos/republica-portuguesa.svg', alt: 'República Portuguesa' } },
-          { image: { src: '/Logos/ARTE.svg', alt: 'ARTE' } },
+          { image: { src: '/Logos/NextGenerationEU.svg', alt: 'NextGenerationEU', style: { height: '24px', width: 'auto', opacity: 0.5 } } },
+          { image: { src: '/Logos/republica-portuguesa.svg', alt: 'República Portuguesa', style: { height: '24px', width: 'auto', opacity: 0.5 } } },
+          { image: { src: '/Logos/Logotipo_ARTE__Horizontal_branco_pt.svg', alt: 'ARTE', style: { height: '24px', width: 'auto', opacity: 0.5 } } },
         ]}
         socialsLink={socialLinksData.map((s) => ({
           icon: s.icon,

@@ -32,10 +32,10 @@ export const Header = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('pt');
   const [submenu, setSubmenu] = useState<string | null>(null);
   const [selectedArea, setSelectedArea] = useState(
-    pathname === '/pages/login' || pathname === '/pages/register' ? '2' : '1'
+    pathname === '/pages/login' || pathname === '/pages/loginregister' ? '2' : '1'
   );
   React.useEffect(() => {
-    if (pathname === '/pages/login' || pathname === '/pages/register') {
+    if (pathname === '/pages/login' || pathname === '/pages/loginregister') {
       setSelectedArea('2');
     } else {
       setSelectedArea('1');
@@ -61,6 +61,41 @@ export const Header = () => {
     // Small timeout to ensure the route change has started and the DOM is accessible
     const timer = setTimeout(closeMenu, 100);
     setSubmenu(null);
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
+  // Apply hover styles to "Inscrever-se" button when on loginregister page
+  React.useEffect(() => {
+    if (pathname !== '/pages/loginregister') return;
+
+    const applyActiveStyles = () => {
+      const btn = document.querySelector('.unauthenticated-panel-menu > .agora-btn') as HTMLElement;
+      if (!btn) return;
+
+      // Text color
+      const childrenWrapper = btn.querySelector('.children-wrapper') as HTMLElement;
+      if (childrenWrapper) childrenWrapper.style.color = 'var(--color-primary-600)';
+
+      // Underline
+      btn.style.textDecorationLine = 'underline';
+      btn.style.textDecorationStyle = 'solid';
+      btn.style.textDecorationThickness = '0.094rem';
+      btn.style.textUnderlineOffset = '0.388rem';
+      btn.style.textDecorationColor = 'var(--color-primary-600)';
+
+      // Icon swap: hide line, show solid
+      const lineIcon = btn.querySelector('.icon-wrapper .line') as HTMLElement;
+      const solidIcon = btn.querySelector('.icon-wrapper .solid') as HTMLElement;
+      if (lineIcon) lineIcon.style.display = 'none';
+      if (solidIcon) solidIcon.style.display = 'block';
+
+      // Icon fill
+      const svgs = btn.querySelectorAll('.icon-wrapper svg');
+      svgs.forEach((svg) => ((svg as HTMLElement).style.fill = 'var(--color-primary-600)'));
+    };
+
+    // Wait for design system to render
+    const timer = setTimeout(applyActiveStyles, 150);
     return () => clearTimeout(timer);
   }, [pathname]);
 
@@ -92,18 +127,29 @@ export const Header = () => {
         }
       }
 
-      // Apply styles if submenu is active
-      if (submenu === 'desenvolvimento') {
-        document.querySelectorAll('.navigation-links-layout').forEach((el) => {
-          const titleEl = el.querySelector(':scope > .title') as HTMLElement | null;
-          if (!titleEl || titleEl.textContent !== 'Conhecimento') return;
+      // Mark the Conhecimento panel and apply submenu title
+      const submenuTitles: Record<string, string> = {
+        desenvolvimento: 'Desenvolvimento',
+        publicacoes: 'Publicações',
+      };
 
-          const htmlEl = el as HTMLElement;
-          htmlEl.setAttribute('data-submenu', 'desenvolvimento');
+      document.querySelectorAll('.navigation-links-layout').forEach((el) => {
+        const titleEl = el.querySelector(':scope > .title') as HTMLElement | null;
+        if (!titleEl) return;
+        const isConhecimento =
+          titleEl.textContent === 'Conhecimento' ||
+          titleEl.dataset.originalTitle === 'Conhecimento';
+        if (!isConhecimento) return;
+
+        const htmlEl = el as HTMLElement;
+        htmlEl.setAttribute('data-conhecimento', '');
+
+        if (submenu && submenuTitles[submenu]) {
+          htmlEl.setAttribute('data-submenu', submenu);
           titleEl.dataset.originalTitle = 'Conhecimento';
-          titleEl.textContent = 'Desenvolvimento';
-        });
-      }
+          titleEl.textContent = submenuTitles[submenu];
+        }
+      });
     };
 
     requestAnimationFrame(() => {
@@ -145,59 +191,39 @@ export const Header = () => {
   const conhecimentoItems: KnowledgeItem[] =
     submenu === "desenvolvimento"
       ? [
+        { type: "back", key: "voltar" },
+        {
+          type: "card",
+          key: "dev-api-ref",
+          iconDefault: "agora-line-plus-circle",
+          iconHover: "agora-solid-plus-circle",
+          title: "Referência da API",
+          description: "Documentação técnica",
+          href: "#",
+        },
+        {
+          type: "card",
+          key: "dev-pub",
+          iconDefault: "agora-line-document",
+          iconHover: "agora-solid-document",
+          title: "Relatórios/Estudos",
+          description: "Submeter estudos",
+          href: "#",
+        },
+      ]
+      : submenu === "publicacoes"
+        ? [
           { type: "back", key: "voltar" },
-          { type: "title", key: "title-dev", label: "Desenvolvimento" },
           {
             type: "card",
-            key: "dev-sparql",
-            iconDefault: "agora-line-file",
-            iconHover: "agora-solid-file",
-            title: "Acesso Catalogo via SPARQL",
-            description: "Query de dados",
-            href: "#",
-          },
-          {
-            type: "card",
-            key: "dev-api-tutorial",
-            iconDefault: "agora-line-plus-circle",
-            iconHover: "agora-solid-plus-circle",
-            title: "API Tutorial",
-            description: "Aprenda a usar a API",
-            href: "#",
-          },
-          {
-            type: "card",
-            key: "dev-api-ref",
-            iconDefault: "agora-line-plus-circle",
-            iconHover: "agora-solid-plus-circle",
-            title: "Referência da API",
-            description: "Documentação técnica",
-            href: "#",
-          },
-          {
-            type: "card",
-            key: "dev-pub",
-            iconDefault: "agora-line-document",
-            iconHover: "agora-solid-document",
-            title: "Pub. Relatórios/Estudos",
-            description: "Submeter estudos",
+            key: "pub-guias",
+            iconDefault: "agora-line-book-open",
+            iconHover: "agora-solid-book-open",
+            title: "Relatórios/Estudos",
+            description: "Relatórios e estudos",
             href: "#",
           },
         ]
-      : submenu === "publicacoes"
-        ? [
-            { type: "back", key: "voltar" },
-            { type: "title", key: "title-pub", label: "Publicações" },
-            {
-              type: "card",
-              key: "pub-guias",
-              iconDefault: "agora-line-book-open",
-              iconHover: "agora-solid-book-open",
-              title: "Guias",
-              description: "Guias e manuais",
-              href: "#",
-            },
-          ]
         : [
           {
             type: "card",
@@ -213,7 +239,7 @@ export const Header = () => {
             key: "publicar",
             iconDefault: "agora-line-plus-circle",
             iconHover: "agora-solid-plus-circle",
-            title: "Publicar dados?",
+            title: "Como publicar dados?",
             description: "Guia de publicação",
             href: "#",
           },
@@ -222,7 +248,7 @@ export const Header = () => {
             key: "reutilizar",
             iconDefault: "agora-line-book-open",
             iconHover: "agora-solid-book-open",
-            title: "Reutilizar dados?",
+            title: "Como reutilizar dados?",
             description: "Guia de reutilização",
             href: "#",
           },
@@ -273,17 +299,7 @@ export const Header = () => {
             description: "Formação online",
             href: "/pages/mini-courses",
           },
-          {
-            type: "card",
-            key: "visualizacoes",
-            iconDefault: "agora-line-eye",
-            iconHover: "agora-solid-eye",
-            title: "Visualizações",
-            description: "Dashboards e mapas",
-            href: "#",
-          },
         ];
-
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     // Force close the menu immediately
@@ -389,7 +405,7 @@ export const Header = () => {
               leadingIcon="agora-line-user"
               leadingIconHover="agora-solid-user"
             >
-              <Link href="/pages/register">Inscrever-se</Link>
+              <Link href="/pages/loginregister">Inscrever-se</Link>
             </UnauthenticatedLink>
           </Unauthenticated>
         </GeneralBar>
@@ -409,13 +425,6 @@ export const Header = () => {
                 iconHover: "agora-solid-layers-menu",
                 title: "Novo Conjunto de Dados",
                 description: "Pesquisar e explorar dados",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "Nova API",
-                description: "Explorar as APIs",
                 href: "#",
               },
               {
@@ -457,15 +466,9 @@ export const Header = () => {
               },
               {
                 iconDefault: "agora-line-document",
+                iconHover: "agora-solid-document",
                 title: "HVDs",
                 description: "High Value Datasets",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "APIs",
-                description: "Consulte as APIs",
                 href: "#",
               },
               {
@@ -523,21 +526,56 @@ export const Header = () => {
               if (item.type === "title") {
                 return (
                   <NavigationLink key={item.key} appearance="link">
-                    <span className="title text-xl-bold">{item.label}</span>
-                  </NavigationLink>
-                );
-              }
-              if (item.type === "card") {
-                if (item.isSubmenuTrigger) {
-                  return (
-                    <NavigationLink key={item.key} appearance="link">
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        onClickCapture={(e) => {
-                          e.stopPropagation();
+                    <div
+
+                      role="button"
+
+                      tabIndex={0}
+
+                      onClickCapture={(e) => {
+
+                        e.stopPropagation();
+
+                        e.preventDefault();
+
+                        setSubmenu(item.key);
+
+                      }}
+
+                      onKeyDown={(e) => {
+
+                        if (e.key === "Enter" || e.key === " ") {
+
                           e.preventDefault();
+
                           setSubmenu(item.key);
+
+                        }
+
+                      }}
+
+                      className="cursor-pointer"
+                    >
+                      <HeaderCard
+
+                        iconDefault={item.iconDefault}
+
+                        iconHover={item.iconHover}
+
+                        title={item.title}
+
+                        description={item.description}
+
+                        href={item.href}
+
+                        onLinkClick={(e) => {
+
+                          e.preventDefault();
+
+                          e.stopPropagation();
+
+                          setSubmenu(item.key);
+
                         }}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === " ") {
