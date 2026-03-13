@@ -310,7 +310,7 @@ export const Header = () => {
                 iconHover: "agora-solid-star",
                 title: "Sobre dados abertos",
                 description: "Informação geral",
-                href: "#",
+                href: "/pages/about-open-data",
               },
               {
                 iconDefault: "agora-line-plus-circle",
