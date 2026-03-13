@@ -149,42 +149,13 @@ const AboutOpenData = () => {
                 </div>
 
                 {/* Newsletter Box */}
-                <div className="bg-[#F2F2F2] rounded-16 p-32 md:p-48 mt-64 relative overflow-hidden">
-                  {/* Background Icon 'A' decoration */}
-                  <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-1/4 translate-y-1/4">
-                    <Icon name="agora-solid-agora" className="w-[300px] h-[300px] text-primary-900" />
-                  </div>
 
-                  <div className="relative z-10">
-                    <h3 className="text-xl-bold text-primary-900 mb-16">Fique a par das novidades</h3>
-                    <p className="text-m-regular text-neutral-700 mb-32 max-w-[480px]">
-                      Subscreva a nossa newsletter para receber atualizações sobre novos conjuntos de dados, eventos e histórias de reutilização.
-                    </p>
-
-                    <div className="flex flex-col gap-16">
-                      <label htmlFor="email" className="text-s-bold text-neutral-900">O seu email</label>
-                      <div className="flex flex-col sm:flex-row gap-16">
-                        <input
-                          type="email"
-                          id="email"
-                          placeholder="Introduza o seu email"
-                          className="flex-grow h-48 px-16 rounded-8 border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-600 bg-white"
-                        />
-                        <Button
-                          variant="primary"
-                          className="h-48 w-48 p-0 flex items-center justify-center rounded-8"
-                        >
-                          <Icon name="agora-line-paper-plane" className="w-24 h-24" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
                 {/* Social Sharing */}
-                <div className="pt-48 border-t border-neutral-200">
-                  <span className="text-s-regular text-neutral-600 block mb-24">Partilhar esta notícia</span>
-                  <div className="flex flex-wrap gap-24 md:gap-32">
+                <div className="pt-48 border-t border-neutral-200 pt-[64px] pb-[64px]">
+                  <span className="text-s-regular text-neutral-600 block mb-[16px]">Partilhar esta notícia</span>
+
+                  <div className="flex flex-wrap gap-24 md:gap-32 p-[16px]">
                     {socialLinks.map((link) => (
                       <Link key={link.name} href={link.href} className="flex items-center gap-8 text-primary-600 hover:text-primary-700 transition-colors">
                         {link.icon ? (
@@ -192,7 +163,7 @@ const AboutOpenData = () => {
                         ) : (
                           <img src={link.customIcon} alt="" className="w-20 h-20" />
                         )}
-                        <span className="text-s-bold">{link.name}</span>
+                        <span className="text-s-bold gap-16">{link.name}</span>
                       </Link>
                     ))}
                   </div>

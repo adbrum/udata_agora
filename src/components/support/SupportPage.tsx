@@ -116,6 +116,7 @@ const FAQ_DATA = [
 
 const SupportPage = () => {
   const [activeItem, setActiveItem] = React.useState("Nesta página");
+  const [expandedId, setExpandedId] = React.useState<string | null>("0-1");
 
   return (
     <main id="nesta-pagina" className="flex-grow bg-white pb-64">
@@ -165,7 +166,7 @@ const SupportPage = () => {
                   <path d="M11.2929 8.70711C10.9024 8.31658 10.9024 7.68342 11.2929 7.29289C11.6834 6.90237 12.3166 6.90237 12.7071 7.29289L16.7071 11.2929C17.0976 11.6834 17.0976 12.3166 16.7071 12.7071L12.7071 16.7071C12.3166 17.0976 11.6834 17.0976 11.2929 16.7071C10.9024 16.3166 10.9024 15.6834 11.2929 15.2929L13.5858 13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H13.5858L11.2929 8.70711Z"></path>
                   <path
                     fillRule="evenodd"
-                    clip-rule="evenodd"
+                    clipRule="evenodd"
                     d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z"
                   ></path>
                 </svg>
@@ -190,7 +191,7 @@ const SupportPage = () => {
                   <path d="M11.2929 8.70711C10.9024 8.31658 10.9024 7.68342 11.2929 7.29289C11.6834 6.90237 12.3166 6.90237 12.7071 7.29289L16.7071 11.2929C17.0976 11.6834 17.0976 12.3166 16.7071 12.7071L12.7071 16.7071C12.3166 17.0976 11.6834 17.0976 11.2929 16.7071C10.9024 16.3166 10.9024 15.6834 11.2929 15.2929L13.5858 13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H13.5858L11.2929 8.70711Z"></path>
                   <path
                     fillRule="evenodd"
-                    clip-rule="evenodd"
+                    clipRule="evenodd"
                     d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z"
                   ></path>
                 </svg>
@@ -215,7 +216,7 @@ const SupportPage = () => {
                   <path d="M11.2929 8.70711C10.9024 8.31658 10.9024 7.68342 11.2929 7.29289C11.6834 6.90237 12.3166 6.90237 12.7071 7.29289L16.7071 11.2929C17.0976 11.6834 17.0976 12.3166 16.7071 12.7071L12.7071 16.7071C12.3166 17.0976 11.6834 17.0976 11.2929 16.7071C10.9024 16.3166 10.9024 15.6834 11.2929 15.2929L13.5858 13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H13.5858L11.2929 8.70711Z"></path>
                   <path
                     fillRule="evenodd"
-                    clip-rule="evenodd"
+                    clipRule="evenodd"
                     d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z"
                   ></path>
                 </svg>
@@ -229,7 +230,7 @@ const SupportPage = () => {
         <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
           <div className="xl:col-span-8 xl:block max-w-ch">
             {/* FAQ Section */}
-            <div id="faq" className="max-w-4xl mx-auto scroll-mt-32">
+            <div id="faq" className="max-w-4xl mx-auto scroll-mt-[190px]">
               <p className="text-sm text-neutral-700 mb-[32px]">Conteúdos atualizado a 23.2.2026</p>
               <h2 className="text-xl-semibold mb-[32px] text-primary-900">Perguntas frequentes</h2>
 
@@ -243,28 +244,37 @@ const SupportPage = () => {
                       .replace(/[\u0300-\u036f]/g, "")
                       .replace(/\s+/g, "-")
                       .replace(/[^\w-]/g, "")}
-                    className={`${category.category !== "Negócios" ? "mt-[32px]" : ""} scroll-mt-32`}
+                    className={`${category.category !== "Negócios" ? "mt-[32px]" : ""} scroll-mt-[190px]`}
                   >
                     <h3 className="text-[20px] font-bold text-[#021C51] mb-[16px]">
                       {category.category}
                     </h3>
                     <AccordionGroup>
-                      {category.items.map((item, itemIdx) => (
-                        <Accordion
-                          key={itemIdx}
-                          headingTitle={
-                            <span className="text-[#2B363C] font-bold mr-[16px]">
-                              {item.question}
-                            </span>
-                          }
-                          headingLevel="h4"
-                          defaultExpanded={item.defaultExpanded}
-                        >
-                          <div className="py-16 mr-[16px] text-neutral-900 leading-relaxed">
-                            {item.answer}
-                          </div>
-                        </Accordion>
-                      ))}
+                      {category.items.map((item, itemIdx) => {
+                        const currentId = `${idx}-${itemIdx}`;
+                        return (
+                          <Accordion
+                            key={itemIdx}
+                            headingTitle={
+                              <span className="text-[#2B363C] font-bold mr-[16px]">
+                                {item.question}
+                              </span>
+                            }
+                            headingLevel="h4"
+                            expanded={expandedId === currentId}
+                            onExpanded={() => setExpandedId(currentId)}
+                            onCollapsed={() => {
+                              if (expandedId === currentId) {
+                                setExpandedId(null);
+                              }
+                            }}
+                          >
+                            <div className="py-16 mr-[16px] text-neutral-900 leading-relaxed">
+                              {item.answer}
+                            </div>
+                          </Accordion>
+                        );
+                      })}
                     </AccordionGroup>
                   </section>
                 ))}
@@ -326,7 +336,7 @@ const SupportPage = () => {
           </div>
         </div>
 
-        <div id="ajuda" className="mt-80 pt-64 border-neutral-200 scroll-mt-32">
+        <div id="ajuda" className="mt-80 pt-64 border-neutral-200 scroll-mt-[190px]">
           <h2 className="text-[24px] font-bold text-[#021C51] mb-[24px]">Ajuda</h2>
           <h3 className="text-[20px] font-[500] text-[#021C51] mb-[16px]">
             Não encontrou o que procurava?
