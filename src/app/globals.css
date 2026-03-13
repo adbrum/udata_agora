@@ -682,11 +682,11 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   --------------------------------------------------------------------------- */
 
 /* Hide root header and footer when inside admin pages */
-body:has(.admin-wrapper) > div > header.sticky {
+body:has(.admin-wrapper)>div>header.sticky {
   display: none;
 }
 
-body:has(.admin-wrapper) > div > div.grow > footer,
+body:has(.admin-wrapper)>div>div.grow>footer,
 body:has(.admin-wrapper) footer:last-child {
   display: none;
 }
@@ -791,20 +791,71 @@ body:has(.admin-wrapper) footer:last-child {
   color: var(--color-primary-600);
 }
 
-.admin-header__search {
+.admin-header__search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-header__search-trigger {
   display: flex;
   align-items: center;
   gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  height: 60px;
   color: var(--color-primary-300, #bbb8ff);
 }
 
-.admin-header__search .agora-search-bar,
-.admin-header__search .header-search-wrapper {
+.admin-header__search-trigger:hover {
+  opacity: 0.8;
+}
+
+.admin-header__search-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.admin-header__search-trigger svg,
+.admin-header__search-trigger svg path {
+  fill: var(--color-primary-300, #bbb8ff) !important;
+}
+
+.admin-header__search-label {
+  font-size: 16px;
+  line-height: 28px;
+  color: var(--color-primary-300, #bbb8ff);
+}
+
+.admin-header__search-expanded {
+  position: absolute;
+  top: 75%;
+  left: -189%;
+  width: 400px;
+  z-index: 101;
+}
+
+.admin-header__search-expanded .agora-search-bar,
+.admin-header__search-expanded .header-search-wrapper {
   background: transparent;
 }
 
-.admin-header__search svg,
-.admin-header__search svg path {
+.admin-header__search-expanded label[for="admin-header-search"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.admin-header__search-expanded svg,
+.admin-header__search-expanded svg path {
   fill: var(--color-primary-300, #bbb8ff);
 }
 

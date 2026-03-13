@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Icon } from "@ama-pt/agora-design-system";
 import SearchDropdown from "@/components/search/SearchDropdown";
 
 export function AdminHeader() {
   const [langOpen, setLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState("Português");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchWrapperRef = useRef<HTMLDivElement>(null);
 
   const languages = [
     { value: "pt", label: "Português" },
@@ -19,6 +21,22 @@ export function AdminHeader() {
     setSelectedLang(lang.label);
     setLangOpen(false);
   };
+
+  // Close search when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        searchWrapperRef.current &&
+        !searchWrapperRef.current.contains(event.target as Node)
+      ) {
+        setSearchOpen(false);
+      }
+    }
+    if (searchOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [searchOpen]);
 
   return (
     <header className="admin-header">
@@ -61,12 +79,29 @@ export function AdminHeader() {
           </div>
 
           {/* Search */}
-          <div className="admin-header__search">
-            <SearchDropdown
-              id="admin-header-search"
-              placeholder="Pesquisar"
-              label="Pesquisar"
-            />
+          <div className="admin-header__search-wrapper" ref={searchWrapperRef}>
+            <button
+              className="admin-header__search-trigger"
+              onClick={() => setSearchOpen(!searchOpen)}
+              aria-expanded={searchOpen}
+              aria-label="Abrir pesquisa"
+            >
+              <Icon
+                name="agora-line-search"
+                className="admin-header__search-icon"
+              />
+              <span className="admin-header__search-label">Pesquisar</span>
+            </button>
+            {searchOpen && (
+              <div className="admin-header__search-expanded">
+                <SearchDropdown
+                  id="admin-header-search"
+                  placeholder="Pesquisar"
+                  label="Pesquisar"
+                  darkMode
+                />
+              </div>
+            )}
           </div>
 
           {/* User avatar */}
