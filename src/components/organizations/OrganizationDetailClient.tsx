@@ -118,8 +118,7 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
                 <div className="space-y-16">
                   <div className="text-neutral-900 text-sm mb-[16px]">
                     <span className="text-m-semibold">Última atualização:</span>{' '}
-                    {/* Fallback to current date or handle undefined specifically if needed */}
-                    {new Date().toLocaleDateString('pt-PT', {
+                    {new Date(organization.last_modified).toLocaleDateString('pt-PT', {
                       day: 'numeric',
                       month: 'long',
                       year: 'numeric'
