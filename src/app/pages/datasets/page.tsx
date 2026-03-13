@@ -1,19 +1,29 @@
 import { fetchDatasets } from '@/services/api';
+import { DatasetFilters } from '@/types/api';
 import DatasetsClient from '@/components/datasets/DatasetsClient';
-
-// Ensure this is a server component by not adding 'use client'
-// But DatasetsClient IS a client component
 
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; org_id?: string | string[] }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const resolvedSearchParams = await searchParams; // Next.js 15+ needs await for params/searchParams
-  console.log('Page Params:', resolvedSearchParams);
-  const page = Number(resolvedSearchParams?.page) || 1;
-  const organization = resolvedSearchParams?.org_id;
-  const initialData = await fetchDatasets(page, 20, organization);
+  const resolved = await searchParams;
+  const page = Number(resolved?.page) || 1;
+
+  const filters: DatasetFilters = {};
+  if (resolved?.q) filters.q = String(resolved.q);
+  if (resolved?.tag) filters.tag = resolved.tag;
+  if (resolved?.license) filters.license = resolved.license;
+  if (resolved?.format) filters.format = resolved.format;
+  if (resolved?.schema) filters.schema = String(resolved.schema);
+  if (resolved?.geozone) filters.geozone = String(resolved.geozone);
+  if (resolved?.granularity) filters.granularity = String(resolved.granularity);
+  if (resolved?.organization) filters.organization = resolved.organization;
+  if (resolved?.badge) filters.badge = resolved.badge;
+  if (resolved?.sort) filters.sort = String(resolved.sort);
+  if (resolved?.featured) filters.featured = resolved.featured === 'true';
+
+  const initialData = await fetchDatasets(page, 20, filters);
 
   return <DatasetsClient initialData={initialData} currentPage={page} />;
 }

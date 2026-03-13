@@ -1,11 +1,17 @@
 import {
   APIResponse,
   Dataset,
+  DatasetBadges,
+  DatasetFilters,
+  FormatSuggestion,
+  Frequency,
   GlobalSearchSuggestion,
+  License,
   Organization,
   Post,
   Reuse,
   SiteInfo,
+  TagSuggestion,
 } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
@@ -70,26 +76,40 @@ export async function logout(): Promise<void> {
 export async function fetchDatasets(
   page: number = 1,
   pageSize: number = 20,
-  organization?: string | string[]
+  filters?: DatasetFilters
 ): Promise<APIResponse<Dataset>> {
   try {
-    console.log("fetchDatasets called with org:", organization);
-    let url = `${API_BASE_URL}/datasets/?page=${page}&page_size=${pageSize}`;
-    if (organization) {
-      if (Array.isArray(organization)) {
-        organization.forEach((org) => {
-          url += `&organization=${org}`;
-        });
-      } else {
-        url += `&organization=${organization}`;
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("page_size", String(pageSize));
+
+    if (filters) {
+      if (filters.q) params.set("q", filters.q);
+      if (filters.schema) params.set("schema", filters.schema);
+      if (filters.geozone) params.set("geozone", filters.geozone);
+      if (filters.granularity) params.set("granularity", filters.granularity);
+      if (filters.sort) params.set("sort", filters.sort);
+      if (filters.featured !== undefined) params.set("featured", String(filters.featured));
+
+      const arrayParams: [string, string | string[] | undefined][] = [
+        ["tag", filters.tag],
+        ["license", filters.license],
+        ["format", filters.format],
+        ["badge", filters.badge],
+        ["organization", filters.organization],
+      ];
+      for (const [key, value] of arrayParams) {
+        if (!value) continue;
+        if (Array.isArray(value)) {
+          value.forEach((v) => params.append(key, v));
+        } else {
+          params.set(key, value);
+        }
       }
     }
 
-    console.log("API Fetch URL:", url);
-
-    const res = await fetch(url, {
-      cache: "no-store", // Ensure fresh data
-    });
+    const url = `${API_BASE_URL}/datasets/?${params.toString()}`;
+    const res = await fetch(url, { cache: "no-store" });
 
     if (!res.ok) {
       throw new Error(`Failed to fetch datasets: ${res.statusText}`);
@@ -98,7 +118,6 @@ export async function fetchDatasets(
     return await res.json();
   } catch (error) {
     console.error("Error fetching datasets:", error);
-    // Return empty state or rethrow depending on desired error handling
     return {
       data: [],
       page: 1,
@@ -129,10 +148,13 @@ export async function fetchDataset(slug: string): Promise<Dataset> {
 
 export async function fetchOrganizations(
   page: number = 1,
-  pageSize: number = 20
+  pageSize: number = 20,
+  sort?: string
 ): Promise<APIResponse<Organization>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/organizations/?page=${page}&page_size=${pageSize}`, {
+    let url = `${API_BASE_URL}/organizations/?page=${page}&page_size=${pageSize}`;
+    if (sort) url += `&sort=${encodeURIComponent(sort)}`;
+    const res = await fetch(url, {
       cache: "no-store",
     });
 
@@ -212,15 +234,6 @@ export async function fetchReuse(rid: string): Promise<Reuse> {
     throw error;
   }
 }
-
-// export async function fetchOrganization(slug: string): Promise<Organization> {
-//   try {
-//     const res = await fetch(`${API_BASE_URL}/organizations/${slug}/`, {
-//       cache: 'no-store',
-//     });
-
-//     if (!res.ok) {
-//       throw new Error(`Failed to fetch organization: ${res.statusText}`);
 
 export async function fetchSiteInfo(): Promise<SiteInfo> {
   try {
@@ -444,6 +457,78 @@ export async function searchReuses(
       next_page: null,
       previous_page: null,
     };
+  }
+}
+
+export async function fetchLicenses(): Promise<License[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/datasets/licenses/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch licenses: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching licenses:", error);
+    return [];
+  }
+}
+
+export async function fetchFrequencies(): Promise<Frequency[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/datasets/frequencies/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch frequencies: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching frequencies:", error);
+    return [];
+  }
+}
+
+export async function fetchSchemas(): Promise<string[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/datasets/schemas/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch schemas: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching schemas:", error);
+    return [];
+  }
+}
+
+export async function fetchDatasetBadges(): Promise<DatasetBadges> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/datasets/badges/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch dataset badges: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching dataset badges:", error);
+    return {};
+  }
+}
+
+export async function suggestFormats(query: string): Promise<FormatSuggestion[]> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/datasets/suggest/formats/?q=${encodeURIComponent(query)}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) throw new Error(`Failed to suggest formats: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error suggesting formats:", error);
+    return [];
+  }
+}
+
+export async function suggestTags(query: string, size: number = 10): Promise<TagSuggestion[]> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/tags/suggest/?q=${encodeURIComponent(query)}&size=${size}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) throw new Error(`Failed to suggest tags: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error suggesting tags:", error);
+    return [];
   }
 }
 

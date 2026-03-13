@@ -23,7 +23,23 @@ export default function DatasetsClient({
   currentPage,
 }: DatasetsClientProps) {
   const router = useRouter();
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const { data: datasets, total, page_size } = initialData;
+
+  const currentQuery = searchParams.get('q') || '';
+  const [searchQuery, setSearchQuery] = React.useState(currentQuery);
+
+  const handleSearch = React.useCallback(() => {
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    if (searchQuery.trim()) {
+      params.set('q', searchQuery.trim());
+    } else {
+      params.delete('q');
+    }
+    params.set('page', '1');
+    const search = params.toString();
+    router.replace(`/pages/datasets${search ? `?${search}` : ''}`, { scroll: false });
+  }, [searchQuery, router]);
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters dataset">
@@ -52,6 +68,10 @@ export default function DatasetsClient({
             voiceActionAltText="Pesquisar por voz"
             searchActionAltText="Pesquisar"
             darkMode={true}
+            value={searchQuery}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSearch(); }}
+            onSearchActivate={() => handleSearch()}
           />
           <div className="mt-8 text-s-regular text-neutral-200">
             Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
