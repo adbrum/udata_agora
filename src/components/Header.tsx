@@ -75,44 +75,29 @@ export const Header = () => {
     []
   );
 
-  // Apply submenu styles directly on DOM (NavigationRoot doesn't forward className/styles)
-  // Only targets the Conhecimento panel via data attribute marker
+  // Apply submenu data attribute on DOM (NavigationRoot doesn't forward className/styles)
   React.useEffect(() => {
-    const applySubmenuStyles = () => {
+    const applySubmenuAttr = () => {
       // Clean up any previously modified panel
       const modified = document.querySelector(
         '.navigation-links-layout[data-submenu]'
       ) as HTMLElement | null;
       if (modified) {
-        const titleEl = modified.querySelector(':scope > .title') as HTMLElement | null;
         modified.removeAttribute('data-submenu');
-        if (titleEl && titleEl.dataset.originalTitle) {
-          titleEl.textContent = titleEl.dataset.originalTitle;
-          delete titleEl.dataset.originalTitle;
-        }
       }
 
-      // Apply styles if submenu is active
-      const submenuTitles: Record<string, string> = {
-        desenvolvimento: "Desenvolvimento",
-        publicacoes: "Publicações",
-      };
-
-      if (submenu && submenuTitles[submenu]) {
+      if (submenu) {
         document.querySelectorAll('.navigation-links-layout').forEach((el) => {
           const titleEl = el.querySelector(':scope > .title') as HTMLElement | null;
           if (!titleEl || titleEl.textContent !== 'Conhecimento') return;
-
-          const htmlEl = el as HTMLElement;
-          htmlEl.setAttribute('data-submenu', submenu);
-          titleEl.dataset.originalTitle = 'Conhecimento';
-          titleEl.textContent = submenuTitles[submenu];
+          (el as HTMLElement).setAttribute('data-submenu', submenu);
         });
       }
     };
 
+    applySubmenuAttr();
     requestAnimationFrame(() => {
-      requestAnimationFrame(applySubmenuStyles);
+      requestAnimationFrame(applySubmenuAttr);
     });
   }, [submenu]);
 
@@ -135,6 +120,7 @@ export const Header = () => {
 
   type KnowledgeItem =
     | { type: "back"; key: string }
+    | { type: "title"; key: string; label: string }
     | {
         type: "card";
         key: string;
@@ -150,6 +136,7 @@ export const Header = () => {
     submenu === "desenvolvimento"
       ? [
           { type: "back", key: "voltar" },
+          { type: "title", key: "title-dev", label: "Desenvolvimento" },
           {
             type: "card",
             key: "dev-sparql",
@@ -190,6 +177,7 @@ export const Header = () => {
       : submenu === "publicacoes"
         ? [
             { type: "back", key: "voltar" },
+            { type: "title", key: "title-pub", label: "Publicações" },
             {
               type: "card",
               key: "pub-guias",
@@ -518,6 +506,13 @@ export const Header = () => {
                         Voltar
                       </Button>
                     </div>
+                  </NavigationLink>
+                );
+              }
+              if (item.type === "title") {
+                return (
+                  <NavigationLink key={item.key} appearance="link">
+                    <span className="title text-xl-bold">{item.label}</span>
                   </NavigationLink>
                 );
               }

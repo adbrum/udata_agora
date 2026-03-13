@@ -546,13 +546,29 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   border-width: 2px;
   border-color: var(--color-primary-600);
   background-color: var(--color-primary-600);
-  padding: 14px;
+  padding: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .agora-header .card-general-neutral-100 .icon-set img {
-  width: 32px;
-  height: 32px;
+  width: 16px;
+  height: 16px;
   filter: brightness(0) invert(1);
+}
+
+.agora-header .card-general-neutral-100 .icon-set svg.icon {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+}
+
+.agora-header .content.content-hover .p-16 {
+  padding-top: 0;
 }
 
 /* Target icons that SHOULD be white */
@@ -602,14 +618,31 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   display: none !important;
 }
 
-/* Submenu: back button above title, container needs position context */
+/* Hide all navigation panel titles */
+.navigation-links-layout>.title {
+  display: none !important;
+}
+
+/* Submenu: position context for back button */
 .navigation-links-layout[data-submenu] {
   position: relative;
 }
 
-.navigation-links-layout[data-submenu] > .links > .link-wrapper:first-child {
+/* Back button: above the grid */
+.navigation-links-layout[data-submenu]>.links>.link-wrapper:first-child {
   grid-column: 1 / -1 !important;
   position: absolute;
   top: -48px;
   z-index: 1;
+}
+
+/* Submenu title: full width row */
+.navigation-links-layout[data-submenu]>.links>.link-wrapper:nth-child(2) {
+  grid-column: 1 / -1 !important;
+}
+
+/* Submenu title text size */
+.navigation-links-layout[data-submenu]>.links>.link-wrapper:nth-child(2) .children-wrapper {
+  font-size: 24px !important;
+  font-weight: 700 !important;
 }
