@@ -88,6 +88,47 @@ export interface GlobalSearchSuggestion {
   score: number;
 }
 
+export interface License {
+  id: string;
+  title: string;
+  url: string | null;
+  maintainer: string | null;
+  flags: string[];
+  alternate_titles: string[];
+  alternate_urls: string[];
+}
+
+export interface Frequency {
+  id: string;
+  label: string;
+}
+
+export interface DatasetBadges {
+  [key: string]: string;
+}
+
+export interface TagSuggestion {
+  text: string;
+}
+
+export interface FormatSuggestion {
+  text: string;
+}
+
+export interface DatasetFilters {
+  q?: string;
+  tag?: string | string[];
+  license?: string | string[];
+  format?: string | string[];
+  schema?: string;
+  geozone?: string;
+  granularity?: string;
+  organization?: string | string[];
+  badge?: string | string[];
+  featured?: boolean;
+  sort?: string;
+}
+
 export interface APIResponse<T> {
   data: T[];
   page: number;
