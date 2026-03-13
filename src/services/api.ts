@@ -1,5 +1,6 @@
 import {
   APIResponse,
+  Dataservice,
   Dataset,
   DatasetBadges,
   DatasetFilters,
@@ -261,6 +262,36 @@ export async function fetchOrgDiscussions(org: string): Promise<Discussion[]> {
     return [];
   }
 }
+
+export async function fetchOrgDataservices(
+  org: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Dataservice>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/dataservices/?organization=${org}&page=${page}&page_size=${pageSize}`,
+      { cache: "no-store" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch organization dataservices: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching organization dataservices:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
 export async function fetchReuses(
   page: number = 1,
   pageSize: number = 20

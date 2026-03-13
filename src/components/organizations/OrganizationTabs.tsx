@@ -13,8 +13,18 @@ import {
   CardLinks,
   Icon,
 } from "@ama-pt/agora-design-system";
-import { Organization, Dataset, Reuse, Discussion, APIResponse } from "@/types/api";
-import { fetchOrgDatasets, fetchOrgReuses, fetchOrgDiscussions } from "@/services/api";
+import {
+  Organization,
+  Dataset,
+  Dataservice,
+  Reuse,
+  APIResponse,
+} from "@/types/api";
+import {
+  fetchOrgDatasets,
+  fetchOrgDataservices,
+  fetchOrgReuses,
+} from "@/services/api";
 
 interface OrganizationTabsProps {
   organization: Organization;
@@ -25,11 +35,13 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
 
   const [datasetsResponse, setDatasetsResponse] = useState<APIResponse<Dataset> | null>(null);
   const [datasetsPage, setDatasetsPage] = useState(1);
+  const [dataservicesResponse, setDataservicesResponse] =
+    useState<APIResponse<Dataservice> | null>(null);
+  const [dataservicesPage, setDataservicesPage] = useState(1);
   const [reuses, setReuses] = useState<Reuse[]>([]);
-  const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(true);
+  const [isLoadingDataservices, setIsLoadingDataservices] = useState(true);
   const [isLoadingReuses, setIsLoadingReuses] = useState(true);
-  const [isLoadingDiscussions, setIsLoadingDiscussions] = useState(true);
 
   useEffect(() => {
     async function loadDatasets() {
@@ -47,6 +59,25 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
   }, [organization.slug, datasetsPage]);
 
   useEffect(() => {
+    async function loadDataservices() {
+      setIsLoadingDataservices(true);
+      try {
+        const response = await fetchOrgDataservices(
+          organization.id,
+          dataservicesPage,
+          20
+        );
+        setDataservicesResponse(response);
+      } catch (error) {
+        console.error("Error loading organization dataservices:", error);
+      } finally {
+        setIsLoadingDataservices(false);
+      }
+    }
+    loadDataservices();
+  }, [organization.id, dataservicesPage]);
+
+  useEffect(() => {
     async function loadReuses() {
       try {
         const response = await fetchOrgReuses(organization.slug);
@@ -57,23 +88,11 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
         setIsLoadingReuses(false);
       }
     }
-
-    async function loadDiscussions() {
-      try {
-        const response = await fetchOrgDiscussions(organization.slug);
-        setDiscussions(response);
-      } catch (error) {
-        console.error("Error loading organization discussions:", error);
-      } finally {
-        setIsLoadingDiscussions(false);
-      }
-    }
-
     loadReuses();
-    loadDiscussions();
   }, [organization.slug]);
 
   const datasets = datasetsResponse?.data || [];
+  const dataservices = dataservicesResponse?.data || [];
 
   const renderTabBody = (content: React.ReactNode) => (
     <TabBody>
@@ -89,10 +108,42 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
     </TabBody>
   );
 
+  const renderPagination = (
+    currentPage: number,
+    total: number,
+    pageSize: number,
+    hasNext: boolean,
+    onPageChange: (page: number) => void
+  ) => {
+    const totalPages = Math.ceil(total / pageSize);
+    if (totalPages <= 1) return null;
+    return (
+      <div className="flex items-center justify-center gap-16 mt-32">
+        <button
+          className="px-16 py-8 text-sm font-medium text-primary-600 border border-primary-300 rounded hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          disabled={currentPage <= 1}
+          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+        >
+          Anterior
+        </button>
+        <span className="text-sm text-neutral-700">
+          Página {currentPage} de {totalPages}
+        </span>
+        <button
+          className="px-16 py-8 text-sm font-medium text-primary-600 border border-primary-300 rounded hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          disabled={!hasNext}
+          onClick={() => onPageChange(currentPage + 1)}
+        >
+          Seguinte
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="mt-64">
       <Tabs>
-        {/* Tab 1: Apresentação (Description) */}
+        {/* Tab 1: Apresentação */}
         <Tab>
           <TabHeader>Apresentação</TabHeader>
           {renderTabBody(
@@ -136,14 +187,17 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                     {datasets.map((dataset) => (
                       <div key={dataset.id} className="h-full">
                         <CardLinks
-                          onClick={() => router.push(`/pages/datasets/${dataset.slug}`)}
+                          onClick={() =>
+                            router.push(`/pages/datasets/${dataset.slug}`)
+                          }
                           className="cursor-pointer text-neutral-900"
                           variant="white"
                           image={{
                             src:
                               dataset.organization?.logo ||
                               "/images/placeholders/organization.png",
-                            alt: dataset.organization?.name || "Organização sem logo",
+                            alt:
+                              dataset.organization?.name || "Organização sem logo",
                           }}
                           category={dataset.organization?.name}
                           title={dataset.title}
@@ -157,7 +211,10 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                                   className="flex items-center gap-8"
                                   title="Visualizações"
                                 >
-                                  <Icon name="agora-line-eye" aria-hidden="true" />
+                                  <Icon
+                                    name="agora-line-eye"
+                                    aria-hidden="true"
+                                  />
                                   <span>
                                     {dataset.metrics?.views
                                       ? dataset.metrics.views >= 1000
@@ -170,7 +227,10 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                                   className="flex items-center gap-8"
                                   title="Downloads"
                                 >
-                                  <Icon name="agora-line-download" aria-hidden="true" />
+                                  <Icon
+                                    name="agora-line-download"
+                                    aria-hidden="true"
+                                  />
                                   <span>
                                     {dataset.metrics?.downloads
                                       ? dataset.metrics.downloads >= 1000
@@ -183,14 +243,20 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                                   className="flex items-center gap-8"
                                   title="Reutilizações"
                                 >
-                                  <Icon name="agora-line-refresh" aria-hidden="true" />
+                                  <Icon
+                                    name="agora-line-refresh"
+                                    aria-hidden="true"
+                                  />
                                   <span>{dataset.metrics?.reuses || 0}</span>
                                 </div>
                                 <div
                                   className="flex items-center gap-8"
                                   title="Favoritos"
                                 >
-                                  <Icon name="agora-line-star" aria-hidden="true" />
+                                  <Icon
+                                    name="agora-line-star"
+                                    aria-hidden="true"
+                                  />
                                   <span>{dataset.metrics?.followers || 0}</span>
                                 </div>
                               </div>
@@ -211,28 +277,14 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                       </div>
                     ))}
                   </div>
-                  {datasetsResponse && datasetsResponse.total > datasetsResponse.page_size && (
-                    <div className="flex items-center justify-center gap-16 mt-32">
-                      <button
-                        className="px-16 py-8 text-sm font-medium text-primary-600 border border-primary-300 rounded hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
-                        disabled={datasetsPage <= 1}
-                        onClick={() => setDatasetsPage((p) => Math.max(1, p - 1))}
-                      >
-                        Anterior
-                      </button>
-                      <span className="text-sm text-neutral-700">
-                        Página {datasetsPage} de{" "}
-                        {Math.ceil(datasetsResponse.total / datasetsResponse.page_size)}
-                      </span>
-                      <button
-                        className="px-16 py-8 text-sm font-medium text-primary-600 border border-primary-300 rounded hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
-                        disabled={!datasetsResponse.next_page}
-                        onClick={() => setDatasetsPage((p) => p + 1)}
-                      >
-                        Seguinte
-                      </button>
-                    </div>
-                  )}
+                  {datasetsResponse &&
+                    renderPagination(
+                      datasetsPage,
+                      datasetsResponse.total,
+                      datasetsResponse.page_size,
+                      !!datasetsResponse.next_page,
+                      setDatasetsPage
+                    )}
                 </>
               ) : (
                 <div className="text-neutral-500">
@@ -243,7 +295,122 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
           )}
         </Tab>
 
-        {/* Tab 3: Reutilizações */}
+        {/* Tab 3: API */}
+        <Tab>
+          <TabHeader>
+            API ({organization.metrics?.dataservices || 0})
+          </TabHeader>
+          {renderTabBody(
+            <>
+              <h2 className="text-sm text-neutral-500 mb-16">
+                API da organização
+              </h2>
+              {isLoadingDataservices ? (
+                <div className="text-neutral-500">A carregar APIs...</div>
+              ) : dataservices.length > 0 ? (
+                <>
+                  <div className="text-sm text-neutral-500 mb-16">
+                    {dataservicesResponse?.total || 0} APIs
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-16">
+                    {dataservices.map((ds) => (
+                      <div key={ds.id} className="h-full">
+                        <CardLinks
+                          className="cursor-pointer text-neutral-900"
+                          variant="white"
+                          image={{
+                            src:
+                              ds.organization?.logo ||
+                              "/images/placeholders/organization.png",
+                            alt: ds.organization?.name || "Organização sem logo",
+                          }}
+                          category={ds.organization?.name}
+                          title={
+                            <div className="flex items-center gap-8">
+                              <Icon
+                                name="agora-line-code"
+                                className="text-primary-600"
+                                aria-hidden="true"
+                              />
+                              <span>{ds.title}</span>
+                            </div>
+                          }
+                          description={
+                            <div className="flex flex-col gap-12">
+                              <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                                {ds.description}
+                              </p>
+                              {ds.format && (
+                                <span className="text-xs font-medium text-primary-600 bg-primary-50 px-8 py-2 rounded w-fit">
+                                  {ds.format}
+                                </span>
+                              )}
+                              <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[8px] text-[#034AD8]">
+                                <div
+                                  className="flex items-center gap-8"
+                                  title="Visualizações"
+                                >
+                                  <Icon
+                                    name="agora-line-eye"
+                                    aria-hidden="true"
+                                  />
+                                  <span>{ds.metrics?.views || 0}</span>
+                                </div>
+                                <div
+                                  className="flex items-center gap-8"
+                                  title="Seguidores"
+                                >
+                                  <Icon
+                                    name="agora-line-star"
+                                    aria-hidden="true"
+                                  />
+                                  <span>{ds.metrics?.followers || 0}</span>
+                                </div>
+                              </div>
+                            </div>
+                          }
+                          date={
+                            <span className="font-[300]">
+                              {`Atualizado há ${formatDistanceToNow(new Date(ds.last_modified), { locale: pt })}`}
+                            </span>
+                          }
+                          mainLink={
+                            ds.base_api_url ? (
+                              <a
+                                href={ds.base_api_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <span className="underline">{ds.title}</span>
+                              </a>
+                            ) : (
+                              <span>{ds.title}</span>
+                            )
+                          }
+                          blockedLink={true}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  {dataservicesResponse &&
+                    renderPagination(
+                      dataservicesPage,
+                      dataservicesResponse.total,
+                      dataservicesResponse.page_size,
+                      !!dataservicesResponse.next_page,
+                      setDataservicesPage
+                    )}
+                </>
+              ) : (
+                <div className="text-neutral-500">
+                  Esta organização não possui APIs publicadas.
+                </div>
+              )}
+            </>
+          )}
+        </Tab>
+
+        {/* Tab 4: Reutilizações */}
         <Tab>
           <TabHeader>
             Reutilizações ({organization.metrics?.reuses || 0})
@@ -260,7 +427,9 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                   {reuses.map((reuse) => (
                     <div key={reuse.id} className="h-full">
                       <CardLinks
-                        onClick={() => router.push(`/pages/reuses/${reuse.slug}`)}
+                        onClick={() =>
+                          router.push(`/pages/reuses/${reuse.slug}`)
+                        }
                         className="cursor-pointer text-neutral-900"
                         variant="transparent"
                         image={{
@@ -272,7 +441,9 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                         }}
                         category={reuse.organization?.name || "Reutilização"}
                         title={
-                          <div className="underline text-xl-bold">{reuse.title}</div>
+                          <div className="underline text-xl-bold">
+                            {reuse.title}
+                          </div>
                         }
                         description={
                           reuse.description ? (
@@ -296,7 +467,8 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                             trailingIconHover: "",
                             trailingIconActive: "",
                             children:
-                              reuse.metrics?.views?.toLocaleString("pt-PT") || "0",
+                              reuse.metrics?.views?.toLocaleString("pt-PT") ||
+                              "0",
                             title: "Visualizações",
                             onClick: (e: React.MouseEvent) => e.preventDefault(),
                             className: "text-[#034AD8]",
@@ -334,69 +506,6 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
           )}
         </Tab>
 
-        {/* Tab 4: Discussões */}
-        <Tab>
-          <TabHeader>Discussões ({discussions.length})</TabHeader>
-          {renderTabBody(
-            <>
-              <h2 className="text-sm text-neutral-500 mb-16">
-                Discussões da organização
-              </h2>
-              {isLoadingDiscussions ? (
-                <div className="text-neutral-500">A carregar discussões...</div>
-              ) : discussions.length > 0 ? (
-                <div className="flex flex-col gap-16">
-                  {discussions.map((discussion) => (
-                    <div
-                      key={discussion.id}
-                      className="bg-white rounded-4 p-24 border border-neutral-200"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h4 className="text-m-semibold text-neutral-900">
-                            {discussion.title}
-                          </h4>
-                          <p className="text-sm text-neutral-500 mt-4">
-                            Por {discussion.user?.first_name}{" "}
-                            {discussion.user?.last_name} ·{" "}
-                            {formatDistanceToNow(new Date(discussion.created), {
-                              locale: pt,
-                              addSuffix: true,
-                            })}
-                          </p>
-                        </div>
-                        {discussion.closed ? (
-                          <span className="text-xs font-medium text-green-700 bg-green-100 px-8 py-4 rounded flex-shrink-0">
-                            Fechada
-                          </span>
-                        ) : (
-                          <span className="text-xs font-medium text-blue-700 bg-blue-100 px-8 py-4 rounded flex-shrink-0">
-                            Aberta
-                          </span>
-                        )}
-                      </div>
-                      {discussion.discussion?.length > 0 && (
-                        <p className="text-sm text-neutral-700 mt-8 line-clamp-2">
-                          {discussion.discussion[0].content}
-                        </p>
-                      )}
-                      {discussion.discussion?.length > 1 && (
-                        <p className="text-xs text-neutral-500 mt-8">
-                          {discussion.discussion.length} mensagens
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-neutral-500">
-                  Nenhuma discussão associada a esta organização.
-                </div>
-              )}
-            </>
-          )}
-        </Tab>
-
         {/* Tab 5: Informações (Statistics, Members, Technical Info) */}
         <Tab>
           <TabHeader>Informações</TabHeader>
@@ -417,21 +526,25 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                     </div>
                   </div>
                   <div className="bg-white rounded-4 p-24 border border-neutral-200">
-                    <div className="text-sm text-neutral-500 mb-4">Reutilizações</div>
+                    <div className="text-sm text-neutral-500 mb-4">API</div>
+                    <div className="text-l-semibold font-bold text-neutral-900">
+                      {organization.metrics?.dataservices || 0}
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-4 p-24 border border-neutral-200">
+                    <div className="text-sm text-neutral-500 mb-4">
+                      Reutilizações
+                    </div>
                     <div className="text-l-semibold font-bold text-neutral-900">
                       {organization.metrics?.reuses || 0}
                     </div>
                   </div>
                   <div className="bg-white rounded-4 p-24 border border-neutral-200">
-                    <div className="text-sm text-neutral-500 mb-4">Seguidores</div>
+                    <div className="text-sm text-neutral-500 mb-4">
+                      Seguidores
+                    </div>
                     <div className="text-l-semibold font-bold text-neutral-900">
                       {organization.metrics?.followers || 0}
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-4 p-24 border border-neutral-200">
-                    <div className="text-sm text-neutral-500 mb-4">Visualizações</div>
-                    <div className="text-l-semibold font-bold text-neutral-900">
-                      {organization.metrics?.views || 0}
                     </div>
                   </div>
                 </div>
@@ -468,7 +581,9 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                             {member.user?.first_name} {member.user?.last_name}
                           </p>
                           <span className="text-xs font-medium text-primary-600 bg-primary-100 px-8 py-2 rounded">
-                            {member.role === "admin" ? "Administrador" : "Editor"}
+                            {member.role === "admin"
+                              ? "Administrador"
+                              : "Editor"}
                           </span>
                         </div>
                       </div>
@@ -490,9 +605,11 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                       </dt>
                       <dd className="text-neutral-900 mt-2">
                         {organization.last_modified
-                          ? format(new Date(organization.last_modified), "d 'de' MMMM 'de' yyyy", {
-                              locale: pt,
-                            })
+                          ? format(
+                              new Date(organization.last_modified),
+                              "d 'de' MMMM 'de' yyyy",
+                              { locale: pt }
+                            )
                           : "—"}
                       </dd>
                     </div>
@@ -510,9 +627,11 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                       </dt>
                       <dd className="text-neutral-900 mt-2">
                         {organization.created_at
-                          ? format(new Date(organization.created_at), "d 'de' MMMM 'de' yyyy", {
-                              locale: pt,
-                            })
+                          ? format(
+                              new Date(organization.created_at),
+                              "d 'de' MMMM 'de' yyyy",
+                              { locale: pt }
+                            )
                           : "—"}
                       </dd>
                     </div>

@@ -21,6 +21,7 @@ export interface Badge {
 
 export interface OrganizationMetrics {
   datasets: number;
+  dataservices: number;
   followers: number;
   members: number;
   reuses: number;
@@ -95,6 +96,22 @@ export interface Reuse {
   url: string;
   tags: string[];
   datasets?: Dataset[];
+}
+
+export interface Dataservice {
+  id: string;
+  title: string;
+  acronym: string | null;
+  slug: string;
+  description: string;
+  base_api_url: string | null;
+  format: string | null;
+  organization: Organization | null;
+  created_at: string;
+  last_modified: string;
+  metrics: Metric;
+  tags: string[];
+  private: boolean;
 }
 
 export interface SiteInfo {
