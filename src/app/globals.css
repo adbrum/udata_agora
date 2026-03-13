@@ -530,6 +530,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 @media (min-width: 1280px) {
   .agora-header .navigation-links-layout .links {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+
   }
 }
 
@@ -581,4 +582,12 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   margin-bottom: 4px;
   font-size: 1rem;
   line-height: 1rem;
+}
+
+.agora-header .card-general .content {
+  flex: 1 1 0%;
+}
+
+.agora-header .card-general .anchor.anchor-blockedLink {
+  margin-right: 0;
 }
