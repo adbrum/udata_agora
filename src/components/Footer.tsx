@@ -168,9 +168,9 @@ export const Footer = () => {
         }}
         caption="Plataforma aberta de dados públicos portugueses"
         partnersLogos={[
-          { image: { src: '/Logos/NextGenerationEU.svg', alt: 'NextGenerationEU' } },
-          { image: { src: '/Logos/republica-portuguesa.svg', alt: 'República Portuguesa' } },
-          { image: { src: '/Logos/ARTE.svg', alt: 'ARTE' } },
+          { image: { src: '/Logos/NextGenerationEU.svg', alt: 'NextGenerationEU', style: { height: '43px', width: 'auto' } } },
+          { image: { src: '/Logos/republica-portuguesa.svg', alt: 'República Portuguesa', style: { height: '43px', width: 'auto' } } },
+          { image: { src: '/Logos/Logotipo_ARTE__Horizontal_branco_pt.svg', alt: 'ARTE', style: { height: '55px', width: 'auto' } } },
         ]}
         socialsLink={socialLinksData.map((s) => ({
           icon: s.icon,

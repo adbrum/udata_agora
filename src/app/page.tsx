@@ -385,7 +385,7 @@ export default function Home() {
         {/* Reuses / Storytelling */}
         <div className="xl:py-64 bg-primary-900">
           <div className="container mx-auto px-4">
-            <h2 className="text-xl-bold text-white">Storytelling</h2>
+            <h2 className="text-xl-bold text-white">Data Stories</h2>
             <p className="mt-16 mb-32 max-w-3xl text-white">
               Precisa de uma descrição uma vez que é um titulo estrangeiro e novidade no dados.gov
             </p>
