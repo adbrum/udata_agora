@@ -99,6 +99,13 @@ export interface Dataset {
   page: string; // The URL to the dataset page usually
 }
 
+export interface DatasetRef {
+  id: string;
+  title: string;
+  page: string;
+  uri: string;
+}
+
 export interface ReuseType {
   id: string;
   label: string;
@@ -136,7 +143,7 @@ export interface Reuse {
   url: string;
   tags: string[];
   badges: Badge[];
-  datasets: Dataset[];
+  datasets: DatasetRef[];
   dataservices: Dataservice[];
 }
 

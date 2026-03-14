@@ -12,7 +12,6 @@ import {
   TabHeader,
   TabBody,
   CardArticle,
-  CardLinks,
 } from '@ama-pt/agora-design-system';
 import { Reuse } from '@/types/api';
 import { format } from 'date-fns';
@@ -277,107 +276,24 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                 {datasets.length} conjunto{datasets.length !== 1 ? 's' : ''} de dados
                 associado{datasets.length !== 1 ? 's' : ''}
               </h2>
-              <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
-                <div className="xl:col-span-8 xl:col-start-5 grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-x-32 pt-0">
-                  {datasets.map((dataset) => (
-                    <div key={dataset.id} className="h-full">
-                      <CardLinks
-                        onClick={() => {}}
-                        className="cursor-pointer text-neutral-900"
-                        variant="white"
-                        image={{
-                          src:
-                            dataset.organization?.logo_thumbnail ||
-                            dataset.organization?.logo ||
-                            '/laptop.png',
-                          alt: `Logo - ${dataset.organization?.name || 'Dataset'}`,
-                        }}
-                        category={dataset.organization?.name || ''}
-                        title={dataset.title}
-                        description={
-                          <div className="flex flex-col gap-12">
-                            <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px]">
-                              {dataset.description}
-                            </p>
-                            <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
-                              <div
-                                className="flex items-center gap-8"
-                                title="Visualizações"
-                              >
-                                <Icon
-                                  name="agora-line-eye"
-                                  className=""
-                                  aria-hidden="true"
-                                />
-                                <span>
-                                  {dataset.metrics?.views?.toLocaleString('pt-PT') || '0'}
-                                </span>
-                              </div>
-                              <div
-                                className="flex items-center gap-8"
-                                title="Downloads"
-                              >
-                                <Icon
-                                  name="agora-line-download"
-                                  className=""
-                                  aria-hidden="true"
-                                />
-                                <span>
-                                  {dataset.metrics?.downloads?.toLocaleString('pt-PT') || '0'}
-                                </span>
-                              </div>
-                              <div
-                                className="flex items-center gap-8"
-                                title="Reutilizações"
-                              >
-                                <img
-                                  src="/Icons/bar_chart.svg"
-                                  className=""
-                                  alt=""
-                                  aria-hidden="true"
-                                />
-                                <span>
-                                  {dataset.metrics?.reuses?.toLocaleString('pt-PT') || '0'}
-                                </span>
-                              </div>
-                              <div
-                                className="flex items-center gap-8"
-                                title="Favoritos"
-                              >
-                                <img
-                                  src="/Icons/favorite.svg"
-                                  className=""
-                                  alt=""
-                                  aria-hidden="true"
-                                />
-                                <span>
-                                  {dataset.metrics?.followers?.toLocaleString('pt-PT') || '0'}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        }
-                        date={
-                          <span className="font-[300]">
-                            Atualizado{' '}
-                            {format(
-                              new Date(dataset.last_modified || dataset.created_at),
-                              'dd MM yyyy',
-                              { locale: pt }
-                            )}
-                          </span>
-                        }
-                        mainLink={
-                          <Link href={`/pages/datasets/${dataset.slug}`}>
-                            <span className="underline">{dataset.title}</span>
-                          </Link>
-                        }
-                        blockedLink={true}
+              <ul className="space-y-16">
+                {datasets.map((dataset) => (
+                  <li key={dataset.id}>
+                    <Link
+                      href={`/pages/datasets/${dataset.uri.split('/').filter(Boolean).pop()}`}
+                      className="flex items-center gap-16 p-16 bg-white rounded-4 border border-neutral-100 hover:border-primary-300 transition-colors"
+                    >
+                      <Icon
+                        name="agora-line-file"
+                        className="w-24 h-24 fill-primary-500 shrink-0"
                       />
-                    </div>
-                  ))}
-                </div>
-              </div>
+                      <span className="text-primary-600 underline font-medium">
+                        {dataset.title}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>

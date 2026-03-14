@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -37,6 +37,11 @@ export default function ReusesClient({
   const router = useRouter();
   const { data: reuses, total, page_size } = initialData;
   const [searchQuery, setSearchQuery] = useState(initialFilters?.q || '');
+  const mountedRef = useRef(false);
+
+  useEffect(() => {
+    mountedRef.current = true;
+  }, []);
 
   const buildUrl = useCallback(
     (overrides: Partial<ReuseFilters> & { page?: number } = {}) => {
@@ -136,7 +141,7 @@ export default function ReusesClient({
             onKeyDown={(e: React.KeyboardEvent) => {
               if (e.key === 'Enter') handleSearch();
             }}
-            onSearchAction={handleSearch}
+            onSearchActivate={() => handleSearch()}
           />
           <div className="mt-8 text-s-regular text-neutral-200">
             Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
@@ -158,9 +163,9 @@ export default function ReusesClient({
                       label="Tipo:"
                       id="filter-type"
                       defaultValue={initialFilters?.type || ''}
-                      onChange={(options: DropdownOptionProps[]) =>
-                        handleTypeFilter(options[0]?.value || '')
-                      }
+                      onChange={(options: DropdownOptionProps[]) => {
+                        if (mountedRef.current) handleTypeFilter(options[0]?.value || '');
+                      }}
                     >
                       <DropdownSection name="types">
                         <DropdownOption value="">Todos os tipos</DropdownOption>
@@ -191,9 +196,9 @@ export default function ReusesClient({
                     id="sort-reuses"
                     defaultValue={sortDefault}
                     className="selectReuse"
-                    onChange={(options: DropdownOptionProps[]) =>
-                      handleSortChange(options[0]?.value || 'reutilizacoes')
-                    }
+                    onChange={(options: DropdownOptionProps[]) => {
+                      if (mountedRef.current) handleSortChange(options[0]?.value || 'reutilizacoes');
+                    }}
                   >
                     <DropdownSection name="order">
                       <DropdownOption value="reutilizacoes">
