@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Breadcrumb,
   Button,
@@ -12,9 +13,11 @@ import {
   TabHeader,
   TabBody,
   CardArticle,
+  CardLinks,
 } from '@ama-pt/agora-design-system';
-import { Reuse } from '@/types/api';
-import { format } from 'date-fns';
+import { Reuse, Dataset } from '@/types/api';
+import { fetchDataset } from '@/services/api';
+import { format, formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
 interface ReuseDetailClientProps {
@@ -22,6 +25,37 @@ interface ReuseDetailClientProps {
 }
 
 export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
+  const router = useRouter();
+  const [fullDatasets, setFullDatasets] = useState<Dataset[]>([]);
+  const [isLoadingDatasets, setIsLoadingDatasets] = useState(true);
+
+  const datasetRefs = reuse.datasets || [];
+
+  useEffect(() => {
+    if (datasetRefs.length === 0) {
+      setIsLoadingDatasets(false);
+      return;
+    }
+
+    async function loadDatasets() {
+      try {
+        const slugs = datasetRefs.map((d) =>
+          d.uri.split('/').filter(Boolean).pop() || d.id
+        );
+        const results = await Promise.all(
+          slugs.map((slug) => fetchDataset(slug).catch(() => null))
+        );
+        setFullDatasets(results.filter((d): d is Dataset => d !== null));
+      } catch {
+        setFullDatasets([]);
+      } finally {
+        setIsLoadingDatasets(false);
+      }
+    }
+
+    loadDatasets();
+  }, [datasetRefs]);
+
   const formatDate = (dateString: string) => {
     try {
       return format(new Date(dateString), "d 'de' MMMM 'de' yyyy", { locale: pt });
@@ -29,8 +63,6 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
       return dateString;
     }
   };
-
-  const datasets = reuse.datasets || [];
 
   const renderTabBody = (content: React.ReactNode) => (
     <TabBody>
@@ -152,7 +184,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                         name="agora-line-calendar"
                         className="w-20 h-20 fill-[var(--color-neutral-900)]"
                       />
-                      <span className="text-neutral-900">{datasets.length}</span>
+                      <span className="text-neutral-900">{datasetRefs.length}</span>
                     </div>
                   </div>
 
@@ -268,32 +300,102 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
       </section>
 
       {/* Associated Datasets */}
-      {datasets.length > 0 && (
+      {datasetRefs.length > 0 && (
         <section className="bg-neutral-000 py-64">
           <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
             <div className="mb-80">
               <h2 className="text-xl font-bold text-[#000032] mb-32">
-                {datasets.length} conjunto{datasets.length !== 1 ? 's' : ''} de dados
-                associado{datasets.length !== 1 ? 's' : ''}
+                {datasetRefs.length} conjunto{datasetRefs.length !== 1 ? 's' : ''} de dados
+                associado{datasetRefs.length !== 1 ? 's' : ''}
               </h2>
-              <ul className="space-y-16">
-                {datasets.map((dataset) => (
-                  <li key={dataset.id}>
-                    <Link
-                      href={`/pages/datasets/${dataset.uri.split('/').filter(Boolean).pop()}`}
-                      className="flex items-center gap-16 p-16 bg-white rounded-4 border border-neutral-100 hover:border-primary-300 transition-colors"
-                    >
-                      <Icon
-                        name="agora-line-file"
-                        className="w-24 h-24 fill-primary-500 shrink-0"
+              {isLoadingDatasets ? (
+                <div className="text-neutral-500">A carregar conjuntos de dados...</div>
+              ) : fullDatasets.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-16">
+                  {fullDatasets.map((dataset) => (
+                    <div key={dataset.id} className="h-full">
+                      <CardLinks
+                        onClick={() => router.push(`/pages/datasets/${dataset.slug}`)}
+                        className="cursor-pointer text-neutral-900"
+                        variant="white"
+                        image={{
+                          src:
+                            dataset.organization?.logo ||
+                            '/images/placeholders/organization.png',
+                          alt:
+                            dataset.organization?.name || 'Organização sem logo',
+                        }}
+                        category={dataset.organization?.name}
+                        title={dataset.title}
+                        description={
+                          <div className="flex flex-col gap-12">
+                            <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                              {dataset.description}
+                            </p>
+                            <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[16px] text-[#034AD8]">
+                              <div
+                                className="flex items-center gap-8"
+                                title="Visualizações"
+                              >
+                                <Icon name="agora-line-eye" aria-hidden="true" />
+                                <span>
+                                  {dataset.metrics?.views
+                                    ? dataset.metrics.views >= 1000
+                                      ? `${(dataset.metrics.views / 1000).toFixed(0)} mil`
+                                      : dataset.metrics.views
+                                    : '0'}
+                                </span>
+                              </div>
+                              <div
+                                className="flex items-center gap-8"
+                                title="Downloads"
+                              >
+                                <Icon name="agora-line-download" aria-hidden="true" />
+                                <span>
+                                  {dataset.metrics?.downloads
+                                    ? dataset.metrics.downloads >= 1000
+                                      ? `${(dataset.metrics.downloads / 1000).toFixed(0)} mil`
+                                      : dataset.metrics.downloads
+                                    : '0'}
+                                </span>
+                              </div>
+                              <div
+                                className="flex items-center gap-8"
+                                title="Reutilizações"
+                              >
+                                <Icon name="agora-line-refresh" aria-hidden="true" />
+                                <span>{dataset.metrics?.reuses || 0}</span>
+                              </div>
+                              <div
+                                className="flex items-center gap-8"
+                                title="Favoritos"
+                              >
+                                <Icon name="agora-line-star" aria-hidden="true" />
+                                <span>{dataset.metrics?.followers || 0}</span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                        date={
+                          <span className="font-[300]">
+                            {`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })}`}
+                          </span>
+                        }
+                        mainLink={
+                          <Link href={`/pages/datasets/${dataset.slug}`}>
+                            <span className="underline">{dataset.title}</span>
+                          </Link>
+                        }
+                        blockedLink={true}
                       />
-                      <span className="text-primary-600 underline font-medium">
-                        {dataset.title}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-neutral-500">
+                  Não foi possível carregar os conjuntos de dados associados.
+                </div>
+              )}
             </div>
           </div>
         </section>
