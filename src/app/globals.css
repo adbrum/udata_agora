@@ -684,13 +684,8 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   [08] ADMIN LAYOUT
   --------------------------------------------------------------------------- */
 
-/* Hide root header and footer when inside admin pages */
+/* Hide root header when inside admin pages */
 body:has(.admin-wrapper)>div>header.sticky {
-  display: none;
-}
-
-body:has(.admin-wrapper)>div>div.grow>footer,
-body:has(.admin-wrapper) footer:last-child {
   display: none;
 }
 
@@ -725,55 +720,94 @@ body:has(.admin-wrapper) footer:last-child {
 /* Side Navigation */
 .admin-side-nav {
   background-color: var(--color-brand-blue-secondary);
-  width: 112px;
+  width: 280px;
   min-height: 100%;
   flex-shrink: 0;
-}
-
-.admin-side-nav__items {
   display: flex;
   flex-direction: column;
-  padding-top: 64px;
 }
 
-.admin-side-nav__item {
+
+/* Sidebar Navigation (Agora component overrides) */
+.admin-sidebar-nav {
+  padding: 8px 0;
+}
+
+.admin-sidebar-nav .agora-sidebar {
+  background-color: transparent;
+}
+
+.admin-sidebar-nav.agora-sidebar .agora-sidebar-item .agora-btn-link-neutral.agora-sidebar-button-item {
+  padding-left: 16px !important;
+}
+
+.admin-sidebar-nav__home-item .agora-sidebar-anchor-item {
+  padding-left: 16px !important;
+}
+
+.admin-sidebar-nav__group-label {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 8px;
-  min-height: 60px;
+  font-size: 16px;
+}
+
+.admin-side-nav .agora-sidebar.darkMode .agora-sidebar-item .agora-sidebar-anchor-item .data-children-wrapper {
+  gap: 8px;
+  font-weight: 400;
+  padding-left: 16px;
+}
+
+.admin-sidebar-nav__group-label--active {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.admin-sidebar-nav__group-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.admin-sidebar-nav__children {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-sidebar-nav__child-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px 42px;
   text-decoration: none;
-  border-left: 4px solid transparent;
+  color: var(--color-white);
+  font-size: 14px;
+  line-height: 24px;
   transition: background-color 0.2s;
 }
 
-.admin-side-nav__item:hover {
+.admin-sidebar-nav__child-item:hover {
   background-color: rgba(3, 56, 162, 0.5);
 }
 
-.admin-side-nav__item--active {
+.admin-sidebar-nav__child-item--active {
   background-color: #0338a2;
-  border-left-color: var(--color-white);
+  border-left: 3px solid var(--color-white);
+  padding-left: 39px;
 }
 
-.admin-side-nav__icon {
-  width: 24px;
-  height: 24px;
+.admin-sidebar-nav__child-icon {
+  width: 20px;
+  height: 20px;
 }
 
-.admin-side-nav__icon,
-.admin-side-nav__icon svg,
-.admin-side-nav__icon svg path {
+.admin-sidebar-nav__child-icon,
+.admin-sidebar-nav__child-icon svg,
+.admin-sidebar-nav__child-icon svg path {
   fill: var(--color-white);
   color: var(--color-white);
-}
-
-.admin-side-nav__label {
-  font-size: 14px;
-  line-height: 24px;
-  color: var(--color-white);
-  text-align: center;
 }
 
 .admin-layout__content {
@@ -1072,11 +1106,20 @@ body:has(.admin-wrapper) footer:last-child {
   }
 
   .admin-side-nav {
-    width: 80px;
+    width: 220px;
   }
 
   .admin-side-nav__label {
     font-size: 11px;
+  }
+
+  .admin-sidebar-nav__child-item {
+    padding-left: 24px;
+    font-size: 13px;
+  }
+
+  .admin-sidebar-nav__child-item--active {
+    padding-left: 21px;
   }
 
   .admin-header__content {
