@@ -1,37 +1,36 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { Sidebar, SidebarItem, InputSearch, Icon, Pill } from '@ama-pt/agora-design-system';
-import { OrgBadges, SiteMetrics } from '@/types/api';
-import { CategoryToggles } from '@/components/CategoryToggles';
+import React from "react";
+import { useRouter } from "next/navigation";
+import { Sidebar, SidebarItem, InputSearch, Icon, Pill } from "@ama-pt/agora-design-system";
+import { OrgBadges, OrganizationFilters, SiteMetrics } from "@/types/api";
+import { CategoryToggles } from "@/components/CategoryToggles";
 
 interface OrganizationsFiltersProps {
   siteMetrics: SiteMetrics;
   orgBadges: OrgBadges;
   orgBadgeCounts: Record<string, number>;
+  initialFilters: OrganizationFilters;
 }
 
 const BADGE_LABELS_PT: Record<string, string> = {
-  association: 'Associação',
-  certified: 'Certificado',
-  company: 'Empresa',
-  'local-authority': 'Autoridade Local',
-  'public-service': 'Serviço Público',
+  association: "Associação",
+  certified: "Certificado",
+  company: "Empresa",
+  "local-authority": "Autoridade Local",
+  "public-service": "Serviço Público",
 };
 
 export const OrganizationsFilters = ({
   siteMetrics,
   orgBadges,
   orgBadgeCounts,
+  initialFilters,
 }: OrganizationsFiltersProps) => {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState("");
 
-  const params = new URLSearchParams(
-    typeof window !== 'undefined' ? window.location.search : ''
-  );
-  const activeBadge = params.get('badge') || '';
+  const activeBadge = initialFilters.badge || "";
 
   const entries = Object.keys(orgBadges).map((kind) => ({
     kind,
@@ -40,23 +39,21 @@ export const OrganizationsFilters = ({
   }));
 
   const filteredEntries = searchQuery.trim()
-    ? entries.filter((entry) =>
-        entry.label.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    ? entries.filter((entry) => entry.label.toLowerCase().includes(searchQuery.toLowerCase()))
     : entries;
 
   const handleBadgeClick = (kind: string) => {
-    const newParams = new URLSearchParams(
-      typeof window !== 'undefined' ? window.location.search : ''
-    );
+    const newParams = new URLSearchParams();
+    if (initialFilters.q) newParams.set("q", initialFilters.q);
+    if (initialFilters.sort) newParams.set("sort", initialFilters.sort);
     if (activeBadge === kind) {
-      newParams.delete('badge');
+      newParams.delete("badge");
     } else {
-      newParams.set('badge', kind);
+      newParams.set("badge", kind);
     }
-    newParams.set('page', '1');
+    newParams.set("page", "1");
     const qs = newParams.toString();
-    router.replace(`/pages/organizations${qs ? `?${qs}` : ''}`, { scroll: false });
+    router.replace(`/pages/organizations${qs ? `?${qs}` : ""}`, { scroll: false });
   };
 
   return (
@@ -70,12 +67,12 @@ export const OrganizationsFilters = ({
           variant="filter"
           open={true}
           item={{
-            children: <span className="font-bold">Organização</span>,
+            children: <span className="font-bold">Tipo de Organização</span>,
             hasIcon: true,
-            collapsedIconTrailing: 'agora-line-minus-circle',
-            collapsedIconHoverTrailing: 'agora-solid-minus-circle',
-            expandedIconTrailing: 'agora-line-plus-circle',
-            expandedIconHoverTrailing: 'agora-solid-plus-circle'
+            collapsedIconTrailing: "agora-line-minus-circle",
+            collapsedIconHoverTrailing: "agora-solid-minus-circle",
+            expandedIconTrailing: "agora-line-plus-circle",
+            expandedIconHoverTrailing: "agora-solid-plus-circle",
           }}
         >
           <div className="mt-16">
@@ -103,8 +100,8 @@ export const OrganizationsFilters = ({
                   onClick={() => handleBadgeClick(entry.kind)}
                   className={`flex items-center justify-between w-full px-12 py-8 rounded-8 text-sm transition-colors cursor-pointer ${
                     activeBadge === entry.kind
-                      ? 'bg-primary-100 text-primary-700 font-bold'
-                      : 'text-neutral-900 font-bold hover:bg-neutral-100'
+                      ? "bg-primary-100 text-primary-700 font-bold"
+                      : "text-neutral-900 font-bold hover:bg-neutral-100"
                   }`}
                 >
                   <span>{entry.label}</span>
@@ -114,14 +111,12 @@ export const OrganizationsFilters = ({
                     circular={false}
                     className="text-xs font-medium text-neutral-500 ml-8"
                   >
-                    {entry.count.toLocaleString('pt-PT')}
+                    {entry.count.toLocaleString("pt-PT")}
                   </Pill>
                 </button>
               ))}
               {filteredEntries.length === 0 && (
-                <span className="text-sm text-neutral-500">
-                  Nenhum badge encontrado.
-                </span>
+                <span className="text-sm text-neutral-500">Nenhum badge encontrado.</span>
               )}
             </div>
           </div>

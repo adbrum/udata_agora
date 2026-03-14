@@ -42,6 +42,7 @@ export default async function OrganizationsPage({
             siteMetrics={siteInfo.metrics}
             orgBadges={orgBadges}
             orgBadgeCounts={orgBadgesWithCounts}
+            initialFilters={filters}
         />
     );
 }

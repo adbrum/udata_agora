@@ -15,7 +15,7 @@ import {
 } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { OrganizationsFilters } from './OrganizationsFilters';
-import { APIResponse, OrgBadges, Organization, SiteMetrics } from '@/types/api';
+import { APIResponse, OrgBadges, Organization, OrganizationFilters, SiteMetrics } from '@/types/api';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -27,6 +27,7 @@ interface OrganizationsClientProps {
   siteMetrics: SiteMetrics;
   orgBadges: OrgBadges;
   orgBadgeCounts: Record<string, number>;
+  initialFilters: OrganizationFilters;
 }
 
 const SORT_OPTIONS: Record<string, string> = {
@@ -91,15 +92,13 @@ export default function OrganizationsClient({
   siteMetrics,
   orgBadges,
   orgBadgeCounts,
+  initialFilters,
 }: OrganizationsClientProps) {
   const router = useRouter();
   const { data: organizations, total, page_size } = initialData;
 
-  const searchParams = new URLSearchParams(
-    typeof window !== 'undefined' ? window.location.search : ''
-  );
-  const currentQuery = searchParams.get('q') || '';
-  const currentSort = searchParams.get('sort') || '';
+  const currentQuery = initialFilters.q || '';
+  const currentSort = initialFilters.sort || '';
   const [searchQuery, setSearchQuery] = React.useState(currentQuery);
 
   const currentSortKey = Object.entries(SORT_OPTIONS).find(
@@ -108,9 +107,10 @@ export default function OrganizationsClient({
 
   const buildUrl = React.useCallback(
     (overrides: Record<string, string | null>) => {
-      const params = new URLSearchParams(
-        typeof window !== 'undefined' ? window.location.search : ''
-      );
+      const params = new URLSearchParams();
+      if (initialFilters.q) params.set('q', initialFilters.q);
+      if (initialFilters.badge) params.set('badge', initialFilters.badge);
+      if (initialFilters.sort) params.set('sort', initialFilters.sort);
       for (const [key, value] of Object.entries(overrides)) {
         if (value) {
           params.set(key, value);
@@ -122,7 +122,7 @@ export default function OrganizationsClient({
       const qs = params.toString();
       return `/pages/organizations${qs ? `?${qs}` : ''}`;
     },
-    []
+    [initialFilters]
   );
 
   const handleSearch = React.useCallback(() => {
@@ -185,7 +185,7 @@ export default function OrganizationsClient({
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
             {/* Sidebar */}
             <div className="xl:col-span-4 xl:block p-32 pl-0">
-              <OrganizationsFilters siteMetrics={siteMetrics} orgBadges={orgBadges} orgBadgeCounts={orgBadgeCounts} />
+              <OrganizationsFilters siteMetrics={siteMetrics} orgBadges={orgBadges} orgBadgeCounts={orgBadgeCounts} initialFilters={initialFilters} />
             </div>
 
             {/* Results Area */}
