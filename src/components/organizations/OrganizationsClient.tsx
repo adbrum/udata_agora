@@ -38,16 +38,31 @@ const SORT_OPTIONS: Record<string, string> = {
 
 function SortSelect({
   currentSortKey,
-  onChange,
+  onSortChange,
 }: {
   currentSortKey: string;
-  onChange: (options: { value: string }[]) => void;
+  onSortChange: (value: string) => void;
 }) {
   const [mounted, setMounted] = React.useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const selectRef = React.useRef<any>(null);
+  const lastValue = React.useRef(currentSortKey);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  React.useEffect(() => {
+    if (!mounted) return;
+    const interval = setInterval(() => {
+      const selected = selectRef.current?.selectedOptions?.[0]?.value;
+      if (selected && selected !== lastValue.current) {
+        lastValue.current = selected;
+        onSortChange(selected);
+      }
+    }, 150);
+    return () => clearInterval(interval);
+  }, [mounted, onSortChange]);
 
   if (!mounted) {
     return (
@@ -69,7 +84,7 @@ function SortSelect({
       label="Ordenar por:"
       id="sort-organizations"
       className="selectOrganization"
-      onChange={onChange}
+      ref={selectRef}
     >
       <DropdownSection name="order">
         <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
@@ -133,14 +148,10 @@ export default function OrganizationsClient({
   }, [searchQuery, router, buildUrl]);
 
   const handleSort = React.useCallback(
-    (options: { value: string }[]) => {
-      const selected = options[0]?.value;
-      if (!selected) return;
-      const sortValue = SORT_OPTIONS[selected] || null;
+    (selectedKey: string) => {
+      const sortValue = SORT_OPTIONS[selectedKey] || null;
       if (sortValue === (currentSort || null)) return;
-      setTimeout(() => {
-        router.replace(buildUrl({ sort: sortValue }), { scroll: false });
-      }, 0);
+      router.replace(buildUrl({ sort: sortValue }), { scroll: false });
     },
     [router, buildUrl, currentSort]
   );
@@ -196,7 +207,7 @@ export default function OrganizationsClient({
                     {total.toLocaleString('pt-PT')} Resultados
                   </span>
                   <div className="w-full md:w-auto xl:col-span-6">
-                    <SortSelect currentSortKey={currentSortKey} onChange={handleSort} />
+                    <SortSelect currentSortKey={currentSortKey} onSortChange={handleSort} />
                   </div>
                 </div>
 
