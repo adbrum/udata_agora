@@ -47,6 +47,24 @@ export interface Organization {
   uri: string;
 }
 
+export interface OrganizationSuggestion {
+  id: string;
+  name: string;
+  slug: string;
+  logo: string | null;
+  score: number;
+}
+
+export interface OrgBadges {
+  [kind: string]: string;
+}
+
+export interface OrganizationFilters {
+  q?: string;
+  badge?: string;
+  sort?: string;
+}
+
 export interface Metric {
   nb_hits?: number;
   nb_uniq_visitors?: number;
@@ -114,15 +132,18 @@ export interface Dataservice {
   private: boolean;
 }
 
+export interface SiteMetrics {
+  datasets: number;
+  dataservices?: number;
+  organizations: number;
+  reuses: number;
+  users: number;
+}
+
 export interface SiteInfo {
   id: string;
   title?: string;
-  metrics: {
-    datasets: number;
-    organizations: number;
-    reuses: number;
-    users: number;
-  };
+  metrics: SiteMetrics;
 }
 
 export interface Post {

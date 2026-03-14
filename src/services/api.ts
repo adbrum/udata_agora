@@ -6,12 +6,14 @@ import {
   DatasetFilters,
   DatasetSuggestion,
   Discussion,
-
   FormatSuggestion,
   Frequency,
   GlobalSearchSuggestion,
   License,
+  OrgBadges,
   Organization,
+  OrganizationFilters,
+  OrganizationSuggestion,
   Post,
   Reuse,
   SiteInfo,
@@ -153,11 +155,20 @@ export async function fetchDataset(slug: string): Promise<Dataset> {
 export async function fetchOrganizations(
   page: number = 1,
   pageSize: number = 20,
-  sort?: string
+  filters?: OrganizationFilters
 ): Promise<APIResponse<Organization>> {
   try {
-    let url = `${API_BASE_URL}/organizations/?page=${page}&page_size=${pageSize}`;
-    if (sort) url += `&sort=${encodeURIComponent(sort)}`;
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("page_size", String(pageSize));
+
+    if (filters) {
+      if (filters.q) params.set("q", filters.q);
+      if (filters.badge) params.set("badge", filters.badge);
+      if (filters.sort) params.set("sort", filters.sort);
+    }
+
+    const url = `${API_BASE_URL}/organizations/?${params.toString()}`;
     const res = await fetch(url, {
       cache: "no-store",
     });
@@ -179,6 +190,36 @@ export async function fetchOrganizations(
     };
   }
 }
+export async function suggestOrganizations(
+  query: string,
+  size: number = 5
+): Promise<OrganizationSuggestion[]> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/organizations/suggest/?q=${encodeURIComponent(query)}&size=${size}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) {
+      throw new Error(`Failed to suggest organizations: ${res.statusText}`);
+    }
+    return await res.json();
+  } catch (error) {
+    console.error("Error suggesting organizations:", error);
+    return [];
+  }
+}
+
+export async function fetchOrgBadges(): Promise<OrgBadges> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/organizations/badges/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch org badges: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org badges:", error);
+    return {};
+  }
+}
+
 export async function fetchOrganization(slugOrId: string): Promise<Organization | null> {
   try {
     const res = await fetch(`${API_BASE_URL}/organizations/${slugOrId}/`, {
