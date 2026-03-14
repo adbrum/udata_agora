@@ -384,7 +384,6 @@ export async function fetchReuses(
     const res = await fetch(url, { cache: "no-store" });
 
     if (!res.ok) {
-      console.error(`Failed to fetch reuses: ${res.status} ${res.statusText}`);
       return empty;
     }
 

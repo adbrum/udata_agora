@@ -29,10 +29,8 @@ export default async function ReusesPage({
         ...(resolvedSearchParams?.sort && { sort: resolvedSearchParams.sort }),
     };
     const hasFilters = Object.keys(filters).length > 0;
-    const [initialData, reuseTypes] = await Promise.all([
-        fetchReuses(page, 12, hasFilters ? filters : undefined),
-        fetchReuseTypes(),
-    ]);
+    const initialData = await fetchReuses(page, 12, hasFilters ? filters : undefined);
+    const reuseTypes = await fetchReuseTypes();
 
     return (
         <ReusesClient
