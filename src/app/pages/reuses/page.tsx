@@ -22,14 +22,15 @@ export default async function ReusesPage({
     const resolvedSearchParams = await searchParams;
     const page = Number(resolvedSearchParams?.page) || 1;
     const filters = {
-        q: resolvedSearchParams?.q,
-        type: resolvedSearchParams?.type,
-        tag: resolvedSearchParams?.tag,
-        organization: resolvedSearchParams?.organization,
-        sort: resolvedSearchParams?.sort,
+        ...(resolvedSearchParams?.q && { q: resolvedSearchParams.q }),
+        ...(resolvedSearchParams?.type && { type: resolvedSearchParams.type }),
+        ...(resolvedSearchParams?.tag && { tag: resolvedSearchParams.tag }),
+        ...(resolvedSearchParams?.organization && { organization: resolvedSearchParams.organization }),
+        ...(resolvedSearchParams?.sort && { sort: resolvedSearchParams.sort }),
     };
+    const hasFilters = Object.keys(filters).length > 0;
     const [initialData, reuseTypes] = await Promise.all([
-        fetchReuses(page, 12, filters),
+        fetchReuses(page, 12, hasFilters ? filters : undefined),
         fetchReuseTypes(),
     ]);
 
