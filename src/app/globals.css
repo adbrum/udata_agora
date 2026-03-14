@@ -766,7 +766,6 @@ body:has(.admin-wrapper) footer:last-child {
 .admin-side-nav__icon svg,
 .admin-side-nav__icon svg path {
   fill: var(--color-white);
-  stroke: var(--color-white);
   color: var(--color-white);
 }
 
@@ -1050,7 +1049,7 @@ body:has(.admin-wrapper) footer:last-child {
   margin-top: 32px;
 }
 
-.datasets-new-page__cards > * {
+.datasets-new-page__cards>* {
   flex: 1;
 }
 
@@ -1092,11 +1091,11 @@ body:has(.admin-wrapper) footer:last-child {
 }
 
 /* Active state for "Autenticar" button on login/register pages (only when NOT logged in) */
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper {
   position: relative;
 }
 
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper::after {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -1106,18 +1105,18 @@ header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-l
   background-color: var(--color-primary-600);
 }
 
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .children-wrapper {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper .children-wrapper {
   color: var(--color-primary-600);
 }
 
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper .line {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper .icon-wrapper .line {
   display: none;
 }
 
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper .solid {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper .icon-wrapper .solid {
   display: block;
 }
 
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper svg {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper .icon-wrapper svg {
   fill: var(--color-primary-600);
 }
