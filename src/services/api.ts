@@ -16,6 +16,7 @@ import {
   Reuse,
   SiteInfo,
   TagSuggestion,
+  UserRef,
 } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
@@ -72,9 +73,25 @@ export async function register(
 /**
  * Perform logout
  */
+/**
+ * Perform logout
+ */
 export async function logout(): Promise<void> {
   const res = await fetch("/logout/", { method: "GET" });
   if (!res.ok) throw new Error("Logout failed");
+}
+
+/**
+ * Fetch the currently authenticated user profile
+ */
+export async function fetchCurrentUser(): Promise<UserRef | null> {
+  try {
+    const res = await fetch("/me", { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
 }
 
 export async function fetchDatasets(

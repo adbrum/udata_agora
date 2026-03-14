@@ -13,21 +13,32 @@ import {
   Area,
   Languages,
   Language,
+  Authenticated,
+  AuthenticatedHeader,
+  AuthenticatedBody,
+  AuthenticatedBodyLink,
+  AuthenticatedFooter,
+  AuthenticatedFooterAction,
   Unauthenticated,
   UnauthenticatedLink,
   NavigationBar,
   NavigationLink,
   NavigationRoot,
   Button,
+  usePopupContext,
 } from '@ama-pt/agora-design-system';
 import SearchDropdown from '@/components/search/SearchDropdown';
 import { HeaderCard } from '@/components/HeaderCard';
+import { LogoutPopupContent } from '@/components/LogoutPopupContent';
+import { useAuth } from '@/context/AuthContext';
 
 export const Header = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const headerRef = useRef<any>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const { show: showPopup } = usePopupContext();
+  const { user } = useAuth();
 
   const [selectedLanguage, setSelectedLanguage] = useState('pt');
   const [submenu, setSubmenu] = useState<string | null>(null);
@@ -398,15 +409,82 @@ export const Header = () => {
             />
           </div>
 
-          <Unauthenticated label="Inscrever-se" aria-label="Registar">
-            <UnauthenticatedLink
-              hasIcon
-              leadingIcon="agora-line-user"
-              leadingIconHover="agora-solid-user"
+          {user ? (
+            <Authenticated
+              avatarType={user.avatar_thumbnail ? "image" : "initials"}
+              srcPath={
+                (user.avatar_thumbnail ||
+                  `${user.first_name.charAt(0).toUpperCase()}${user.last_name.charAt(0).toUpperCase()}`) as unknown as undefined
+              }
+              hasBadge
+              badgePosition="top-right"
+              alt={`${user.first_name} ${user.last_name}`}
+              information={`${user.first_name} ${user.last_name}`}
             >
-              <Link href="/pages/loginregister">Inscrever-se</Link>
-            </UnauthenticatedLink>
-          </Unauthenticated>
+              <AuthenticatedHeader>
+                {user.first_name} {user.last_name}
+              </AuthenticatedHeader>
+              <AuthenticatedBody>
+                <AuthenticatedBodyLink
+                  hasIcon
+                  leadingIcon="agora-line-user"
+                  leadingIconHover="agora-solid-user"
+                >
+                  <a href="/pages/admin/perfil">O meu perfil</a>
+                </AuthenticatedBodyLink>
+                <AuthenticatedBodyLink
+                  hasIcon
+                  leadingIcon="agora-line-settings"
+                  leadingIconHover="agora-solid-settings"
+                >
+                  <a href="/pages/admin/definicoes">As minhas definições</a>
+                </AuthenticatedBodyLink>
+                <AuthenticatedBodyLink
+                  hasIcon
+                  leadingIcon="agora-line-mega-phone"
+                  leadingIconHover="agora-solid-mega-phone"
+                >
+                  <a href="/pages/admin/notificacoes">Notificações</a>
+                </AuthenticatedBodyLink>
+              </AuthenticatedBody>
+              <AuthenticatedFooter>
+                <AuthenticatedFooterAction
+                  hasIcon
+                  leadingIcon="agora-line-trash"
+                  leadingIconHover="agora-solid-trash"
+                  variant="danger"
+                  appearance="link"
+                >
+                  Eliminar conta
+                </AuthenticatedFooterAction>
+                <AuthenticatedFooterAction
+                  hasIcon
+                  leadingIcon="agora-line-log-out"
+                  leadingIconHover="agora-solid-log-out"
+                  appearance="link"
+                  onClick={() =>
+                    showPopup(<LogoutPopupContent />, {
+                      title: "Terminar sessão",
+                      closeAriaLabel: "Fechar",
+                      dimensions: "s",
+                    })
+                  }
+                >
+                  Terminar sessão
+                </AuthenticatedFooterAction>
+              </AuthenticatedFooter>
+            </Authenticated>
+          ) : (
+            <Unauthenticated label="Inscrever-se" aria-label="Registar">
+              <UnauthenticatedLink
+                hasIcon
+                leadingIcon="agora-line-user"
+                leadingIconHover="agora-solid-user"
+              >
+                <Link href="/pages/loginregister">Inscrever-se</Link>
+              </UnauthenticatedLink>
+            </Unauthenticated>
+          )}
         </GeneralBar>
 
         <NavigationBar
