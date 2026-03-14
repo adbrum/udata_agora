@@ -2,13 +2,14 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Sidebar, SidebarItem, Checkbox, InputSearch, Icon } from '@ama-pt/agora-design-system';
+import { Sidebar, SidebarItem, InputSearch, Icon, Pill } from '@ama-pt/agora-design-system';
 import { OrgBadges, SiteMetrics } from '@/types/api';
 import { CategoryToggles } from '@/components/CategoryToggles';
 
 interface OrganizationsFiltersProps {
   siteMetrics: SiteMetrics;
   orgBadges: OrgBadges;
+  orgBadgeCounts: Record<string, number>;
 }
 
 const BADGE_LABELS_PT: Record<string, string> = {
@@ -19,7 +20,11 @@ const BADGE_LABELS_PT: Record<string, string> = {
   'public-service': 'Serviço Público',
 };
 
-export const OrganizationsFilters = ({ siteMetrics, orgBadges }: OrganizationsFiltersProps) => {
+export const OrganizationsFilters = ({
+  siteMetrics,
+  orgBadges,
+  orgBadgeCounts,
+}: OrganizationsFiltersProps) => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -31,6 +36,7 @@ export const OrganizationsFilters = ({ siteMetrics, orgBadges }: OrganizationsFi
   const entries = Object.keys(orgBadges).map((kind) => ({
     kind,
     label: BADGE_LABELS_PT[kind] || orgBadges[kind],
+    count: orgBadgeCounts[kind] ?? 0,
   }));
 
   const filteredEntries = searchQuery.trim()
@@ -39,14 +45,14 @@ export const OrganizationsFilters = ({ siteMetrics, orgBadges }: OrganizationsFi
       )
     : entries;
 
-  const handleBadgeChange = (kind: string, checked: boolean) => {
+  const handleBadgeClick = (kind: string) => {
     const newParams = new URLSearchParams(
       typeof window !== 'undefined' ? window.location.search : ''
     );
-    if (checked) {
-      newParams.set('badge', kind);
-    } else {
+    if (activeBadge === kind) {
       newParams.delete('badge');
+    } else {
+      newParams.set('badge', kind);
     }
     newParams.set('page', '1');
     const qs = newParams.toString();
@@ -89,18 +95,28 @@ export const OrganizationsFilters = ({ siteMetrics, orgBadges }: OrganizationsFi
                 />
               </div>
             )}
-            <div className="flex flex-col gap-12 mt-16 pb-16">
+            <div className="flex flex-col gap-8 mt-16 pb-16">
               {filteredEntries.map((entry) => (
-                <Checkbox
+                <button
                   key={entry.kind}
-                  label={entry.label}
-                  value={entry.kind}
-                  checked={activeBadge === entry.kind}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleBadgeChange(entry.kind, e.target.checked)
-                  }
-                  className="font-bold"
-                />
+                  type="button"
+                  onClick={() => handleBadgeClick(entry.kind)}
+                  className={`flex items-center justify-between w-full px-12 py-8 rounded-8 text-sm transition-colors cursor-pointer ${
+                    activeBadge === entry.kind
+                      ? 'bg-primary-100 text-primary-700 font-bold'
+                      : 'text-neutral-900 font-bold hover:bg-neutral-100'
+                  }`}
+                >
+                  <span>{entry.label}</span>
+                  <Pill
+                    variant="neutral"
+                    appearance="outline"
+                    circular={false}
+                    className="text-xs font-medium text-neutral-500 ml-8"
+                  >
+                    {entry.count.toLocaleString('pt-PT')}
+                  </Pill>
+                </button>
               ))}
               {filteredEntries.length === 0 && (
                 <span className="text-sm text-neutral-500">

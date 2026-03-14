@@ -26,6 +26,7 @@ interface OrganizationsClientProps {
   currentPage: number;
   siteMetrics: SiteMetrics;
   orgBadges: OrgBadges;
+  orgBadgeCounts: Record<string, number>;
 }
 
 const SORT_OPTIONS: Record<string, string> = {
@@ -39,6 +40,7 @@ export default function OrganizationsClient({
   currentPage,
   siteMetrics,
   orgBadges,
+  orgBadgeCounts,
 }: OrganizationsClientProps) {
   const router = useRouter();
   const { data: organizations, total, page_size } = initialData;
@@ -133,7 +135,7 @@ export default function OrganizationsClient({
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
             {/* Sidebar */}
             <div className="xl:col-span-4 xl:block p-32 pl-0">
-              <OrganizationsFilters siteMetrics={siteMetrics} orgBadges={orgBadges} />
+              <OrganizationsFilters siteMetrics={siteMetrics} orgBadges={orgBadges} orgBadgeCounts={orgBadgeCounts} />
             </div>
 
             {/* Results Area */}
