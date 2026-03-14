@@ -14,6 +14,7 @@ import {
   TabBody,
   CardArticle,
   CardLinks,
+  SearchPagination,
 } from '@ama-pt/agora-design-system';
 import { Reuse, Dataset } from '@/types/api';
 import { fetchDataset } from '@/services/api';
@@ -72,33 +73,19 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
     datasetsPage * datasetsPageSize
   );
 
-  const renderPagination = (
-    currentPage: number,
-    total: number,
-    pageSize: number,
-    onPageChange: (page: number) => void
-  ) => {
-    const totalPages = Math.ceil(total / pageSize);
-    if (totalPages <= 1) return null;
+  const renderDatasetsPagination = () => {
+    if (totalDatasetsPages <= 1) return null;
     return (
-      <div className="flex items-center justify-center gap-16 mt-32">
-        <button
-          className="px-16 py-8 text-sm font-medium text-primary-600 border border-primary-300 rounded hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
-          disabled={currentPage <= 1}
-          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-        >
-          Anterior
-        </button>
-        <span className="text-sm text-neutral-700">
-          Página {currentPage} de {totalPages}
-        </span>
-        <button
-          className="px-16 py-8 text-sm font-medium text-primary-600 border border-primary-300 rounded hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
-          disabled={currentPage >= totalPages}
-          onClick={() => onPageChange(currentPage + 1)}
-        >
-          Seguinte
-        </button>
+      <div className="mt-32 flex justify-center">
+        <SearchPagination
+          totalPages={totalDatasetsPages}
+          onChange={(page: number) => setDatasetsPage(page + 1)}
+          label="Paginação"
+          nextPageAriaLabel="Próxima página"
+          previousPageAriaLabel="Página anterior"
+          boundaryCount={1}
+          siblingCount={1}
+        />
       </div>
     );
   };
@@ -434,12 +421,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                     </div>
                   ))}
                 </div>
-                {renderPagination(
-                  datasetsPage,
-                  fullDatasets.length,
-                  datasetsPageSize,
-                  setDatasetsPage
-                )}
+                {renderDatasetsPagination()}
                 </>
               ) : (
                 <div className="text-neutral-500">
