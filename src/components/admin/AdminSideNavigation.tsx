@@ -44,6 +44,11 @@ const navItems: NavItem[] = [
     href: "/pages/admin/statistics",
     customIcon: "/Icons/graphic_circle.svg",
   },
+  {
+    label: "dados.gov",
+    href: "/",
+    icon: "agora-line-plane",
+  },
 ];
 
 export function AdminSideNavigation() {
