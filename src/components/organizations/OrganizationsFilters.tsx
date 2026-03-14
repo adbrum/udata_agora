@@ -119,6 +119,37 @@ export const OrganizationsFilters = ({ siteMetrics }: OrganizationsFiltersProps)
             </Pill>
           </div>
         </Toggle>
+
+        {/* Organizações */}
+        <Toggle
+          id="organizacoes"
+          name="org-filter-type"
+          value="organizacoes"
+          appearance="icon"
+          variant="primary"
+          hasIcon
+          leadingIcon="agora-line-building"
+          leadingIconHover="agora-solid-building"
+          checked={activeTab === 'organizacoes'}
+          onChange={() => setActiveTab('organizacoes')}
+          iconOnly={false}
+          fullWidth={true}
+          className="w-full"
+        >
+          <div className="flex items-center gap-12 font-bold text-sm">
+            <span className={activeTab === 'organizacoes' ? 'text-primary-600 font-bold' : 'text-neutral-900 font-bold'}>
+              Organizações
+            </span>
+            <Pill
+              variant="neutral"
+              appearance="outline"
+              circular={false}
+              className="text-xs font-medium text-neutral-500 ml-16"
+            >
+              {siteMetrics.organizations.toLocaleString('pt-PT')}
+            </Pill>
+          </div>
+        </Toggle>
       </div>
 
       <h2 className="font-bold text-xl text-neutral-900 mt-64 mb-32">Filtros</h2>
