@@ -8,6 +8,14 @@ import {
   Dropdown,
   DropdownSection,
   DropdownOption,
+  InputText,
+  InputTextArea,
+  DragAndDropUploader,
+  StatusCard,
+  Tabs,
+  Tab,
+  TabHeader,
+  TabBody,
 } from "@ama-pt/agora-design-system";
 
 export default function ProfileClient() {
@@ -104,6 +112,157 @@ export default function ProfileClient() {
             </Dropdown>
           </div>
         </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="mt-[32px]">
+        <Tabs>
+          <Tab active>
+            <TabHeader>Perfil</TabHeader>
+            <TabBody>
+              <div className="datasets-admin-page__form mt-[24px]">
+                <h2 className="datasets-admin-page__section-title">EDITAR PERFIL</h2>
+
+                <div className="datasets-admin-page__fields-group">
+                  <div className="flex gap-[18px]">
+                    <InputText
+                      label="Primeiro nome *"
+                      placeholder="Placeholder"
+                      id="first-name"
+                    />
+                    <InputText
+                      label="Nome *"
+                      placeholder="Placeholder"
+                      id="last-name"
+                    />
+                  </div>
+
+                  <InputTextArea
+                    label="Biografia"
+                    placeholder="Placeholder"
+                    id="biography"
+                    rows={4}
+                  />
+
+                  <InputText
+                    label="Site da Internet"
+                    placeholder="Placeholder"
+                    id="website"
+                  />
+
+                  <div>
+                    <span className="text-primary-900 text-base font-medium leading-7">
+                      Foto de perfil
+                    </span>
+                    <div className="mt-2">
+                      <DragAndDropUploader
+                        dragAndDropLabel="Arraste e solte os ficheiros"
+                        separatorLabel="ou"
+                        inputLabel="Navegar"
+                        removeFileButtonLabel="Remover ficheiro"
+                        replaceFileButtonLabel="Substituir ficheiro"
+                        extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                        accept=".jpg,.jpeg,.png"
+                        maxSize={4194304}
+                        maxCount={1}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-end gap-[16px]">
+                    <div className="flex-1">
+                      <InputText
+                        label="Chave de API"
+                        placeholder="Placeholder"
+                        id="api-key"
+                      />
+                    </div>
+                    <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
+                      Gerar
+                    </Button>
+                  </div>
+
+                  <div className="flex items-end gap-[16px]">
+                    <div className="flex-1">
+                      <InputText
+                        label="Endereço de email"
+                        placeholder="ines.correia@babelgroup.com"
+                        id="email"
+                      />
+                    </div>
+                    <Button appearance="outline" variant="neutral" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
+                      Alterar endereço de e-mail
+                    </Button>
+                  </div>
+
+                  <div className="flex items-end gap-[16px]">
+                    <div className="flex-1">
+                      <InputText
+                        label="Senha"
+                        placeholder="**********"
+                        id="password"
+                        type="password"
+                      />
+                    </div>
+                    <Button appearance="outline" variant="neutral" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
+                      Alterar sua senha
+                    </Button>
+                  </div>
+                </div>
+
+                <StatusCard
+                  type="warning"
+                  description={
+                    <>
+                      <strong>Autenticação de dois fatores</strong>
+                      <br />
+                      Configure a autenticação de dois fatores.
+                    </>
+                  }
+                />
+
+                <div className="flex justify-end mt-[8px]">
+                  <Button appearance="outline" variant="neutral" hasIcon leadingIcon="agora-line-settings" leadingIconHover="agora-solid-settings">
+                    Configure a autenticação de dois fatores.
+                  </Button>
+                </div>
+
+                <StatusCard
+                  type="danger"
+                  description={
+                    <>
+                      <strong>Excluir conta</strong>
+                      <br />
+                      Atenção, esta ação não pode ser cancelada.
+                    </>
+                  }
+                />
+
+                <div className="flex justify-end mt-[8px]">
+                  <Button appearance="outline" variant="danger" hasIcon leadingIcon="agora-line-delete" leadingIconHover="agora-solid-delete">
+                    EXCLUIR
+                  </Button>
+                </div>
+
+                <div className="flex justify-end mt-[16px]">
+                  <Button variant="primary" hasIcon leadingIcon="agora-line-save" leadingIconHover="agora-solid-save">
+                    Para salvaguardar
+                  </Button>
+                </div>
+              </div>
+            </TabBody>
+          </Tab>
+          <Tab>
+            <TabHeader>Atividades</TabHeader>
+            <TabBody>
+              <div className="mt-[24px]">
+                <p className="text-neutral-700 text-base">
+                  Nenhuma atividade registada.
+                </p>
+              </div>
+            </TabBody>
+          </Tab>
+        </Tabs>
       </div>
     </div>
   );
