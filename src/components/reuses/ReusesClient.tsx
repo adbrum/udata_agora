@@ -21,7 +21,7 @@ import { pt } from 'date-fns/locale';
 import PageBanner from '@/components/PageBanner';
 
 const SORT_OPTIONS: Record<string, string> = {
-  reutilizacoes: '-reuses',
+  relevancia: '',
   recentes: '-created',
   visualizados: '-views',
   seguidores: '-followers',
@@ -68,7 +68,7 @@ function SortSelect({
               ? 'Mais visualizados'
               : currentSortKey === 'seguidores'
                 ? 'Mais seguidos'
-                : 'Número de reutilizações'}
+                : 'Por relevância'}
         </div>
       </div>
     );
@@ -82,8 +82,8 @@ function SortSelect({
       ref={selectRef}
     >
       <DropdownSection name="order">
-        <DropdownOption value="reutilizacoes" selected={currentSortKey === 'reutilizacoes'}>
-          Número de reutilizações
+        <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
+          Por relevância
         </DropdownOption>
         <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
           Mais recentes
@@ -228,10 +228,9 @@ export default function ReusesClient({
     const reverseMap: Record<string, string> = {
       '-created': 'recentes',
       '-views': 'visualizados',
-      '-reuses': 'reutilizacoes',
       '-followers': 'seguidores',
     };
-    return reverseMap[initialFilters?.sort || ''] || 'reutilizacoes';
+    return reverseMap[initialFilters?.sort || ''] || 'relevancia';
   })();
 
   const hasActiveFilters = !!(
