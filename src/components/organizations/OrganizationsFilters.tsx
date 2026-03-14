@@ -128,8 +128,8 @@ export const OrganizationsFilters = ({ siteMetrics }: OrganizationsFiltersProps)
           appearance="icon"
           variant="primary"
           hasIcon
-          leadingIcon="agora-line-building"
-          leadingIconHover="agora-solid-building"
+          leadingIcon="agora-line-buildings"
+          leadingIconHover="agora-solid-buildings"
           checked={activeTab === 'organizacoes'}
           onChange={() => setActiveTab('organizacoes')}
           iconOnly={false}
