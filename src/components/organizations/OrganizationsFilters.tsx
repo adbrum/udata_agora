@@ -82,14 +82,15 @@ export const OrganizationsFilters = ({ siteMetrics, orgBadges }: OrganizationsFi
               {filteredEntries.map(([kind, label]) => (
                 <Checkbox
                   key={kind}
-                  label={label}
                   value={kind}
                   checked={activeBadge === kind}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleBadgeChange(kind, e.target.checked)
                   }
                   className="font-bold"
-                />
+                >
+                  {label}
+                </Checkbox>
               ))}
               {filteredEntries.length === 0 && (
                 <span className="text-sm text-neutral-500">
