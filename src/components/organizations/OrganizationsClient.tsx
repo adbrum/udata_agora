@@ -35,14 +35,33 @@ const SORT_OPTIONS: Record<string, string> = {
   recentes: '-last_modified',
 };
 
-const SortSelect = React.memo(function SortSelect({
+function SortSelect({
   currentSortKey,
   onChange,
 }: {
   currentSortKey: string;
   onChange: (options: { value: string }[]) => void;
 }) {
-  const [initialKey] = React.useState(currentSortKey);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="selectOrganization">
+        <label className="text-s-regular text-neutral-700 mb-4 block">
+          Ordenar por:
+        </label>
+        <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
+          {currentSortKey === 'alfabetica' ? 'Ordem alfabética'
+            : currentSortKey === 'recentes' ? 'Mais recentes'
+            : 'Por relevância'}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <InputSelect
@@ -52,19 +71,19 @@ const SortSelect = React.memo(function SortSelect({
       onChange={onChange}
     >
       <DropdownSection name="order">
-        <DropdownOption value="relevancia" selected={initialKey === 'relevancia'}>
+        <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
           Por relevância
         </DropdownOption>
-        <DropdownOption value="alfabetica" selected={initialKey === 'alfabetica'}>
+        <DropdownOption value="alfabetica" selected={currentSortKey === 'alfabetica'}>
           Ordem alfabética
         </DropdownOption>
-        <DropdownOption value="recentes" selected={initialKey === 'recentes'}>
+        <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
           Mais recentes
         </DropdownOption>
       </DropdownSection>
     </InputSelect>
   );
-});
+}
 
 export default function OrganizationsClient({
   initialData,
