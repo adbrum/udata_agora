@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -12,7 +12,6 @@ import {
   DropdownOption,
   Icon,
   CardNoResults,
-  DropdownOptionProps,
 } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { APIResponse, Reuse, ReuseFilters, ReuseType } from '@/types/api';
@@ -20,6 +19,143 @@ import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
 import PageBanner from '@/components/PageBanner';
+
+const SORT_OPTIONS: Record<string, string> = {
+  reutilizacoes: '-reuses',
+  recentes: '-created',
+  visualizados: '-views',
+  seguidores: '-followers',
+};
+
+function SortSelect({
+  currentSortKey,
+  onSortChange,
+}: {
+  currentSortKey: string;
+  onSortChange: (value: string) => void;
+}) {
+  const [mounted, setMounted] = React.useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const selectRef = React.useRef<any>(null);
+  const lastValue = React.useRef(currentSortKey);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    if (!mounted) return;
+    const interval = setInterval(() => {
+      const selected = selectRef.current?.selectedOptions?.[0]?.value;
+      if (selected && selected !== lastValue.current) {
+        lastValue.current = selected;
+        onSortChange(selected);
+      }
+    }, 150);
+    return () => clearInterval(interval);
+  }, [mounted, onSortChange]);
+
+  if (!mounted) {
+    return (
+      <div className="selectReuse">
+        <label className="text-s-regular text-neutral-700 mb-4 block">
+          Ordenar por :
+        </label>
+        <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
+          {currentSortKey === 'recentes'
+            ? 'Mais recentes'
+            : currentSortKey === 'visualizados'
+              ? 'Mais visualizados'
+              : currentSortKey === 'seguidores'
+                ? 'Mais seguidos'
+                : 'Número de reutilizações'}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <InputSelect
+      label="Ordenar por :"
+      id="sort-reuses"
+      className="selectReuse"
+      ref={selectRef}
+    >
+      <DropdownSection name="order">
+        <DropdownOption value="reutilizacoes" selected={currentSortKey === 'reutilizacoes'}>
+          Número de reutilizações
+        </DropdownOption>
+        <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
+          Mais recentes
+        </DropdownOption>
+        <DropdownOption value="visualizados" selected={currentSortKey === 'visualizados'}>
+          Mais visualizados
+        </DropdownOption>
+        <DropdownOption value="seguidores" selected={currentSortKey === 'seguidores'}>
+          Mais seguidos
+        </DropdownOption>
+      </DropdownSection>
+    </InputSelect>
+  );
+}
+
+function TypeSelect({
+  currentType,
+  reuseTypes,
+  onTypeChange,
+}: {
+  currentType: string;
+  reuseTypes: ReuseType[];
+  onTypeChange: (value: string) => void;
+}) {
+  const [mounted, setMounted] = React.useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const selectRef = React.useRef<any>(null);
+  const lastValue = React.useRef(currentType);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    if (!mounted) return;
+    const interval = setInterval(() => {
+      const selected = selectRef.current?.selectedOptions?.[0]?.value;
+      if (selected !== undefined && selected !== lastValue.current) {
+        lastValue.current = selected;
+        onTypeChange(selected);
+      }
+    }, 150);
+    return () => clearInterval(interval);
+  }, [mounted, onTypeChange]);
+
+  if (!mounted) {
+    const label = reuseTypes.find((rt) => rt.id === currentType)?.label || 'Todos os tipos';
+    return (
+      <div>
+        <label className="text-s-regular text-neutral-700 mb-4 block">Tipo:</label>
+        <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
+          {label}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <InputSelect label="Tipo:" id="filter-type" ref={selectRef}>
+      <DropdownSection name="types">
+        <DropdownOption value="" selected={!currentType}>
+          Todos os tipos
+        </DropdownOption>
+        {reuseTypes.map((rt) => (
+          <DropdownOption key={rt.id} value={rt.id} selected={currentType === rt.id}>
+            {rt.label}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    </InputSelect>
+  );
+}
 
 interface ReusesClientProps {
   initialData: APIResponse<Reuse>;
@@ -37,11 +173,6 @@ export default function ReusesClient({
   const router = useRouter();
   const { data: reuses, total, page_size } = initialData;
   const [searchQuery, setSearchQuery] = useState(initialFilters?.q || '');
-  const mountedRef = useRef(false);
-
-  useEffect(() => {
-    mountedRef.current = true;
-  }, []);
 
   const buildUrl = useCallback(
     (overrides: Partial<ReuseFilters> & { page?: number } = {}) => {
@@ -72,13 +203,7 @@ export default function ReusesClient({
 
   const handleSortChange = useCallback(
     (value: string) => {
-      const sortMap: Record<string, string> = {
-        recentes: '-created',
-        visualizados: '-views',
-        reutilizacoes: '-reuses',
-        seguidores: '-followers',
-      };
-      router.push(buildUrl({ sort: sortMap[value] || undefined, page: 1 }));
+      router.push(buildUrl({ sort: SORT_OPTIONS[value] || undefined, page: 1 }));
     },
     [router, buildUrl]
   );
@@ -159,23 +284,11 @@ export default function ReusesClient({
               <div className="w-full md:w-auto xl:col-span-5 flex items-end gap-16 justify-end">
                 {reuseTypes.length > 0 && (
                   <div className="flex-grow max-w-[200px]">
-                    <InputSelect
-                      label="Tipo:"
-                      id="filter-type"
-                      defaultValue={initialFilters?.type || ''}
-                      onChange={(options: DropdownOptionProps[]) => {
-                        if (mountedRef.current) handleTypeFilter(options[0]?.value || '');
-                      }}
-                    >
-                      <DropdownSection name="types">
-                        <DropdownOption value="">Todos os tipos</DropdownOption>
-                        {reuseTypes.map((rt) => (
-                          <DropdownOption key={rt.id} value={rt.id}>
-                            {rt.label}
-                          </DropdownOption>
-                        ))}
-                      </DropdownSection>
-                    </InputSelect>
+                    <TypeSelect
+                      currentType={initialFilters?.type || ''}
+                      reuseTypes={reuseTypes}
+                      onTypeChange={handleTypeFilter}
+                    />
                   </div>
                 )}
                 {hasActiveFilters && (
@@ -191,24 +304,10 @@ export default function ReusesClient({
                   </Button>
                 )}
                 <div className="flex-grow max-w-[240px]">
-                  <InputSelect
-                    label="Ordenar por :"
-                    id="sort-reuses"
-                    defaultValue={sortDefault}
-                    className="selectReuse"
-                    onChange={(options: DropdownOptionProps[]) => {
-                      if (mountedRef.current) handleSortChange(options[0]?.value || 'reutilizacoes');
-                    }}
-                  >
-                    <DropdownSection name="order">
-                      <DropdownOption value="reutilizacoes">
-                        Número de reutilizações
-                      </DropdownOption>
-                      <DropdownOption value="recentes">Mais recentes</DropdownOption>
-                      <DropdownOption value="visualizados">Mais visualizados</DropdownOption>
-                      <DropdownOption value="seguidores">Mais seguidos</DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
+                  <SortSelect
+                    currentSortKey={sortDefault}
+                    onSortChange={handleSortChange}
+                  />
                 </div>
               </div>
             </div>
