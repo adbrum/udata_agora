@@ -76,9 +76,9 @@ export default function DatasetsAdminClient() {
       <div className="datasets-admin-page__breadcrumb">
         <Breadcrumb
           items={[
-            { label: "Home", url: "/" },
-            { label: "APIs", url: "/pages/admin/dataservices/new" },
-            { label: "Formulário de inscrição", url: "#" },
+            { label: "Administração", url: "/pages/admin" },
+            { label: "Lopes Inês", url: "#" },
+            { label: "Conjuntos de dados", url: "/pages/admin/datasets" },
           ]}
         />
       </div>

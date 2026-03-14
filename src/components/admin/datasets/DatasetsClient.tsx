@@ -60,6 +60,7 @@ export default function DatasetsClient() {
             hasAnchor
             valueAnchor="Publicar em data.gouv.fr"
             anchorHref="/pages/admin/datasets/new"
+            anchorTarget="_self"
           />
         </div>
       </div>

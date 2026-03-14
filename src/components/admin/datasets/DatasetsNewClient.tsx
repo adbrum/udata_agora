@@ -9,9 +9,9 @@ export default function DatasetsNewClient() {
       <div className="datasets-admin-page__breadcrumb">
         <Breadcrumb
           items={[
-            { label: "Home", url: "/" },
-            { label: "Conjunto de dados", url: "/pages/admin/datasets" },
-            { label: "Publicar em dados.gov", url: "#" },
+            { label: "Administração", url: "/pages/admin" },
+            { label: "Lopes Inês", url: "#" },
+            { label: "Conjuntos de dados", url: "/pages/admin/datasets" },
           ]}
         />
       </div>
