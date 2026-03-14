@@ -16,10 +16,8 @@ import {
   InputPassword,
 } from "@ama-pt/agora-design-system";
 import { fetchCsrfToken, login } from "@/services/api";
-import { useRouter } from "next/navigation";
 
 export default function LoginClient() {
-  const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
   const [isHoveredEidas, setIsHoveredEidas] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,9 +71,8 @@ export default function LoginClient() {
       // 3. Login
       const response = await login(payload);
 
-      // 4. Redirect on success
-      router.push(response.redirect || "/");
-      router.refresh();
+      // 4. Redirect on success (full reload to update auth state)
+      window.location.href = response.redirect || "/";
     } catch (err: any) {
       console.error("Login error:", err);
       setError(err.message || "Ocorreu um erro ao tentar iniciar sessão.");

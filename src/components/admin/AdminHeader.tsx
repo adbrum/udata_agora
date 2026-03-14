@@ -17,9 +17,12 @@ import {
   AuthenticatedFooter,
   AuthenticatedFooterAction,
 } from "@ama-pt/agora-design-system";
+import { useAuth } from "@/context/AuthContext";
+import { logout } from "@/services/api";
 
 export function AdminHeader() {
   const [currentLang, setCurrentLang] = useState("pt");
+  const { user } = useAuth();
 
   return (
     <div className="admin-header">
@@ -44,14 +47,19 @@ export function AdminHeader() {
             </DefaultSearch>
           </Search>
           <Authenticated
-            avatarType="initials"
-            srcPath={"IC" as unknown as undefined}
+            avatarType={user?.avatar_thumbnail ? "image" : "initials"}
+            srcPath={
+              (user?.avatar_thumbnail ||
+                `${user?.first_name.charAt(0).toUpperCase() ?? ""}${user?.last_name.charAt(0).toUpperCase() ?? ""}`) as unknown as undefined
+            }
             hasBadge
             badgePosition="top-right"
-            alt="Inês Correia"
-            information="Inês Correia"
+            alt={`${user?.first_name ?? ""} ${user?.last_name ?? ""}`}
+            information={`${user?.first_name ?? ""} ${user?.last_name ?? ""}`}
           >
-            <AuthenticatedHeader>Inês Correia</AuthenticatedHeader>
+            <AuthenticatedHeader>
+              {user?.first_name} {user?.last_name}
+            </AuthenticatedHeader>
             <AuthenticatedBody>
               <AuthenticatedBodyLink
                 hasIcon
@@ -90,6 +98,10 @@ export function AdminHeader() {
                 leadingIcon="agora-line-log-out"
                 leadingIconHover="agora-solid-log-out"
                 appearance="link"
+                onClick={async () => {
+                  await logout();
+                  window.location.href = "/";
+                }}
               >
                 Terminar sessão
               </AuthenticatedFooterAction>

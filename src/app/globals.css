@@ -1084,3 +1084,40 @@ body:has(.admin-wrapper) footer:last-child {
     padding: 0 24px;
   }
 }
+
+
+/* Ensure popup dialog appears above header and authenticated panel overlays */
+.agora-dialog {
+  z-index: 9999 !important;
+}
+
+/* Active state for "Autenticar" button on login/register pages (only when NOT logged in) */
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper {
+  position: relative;
+}
+
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  background-color: var(--color-primary-600);
+}
+
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .children-wrapper {
+  color: var(--color-primary-600);
+}
+
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper .line {
+  display: none;
+}
+
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper .solid {
+  display: block;
+}
+
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper svg {
+  fill: var(--color-primary-600);
+}

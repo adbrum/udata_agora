@@ -19,10 +19,12 @@ export async function POST(request: NextRequest) {
 
   const responseHeaders = new Headers();
 
-  // Forward Set-Cookie headers from backend
+  // Forward Set-Cookie headers from backend, stripping Domain so cookies
+  // are scoped to the frontend origin (not the backend's domain)
   const setCookies = backendResponse.headers.getSetCookie();
   for (const cookie of setCookies) {
-    responseHeaders.append("Set-Cookie", cookie);
+    const cleaned = cookie.replace(/;\s*Domain=[^;]*/i, "");
+    responseHeaders.append("Set-Cookie", cleaned);
   }
 
   // 302 = login succeeded (backend redirects to /)

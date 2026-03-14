@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import NextImage from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
@@ -15,6 +16,7 @@ import {
   Language,
   Unauthenticated,
   UnauthenticatedLink,
+  Icon,
   NavigationBar,
   NavigationLink,
   NavigationRoot,
@@ -22,12 +24,41 @@ import {
 } from '@ama-pt/agora-design-system';
 import SearchDropdown from '@/components/search/SearchDropdown';
 import { HeaderCard } from '@/components/HeaderCard';
+import { useAuth } from '@/context/AuthContext';
+import { logout } from '@/services/api';
 
 export const Header = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const headerRef = useRef<any>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  // Create a DOM node for the "Desconectar" portal
+  const [logoutPortalNode, setLogoutPortalNode] = useState<HTMLLIElement | null>(null);
+  React.useEffect(() => {
+    const panelsList = document.querySelector("header.sticky .panels-menu > ul");
+    if (!panelsList) return;
+
+    if (user) {
+      let li = panelsList.querySelector(".logout-panel-menu") as HTMLLIElement | null;
+      if (!li) {
+        li = document.createElement("li");
+        li.className = "logout-panel-menu";
+        panelsList.appendChild(li);
+      }
+      setLogoutPortalNode(li);
+    } else {
+      const existing = panelsList.querySelector(".logout-panel-menu");
+      if (existing) existing.remove();
+      setLogoutPortalNode(null);
+    }
+
+    return () => {
+      panelsList.querySelector(".logout-panel-menu")?.remove();
+      setLogoutPortalNode(null);
+    };
+  }, [user]);
 
   const [selectedLanguage, setSelectedLanguage] = useState('pt');
   const [submenu, setSubmenu] = useState<string | null>(null);
@@ -64,40 +95,8 @@ export const Header = () => {
     return () => clearTimeout(timer);
   }, [pathname]);
 
-  // Apply hover styles to "Inscrever-se" button when on loginregister page
-  React.useEffect(() => {
-    if (pathname !== '/pages/loginregister') return;
-
-    const applyActiveStyles = () => {
-      const btn = document.querySelector('.unauthenticated-panel-menu > .agora-btn') as HTMLElement;
-      if (!btn) return;
-
-      // Text color
-      const childrenWrapper = btn.querySelector('.children-wrapper') as HTMLElement;
-      if (childrenWrapper) childrenWrapper.style.color = 'var(--color-primary-600)';
-
-      // Underline
-      btn.style.textDecorationLine = 'underline';
-      btn.style.textDecorationStyle = 'solid';
-      btn.style.textDecorationThickness = '0.094rem';
-      btn.style.textUnderlineOffset = '0.388rem';
-      btn.style.textDecorationColor = 'var(--color-primary-600)';
-
-      // Icon swap: hide line, show solid
-      const lineIcon = btn.querySelector('.icon-wrapper .line') as HTMLElement;
-      const solidIcon = btn.querySelector('.icon-wrapper .solid') as HTMLElement;
-      if (lineIcon) lineIcon.style.display = 'none';
-      if (solidIcon) solidIcon.style.display = 'block';
-
-      // Icon fill
-      const svgs = btn.querySelectorAll('.icon-wrapper svg');
-      svgs.forEach((svg) => ((svg as HTMLElement).style.fill = 'var(--color-primary-600)'));
-    };
-
-    // Wait for design system to render
-    const timer = setTimeout(applyActiveStyles, 150);
-    return () => clearTimeout(timer);
-  }, [pathname]);
+  // Mark header when on auth pages so CSS can style the "Autenticar" button
+  const isAuthPage = pathname === '/pages/loginregister' || pathname === '/pages/login';
 
   // Reset submenu when clicking anywhere outside the card grid (.links)
   const handleHeaderClickCapture = React.useCallback(
@@ -321,7 +320,8 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-sticky" onClickCapture={handleHeaderClickCapture}>
+    <>
+    <header className="sticky top-0 z-sticky" data-auth-page={isAuthPage || undefined} data-no-user={!user || undefined} onClickCapture={handleHeaderClickCapture}>
       <AgoraHeader ref={headerRef}>
         <Brand>
           <Logo>
@@ -398,13 +398,18 @@ export const Header = () => {
             />
           </div>
 
-          <Unauthenticated label="Inscrever-se" aria-label="Registar">
+          <Unauthenticated
+            label={user ? "Administração" : "Autenticar"}
+            aria-label={user ? "Administração" : "Autenticar"}
+          >
             <UnauthenticatedLink
               hasIcon
               leadingIcon="agora-line-user"
               leadingIconHover="agora-solid-user"
             >
-              <Link href="/pages/loginregister">Inscrever-se</Link>
+              <Link href={user ? "/pages/admin/me/datasets" : "/pages/loginregister"}>
+                {user ? "Administração" : "Autenticar"}
+              </Link>
             </UnauthenticatedLink>
           </Unauthenticated>
         </GeneralBar>
@@ -464,8 +469,8 @@ export const Header = () => {
                 href: "/pages/datasets",
               },
               {
-                iconDefault: "agora-line-document",
-                iconHover: "agora-solid-document",
+                iconDefault: "agora-line-health",
+                iconHover: "agora-solid-health",
                 title: "HVDs",
                 description: "High Value Datasets",
                 href: "#",
@@ -628,5 +633,27 @@ export const Header = () => {
         </NavigationBar>
       </AgoraHeader>
     </header>
+    {logoutPortalNode && createPortal(
+      <div className="panel-menu unauthenticated-panel-menu">
+        <span className="agora-link-wrapper agora-link-wrapper-link-neutral full-width inline-flex items-center justify-center min-h-[44px] min-w-[44px] py-8 custom-header-link-wrapper panel-menu-link-wrapper">
+          <a
+            className="link-with-icon"
+            href="#"
+            onClick={async (e) => {
+              e.preventDefault();
+              await logout();
+              window.location.href = "/";
+            }}
+          >
+            <div className="icon-wrapper leading">
+              <Icon name="agora-line-log-out" dimensions="s" />
+            </div>
+            <span className="children-wrapper">Desconectar</span>
+          </a>
+        </span>
+      </div>,
+      logoutPortalNode
+    )}
+    </>
   );
 };

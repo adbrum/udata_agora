@@ -18,6 +18,7 @@ import {
   Reuse,
   SiteInfo,
   TagSuggestion,
+  UserRef,
 } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
@@ -26,10 +27,10 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/a
  * Fetch CSRF token from backend
  */
 export async function fetchCsrfToken(): Promise<string> {
-  const res = await fetch("/get-csrf", { cache: "no-store" });
+  const res = await fetch("/csrf", { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch CSRF token");
   const data = await res.json();
-  return data.response.csrf_token;
+  return data.csrf_token;
 }
 
 /**
@@ -74,9 +75,25 @@ export async function register(
 /**
  * Perform logout
  */
+/**
+ * Perform logout
+ */
 export async function logout(): Promise<void> {
   const res = await fetch("/logout/", { method: "GET" });
   if (!res.ok) throw new Error("Logout failed");
+}
+
+/**
+ * Fetch the currently authenticated user profile
+ */
+export async function fetchCurrentUser(): Promise<UserRef | null> {
+  try {
+    const res = await fetch("/me", { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
 }
 
 export async function fetchDatasets(
