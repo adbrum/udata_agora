@@ -31,12 +31,12 @@ const navGroups: NavGroup[] = [
       },
       {
         label: "API",
-        href: "/pages/admin/dataservices/new",
+        href: "/pages/admin/me/dataservices",
         customIcon: "/Icons/reduce.svg",
       },
       {
         label: "Reutilizações",
-        href: "/pages/admin/reuses",
+        href: "/pages/admin/me/reuses",
         customIcon: "/Icons/bar_char_white.svg",
       },
       {
