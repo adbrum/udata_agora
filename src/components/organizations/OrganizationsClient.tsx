@@ -16,6 +16,8 @@ import {
 import { Pagination } from '@/components/Pagination';
 import { OrganizationsFilters } from './OrganizationsFilters';
 import { APIResponse, Organization } from '@/types/api';
+import { formatDistanceToNow } from 'date-fns';
+import { pt } from 'date-fns/locale';
 
 import PageBanner from '@/components/PageBanner';
 
@@ -24,12 +26,63 @@ interface OrganizationsClientProps {
   currentPage: number;
 }
 
+const SORT_OPTIONS: Record<string, string> = {
+  relevancia: '',
+  alfabetica: 'name',
+  recentes: '-created',
+};
+
 export default function OrganizationsClient({
   initialData,
   currentPage,
 }: OrganizationsClientProps) {
   const router = useRouter();
   const { data: organizations, total, page_size } = initialData;
+
+  const searchParams = new URLSearchParams(
+    typeof window !== 'undefined' ? window.location.search : ''
+  );
+  const currentQuery = searchParams.get('q') || '';
+  const currentSort = searchParams.get('sort') || '';
+  const [searchQuery, setSearchQuery] = React.useState(currentQuery);
+
+  const currentSortKey = Object.entries(SORT_OPTIONS).find(
+    ([, v]) => v === currentSort
+  )?.[0] || 'relevancia';
+
+  const buildUrl = React.useCallback(
+    (overrides: Record<string, string | null>) => {
+      const params = new URLSearchParams(
+        typeof window !== 'undefined' ? window.location.search : ''
+      );
+      for (const [key, value] of Object.entries(overrides)) {
+        if (value) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      }
+      params.set('page', '1');
+      const qs = params.toString();
+      return `/pages/organizations${qs ? `?${qs}` : ''}`;
+    },
+    []
+  );
+
+  const handleSearch = React.useCallback(() => {
+    router.replace(
+      buildUrl({ q: searchQuery.trim() || null }),
+      { scroll: false }
+    );
+  }, [searchQuery, router, buildUrl]);
+
+  const handleSort = React.useCallback(
+    (value: string) => {
+      const sortValue = SORT_OPTIONS[value] || null;
+      router.replace(buildUrl({ sort: sortValue }), { scroll: false });
+    },
+    [router, buildUrl]
+  );
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters organization">
@@ -46,12 +99,16 @@ export default function OrganizationsClient({
         >
           <InputSearchBar
             label="O que procura nas organizações?"
-            placeholder="Pesquisar datasets, organizações, temas..."
-            id="datasets-search"
+            placeholder="Pesquisar organizações..."
+            id="organizations-search"
             hasVoiceActionButton={true}
             voiceActionAltText="Pesquisar por voz"
             searchActionAltText="Pesquisar"
             darkMode={true}
+            value={searchQuery}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSearch(); }}
+            onSearchActivate={() => handleSearch()}
           />
           <div className="mt-8 text-s-regular text-neutral-200">
             Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
@@ -81,8 +138,9 @@ export default function OrganizationsClient({
                     <InputSelect
                       label="Ordenar por:"
                       id="sort-organizations"
-                      defaultValue="relevancia"
+                      defaultValue={currentSortKey}
                       className="selectOrganization"
+                      onChange={(value: string) => handleSort(value)}
                     >
                       <DropdownSection name="order">
                         <DropdownOption value="relevancia">Por relevância</DropdownOption>
@@ -116,7 +174,11 @@ export default function OrganizationsClient({
                               </p>
                             ) : undefined
                           }
-                          date={<span className="font-[300]">Atualizado há 3 dias</span>}
+                          date={
+                            <span className="font-[300]">
+                              {`Atualizado há ${formatDistanceToNow(new Date(org.last_modified), { locale: pt })}`}
+                            </span>
+                          }
                           links={[
                             {
                               href: '#',
@@ -126,7 +188,13 @@ export default function OrganizationsClient({
                               trailingIcon: '',
                               trailingIconHover: '',
                               trailingIconActive: '',
-                              children: '2 M',
+                              children: org.metrics?.views
+                                ? org.metrics.views >= 1000000
+                                  ? (org.metrics.views / 1000000).toFixed(1).replace('.', ',') + ' M'
+                                  : org.metrics.views >= 1000
+                                    ? (org.metrics.views / 1000).toFixed(0) + ' mil'
+                                    : String(org.metrics.views)
+                                : '0',
                               title: 'Visualizações',
                               onClick: (e: React.MouseEvent) => e.preventDefault(),
                               className: 'text-[#034AD8]',
@@ -139,7 +207,7 @@ export default function OrganizationsClient({
                               trailingIcon: '',
                               trailingIconHover: '',
                               trailingIconActive: '',
-                              children: `${Math.floor(Math.random() * 1000)} mil`,
+                              children: String(org.metrics?.datasets || 0),
                               title: 'Datasets',
                               onClick: (e: React.MouseEvent) => e.preventDefault(),
                               className: 'text-[#034AD8]',
@@ -150,7 +218,7 @@ export default function OrganizationsClient({
                               children: (
                                 <span className="flex items-center gap-8">
                                   <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
-                                  <span>{Math.floor(Math.random() * 200)}</span>
+                                  <span>{org.metrics?.reuses || 0}</span>
                                 </span>
                               ),
                               title: 'Reutilizações',
@@ -164,7 +232,7 @@ export default function OrganizationsClient({
                               trailingIcon: '',
                               trailingIconHover: '',
                               trailingIconActive: '',
-                              children: '412',
+                              children: String(org.metrics?.followers || 0),
                               title: 'Favoritos',
                               onClick: (e: React.MouseEvent) => e.preventDefault(),
                               className: 'text-[#034AD8]',

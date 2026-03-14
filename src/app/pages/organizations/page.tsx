@@ -1,5 +1,6 @@
 import { fetchOrganizations } from '@/services/api';
 import OrganizationsClient from '@/components/organizations/OrganizationsClient';
+import { OrganizationFilters } from '@/types/api';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -10,11 +11,17 @@ export const metadata: Metadata = {
 export default async function OrganizationsPage({
     searchParams,
 }: {
-    searchParams: Promise<{ page?: string }>;
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-    const resolvedSearchParams = await searchParams;
-    const page = Number(resolvedSearchParams?.page) || 1;
-    const initialData = await fetchOrganizations(page, 20);
+    const resolved = await searchParams;
+    const page = Number(resolved?.page) || 1;
+
+    const filters: OrganizationFilters = {};
+    if (resolved?.q) filters.q = String(resolved.q);
+    if (resolved?.badge) filters.badge = String(resolved.badge);
+    if (resolved?.sort) filters.sort = String(resolved.sort);
+
+    const initialData = await fetchOrganizations(page, 20, filters);
 
     return <OrganizationsClient initialData={initialData} currentPage={page} />;
 }
