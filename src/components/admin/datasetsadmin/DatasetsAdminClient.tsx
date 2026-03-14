@@ -99,14 +99,16 @@ export default function DatasetsAdminClient() {
       {/* Progress bar */}
       <div className="datasets-admin-page__stepper">
         <div className="datasets-admin-page__stepper-bar">
-          {Array.from({ length: 3 }).map((_, i) => (
+          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--start" />
+          {Array.from({ length: 12 }).map((_, i) => (
             <div
               key={i}
               className={`datasets-admin-page__stepper-segment ${
-                i < 1 ? "datasets-admin-page__stepper-segment--filled" : ""
+                i < 4 ? "datasets-admin-page__stepper-segment--filled" : ""
               }`}
             />
           ))}
+          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--end" />
         </div>
         <span className="datasets-admin-page__stepper-label">Passo 1/3</span>
       </div>

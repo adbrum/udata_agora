@@ -860,6 +860,21 @@ body:has(.admin-wrapper)>div>header.sticky {
   background-color: var(--color-neutral-200);
 }
 
+.datasets-admin-page__stepper-mark {
+  width: 4px;
+  height: 4px;
+  background-color: var(--color-primary-900);
+  flex-shrink: 0;
+}
+
+.datasets-admin-page__stepper-mark--start {
+  border-right: 2px solid white;
+}
+
+.datasets-admin-page__stepper-mark--end {
+  border-left: 2px solid white;
+}
+
 .datasets-admin-page__stepper-segment {
   flex: 1;
   height: 100%;

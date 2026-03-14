@@ -4,8 +4,10 @@ import React from "react";
 import { Breadcrumb, CardAction } from "@ama-pt/agora-design-system";
 
 export default function DatasetsNewClient() {
-  const totalSteps = 3;
+  const totalSteps = 4;
   const currentStep = 1;
+  const totalSegments = 12;
+  const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
   return (
     <div className="datasets-admin-page">
@@ -21,18 +23,30 @@ export default function DatasetsNewClient() {
 
       <h1 className="datasets-admin-page__title">Publicar em dados.gov</h1>
 
+      {/* Step indicator */}
+      <div className="datasets-admin-page__step-header">
+        <p className="datasets-admin-page__step-text">
+          <span className="text-primary-600 font-bold">Passo{currentStep} - </span>
+          <span className="text-primary-900 font-bold">
+            Descreva o conjunto de dados
+          </span>
+        </p>
+      </div>
+
+      {/* Progress bar */}
       <div className="datasets-admin-page__stepper">
         <div className="datasets-admin-page__stepper-bar">
-          {Array.from({ length: totalSteps }).map((_, i) => (
+          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--start" />
+          {Array.from({ length: totalSegments }).map((_, i) => (
             <div
               key={i}
-              className={`datasets-admin-page__stepper-segment ${
-                i < currentStep
+              className={`datasets-admin-page__stepper-segment ${i < filledSegments
                   ? "datasets-admin-page__stepper-segment--filled"
                   : ""
-              }`}
+                }`}
             />
           ))}
+          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--end" />
         </div>
         <span className="datasets-admin-page__stepper-label">
           Passo {currentStep}/{totalSteps}
