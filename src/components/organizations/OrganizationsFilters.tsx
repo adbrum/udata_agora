@@ -1,18 +1,16 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
-import { Sidebar, SidebarItem, Checkbox, InputSearch, Icon, Toggle, Pill } from '@ama-pt/agora-design-system';
+import { Sidebar, SidebarItem, Checkbox, InputSearch, Icon } from '@ama-pt/agora-design-system';
 import { SiteMetrics } from '@/types/api';
+import { CategoryToggles } from '@/components/CategoryToggles';
 
 interface OrganizationsFiltersProps {
   siteMetrics: SiteMetrics;
 }
 
 export const OrganizationsFilters = ({ siteMetrics }: OrganizationsFiltersProps) => {
-  const router = useRouter();
   const [searchQueries, setSearchQueries] = React.useState<Record<string, string>>({});
-  const [activeTab, setActiveTab] = React.useState('organizacoes');
 
   const handleSearchChange = (groupName: string, value: string) => {
     setSearchQueries((prev) => ({
@@ -27,136 +25,9 @@ export const OrganizationsFilters = ({ siteMetrics }: OrganizationsFiltersProps)
 
   return (
     <div className="h-full organizations-filters">
-      {/* Sidebar Type selection as seen in Figma */}
-      <div className="mb-64 pr-32 max-w-[592px] flex flex-col gap-16 mt-[32px]">
-        {/* Reutilizações */}
-        <Toggle
-          id="reutilizacoes"
-          name="org-filter-type"
-          value="reutilizacoes"
-          appearance="icon"
-          variant="primary"
-          hasIcon={true}
-          leadingIcon={activeTab === 'reutilizacoes' ? "/Icons/bar_char_white.svg" : "/Icons/bar_chart.svg"}
-          leadingIconHover="/Icons/bar_char_white.svg"
-          checked={activeTab === 'reutilizacoes'}
-          onChange={() => { setActiveTab('reutilizacoes'); router.push('/pages/reuses'); }}
-          iconOnly={false}
-          fullWidth={true}
-          className="w-full agora-toggle agora-toggle-icon agora-toggle-icon-primary full-width has-icon"
-        >
-          <div className="flex items-center gap-12 font-bold text-sm">
-            <span className={activeTab === 'reutilizacoes' ? 'text-primary-600 font-bold' : 'text-neutral-900 font-bold'}>
-              Reutilizações
-            </span>
-            <Pill
-              variant="neutral"
-              appearance="outline"
-              circular={false}
-              className="text-xs font-medium text-neutral-500 ml-16"
-            >
-              {siteMetrics.reuses.toLocaleString('pt-PT')}
-            </Pill>
-          </div>
-        </Toggle>
-
-        {/* Conjunto de dados */}
-        <Toggle
-          id="datasets"
-          name="org-filter-type"
-          value="datasets"
-          appearance="icon"
-          variant="primary"
-          hasIcon
-          leadingIcon="agora-line-hardware-settings"
-          leadingIconHover="agora-solid-hardware-settings"
-          checked={activeTab === 'datasets'}
-          onChange={() => { setActiveTab('datasets'); router.push('/pages/datasets'); }}
-          iconOnly={false}
-          fullWidth={true}
-          className="w-full"
-        >
-          <div className="flex items-center gap-12 font-bold text-sm">
-            <span className={activeTab === 'datasets' ? 'text-primary-600 font-bold' : 'text-neutral-900 font-bold'}>
-              Conjunto de dados
-            </span>
-            <Pill
-              variant="neutral"
-              appearance="outline"
-              circular={false}
-              className="text-xs font-medium text-neutral-500 ml-16"
-            >
-              {siteMetrics.datasets.toLocaleString('pt-PT')}
-            </Pill>
-          </div>
-        </Toggle>
-
-        {/* APIs */}
-        <Toggle
-          id="apis"
-          name="org-filter-type"
-          value="apis"
-          appearance="icon"
-          variant="primary"
-          hasIcon
-          leadingIcon="agora-line-star"
-          leadingIconHover="agora-solid-star"
-          checked={activeTab === 'apis'}
-          onChange={() => { setActiveTab('apis'); router.push('/pages/dataservices'); }}
-          iconOnly={false}
-          fullWidth={true}
-          className="w-full"
-        >
-          <div className="flex items-center gap-12 font-bold text-sm">
-            <span className={activeTab === 'apis' ? 'text-primary-600 font-bold' : 'text-neutral-900 font-bold'}>
-              APIs
-            </span>
-            <Pill
-              variant="neutral"
-              appearance="outline"
-              circular={false}
-              className="text-xs font-medium text-neutral-500 ml-16"
-            >
-              {(siteMetrics.dataservices ?? 0).toLocaleString('pt-PT')}
-            </Pill>
-          </div>
-        </Toggle>
-
-        {/* Organizações */}
-        <Toggle
-          id="organizacoes"
-          name="org-filter-type"
-          value="organizacoes"
-          appearance="icon"
-          variant="primary"
-          hasIcon
-          leadingIcon="agora-line-buildings"
-          leadingIconHover="agora-solid-buildings"
-          checked={activeTab === 'organizacoes'}
-          onChange={() => setActiveTab('organizacoes')}
-          iconOnly={false}
-          fullWidth={true}
-          className="w-full"
-        >
-          <div className="flex items-center gap-12 font-bold text-sm">
-            <span className={activeTab === 'organizacoes' ? 'text-primary-600 font-bold' : 'text-neutral-900 font-bold'}>
-              Organizações
-            </span>
-            <Pill
-              variant="neutral"
-              appearance="outline"
-              circular={false}
-              className="text-xs font-medium text-neutral-500 ml-16"
-            >
-              {siteMetrics.organizations.toLocaleString('pt-PT')}
-            </Pill>
-          </div>
-        </Toggle>
-      </div>
+      <CategoryToggles siteMetrics={siteMetrics} />
 
       <h2 className="font-bold text-xl text-neutral-900 mt-64 mb-32">Filtros</h2>
-
-
 
       <Sidebar variant="filter" className="font-bold">
         {filterGroups.map((group, index) => {
