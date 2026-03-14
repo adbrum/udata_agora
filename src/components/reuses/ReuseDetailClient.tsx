@@ -28,6 +28,8 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
   const router = useRouter();
   const [fullDatasets, setFullDatasets] = useState<Dataset[]>([]);
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(true);
+  const [datasetsPage, setDatasetsPage] = useState(1);
+  const datasetsPageSize = 6;
 
   const datasetRefs = reuse.datasets || [];
 
@@ -62,6 +64,43 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
     } catch {
       return dateString;
     }
+  };
+
+  const totalDatasetsPages = Math.ceil(fullDatasets.length / datasetsPageSize);
+  const paginatedDatasets = fullDatasets.slice(
+    (datasetsPage - 1) * datasetsPageSize,
+    datasetsPage * datasetsPageSize
+  );
+
+  const renderPagination = (
+    currentPage: number,
+    total: number,
+    pageSize: number,
+    onPageChange: (page: number) => void
+  ) => {
+    const totalPages = Math.ceil(total / pageSize);
+    if (totalPages <= 1) return null;
+    return (
+      <div className="flex items-center justify-center gap-16 mt-32">
+        <button
+          className="px-16 py-8 text-sm font-medium text-primary-600 border border-primary-300 rounded hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          disabled={currentPage <= 1}
+          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+        >
+          Anterior
+        </button>
+        <span className="text-sm text-neutral-700">
+          Página {currentPage} de {totalPages}
+        </span>
+        <button
+          className="px-16 py-8 text-sm font-medium text-primary-600 border border-primary-300 rounded hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          disabled={currentPage >= totalPages}
+          onClick={() => onPageChange(currentPage + 1)}
+        >
+          Seguinte
+        </button>
+      </div>
+    );
   };
 
   const renderTabBody = (content: React.ReactNode) => (
@@ -311,8 +350,12 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
               {isLoadingDatasets ? (
                 <div className="text-neutral-500">A carregar conjuntos de dados...</div>
               ) : fullDatasets.length > 0 ? (
+                <>
+                <div className="text-sm text-neutral-500 mb-16">
+                  {fullDatasets.length} conjuntos de dados
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-16">
-                  {fullDatasets.map((dataset) => (
+                  {paginatedDatasets.map((dataset) => (
                     <div key={dataset.id} className="h-full">
                       <CardLinks
                         onClick={() => router.push(`/pages/datasets/${dataset.slug}`)}
@@ -391,6 +434,13 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                     </div>
                   ))}
                 </div>
+                {renderPagination(
+                  datasetsPage,
+                  fullDatasets.length,
+                  datasetsPageSize,
+                  setDatasetsPage
+                )}
+                </>
               ) : (
                 <div className="text-neutral-500">
                   Não foi possível carregar os conjuntos de dados associados.
