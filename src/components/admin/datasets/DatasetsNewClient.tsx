@@ -1,13 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Breadcrumb, Button, CardAction, StatusCard } from "@ama-pt/agora-design-system";
+import {
+  Breadcrumb,
+  Button,
+  CardAction,
+  StatusCard,
+  Dropdown,
+  DropdownSection,
+  DropdownOption,
+} from "@ama-pt/agora-design-system";
 import DatasetsAdminClient from "@/components/admin/datasetsadmin/DatasetsAdminClient";
 
 export default function DatasetsNewClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [showPublishDropdown, setShowPublishDropdown] = useState(false);
+  const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
   const totalSteps = 4;
   const currentStep = Number(searchParams.get("step")) || 1;
   const totalSegments = 12;
@@ -26,9 +36,50 @@ export default function DatasetsNewClient() {
         />
       </div>
 
-      <h1 className="datasets-admin-page__title mt-[64px] mb-[64px]">
-        {currentStep === 1 ? "Publicar em dados.gov" : "Formulário de inscrição"}
-      </h1>
+      <div className="datasets-admin-page__header">
+        <h1 className="datasets-admin-page__title">
+          {currentStep === 1 ? "Publicar em dados.gov" : "Formulário de inscrição"}
+        </h1>
+        <div
+          className="relative inline-block publish-dropdown-wrapper"
+          ref={publishDropdownWrapperRef}
+        >
+          <Button
+            variant="primary"
+            hasIcon={true}
+            trailingIcon={
+              showPublishDropdown ? "agora-line-arrow-up" : "agora-line-arrow-down"
+            }
+            trailingIconHover={
+              showPublishDropdown ? "agora-solid-arrow-up" : "agora-solid-arrow-down"
+            }
+            className="px-24 py-16 rounded-8 h-auto relative z-10"
+            onClick={() => setShowPublishDropdown((v) => !v)}
+          >
+            <span className="text-lg font-medium">
+              Publicar <span className="font-bold">dados.gov</span>
+            </span>
+          </Button>
+          <Dropdown
+            type="text"
+            showDropdown={showPublishDropdown}
+            onHide={() => setShowPublishDropdown(false)}
+            hideSectionNames={true}
+            optionsVisible={4}
+            style={{
+              width: "max-content",
+              minWidth: "100%",
+            }}
+          >
+            <DropdownSection name="publish" label="">
+              <DropdownOption value="dataset">Um conjunto de dados</DropdownOption>
+              <DropdownOption value="reuse">Uma reutilização</DropdownOption>
+              <DropdownOption value="harvester">Um harvester</DropdownOption>
+              <DropdownOption value="organization">Uma organização</DropdownOption>
+            </DropdownSection>
+          </Dropdown>
+        </div>
+      </div>
 
       {/* Step indicator */}
       <div className="datasets-admin-page__step-header">
