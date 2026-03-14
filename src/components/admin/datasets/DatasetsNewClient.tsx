@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Breadcrumb, CardAction } from "@ama-pt/agora-design-system";
+import { Breadcrumb, Button, CardAction, StatusCard } from "@ama-pt/agora-design-system";
 
 export default function DatasetsNewClient() {
   const totalSteps = 4;
@@ -53,8 +53,14 @@ export default function DatasetsNewClient() {
         </span>
       </div>
 
-      <div className="datasets-new-page__cards">
+      <StatusCard
+        type="info"
+        description="Se desejar realizar testes, utilize demo.dados.gov"
+      />
+
+      <div className="datasets-new-page__cards mb-[32px]">
         <CardAction
+          variant="neutral-100"
           titleText="Publicar um conjunto de dados"
           descriptionText="Seja uma administração pública ou uma empresa pública, todos podem publicar em dados.gov!"
           icon={{ name: "agora-line-file" }}
@@ -66,6 +72,7 @@ export default function DatasetsNewClient() {
         />
 
         <CardAction
+          variant="neutral-100"
           titleText="Publicar com um diagrama"
           descriptionText="Seus dados seguem um esquema de referência? Selecione um esquema e crie seus dados estruturados!"
           icon={{ name: "agora-line-edit" }}
@@ -74,6 +81,69 @@ export default function DatasetsNewClient() {
             variant: "neutral",
           }}
         />
+      </div>
+
+      {/* Admin sections */}
+      <div className="datasets-new-page__admin-sections">
+        <div className="datasets-new-page__admin-section">
+          <p className="text-primary-900 text-base font-bold leading-7">
+            Você é um administrador e deseja automatizar a publicação de seus dados?
+          </p>
+          <p className="text-neutral-700 text-sm leading-relaxed">
+            Você pode publicar automaticamente via API ou vinculando seu portal de dados
+            abertos ao data.gouv.fr com um coletor de dados.
+          </p>
+          <div className="flex gap-4 flex-wrap">
+            <Button
+              appearance="link"
+              variant="primary"
+              hasIcon
+              trailingIcon="agora-line-external-link"
+              trailingIconHover="agora-solid-external-link"
+            >
+              Consulte a documentação da API.
+            </Button>
+            <Button
+              appearance="link"
+              variant="primary"
+              hasIcon
+              trailingIcon="agora-line-external-link"
+              trailingIconHover="agora-solid-external-link"
+            >
+              Saiba mais sobre a colheita.
+            </Button>
+            <Button
+              appearance="link"
+              variant="primary"
+              hasIcon
+              trailingIcon="agora-line-external-link"
+              trailingIconHover="agora-solid-external-link"
+            >
+              Escreva-nos
+            </Button>
+          </div>
+        </div>
+
+        <div className="datasets-new-page__admin-section">
+          <p className="text-primary-900 text-base font-bold leading-7">
+            Você é um administrador e deseja catalogar seus dados?
+          </p>
+          <p className="text-neutral-700 text-sm leading-relaxed">
+            Você pode usar o serviço para que os departamentos do governo central gerenciem
+            e disponibilizem seu catálogo de dados.
+          </p>
+          <div className="flex gap-4 flex-wrap">
+            <Button
+              appearance="link"
+              variant="primary"
+              hasIcon
+              trailingIcon="agora-line-external-link"
+              trailingIconHover="agora-solid-external-link"
+            >
+              Acesse a área de catalogação.
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
