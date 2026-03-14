@@ -1085,13 +1085,18 @@ body:has(.admin-wrapper) footer:last-child {
   }
 }
 
-/* Force order in general bar: Administração before Avatar */
-.agora-general-bar .unauthenticated-panel-menu {
-  order: 1;
+/* Force order in general bar (row-reverse): Language → Administração → Avatar */
+/* row-reverse means lowest order appears rightmost */
+.general-bar .languages-panel-menu {
+  order: 3;
 }
 
-.agora-general-bar .authenticated-panel-menu {
+.general-bar .unauthenticated-panel-menu {
   order: 2;
+}
+
+.general-bar .authenticated-panel-menu {
+  order: 1;
 }
 
 /* Hide authenticated avatar when user is not logged in */
@@ -1104,12 +1109,12 @@ header[data-no-user] .authenticated-panel-menu {
   z-index: 9999 !important;
 }
 
-/* Active state for "Autenticar" button on login/register pages */
-header[data-auth-page] .unauthenticated-panel-menu > .panel-menu-link-wrapper {
+/* Active state for "Autenticar" button on login/register pages (only when NOT logged in) */
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper {
   position: relative;
 }
 
-header[data-auth-page] .unauthenticated-panel-menu > .panel-menu-link-wrapper::after {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -1119,18 +1124,18 @@ header[data-auth-page] .unauthenticated-panel-menu > .panel-menu-link-wrapper::a
   background-color: var(--color-primary-600);
 }
 
-header[data-auth-page] .unauthenticated-panel-menu > .panel-menu-link-wrapper .children-wrapper {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .children-wrapper {
   color: var(--color-primary-600);
 }
 
-header[data-auth-page] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper .line {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper .line {
   display: none;
 }
 
-header[data-auth-page] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper .solid {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper .solid {
   display: block;
 }
 
-header[data-auth-page] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper svg {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper svg {
   fill: var(--color-primary-600);
 }
