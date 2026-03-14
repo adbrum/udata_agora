@@ -55,19 +55,22 @@ export function AdminHeader() {
             <AuthenticatedBody>
               <AuthenticatedBodyLink
                 hasIcon
-                leadingIcon="agora-line-person"
+                leadingIcon="agora-line-user"
+                leadingIconHover="agora-solid-user"
               >
                 <a href="/pages/admin/perfil">O meu perfil</a>
               </AuthenticatedBodyLink>
               <AuthenticatedBodyLink
                 hasIcon
                 leadingIcon="agora-line-settings"
+                leadingIconHover="agora-solid-settings"
               >
                 <a href="/pages/admin/definicoes">As minhas definições</a>
               </AuthenticatedBodyLink>
               <AuthenticatedBodyLink
                 hasIcon
-                leadingIcon="agora-line-notification"
+                leadingIcon="agora-line-mega-phone"
+                leadingIconHover="agora-solid-mega-phone"
               >
                 <a href="/pages/admin/notificacoes">Notificações</a>
               </AuthenticatedBodyLink>
@@ -75,7 +78,8 @@ export function AdminHeader() {
             <AuthenticatedFooter>
               <AuthenticatedFooterAction
                 hasIcon
-                leadingIcon="agora-line-delete"
+                leadingIcon="agora-line-trash"
+                leadingIconHover="agora-solid-trash"
                 variant="danger"
                 appearance="link"
               >
@@ -83,7 +87,8 @@ export function AdminHeader() {
               </AuthenticatedFooterAction>
               <AuthenticatedFooterAction
                 hasIcon
-                leadingIcon="agora-line-logout"
+                leadingIcon="agora-line-log-out"
+                leadingIconHover="agora-solid-log-out"
                 appearance="link"
               >
                 Terminar sessão

@@ -759,9 +759,12 @@ body:has(.admin-wrapper) footer:last-child {
   height: 24px;
 }
 
+.admin-side-nav__icon,
 .admin-side-nav__icon svg,
 .admin-side-nav__icon svg path {
   fill: var(--color-white);
+  stroke: var(--color-white);
+  color: var(--color-white);
 }
 
 .admin-side-nav__label {
@@ -785,12 +788,18 @@ body:has(.admin-wrapper) footer:last-child {
   margin-bottom: 64px;
 }
 
+.datasets-admin-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 64px;
+}
+
 .datasets-admin-page__title {
   font-size: 32px;
   font-weight: 700;
   line-height: 48px;
   color: var(--color-brand-blue-secondary);
-  margin-bottom: 64px;
 }
 
 .datasets-admin-page__step-header {

@@ -11,7 +11,7 @@ export default function DatasetsNewClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: "Lopes Inês", url: "#" },
-            { label: "Conjuntos de dados", url: "/pages/admin/datasets" },
+            { label: "Conjuntos de dados", url: "/pages/admin/me/datasets" },
           ]}
         />
       </div>
@@ -21,12 +21,12 @@ export default function DatasetsNewClient() {
       <div className="datasets-new-page__cards">
         <CardAction
           titleText="Publicar um conjunto de dados"
-          descriptionText="Seja uma administração pública ou uma empresa pública, todos podem publicar em data.gouv.fr!"
+          descriptionText="Seja uma administração pública ou uma empresa pública, todos podem publicar em dados.gov!"
           icon={{ name: "agora-line-file" }}
           button={{
             children: "Comece a publicar",
             variant: "primary",
-            onClick: () => (window.location.href = "/pages/admin/datasetsadmin"),
+            onClick: () => (window.location.href = "/pages/admin/me/datasetsadmin"),
           }}
         />
 

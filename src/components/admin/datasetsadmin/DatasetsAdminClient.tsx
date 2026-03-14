@@ -78,7 +78,7 @@ export default function DatasetsAdminClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: "Lopes Inês", url: "#" },
-            { label: "Conjuntos de dados", url: "/pages/admin/datasets" },
+            { label: "Conjuntos de dados", url: "/pages/admin/me/datasets" },
           ]}
         />
       </div>

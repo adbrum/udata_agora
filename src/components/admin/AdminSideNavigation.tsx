@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@ama-pt/agora-design-system";
@@ -8,29 +9,30 @@ import { Icon } from "@ama-pt/agora-design-system";
 interface NavItem {
   label: string;
   href: string;
-  icon: string;
+  icon?: string;
+  customIcon?: string;
 }
 
 const navItems: NavItem[] = [
   {
     label: "APIS",
     href: "/pages/admin/dataservices/new",
-    icon: "agora-line-link",
+    customIcon: "/Icons/reduce.svg",
   },
   {
     label: "Conjunto de dados",
-    href: "/pages/admin/datasets",
-    icon: "agora-line-file",
+    href: "/pages/admin/me/datasets",
+    icon: "agora-line-layers-menu",
   },
   {
     label: "Reutilizações",
     href: "/pages/admin/reuses",
-    icon: "agora-line-external-link",
+    customIcon: "/Icons/bar_char_white.svg",
   },
   {
     label: "Recursos comunitários",
     href: "/pages/admin/community-resources",
-    icon: "agora-line-building",
+    icon: "agora-line-user-group",
   },
   {
     label: "Perfil",
@@ -40,7 +42,7 @@ const navItems: NavItem[] = [
   {
     label: "Estatísticas",
     href: "/pages/admin/statistics",
-    icon: "agora-line-eye",
+    customIcon: "/Icons/graphic_circle.svg",
   },
 ];
 
@@ -58,7 +60,17 @@ export function AdminSideNavigation() {
               href={item.href}
               className={`admin-side-nav__item ${isActive ? "admin-side-nav__item--active" : ""}`}
             >
-              <Icon name={item.icon} className="admin-side-nav__icon" />
+              {item.customIcon ? (
+                <Image
+                  src={item.customIcon}
+                  alt={item.label}
+                  width={24}
+                  height={24}
+                  className="admin-side-nav__icon"
+                />
+              ) : (
+                <Icon name={item.icon!} className="admin-side-nav__icon" />
+              )}
               <span className="admin-side-nav__label">{item.label}</span>
             </Link>
           );
