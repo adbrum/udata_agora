@@ -68,7 +68,7 @@ function SortSelect({
               ? 'Mais visualizados'
               : currentSortKey === 'seguidores'
                 ? 'Mais seguidos'
-                : 'Por relevância'}
+                : 'Relevância'}
         </div>
       </div>
     );
@@ -83,7 +83,7 @@ function SortSelect({
     >
       <DropdownSection name="order">
         <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
-          Por relevância
+          Relevância
         </DropdownOption>
         <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
           Mais recentes

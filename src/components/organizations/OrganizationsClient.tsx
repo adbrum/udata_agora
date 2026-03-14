@@ -73,7 +73,7 @@ function SortSelect({
         <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
           {currentSortKey === 'alfabetica' ? 'Ordem alfabética'
             : currentSortKey === 'recentes' ? 'Mais recentes'
-            : 'Por relevância'}
+            : 'Relevância'}
         </div>
       </div>
     );
@@ -88,7 +88,7 @@ function SortSelect({
     >
       <DropdownSection name="order">
         <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
-          Por relevância
+          Relevância
         </DropdownOption>
         <DropdownOption value="alfabetica" selected={currentSortKey === 'alfabetica'}>
           Ordem alfabética
