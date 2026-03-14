@@ -190,6 +190,36 @@ export async function fetchOrganizations(
     };
   }
 }
+export async function suggestOrganizations(
+  query: string,
+  size: number = 5
+): Promise<OrganizationSuggestion[]> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/organizations/suggest/?q=${encodeURIComponent(query)}&size=${size}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) {
+      throw new Error(`Failed to suggest organizations: ${res.statusText}`);
+    }
+    return await res.json();
+  } catch (error) {
+    console.error("Error suggesting organizations:", error);
+    return [];
+  }
+}
+
+export async function fetchOrgBadges(): Promise<OrgBadge[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/organizations/badges/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch org badges: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org badges:", error);
+    return [];
+  }
+}
+
 export async function fetchOrganization(slugOrId: string): Promise<Organization | null> {
   try {
     const res = await fetch(`${API_BASE_URL}/organizations/${slugOrId}/`, {
