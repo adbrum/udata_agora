@@ -99,6 +99,34 @@ export interface Dataset {
   page: string; // The URL to the dataset page usually
 }
 
+export interface DatasetRef {
+  id: string;
+  title: string;
+  page: string;
+  uri: string;
+}
+
+export interface ReuseType {
+  id: string;
+  label: string;
+}
+
+export interface ReuseSuggestion {
+  id: string;
+  title: string;
+  slug: string;
+  image_url: string | null;
+  score: number;
+}
+
+export interface ReuseFilters {
+  q?: string;
+  type?: string;
+  tag?: string;
+  organization?: string;
+  sort?: string;
+}
+
 export interface Reuse {
   id: string;
   title: string;
@@ -108,12 +136,15 @@ export interface Reuse {
   image: string | null;
   image_thumbnail: string | null;
   organization: Organization | null;
+  owner: UserRef | null;
   created_at: string;
   last_modified: string;
   metrics: Metric;
   url: string;
   tags: string[];
-  datasets?: Dataset[];
+  badges: Badge[];
+  datasets: DatasetRef[];
+  dataservices: Dataservice[];
 }
 
 export interface Dataservice {

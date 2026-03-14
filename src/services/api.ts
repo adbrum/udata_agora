@@ -16,6 +16,9 @@ import {
   OrganizationSuggestion,
   Post,
   Reuse,
+  ReuseFilters,
+  ReuseSuggestion,
+  ReuseType,
   SiteInfo,
   TagSuggestion,
   UserRef,
@@ -352,29 +355,42 @@ export async function fetchOrgDataservices(
 
 export async function fetchReuses(
   page: number = 1,
-  pageSize: number = 20
+  pageSize: number = 20,
+  filters?: ReuseFilters
 ): Promise<APIResponse<Reuse>> {
+  const empty: APIResponse<Reuse> = {
+    data: [],
+    page: 1,
+    page_size: pageSize,
+    total: 0,
+    next_page: null,
+    previous_page: null,
+  };
+
   try {
-    const url = `${API_BASE_URL}/reuses/?page=${page}&page_size=${pageSize}`;
-    const res = await fetch(url, {
-      cache: "no-store",
-    });
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("page_size", String(pageSize));
+
+    if (filters) {
+      if (filters.q) params.set("q", filters.q);
+      if (filters.type) params.set("type", filters.type);
+      if (filters.tag) params.set("tag", filters.tag);
+      if (filters.organization) params.set("organization", filters.organization);
+      if (filters.sort) params.set("sort", filters.sort);
+    }
+
+    const url = `${API_BASE_URL}/reuses/?${params.toString()}`;
+    const res = await fetch(url, { cache: "no-store" });
 
     if (!res.ok) {
-      throw new Error(`Failed to fetch reuses: ${res.statusText}`);
+      return empty;
     }
 
     return await res.json();
   } catch (error) {
     console.error("Error fetching reuses:", error);
-    return {
-      data: [],
-      page: 1,
-      page_size: pageSize,
-      total: 0,
-      next_page: null,
-      previous_page: null,
-    };
+    return empty;
   }
 }
 export async function fetchReuse(rid: string): Promise<Reuse> {
@@ -392,6 +408,50 @@ export async function fetchReuse(rid: string): Promise<Reuse> {
     console.error("Error fetching reuse:", error);
     throw error;
   }
+}
+
+export async function fetchReuseTypes(): Promise<ReuseType[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/reuses/types/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch reuse types: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching reuse types:", error);
+    return [];
+  }
+}
+
+export async function suggestReuses(
+  query: string,
+  size: number = 5
+): Promise<ReuseSuggestion[]> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/reuses/suggest/?q=${encodeURIComponent(query)}&size=${size}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) throw new Error(`Failed to suggest reuses: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error suggesting reuses:", error);
+    return [];
+  }
+}
+
+export async function followReuse(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/reuses/${id}/followers/`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to follow reuse: ${res.statusText}`);
+}
+
+export async function unfollowReuse(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/reuses/${id}/followers/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to unfollow reuse: ${res.statusText}`);
 }
 
 export async function fetchSiteInfo(): Promise<SiteInfo> {

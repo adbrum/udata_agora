@@ -12,6 +12,7 @@ import {
   TabBody,
   CardLinks,
   Icon,
+  SearchPagination,
 } from "@ama-pt/agora-design-system";
 import {
   Organization,
@@ -45,7 +46,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
 
   useEffect(() => {
     async function loadDatasets() {
-      setIsLoadingDatasets(true);
+      if (!datasetsResponse) setIsLoadingDatasets(true);
       try {
         const response = await fetchOrgDatasets(organization.slug, datasetsPage, 20);
         setDatasetsResponse(response);
@@ -56,11 +57,12 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
       }
     }
     loadDatasets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organization.slug, datasetsPage]);
 
   useEffect(() => {
     async function loadDataservices() {
-      setIsLoadingDataservices(true);
+      if (!dataservicesResponse) setIsLoadingDataservices(true);
       try {
         const response = await fetchOrgDataservices(
           organization.id,
@@ -75,6 +77,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
       }
     }
     loadDataservices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organization.id, dataservicesPage]);
 
   useEffect(() => {
@@ -112,30 +115,22 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
     currentPage: number,
     total: number,
     pageSize: number,
-    hasNext: boolean,
+    _hasNext: boolean,
     onPageChange: (page: number) => void
   ) => {
     const totalPages = Math.ceil(total / pageSize);
     if (totalPages <= 1) return null;
     return (
-      <div className="flex items-center justify-center gap-16 mt-32">
-        <button
-          className="px-16 py-8 text-sm font-medium text-primary-600 border border-primary-300 rounded hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
-          disabled={currentPage <= 1}
-          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-        >
-          Anterior
-        </button>
-        <span className="text-sm text-neutral-700">
-          Página {currentPage} de {totalPages}
-        </span>
-        <button
-          className="px-16 py-8 text-sm font-medium text-primary-600 border border-primary-300 rounded hover:bg-primary-50 disabled:opacity-40 disabled:cursor-not-allowed"
-          disabled={!hasNext}
-          onClick={() => onPageChange(currentPage + 1)}
-        >
-          Seguinte
-        </button>
+      <div className="mt-32 flex justify-center">
+        <SearchPagination
+          totalPages={totalPages}
+          onChange={(page: number) => onPageChange(page + 1)}
+          label="Paginação"
+          nextPageAriaLabel="Próxima página"
+          previousPageAriaLabel="Página anterior"
+          boundaryCount={1}
+          siblingCount={1}
+        />
       </div>
     );
   };
