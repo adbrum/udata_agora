@@ -21,7 +21,7 @@ export default function DatasetsNewClient() {
         />
       </div>
 
-      <h1 className="datasets-admin-page__title">Publicar em dados.gov</h1>
+      <h1 className="datasets-admin-page__title mt-[64px] mb-[64px]">Publicar em dados.gov</h1>
 
       {/* Step indicator */}
       <div className="datasets-admin-page__step-header">

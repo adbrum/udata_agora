@@ -8,9 +8,11 @@ import {
   RadioButton,
   Icon,
   Breadcrumb,
+  StatusCard,
   Accordion,
   AccordionGroup,
   InputSelect,
+  InputDate,
   DropdownSection,
   DropdownOption,
 } from "@ama-pt/agora-design-system";
@@ -20,53 +22,49 @@ export default function DatasetsAdminClient() {
 
   const auxiliarItems = [
     {
-      title: "Como dar nomes à sua API",
+      title: "Nomeando seu conjunto de dados",
       content:
-        "Explore nomes claros e concisos que descrevam a função principal da sua API.",
+        "Explore nomes claros e concisos que descrevam a função principal do seu conjunto de dados.",
     },
     {
-      title: "Adicione uma abreviação ou sigla à API.",
+      title: "Adicione uma sigla ao conjunto de dados.",
       content:
         "Abreviações ajudam na identificação rápida em listas e dashboards.",
     },
     {
       title: "Escreva uma boa descrição",
       content:
-        "Uma boa descrição deve resumir o que a API faz, quem a deve usar e os principais benefícios.",
+        "Uma boa descrição deve resumir o que o conjunto de dados contém, quem o deve usar e os principais benefícios.",
     },
     {
-      title: "Defina o link correto para a API.",
-      content: "Use o endpoint base da sua API.",
-    },
-    {
-      title: "Adicione um link para a documentação da máquina.",
-      content: "Ficheiros como OpenAPI (Swagger) ou RAML.",
-    },
-    {
-      title: "Adicione um link para a documentação técnica.",
-      content: "Guias de integração, autenticação e exemplos de código.",
-    },
-    {
-      title: "Especifique o limite de chamadas",
-      content: "Indique o número máximo de pedidos por minuto/hora.",
-    },
-    {
-      title: "Indique a disponibilidade",
-      content: "Ex: 24/7, Dias úteis, 99.9% uptime.",
-    },
-    {
-      title: "Selecione um tipo de acesso",
+      title: "Escreva uma breve descrição.",
       content:
-        "Explique a diferença entre acesso aberto, com conta ou restrito.",
+        "Uma breve descrição ajuda a identificar rapidamente o conteúdo do conjunto de dados.",
     },
     {
-      title: "Adicione um link à solicitação de autorização",
+      title: "Adicionar palavras-chave",
       content:
-        "Onde os utilizadores podem pedir acesso se a API for restrita.",
+        "Palavras-chave ajudam a encontrar o conjunto de dados mais facilmente.",
     },
     {
-      title: "Adicione um link para a documentação da empresa.",
-      content: "Termos de serviço e políticas de privacidade.",
+      title: "Selecione uma licença",
+      content:
+        "A licença define as condições de utilização dos dados.",
+    },
+    {
+      title: "Escolha a frequência de atualização.",
+      content:
+        "Indique com que regularidade os dados são atualizados.",
+    },
+    {
+      title: "Forneça a cobertura de tempo.",
+      content:
+        "Indique o período temporal coberto pelo conjunto de dados.",
+    },
+    {
+      title: "Complete as informações espaciais",
+      content:
+        "Indique a área geográfica coberta pelo conjunto de dados.",
     },
   ];
 
@@ -84,14 +82,14 @@ export default function DatasetsAdminClient() {
       </div>
 
       {/* Page Title */}
-      <h1 className="datasets-admin-page__title">Formulário de inscrição</h1>
+      <h1 className="datasets-admin-page__title mt-[64px] mb-[64px]">Formulário de inscrição</h1>
 
       {/* Step indicator */}
       <div className="datasets-admin-page__step-header">
         <p className="datasets-admin-page__step-text">
-          <span className="text-primary-600 font-bold">Passo1 - </span>
+          <span className="text-primary-600 font-bold">Passo 2 - </span>
           <span className="text-primary-900 font-bold">
-            Descreva a sua API
+            Descreva o conjunto de dados
           </span>
         </p>
       </div>
@@ -104,13 +102,13 @@ export default function DatasetsAdminClient() {
             <div
               key={i}
               className={`datasets-admin-page__stepper-segment ${
-                i < 4 ? "datasets-admin-page__stepper-segment--filled" : ""
+                i < 6 ? "datasets-admin-page__stepper-segment--filled" : ""
               }`}
             />
           ))}
           <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--end" />
         </div>
-        <span className="datasets-admin-page__stepper-label">Passo 1/3</span>
+        <span className="datasets-admin-page__stepper-label">Passo 2/4</span>
       </div>
 
       {/* Main content area: form + auxiliar sidebar */}
@@ -118,21 +116,16 @@ export default function DatasetsAdminClient() {
         {/* Left: Form */}
         <div className="datasets-admin-page__form-area">
           {/* Info card */}
-          <div className="datasets-admin-page__info-card">
-            <Icon
-              name="agora-solid-info-circle"
-              className="datasets-admin-page__info-icon"
-            />
-            <div>
-              <p className="datasets-admin-page__info-title">
-                O que é uma API?
-              </p>
-              <p className="datasets-admin-page__info-description">
-                Uma API é uma ferramenta informática que permite que um website
-                ou software se comunique com outro computador e troque dados.
-              </p>
-            </div>
-          </div>
+          <StatusCard
+            type="info"
+            description={
+              <>
+                <strong>O que é um conjunto de dados?</strong>
+                <br />
+                Em data.gouv.fr, um conjunto de dados é um conjunto de arquivos.
+              </>
+            }
+          />
 
           <form className="datasets-admin-page__form">
             {/* Produtor Section */}
@@ -179,47 +172,50 @@ export default function DatasetsAdminClient() {
 
             <div className="datasets-admin-page__fields-group">
               <InputText
-                label="Nome da API*"
+                label="Título*"
                 placeholder="Placeholder"
                 id="api-name"
               />
               <InputText
-                label="Acrónimo"
+                label="Acrônimo"
                 placeholder="Placeholder"
                 id="api-acronym"
               />
               <InputTextArea
                 label="Descrição*"
                 placeholder="Placeholder"
-                id="api-description"
+                id="dataset-description"
                 rows={4}
                 maxLength={246}
               />
-              <InputText
-                label="Link raiz da API"
+              <InputTextArea
+                label="Descrição resumida"
                 placeholder="Placeholder"
-                id="api-root-link"
+                id="dataset-short-description"
+                rows={3}
               />
-              <InputText
-                label="Link para a documentação da API (arquivo OpenAPI ou Swagger)"
-                placeholder="Placeholder"
-                id="api-doc-openapi"
-              />
-              <InputText
-                label="Link para a documentação técnica da API"
-                placeholder="Placeholder"
-                id="api-doc-technical"
-              />
-              <InputText
-                label="Limite de chamadas"
-                placeholder="Placeholder"
-                id="api-rate-limit"
-              />
-              <InputText
-                label="Disponibilidade"
-                placeholder="Placeholder"
-                id="api-availability"
-              />
+              <p className="text-neutral-500 text-sm leading-relaxed -mt-2">
+                Se este campo for deixado em branco, serão utilizados os primeiros 200
+                caracteres da sua descrição.
+              </p>
+              <div className="w-1/2">
+                <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit" fullWidth>
+                  Sugira uma breve descrição.
+                </Button>
+              </div>
+
+              <InputSelect
+                label="Palavras-chave"
+                placeholder="Pesquise por uma palavra-chave..."
+                id="dataset-keywords"
+              >
+                <DropdownSection name="keywords">
+                  <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
+                </DropdownSection>
+              </InputSelect>
+              <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-sparkles">
+                Sugira palavras-chave
+              </Button>
             </div>
 
             {/* Acesso Section */}
@@ -230,20 +226,13 @@ export default function DatasetsAdminClient() {
                 <span className="text-primary-900 text-base font-medium leading-7">
                   Tipo de acesso
                 </span>
-                <div className="flex flex-col">
+                <div className="flex flex-row gap-4">
                   <RadioButton
                     label="Abrir"
                     id="access-open"
                     name="access-type"
                     checked={accessType === "open"}
                     onChange={() => setAccessType("open")}
-                  />
-                  <RadioButton
-                    label="Abrir com conta"
-                    id="access-account"
-                    name="access-type"
-                    checked={accessType === "account"}
-                    onChange={() => setAccessType("account")}
                   />
                   <RadioButton
                     label="Restrito"
@@ -254,16 +243,80 @@ export default function DatasetsAdminClient() {
                   />
                 </div>
               </div>
-              <InputText
-                label="Link para a ferramenta de autorização de acesso"
-                placeholder="Placeholder"
-                id="api-auth-tool"
-              />
-              <InputText
-                label="Link para a documentação comercial da API"
-                placeholder="Placeholder"
-                id="api-doc-commercial"
-              />
+
+              <InputSelect
+                label="Licença"
+                placeholder="Selecione uma licença"
+                id="dataset-license"
+              >
+                <DropdownSection name="licenses">
+                  <DropdownOption value="license1">Licença 1</DropdownOption>
+                </DropdownSection>
+              </InputSelect>
+            </div>
+
+            {/* Tempo Section */}
+            <h2 className="datasets-admin-page__section-title">Tempo</h2>
+
+            <div className="datasets-admin-page__fields-group">
+              <InputSelect
+                label="Frequência de atualização *"
+                placeholder="Procure uma frequência..."
+                id="dataset-frequency"
+              >
+                <DropdownSection name="frequencies">
+                  <DropdownOption value="daily">Diária</DropdownOption>
+                  <DropdownOption value="weekly">Semanal</DropdownOption>
+                  <DropdownOption value="monthly">Mensal</DropdownOption>
+                  <DropdownOption value="annual">Anual</DropdownOption>
+                </DropdownSection>
+              </InputSelect>
+
+              <span className="text-primary-900 text-base font-medium leading-7">
+                Cobertura temporal
+              </span>
+              <div className="flex gap-4">
+                <InputDate
+                  label="Começo"
+                  id="dataset-date-start"
+                  dayInputPlaceholder="dd"
+                  monthInputPlaceholder="mm"
+                  yearInputPlaceholder="aaaa"
+                  calendarIconAriaLabel="Abrir calendário"
+                  previousYearAriaLabel="Ano anterior"
+                  previousMonthAriaLabel="Mês anterior"
+                  nextMonthAriaLabel="Próximo mês"
+                  nextYearAriaLabel="Próximo ano"
+                  selectedDayAriaLabel="Dia selecionado"
+                  todayDayAriaLabel="Hoje"
+                  todayLabel="Hoje"
+                  cancelLabel="Cancelar"
+                  okLabel="OK"
+                  hideLabel
+                  hasIcon
+                  icon="agora-line-calendar"
+                />
+                <InputDate
+                  label="Fim"
+                  id="dataset-date-end"
+                  dayInputPlaceholder="dd"
+                  monthInputPlaceholder="mm"
+                  yearInputPlaceholder="aaaa"
+                  calendarIconAriaLabel="Abrir calendário"
+                  previousYearAriaLabel="Ano anterior"
+                  previousMonthAriaLabel="Mês anterior"
+                  nextMonthAriaLabel="Próximo mês"
+                  nextYearAriaLabel="Próximo ano"
+                  selectedDayAriaLabel="Dia selecionado"
+                  todayDayAriaLabel="Hoje"
+                  todayLabel="Hoje"
+                  cancelLabel="Cancelar"
+                  okLabel="OK"
+                  hideLabel
+                  hasIcon
+                  icon="agora-line-calendar"
+                />
+              </div>
             </div>
 
             {/* Submit button */}
@@ -284,7 +337,7 @@ export default function DatasetsAdminClient() {
           <div className="datasets-admin-page__auxiliar-inner">
             <div className="datasets-admin-page__auxiliar-header">
               <Icon
-                name="agora-line-help-support"
+                name="agora-line-question-mark"
                 className="w-[24px] h-[24px]"
               />
               <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
