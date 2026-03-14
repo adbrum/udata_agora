@@ -2,11 +2,19 @@
 
 import { Button, usePopupContext } from "@ama-pt/agora-design-system";
 import { logout } from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
 
 export function LogoutPopupContent() {
   const { hide } = usePopupContext();
+  const { samlLogin } = useAuth();
 
   const handleConfirm = async () => {
+    if (samlLogin) {
+      hide();
+      window.location.href = "/saml/logout";
+      return;
+    }
+
     try {
       await logout();
     } catch (error) {

@@ -32,7 +32,7 @@ export const Header = () => {
   const headerRef = useRef<any>(null);
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, samlLogin } = useAuth();
 
   // Create a DOM node for the "Desconectar" portal
   const [logoutPortalNode, setLogoutPortalNode] = useState<HTMLLIElement | null>(null);
@@ -641,6 +641,10 @@ export const Header = () => {
             href="#"
             onClick={async (e) => {
               e.preventDefault();
+              if (samlLogin) {
+                window.location.href = "/saml/logout";
+                return;
+              }
               await logout();
               window.location.href = "/";
             }}

@@ -22,7 +22,7 @@ import { logout } from "@/services/api";
 
 export function AdminHeader() {
   const [currentLang, setCurrentLang] = useState("pt");
-  const { user } = useAuth();
+  const { user, samlLogin } = useAuth();
 
   return (
     <div className="admin-header">
@@ -99,6 +99,10 @@ export function AdminHeader() {
                 leadingIconHover="agora-solid-log-out"
                 appearance="link"
                 onClick={async () => {
+                  if (samlLogin) {
+                    window.location.href = "/saml/logout";
+                    return;
+                  }
                   await logout();
                   window.location.href = "/";
                 }}
