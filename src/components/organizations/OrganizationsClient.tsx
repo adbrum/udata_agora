@@ -76,8 +76,13 @@ export default function OrganizationsClient({
     );
   }, [searchQuery, router, buildUrl]);
 
+  const sortInitRef = React.useRef(false);
   const handleSort = React.useCallback(
     (value: string) => {
+      if (!sortInitRef.current) {
+        sortInitRef.current = true;
+        return;
+      }
       const sortValue = SORT_OPTIONS[value] || null;
       router.replace(buildUrl({ sort: sortValue }), { scroll: false });
     },
