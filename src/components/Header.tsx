@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import NextImage from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
@@ -15,13 +16,7 @@ import {
   Language,
   Unauthenticated,
   UnauthenticatedLink,
-  Authenticated,
-  AuthenticatedHeader,
-  AuthenticatedBody,
-  AuthenticatedBodyLink,
-  AuthenticatedFooter,
-  AuthenticatedFooterAction,
-  usePopupContext,
+  Icon,
   NavigationBar,
   NavigationLink,
   NavigationRoot,
@@ -30,7 +25,7 @@ import {
 import SearchDropdown from '@/components/search/SearchDropdown';
 import { HeaderCard } from '@/components/HeaderCard';
 import { useAuth } from '@/context/AuthContext';
-import { LogoutPopupContent } from '@/components/LogoutPopupContent';
+import { logout } from '@/services/api';
 
 export const Header = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,7 +33,32 @@ export const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
-  const { show: showPopup } = usePopupContext();
+
+  // Create a DOM node for the "Desconectar" portal
+  const [logoutPortalNode, setLogoutPortalNode] = useState<HTMLLIElement | null>(null);
+  React.useEffect(() => {
+    const panelsList = document.querySelector("header.sticky .panels-menu > ul");
+    if (!panelsList) return;
+
+    if (user) {
+      let li = panelsList.querySelector(".logout-panel-menu") as HTMLLIElement | null;
+      if (!li) {
+        li = document.createElement("li");
+        li.className = "logout-panel-menu";
+        panelsList.appendChild(li);
+      }
+      setLogoutPortalNode(li);
+    } else {
+      const existing = panelsList.querySelector(".logout-panel-menu");
+      if (existing) existing.remove();
+      setLogoutPortalNode(null);
+    }
+
+    return () => {
+      panelsList.querySelector(".logout-panel-menu")?.remove();
+      setLogoutPortalNode(null);
+    };
+  }, [user]);
 
   const [selectedLanguage, setSelectedLanguage] = useState('pt');
   const [submenu, setSubmenu] = useState<string | null>(null);
@@ -145,7 +165,7 @@ export const Header = () => {
 
   const areas = [
     { value: '1', label: 'Portal' },
-    { value: '2', label: 'Área reservada' },
+    { value: '2', label: 'Iniciar Sessão' },
   ];
 
   const currentLangLabel =
@@ -300,6 +320,7 @@ export const Header = () => {
   };
 
   return (
+    <>
     <header className="sticky top-0 z-sticky" data-auth-page={isAuthPage || undefined} data-no-user={!user || undefined} onClickCapture={handleHeaderClickCapture}>
       <AgoraHeader ref={headerRef}>
         <Brand>
@@ -331,8 +352,8 @@ export const Header = () => {
             />
             <Area
               value="2"
-              label="Área reservada"
-              onClick={() => router.push('/pages/loginregister')}
+              label="Iniciar Sessão"
+              onClick={() => router.push('/pages/login')}
               active={selectedArea === '2'}
             />
           </Areas>
@@ -391,79 +412,6 @@ export const Header = () => {
               </Link>
             </UnauthenticatedLink>
           </Unauthenticated>
-          <Authenticated
-            avatarType="initials"
-            srcPath={
-              (user
-                ? (user.avatar_thumbnail ||
-                    `${user.first_name.charAt(0).toUpperCase()}${user.last_name.charAt(0).toUpperCase()}`)
-                : "") as unknown as undefined
-            }
-            hasBadge
-            badgePosition="top-right"
-            alt={user ? `${user.first_name} ${user.last_name}` : ""}
-            information={user ? `${user.first_name} ${user.last_name}` : ""}
-          >
-            <AuthenticatedHeader>
-              {user ? `${user.first_name} ${user.last_name}` : ""}
-            </AuthenticatedHeader>
-            <AuthenticatedBody>
-              <AuthenticatedBodyLink
-                hasIcon
-                leadingIcon="agora-line-user"
-                leadingIconHover="agora-solid-user"
-              >
-                <a href="/pages/admin/perfil">O meu perfil</a>
-              </AuthenticatedBodyLink>
-              <AuthenticatedBodyLink
-                hasIcon
-                leadingIcon="agora-line-settings"
-                leadingIconHover="agora-solid-settings"
-              >
-                <a href="/pages/admin/definicoes">As minhas definições</a>
-              </AuthenticatedBodyLink>
-              <AuthenticatedBodyLink
-                hasIcon
-                leadingIcon="agora-line-mega-phone"
-                leadingIconHover="agora-solid-mega-phone"
-              >
-                <a href="/pages/admin/notificacoes">Notificações</a>
-              </AuthenticatedBodyLink>
-            </AuthenticatedBody>
-            <AuthenticatedFooter>
-              <AuthenticatedFooterAction
-                hasIcon
-                leadingIcon="agora-line-trash"
-                leadingIconHover="agora-solid-trash"
-                variant="danger"
-                appearance="link"
-              >
-                Eliminar conta
-              </AuthenticatedFooterAction>
-              <AuthenticatedFooterAction
-                hasIcon
-                leadingIcon="agora-line-log-out"
-                leadingIconHover="agora-solid-log-out"
-                appearance="link"
-                onClick={() => {
-                  const backdrop = document.querySelector(
-                    ".authenticated-panel-menu-backdrop"
-                  ) as HTMLElement;
-                  if (backdrop) backdrop.click();
-
-                  setTimeout(() => {
-                    showPopup(<LogoutPopupContent />, {
-                      title: "Terminar sessão",
-                      closeAriaLabel: "Fechar",
-                      dimensions: "s",
-                    });
-                  }, 200);
-                }}
-              >
-                Terminar sessão
-              </AuthenticatedFooterAction>
-            </AuthenticatedFooter>
-          </Authenticated>
         </GeneralBar>
 
         <NavigationBar
@@ -685,5 +633,27 @@ export const Header = () => {
         </NavigationBar>
       </AgoraHeader>
     </header>
+    {logoutPortalNode && createPortal(
+      <div className="panel-menu unauthenticated-panel-menu">
+        <span className="agora-link-wrapper agora-link-wrapper-link-neutral full-width inline-flex items-center justify-center min-h-[44px] min-w-[44px] py-8 custom-header-link-wrapper panel-menu-link-wrapper">
+          <a
+            className="link-with-icon"
+            href="#"
+            onClick={async (e) => {
+              e.preventDefault();
+              await logout();
+              window.location.href = "/";
+            }}
+          >
+            <div className="icon-wrapper leading">
+              <Icon name="agora-line-log-out" dimensions="s" />
+            </div>
+            <span className="children-wrapper">Desconectar</span>
+          </a>
+        </span>
+      </div>,
+      logoutPortalNode
+    )}
+    </>
   );
 };

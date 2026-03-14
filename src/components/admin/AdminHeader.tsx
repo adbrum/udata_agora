@@ -16,14 +16,12 @@ import {
   AuthenticatedBodyLink,
   AuthenticatedFooter,
   AuthenticatedFooterAction,
-  usePopupContext,
 } from "@ama-pt/agora-design-system";
-import { LogoutPopupContent } from "@/components/LogoutPopupContent";
 import { useAuth } from "@/context/AuthContext";
+import { logout } from "@/services/api";
 
 export function AdminHeader() {
   const [currentLang, setCurrentLang] = useState("pt");
-  const { show: showPopup } = usePopupContext();
   const { user } = useAuth();
 
   return (
@@ -100,20 +98,9 @@ export function AdminHeader() {
                 leadingIcon="agora-line-log-out"
                 leadingIconHover="agora-solid-log-out"
                 appearance="link"
-                onClick={() => {
-                  // Close the authenticated panel
-                  const backdrop = document.querySelector(
-                    ".authenticated-panel-menu-backdrop"
-                  ) as HTMLElement;
-                  if (backdrop) backdrop.click();
-
-                  setTimeout(() => {
-                    showPopup(<LogoutPopupContent />, {
-                      title: "Terminar sessão",
-                      closeAriaLabel: "Fechar",
-                      dimensions: "s",
-                    });
-                  }, 200);
+                onClick={async () => {
+                  await logout();
+                  window.location.href = "/";
                 }}
               >
                 Terminar sessão

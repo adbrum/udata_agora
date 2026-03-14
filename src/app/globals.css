@@ -1085,24 +1085,6 @@ body:has(.admin-wrapper) footer:last-child {
   }
 }
 
-/* Force order in general bar (row-reverse): Language → Administração → Avatar */
-/* row-reverse means lowest order appears rightmost */
-.general-bar .languages-panel-menu {
-  order: 3;
-}
-
-.general-bar .unauthenticated-panel-menu {
-  order: 2;
-}
-
-.general-bar .authenticated-panel-menu {
-  order: 1;
-}
-
-/* Hide authenticated avatar when user is not logged in */
-header[data-no-user] .authenticated-panel-menu {
-  display: none !important;
-}
 
 /* Ensure popup dialog appears above header and authenticated panel overlays */
 .agora-dialog {
