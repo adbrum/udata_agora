@@ -76,18 +76,17 @@ export default function OrganizationsClient({
     );
   }, [searchQuery, router, buildUrl]);
 
-  const sortInitRef = React.useRef(false);
-  const handleSort = React.useCallback(
-    (value: string) => {
-      if (!sortInitRef.current) {
-        sortInitRef.current = true;
-        return;
-      }
-      const sortValue = SORT_OPTIONS[value] || null;
-      router.replace(buildUrl({ sort: sortValue }), { scroll: false });
-    },
-    [router, buildUrl]
-  );
+  const [selectedSort, setSelectedSort] = React.useState(currentSortKey);
+  const isInitialSort = React.useRef(true);
+
+  React.useEffect(() => {
+    if (isInitialSort.current) {
+      isInitialSort.current = false;
+      return;
+    }
+    const sortValue = SORT_OPTIONS[selectedSort] || null;
+    router.replace(buildUrl({ sort: sortValue }), { scroll: false });
+  }, [selectedSort, router, buildUrl]);
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters organization">
@@ -145,7 +144,7 @@ export default function OrganizationsClient({
                       id="sort-organizations"
                       defaultValue={currentSortKey}
                       className="selectOrganization"
-                      onChange={(value: string) => handleSort(value)}
+                      onChange={(value: string) => setSelectedSort(value)}
                     >
                       <DropdownSection name="order">
                         <DropdownOption value="relevancia">Por relevância</DropdownOption>
