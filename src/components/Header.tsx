@@ -469,8 +469,8 @@ export const Header = () => {
                 href: "/pages/datasets",
               },
               {
-                iconDefault: "agora-line-document",
-                iconHover: "agora-solid-document",
+                iconDefault: "agora-line-health",
+                iconHover: "agora-solid-health",
                 title: "HVDs",
                 description: "High Value Datasets",
                 href: "#",
