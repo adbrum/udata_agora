@@ -35,6 +35,37 @@ const SORT_OPTIONS: Record<string, string> = {
   recentes: '-last_modified',
 };
 
+const SortSelect = React.memo(function SortSelect({
+  currentSortKey,
+  onChange,
+}: {
+  currentSortKey: string;
+  onChange: (options: { value: string }[]) => void;
+}) {
+  const [initialKey] = React.useState(currentSortKey);
+
+  return (
+    <InputSelect
+      label="Ordenar por:"
+      id="sort-organizations"
+      className="selectOrganization"
+      onChange={onChange}
+    >
+      <DropdownSection name="order">
+        <DropdownOption value="relevancia" selected={initialKey === 'relevancia'}>
+          Por relevância
+        </DropdownOption>
+        <DropdownOption value="alfabetica" selected={initialKey === 'alfabetica'}>
+          Ordem alfabética
+        </DropdownOption>
+        <DropdownOption value="recentes" selected={initialKey === 'recentes'}>
+          Mais recentes
+        </DropdownOption>
+      </DropdownSection>
+    </InputSelect>
+  );
+});
+
 export default function OrganizationsClient({
   initialData,
   currentPage,
@@ -146,24 +177,7 @@ export default function OrganizationsClient({
                     {total.toLocaleString('pt-PT')} Resultados
                   </span>
                   <div className="w-full md:w-auto xl:col-span-6">
-                    <InputSelect
-                      label="Ordenar por:"
-                      id="sort-organizations"
-                      className="selectOrganization"
-                      onChange={handleSort}
-                    >
-                      <DropdownSection name="order">
-                        <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
-                          Por relevância
-                        </DropdownOption>
-                        <DropdownOption value="alfabetica" selected={currentSortKey === 'alfabetica'}>
-                          Ordem alfabética
-                        </DropdownOption>
-                        <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
-                          Mais recentes
-                        </DropdownOption>
-                      </DropdownSection>
-                    </InputSelect>
+                    <SortSelect currentSortKey={currentSortKey} onChange={handleSort} />
                   </div>
                 </div>
 
