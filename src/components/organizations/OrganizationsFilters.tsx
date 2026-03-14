@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Sidebar, SidebarItem, Checkbox, InputSearch, Icon, Toggle, Pill } from '@ama-pt/agora-design-system';
 import { SiteMetrics } from '@/types/api';
 
@@ -9,8 +10,9 @@ interface OrganizationsFiltersProps {
 }
 
 export const OrganizationsFilters = ({ siteMetrics }: OrganizationsFiltersProps) => {
+  const router = useRouter();
   const [searchQueries, setSearchQueries] = React.useState<Record<string, string>>({});
-  const [activeTab, setActiveTab] = React.useState('reutilizacoes');
+  const [activeTab, setActiveTab] = React.useState('organizacoes');
 
   const handleSearchChange = (groupName: string, value: string) => {
     setSearchQueries((prev) => ({
@@ -38,7 +40,7 @@ export const OrganizationsFilters = ({ siteMetrics }: OrganizationsFiltersProps)
           leadingIcon={activeTab === 'reutilizacoes' ? "/Icons/bar_char_white.svg" : "/Icons/bar_chart.svg"}
           leadingIconHover="/Icons/bar_char_white.svg"
           checked={activeTab === 'reutilizacoes'}
-          onChange={() => setActiveTab('reutilizacoes')}
+          onChange={() => { setActiveTab('reutilizacoes'); router.push('/pages/reuses'); }}
           iconOnly={false}
           fullWidth={true}
           className="w-full agora-toggle agora-toggle-icon agora-toggle-icon-primary full-width has-icon"
@@ -69,7 +71,7 @@ export const OrganizationsFilters = ({ siteMetrics }: OrganizationsFiltersProps)
           leadingIcon="agora-line-hardware-settings"
           leadingIconHover="agora-solid-hardware-settings"
           checked={activeTab === 'datasets'}
-          onChange={() => setActiveTab('datasets')}
+          onChange={() => { setActiveTab('datasets'); router.push('/pages/datasets'); }}
           iconOnly={false}
           fullWidth={true}
           className="w-full"
@@ -100,7 +102,7 @@ export const OrganizationsFilters = ({ siteMetrics }: OrganizationsFiltersProps)
           leadingIcon="agora-line-star"
           leadingIconHover="agora-solid-star"
           checked={activeTab === 'apis'}
-          onChange={() => setActiveTab('apis')}
+          onChange={() => { setActiveTab('apis'); router.push('/pages/dataservices'); }}
           iconOnly={false}
           fullWidth={true}
           className="w-full"
