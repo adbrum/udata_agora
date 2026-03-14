@@ -82,7 +82,9 @@ export default function OrganizationsClient({
       if (!selected) return;
       const sortValue = SORT_OPTIONS[selected] || null;
       if (sortValue === (currentSort || null)) return;
-      router.replace(buildUrl({ sort: sortValue }), { scroll: false });
+      setTimeout(() => {
+        router.replace(buildUrl({ sort: sortValue }), { scroll: false });
+      }, 0);
     },
     [router, buildUrl, currentSort]
   );
