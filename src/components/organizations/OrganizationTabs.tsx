@@ -46,7 +46,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
 
   useEffect(() => {
     async function loadDatasets() {
-      setIsLoadingDatasets(true);
+      if (!datasetsResponse) setIsLoadingDatasets(true);
       try {
         const response = await fetchOrgDatasets(organization.slug, datasetsPage, 20);
         setDatasetsResponse(response);
@@ -57,11 +57,12 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
       }
     }
     loadDatasets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organization.slug, datasetsPage]);
 
   useEffect(() => {
     async function loadDataservices() {
-      setIsLoadingDataservices(true);
+      if (!dataservicesResponse) setIsLoadingDataservices(true);
       try {
         const response = await fetchOrgDataservices(
           organization.id,
@@ -76,6 +77,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
       }
     }
     loadDataservices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organization.id, dataservicesPage]);
 
   useEffect(() => {
