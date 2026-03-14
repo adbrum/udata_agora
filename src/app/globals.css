@@ -1182,16 +1182,26 @@ header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-lin
 /* Profile card */
 /* Admin tabs overrides */
 .datasets-admin-page .agora-tabs.desktop .tab-panel.current-neutral,
-.datasets-admin-page .agora-tabs.desktop .tab-list.desktop .tab-list-item.active.current-neutral {
+.datasets-admin-page .agora-tabs.desktop .tab-list.desktop .tab-list-item.active.current-neutral,
+.datasets-admin-page .agora-tabs.desktop .tab-list.desktop .tab-list-item.current-neutral {
   background-color: transparent;
 }
 
 .datasets-admin-page .tab-panel-content {
   padding: 0;
+  background-color: transparent;
 }
 
 .datasets-admin-page .tab-panel-content::before {
   display: none;
+}
+
+.datasets-admin-page .tab-panel-content::after {
+  display: none;
+}
+
+.datasets-admin-page .agora-tabs .tab-panel {
+  background-color: transparent;
 }
 
 /* Statistics */
