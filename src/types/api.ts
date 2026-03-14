@@ -9,6 +9,19 @@ export interface UserRef {
   page: string;
 }
 
+export interface User extends UserRef {
+  email: string | null;
+  website: string | null;
+  about: string | null;
+  roles: string[];
+  active: boolean;
+  organizations: Organization[];
+  since: string;
+  last_login_at: string | null;
+  metrics: Record<string, number>;
+  apikey: string | null;
+}
+
 export interface OrganizationMember {
   user: UserRef;
   role: string;
