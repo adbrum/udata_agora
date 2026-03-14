@@ -8,9 +8,6 @@ import {
   InputSearchBar,
   Icon,
   CardLinks,
-  InputSelect,
-  DropdownSection,
-  DropdownOption,
   CardNoResults
 } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
@@ -76,17 +73,10 @@ export default function OrganizationsClient({
     );
   }, [searchQuery, router, buildUrl]);
 
-  const [selectedSort, setSelectedSort] = React.useState(currentSortKey);
-  const isInitialSort = React.useRef(true);
-
-  React.useEffect(() => {
-    if (isInitialSort.current) {
-      isInitialSort.current = false;
-      return;
-    }
-    const sortValue = SORT_OPTIONS[selectedSort] || null;
+  const handleSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const sortValue = SORT_OPTIONS[e.target.value] || null;
     router.replace(buildUrl({ sort: sortValue }), { scroll: false });
-  }, [selectedSort, router, buildUrl]);
+  };
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters organization">
@@ -139,19 +129,22 @@ export default function OrganizationsClient({
                     {total.toLocaleString('pt-PT')} Resultados
                   </span>
                   <div className="w-full md:w-auto xl:col-span-6">
-                    <InputSelect
-                      label="Ordenar por:"
-                      id="sort-organizations"
-                      defaultValue={currentSortKey}
-                      className="selectOrganization"
-                      onChange={(value: string) => setSelectedSort(value)}
+                    <label
+                      htmlFor="sort-organizations"
+                      className="text-s-regular text-neutral-700 mb-4 block"
                     >
-                      <DropdownSection name="order">
-                        <DropdownOption value="relevancia">Por relevância</DropdownOption>
-                        <DropdownOption value="alfabetica">Ordem alfabética</DropdownOption>
-                        <DropdownOption value="recentes">Mais recentes</DropdownOption>
-                      </DropdownSection>
-                    </InputSelect>
+                      Ordenar por:
+                    </label>
+                    <select
+                      id="sort-organizations"
+                      value={currentSortKey}
+                      onChange={handleSort}
+                      className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="relevancia">Por relevância</option>
+                      <option value="alfabetica">Ordem alfabética</option>
+                      <option value="recentes">Mais recentes</option>
+                    </select>
                   </div>
                 </div>
 
