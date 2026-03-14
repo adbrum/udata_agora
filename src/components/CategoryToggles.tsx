@@ -95,7 +95,7 @@ export const CategoryToggles = ({ siteMetrics }: CategoryTogglesProps) => {
             leadingIconHover={item.leadingIconHover}
             checked={isActive}
             onChange={() => {
-              if (!isActive) router.push(item.href);
+              router.push(item.href);
             }}
             iconOnly={false}
             fullWidth={true}
