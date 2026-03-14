@@ -21,6 +21,7 @@ import {
   ReuseType,
   SiteInfo,
   TagSuggestion,
+  User,
   UserRef,
 } from "@/types/api";
 
@@ -89,7 +90,7 @@ export async function logout(): Promise<void> {
 /**
  * Fetch the currently authenticated user profile
  */
-export async function fetchCurrentUser(): Promise<UserRef | null> {
+export async function fetchCurrentUser(): Promise<User | null> {
   try {
     const res = await fetch("/me", { cache: "no-store" });
     if (!res.ok) return null;
