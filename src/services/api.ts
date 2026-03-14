@@ -25,10 +25,10 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/a
  * Fetch CSRF token from backend
  */
 export async function fetchCsrfToken(): Promise<string> {
-  const res = await fetch("/get-csrf", { cache: "no-store" });
+  const res = await fetch("/csrf", { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch CSRF token");
   const data = await res.json();
-  return data.response.csrf_token;
+  return data.csrf_token;
 }
 
 /**

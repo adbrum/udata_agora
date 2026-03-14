@@ -100,13 +100,21 @@ export function AdminHeader() {
                 leadingIcon="agora-line-log-out"
                 leadingIconHover="agora-solid-log-out"
                 appearance="link"
-                onClick={() =>
-                  showPopup(<LogoutPopupContent />, {
-                    title: "Terminar sessão",
-                    closeAriaLabel: "Fechar",
-                    dimensions: "s",
-                  })
-                }
+                onClick={() => {
+                  // Close the authenticated panel
+                  const backdrop = document.querySelector(
+                    ".authenticated-panel-menu-backdrop"
+                  ) as HTMLElement;
+                  if (backdrop) backdrop.click();
+
+                  setTimeout(() => {
+                    showPopup(<LogoutPopupContent />, {
+                      title: "Terminar sessão",
+                      closeAriaLabel: "Fechar",
+                      dimensions: "s",
+                    });
+                  }, 200);
+                }}
               >
                 Terminar sessão
               </AuthenticatedFooterAction>

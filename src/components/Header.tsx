@@ -13,32 +13,32 @@ import {
   Area,
   Languages,
   Language,
+  Unauthenticated,
+  UnauthenticatedLink,
   Authenticated,
   AuthenticatedHeader,
   AuthenticatedBody,
   AuthenticatedBodyLink,
   AuthenticatedFooter,
   AuthenticatedFooterAction,
-  Unauthenticated,
-  UnauthenticatedLink,
+  usePopupContext,
   NavigationBar,
   NavigationLink,
   NavigationRoot,
   Button,
-  usePopupContext,
 } from '@ama-pt/agora-design-system';
 import SearchDropdown from '@/components/search/SearchDropdown';
 import { HeaderCard } from '@/components/HeaderCard';
-import { LogoutPopupContent } from '@/components/LogoutPopupContent';
 import { useAuth } from '@/context/AuthContext';
+import { LogoutPopupContent } from '@/components/LogoutPopupContent';
 
 export const Header = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const headerRef = useRef<any>(null);
   const router = useRouter();
   const pathname = usePathname();
-  const { show: showPopup } = usePopupContext();
   const { user } = useAuth();
+  const { show: showPopup } = usePopupContext();
 
   const [selectedLanguage, setSelectedLanguage] = useState('pt');
   const [submenu, setSubmenu] = useState<string | null>(null);
@@ -75,40 +75,8 @@ export const Header = () => {
     return () => clearTimeout(timer);
   }, [pathname]);
 
-  // Apply hover styles to "Inscrever-se" button when on loginregister page
-  React.useEffect(() => {
-    if (pathname !== '/pages/loginregister') return;
-
-    const applyActiveStyles = () => {
-      const btn = document.querySelector('.unauthenticated-panel-menu > .agora-btn') as HTMLElement;
-      if (!btn) return;
-
-      // Text color
-      const childrenWrapper = btn.querySelector('.children-wrapper') as HTMLElement;
-      if (childrenWrapper) childrenWrapper.style.color = 'var(--color-primary-600)';
-
-      // Underline
-      btn.style.textDecorationLine = 'underline';
-      btn.style.textDecorationStyle = 'solid';
-      btn.style.textDecorationThickness = '0.094rem';
-      btn.style.textUnderlineOffset = '0.388rem';
-      btn.style.textDecorationColor = 'var(--color-primary-600)';
-
-      // Icon swap: hide line, show solid
-      const lineIcon = btn.querySelector('.icon-wrapper .line') as HTMLElement;
-      const solidIcon = btn.querySelector('.icon-wrapper .solid') as HTMLElement;
-      if (lineIcon) lineIcon.style.display = 'none';
-      if (solidIcon) solidIcon.style.display = 'block';
-
-      // Icon fill
-      const svgs = btn.querySelectorAll('.icon-wrapper svg');
-      svgs.forEach((svg) => ((svg as HTMLElement).style.fill = 'var(--color-primary-600)'));
-    };
-
-    // Wait for design system to render
-    const timer = setTimeout(applyActiveStyles, 150);
-    return () => clearTimeout(timer);
-  }, [pathname]);
+  // Mark header when on auth pages so CSS can style the "Autenticar" button
+  const isAuthPage = pathname === '/pages/loginregister' || pathname === '/pages/login';
 
   // Reset submenu when clicking anywhere outside the card grid (.links)
   const handleHeaderClickCapture = React.useCallback(
@@ -177,7 +145,7 @@ export const Header = () => {
 
   const areas = [
     { value: '1', label: 'Portal' },
-    { value: '2', label: 'Iniciar Sessão' },
+    { value: '2', label: 'Área reservada' },
   ];
 
   const currentLangLabel =
@@ -332,7 +300,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-sticky" onClickCapture={handleHeaderClickCapture}>
+    <header className="sticky top-0 z-sticky" data-auth-page={isAuthPage || undefined} data-no-user={!user || undefined} onClickCapture={handleHeaderClickCapture}>
       <AgoraHeader ref={headerRef}>
         <Brand>
           <Logo>
@@ -363,8 +331,8 @@ export const Header = () => {
             />
             <Area
               value="2"
-              label="Iniciar Sessão"
-              onClick={() => router.push('/pages/login')}
+              label="Área reservada"
+              onClick={() => router.push('/pages/loginregister')}
               active={selectedArea === '2'}
             />
           </Areas>
@@ -409,82 +377,93 @@ export const Header = () => {
             />
           </div>
 
-          {user ? (
-            <Authenticated
-              avatarType={user.avatar_thumbnail ? "image" : "initials"}
-              srcPath={
-                (user.avatar_thumbnail ||
-                  `${user.first_name.charAt(0).toUpperCase()}${user.last_name.charAt(0).toUpperCase()}`) as unknown as undefined
-              }
-              hasBadge
-              badgePosition="top-right"
-              alt={`${user.first_name} ${user.last_name}`}
-              information={`${user.first_name} ${user.last_name}`}
+          <Unauthenticated
+            label={user ? "Administração" : "Autenticar"}
+            aria-label={user ? "Administração" : "Autenticar"}
+          >
+            <UnauthenticatedLink
+              hasIcon
+              leadingIcon="agora-line-user"
+              leadingIconHover="agora-solid-user"
             >
-              <AuthenticatedHeader>
-                {user.first_name} {user.last_name}
-              </AuthenticatedHeader>
-              <AuthenticatedBody>
-                <AuthenticatedBodyLink
-                  hasIcon
-                  leadingIcon="agora-line-user"
-                  leadingIconHover="agora-solid-user"
-                >
-                  <a href="/pages/admin/perfil">O meu perfil</a>
-                </AuthenticatedBodyLink>
-                <AuthenticatedBodyLink
-                  hasIcon
-                  leadingIcon="agora-line-settings"
-                  leadingIconHover="agora-solid-settings"
-                >
-                  <a href="/pages/admin/definicoes">As minhas definições</a>
-                </AuthenticatedBodyLink>
-                <AuthenticatedBodyLink
-                  hasIcon
-                  leadingIcon="agora-line-mega-phone"
-                  leadingIconHover="agora-solid-mega-phone"
-                >
-                  <a href="/pages/admin/notificacoes">Notificações</a>
-                </AuthenticatedBodyLink>
-              </AuthenticatedBody>
-              <AuthenticatedFooter>
-                <AuthenticatedFooterAction
-                  hasIcon
-                  leadingIcon="agora-line-trash"
-                  leadingIconHover="agora-solid-trash"
-                  variant="danger"
-                  appearance="link"
-                >
-                  Eliminar conta
-                </AuthenticatedFooterAction>
-                <AuthenticatedFooterAction
-                  hasIcon
-                  leadingIcon="agora-line-log-out"
-                  leadingIconHover="agora-solid-log-out"
-                  appearance="link"
-                  onClick={() =>
-                    showPopup(<LogoutPopupContent />, {
-                      title: "Terminar sessão",
-                      closeAriaLabel: "Fechar",
-                      dimensions: "s",
-                    })
-                  }
-                >
-                  Terminar sessão
-                </AuthenticatedFooterAction>
-              </AuthenticatedFooter>
-            </Authenticated>
-          ) : (
-            <Unauthenticated label="Inscrever-se" aria-label="Registar">
-              <UnauthenticatedLink
+              <Link href={user ? "/pages/admin/me/datasets" : "/pages/loginregister"}>
+                {user ? "Administração" : "Autenticar"}
+              </Link>
+            </UnauthenticatedLink>
+          </Unauthenticated>
+          <Authenticated
+            avatarType="initials"
+            srcPath={
+              (user
+                ? (user.avatar_thumbnail ||
+                    `${user.first_name.charAt(0).toUpperCase()}${user.last_name.charAt(0).toUpperCase()}`)
+                : "") as unknown as undefined
+            }
+            hasBadge
+            badgePosition="top-right"
+            alt={user ? `${user.first_name} ${user.last_name}` : ""}
+            information={user ? `${user.first_name} ${user.last_name}` : ""}
+          >
+            <AuthenticatedHeader>
+              {user ? `${user.first_name} ${user.last_name}` : ""}
+            </AuthenticatedHeader>
+            <AuthenticatedBody>
+              <AuthenticatedBodyLink
                 hasIcon
                 leadingIcon="agora-line-user"
                 leadingIconHover="agora-solid-user"
               >
-                <Link href="/pages/loginregister">Inscrever-se</Link>
-              </UnauthenticatedLink>
-            </Unauthenticated>
-          )}
+                <a href="/pages/admin/perfil">O meu perfil</a>
+              </AuthenticatedBodyLink>
+              <AuthenticatedBodyLink
+                hasIcon
+                leadingIcon="agora-line-settings"
+                leadingIconHover="agora-solid-settings"
+              >
+                <a href="/pages/admin/definicoes">As minhas definições</a>
+              </AuthenticatedBodyLink>
+              <AuthenticatedBodyLink
+                hasIcon
+                leadingIcon="agora-line-mega-phone"
+                leadingIconHover="agora-solid-mega-phone"
+              >
+                <a href="/pages/admin/notificacoes">Notificações</a>
+              </AuthenticatedBodyLink>
+            </AuthenticatedBody>
+            <AuthenticatedFooter>
+              <AuthenticatedFooterAction
+                hasIcon
+                leadingIcon="agora-line-trash"
+                leadingIconHover="agora-solid-trash"
+                variant="danger"
+                appearance="link"
+              >
+                Eliminar conta
+              </AuthenticatedFooterAction>
+              <AuthenticatedFooterAction
+                hasIcon
+                leadingIcon="agora-line-log-out"
+                leadingIconHover="agora-solid-log-out"
+                appearance="link"
+                onClick={() => {
+                  const backdrop = document.querySelector(
+                    ".authenticated-panel-menu-backdrop"
+                  ) as HTMLElement;
+                  if (backdrop) backdrop.click();
+
+                  setTimeout(() => {
+                    showPopup(<LogoutPopupContent />, {
+                      title: "Terminar sessão",
+                      closeAriaLabel: "Fechar",
+                      dimensions: "s",
+                    });
+                  }, 200);
+                }}
+              >
+                Terminar sessão
+              </AuthenticatedFooterAction>
+            </AuthenticatedFooter>
+          </Authenticated>
         </GeneralBar>
 
         <NavigationBar

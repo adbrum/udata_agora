@@ -22,9 +22,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function loadUser() {
       try {
         const currentUser = await fetchCurrentUser();
+        console.log("[AuthContext] fetchCurrentUser result:", currentUser);
         setUser(currentUser);
       } catch (error) {
-        console.error("Error fetching current user:", error);
+        console.error("[AuthContext] Error fetching current user:", error);
       } finally {
         setIsLoading(false);
       }
