@@ -77,7 +77,7 @@ export default function ReusesFormClient({
     {
       title: "Escolha uma imagem",
       content:
-        'Se a sua reutilização assumir a forma de uma representação gráfica, você pode fornecer uma pré-visualização para outros usuários usando uma imagem ou captura de tela. Essa imagem aparecerá na seção "Reutilizações" da página do conjunto de dados associado. Quando relevante, as capturas de tela ilustram melhor a reutilização e, portanto, são preferíveis a logotipos ou ilustrações, por exemplo.',
+        'Se a sua reutilização assumir a forma de uma representação gráfica, você pode fornecer uma pré-visualização para outros utilizadores usando uma imagem ou captura de tela. Essa imagem aparecerá na seção "Reutilizações" da página do conjunto de dados associado. Quando relevante, as capturas de tela ilustram melhor a reutilização e, portanto, são preferíveis a logotipos ou ilustrações, por exemplo.',
     },
   ];
 
