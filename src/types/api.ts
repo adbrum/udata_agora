@@ -55,8 +55,8 @@ export interface OrganizationSuggestion {
   score: number;
 }
 
-export interface OrgBadge {
-  kind: string;
+export interface OrgBadges {
+  [kind: string]: string;
 }
 
 export interface OrganizationFilters {

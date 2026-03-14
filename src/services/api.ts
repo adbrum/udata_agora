@@ -10,7 +10,7 @@ import {
   Frequency,
   GlobalSearchSuggestion,
   License,
-  OrgBadge,
+  OrgBadges,
   Organization,
   OrganizationFilters,
   OrganizationSuggestion,
@@ -209,14 +209,14 @@ export async function suggestOrganizations(
   }
 }
 
-export async function fetchOrgBadges(): Promise<OrgBadge[]> {
+export async function fetchOrgBadges(): Promise<OrgBadges> {
   try {
     const res = await fetch(`${API_BASE_URL}/organizations/badges/`, { cache: "no-store" });
     if (!res.ok) throw new Error(`Failed to fetch org badges: ${res.statusText}`);
     return await res.json();
   } catch (error) {
     console.error("Error fetching org badges:", error);
-    return [];
+    return {};
   }
 }
 

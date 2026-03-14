@@ -1,23 +1,46 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Sidebar, SidebarItem, Checkbox, InputSearch, Icon } from '@ama-pt/agora-design-system';
-import { Organization, SiteMetrics } from '@/types/api';
+import { OrgBadges, SiteMetrics } from '@/types/api';
 import { CategoryToggles } from '@/components/CategoryToggles';
 
 interface OrganizationsFiltersProps {
   siteMetrics: SiteMetrics;
-  organizations: Organization[];
+  orgBadges: OrgBadges;
 }
 
-export const OrganizationsFilters = ({ siteMetrics, organizations }: OrganizationsFiltersProps) => {
+export const OrganizationsFilters = ({ siteMetrics, orgBadges }: OrganizationsFiltersProps) => {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = React.useState('');
 
-  const filteredOrgs = searchQuery.trim()
-    ? organizations.filter((org) =>
-        org.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const params = new URLSearchParams(
+    typeof window !== 'undefined' ? window.location.search : ''
+  );
+  const activeBadge = params.get('badge') || '';
+
+  const entries = Object.entries(orgBadges);
+
+  const filteredEntries = searchQuery.trim()
+    ? entries.filter(([, label]) =>
+        label.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : organizations;
+    : entries;
+
+  const handleBadgeChange = (kind: string, checked: boolean) => {
+    const newParams = new URLSearchParams(
+      typeof window !== 'undefined' ? window.location.search : ''
+    );
+    if (checked) {
+      newParams.set('badge', kind);
+    } else {
+      newParams.delete('badge');
+    }
+    newParams.set('page', '1');
+    const qs = newParams.toString();
+    router.replace(`/pages/organizations${qs ? `?${qs}` : ''}`, { scroll: false });
+  };
 
   return (
     <div className="h-full organizations-filters">
@@ -39,12 +62,12 @@ export const OrganizationsFilters = ({ siteMetrics, organizations }: Organizatio
           }}
         >
           <div className="mt-16">
-            {organizations.length > 10 && (
+            {entries.length > 10 && (
               <div className="mb-4 mt-8 relative">
                 <InputSearch
-                  label="Pesquisar organização"
+                  label="Pesquisar badge"
                   hideLabel
-                  placeholder="Pesquisar organização"
+                  placeholder="Pesquisar"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -55,18 +78,22 @@ export const OrganizationsFilters = ({ siteMetrics, organizations }: Organizatio
                 />
               </div>
             )}
-            <div className="flex flex-col gap-12 mt-16 pb-16 max-h-[400px] overflow-y-auto">
-              {filteredOrgs.map((org) => (
+            <div className="flex flex-col gap-12 mt-16 pb-16">
+              {filteredEntries.map(([kind, label]) => (
                 <Checkbox
-                  key={org.id}
-                  label={org.name}
-                  value={org.id}
+                  key={kind}
+                  label={label}
+                  value={kind}
+                  checked={activeBadge === kind}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleBadgeChange(kind, e.target.checked)
+                  }
                   className="font-bold"
                 />
               ))}
-              {filteredOrgs.length === 0 && (
+              {filteredEntries.length === 0 && (
                 <span className="text-sm text-neutral-500">
-                  Nenhuma organização encontrada.
+                  Nenhum badge encontrado.
                 </span>
               )}
             </div>
