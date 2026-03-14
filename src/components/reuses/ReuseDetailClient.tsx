@@ -181,9 +181,18 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                         {reuse.organization?.name || 'Sem organização'}
                       </div>
                     )}
-                    <div className="text-sm font-medium underline cursor-pointer">
-                      {reuse.organization?.name || reuse.owner?.first_name || ''}
-                    </div>
+                    {reuse.organization ? (
+                      <Link
+                        href={`/pages/organizations/${reuse.organization.slug}`}
+                        className="text-sm font-medium underline text-primary-600 hover:text-primary-800"
+                      >
+                        {reuse.organization.name}
+                      </Link>
+                    ) : reuse.owner ? (
+                      <span className="text-sm font-medium">
+                        {reuse.owner.first_name} {reuse.owner.last_name}
+                      </span>
+                    ) : null}
                   </div>
                 }
               >
