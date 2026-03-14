@@ -16,6 +16,9 @@ import {
   OrganizationSuggestion,
   Post,
   Reuse,
+  ReuseFilters,
+  ReuseSuggestion,
+  ReuseType,
   SiteInfo,
   TagSuggestion,
   UserRef,
@@ -352,10 +355,23 @@ export async function fetchOrgDataservices(
 
 export async function fetchReuses(
   page: number = 1,
-  pageSize: number = 20
+  pageSize: number = 20,
+  filters?: ReuseFilters
 ): Promise<APIResponse<Reuse>> {
   try {
-    const url = `${API_BASE_URL}/reuses/?page=${page}&page_size=${pageSize}`;
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("page_size", String(pageSize));
+
+    if (filters) {
+      if (filters.q) params.set("q", filters.q);
+      if (filters.type) params.set("type", filters.type);
+      if (filters.tag) params.set("tag", filters.tag);
+      if (filters.organization) params.set("organization", filters.organization);
+      if (filters.sort) params.set("sort", filters.sort);
+    }
+
+    const url = `${API_BASE_URL}/reuses/?${params.toString()}`;
     const res = await fetch(url, {
       cache: "no-store",
     });
