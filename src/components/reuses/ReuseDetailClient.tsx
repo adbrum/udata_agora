@@ -301,7 +301,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
 
       {/* Associated Datasets */}
       {datasetRefs.length > 0 && (
-        <section className="bg-neutral-000 py-64">
+        <section className="bg-neutral-50 py-64">
           <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
             <div className="mb-80">
               <h2 className="text-xl font-bold text-[#000032] mb-32">
