@@ -19,7 +19,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "Conjunto de dados",
-    href: "/pages/admin/datasetsadmin",
+    href: "/pages/admin/datasets",
     icon: "agora-line-file",
   },
   {
