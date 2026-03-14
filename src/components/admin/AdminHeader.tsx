@@ -1,83 +1,102 @@
 "use client";
 
-import React, { useState } from "react";
-import { Icon } from "@ama-pt/agora-design-system";
-import SearchDropdown from "@/components/search/SearchDropdown";
+import { useState } from "react";
+import {
+  Header,
+  GeneralBar,
+  Languages,
+  Language,
+  Search,
+  DefaultSearch,
+  SearchInputContainer,
+  InputSearchBar,
+  Authenticated,
+  AuthenticatedHeader,
+  AuthenticatedBody,
+  AuthenticatedBodyLink,
+  AuthenticatedFooter,
+  AuthenticatedFooterAction,
+} from "@ama-pt/agora-design-system";
 
 export function AdminHeader() {
-  const [langOpen, setLangOpen] = useState(false);
-  const [selectedLang, setSelectedLang] = useState("Português");
-
-  const languages = [
-    { value: "pt", label: "Português" },
-    { value: "en", label: "Inglês" },
-    { value: "es", label: "Espanhol" },
-    { value: "fr", label: "Francês" },
-  ];
-
-  const handleLangSelect = (lang: { value: string; label: string }) => {
-    setSelectedLang(lang.label);
-    setLangOpen(false);
-  };
+  const [currentLang, setCurrentLang] = useState("pt");
 
   return (
-    <header className="admin-header">
-      <div className="admin-header__content">
-        {/* Right-aligned options */}
-        <div className="admin-header__options">
-          {/* Language selector */}
-          <div className="admin-header__lang-wrapper">
-            <button
-              className="admin-header__option"
-              onClick={() => setLangOpen(!langOpen)}
-              aria-expanded={langOpen}
-              aria-label="Selecionar idioma"
-            >
-              <span className="admin-header__option-label">{selectedLang}</span>
-              <span className="admin-header__option-icon" style={{ fill: "#BBB8FF" }}>
-                <Icon
-                  name={langOpen ? "agora-line-arrow-up" : "agora-line-arrow-down"}
-                  className="admin-header__lang-icon"
-                />
-              </span>
-            </button>
-            {langOpen && (
-              <div className="admin-header__lang-dropdown">
-                {languages.map((lang) => (
-                  <button
-                    key={lang.value}
-                    className={`admin-header__lang-item ${
-                      lang.label === selectedLang
-                        ? "admin-header__lang-item--active"
-                        : ""
-                    }`}
-                    onClick={() => handleLangSelect(lang)}
-                  >
-                    {lang.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Search */}
-          <div className="admin-header__search">
-            <SearchDropdown
-              id="admin-header-search"
-              placeholder="Pesquisar"
-              label="Pesquisar"
-            />
-          </div>
-
-          {/* User avatar */}
-          <div className="admin-header__avatar-wrapper">
-            <div className="admin-header__avatar">
-              <span className="admin-header__avatar-initials">DM</span>
-            </div>
-            <span className="admin-header__notification" />
-          </div>
-        </div>
-      </div>
-    </header>
+    <div className="admin-header">
+      <Header darkMode>
+        <GeneralBar aria-label="Barra de opções do administrador">
+          <Languages
+            aria-label="Selecionar idioma"
+            onChange={(lang) => {
+              setCurrentLang(lang);
+            }}
+          >
+            <Language label="Português" abbr="PT" value="pt" checked={currentLang === "pt"} />
+            <Language label="Inglês" abbr="EN" value="en" checked={currentLang === "en"} />
+            <Language label="Espanhol" abbr="ES" value="es" checked={currentLang === "es"} />
+            <Language label="Francês" abbr="FR" value="fr" checked={currentLang === "fr"} />
+          </Languages>
+          <Search label="Pesquisar">
+            <DefaultSearch>
+              <SearchInputContainer>
+                <InputSearchBar placeholder="Pesquisar" aria-label="Pesquisar" />
+              </SearchInputContainer>
+            </DefaultSearch>
+          </Search>
+          <Authenticated
+            avatarType="initials"
+            srcPath={"IC" as unknown as undefined}
+            hasBadge
+            badgePosition="top-right"
+            alt="Inês Correia"
+            information="Inês Correia"
+          >
+            <AuthenticatedHeader>Inês Correia</AuthenticatedHeader>
+            <AuthenticatedBody>
+              <AuthenticatedBodyLink
+                hasIcon
+                leadingIcon="agora-line-user"
+                leadingIconHover="agora-solid-user"
+              >
+                <a href="/pages/admin/perfil">O meu perfil</a>
+              </AuthenticatedBodyLink>
+              <AuthenticatedBodyLink
+                hasIcon
+                leadingIcon="agora-line-settings"
+                leadingIconHover="agora-solid-settings"
+              >
+                <a href="/pages/admin/definicoes">As minhas definições</a>
+              </AuthenticatedBodyLink>
+              <AuthenticatedBodyLink
+                hasIcon
+                leadingIcon="agora-line-mega-phone"
+                leadingIconHover="agora-solid-mega-phone"
+              >
+                <a href="/pages/admin/notificacoes">Notificações</a>
+              </AuthenticatedBodyLink>
+            </AuthenticatedBody>
+            <AuthenticatedFooter>
+              <AuthenticatedFooterAction
+                hasIcon
+                leadingIcon="agora-line-trash"
+                leadingIconHover="agora-solid-trash"
+                variant="danger"
+                appearance="link"
+              >
+                Eliminar conta
+              </AuthenticatedFooterAction>
+              <AuthenticatedFooterAction
+                hasIcon
+                leadingIcon="agora-line-log-out"
+                leadingIconHover="agora-solid-log-out"
+                appearance="link"
+              >
+                Terminar sessão
+              </AuthenticatedFooterAction>
+            </AuthenticatedFooter>
+          </Authenticated>
+        </GeneralBar>
+      </Header>
+    </div>
   );
 }

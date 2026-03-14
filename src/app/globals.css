@@ -569,8 +569,11 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 }
 
 .agora-header .card-general-neutral-100 .icon-set img {
-  width: 16px;
-  height: 16px;
+  width: 16px !important;
+  min-width: 16px;
+  height: 16px !important;
+  min-height: 16px;
+  object-fit: contain;
   filter: brightness(0) invert(1);
 }
 
@@ -682,11 +685,11 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   --------------------------------------------------------------------------- */
 
 /* Hide root header and footer when inside admin pages */
-body:has(.admin-wrapper) > div > header.sticky {
+body:has(.admin-wrapper)>div>header.sticky {
   display: none;
 }
 
-body:has(.admin-wrapper) > div > div.grow > footer,
+body:has(.admin-wrapper)>div>div.grow>footer,
 body:has(.admin-wrapper) footer:last-child {
   display: none;
 }
@@ -700,148 +703,17 @@ body:has(.admin-wrapper) footer:last-child {
 
 /* Admin Header */
 .admin-header {
-  background-color: var(--color-brand-blue-secondary);
-  height: 60px;
   width: 100%;
   flex-shrink: 0;
 }
 
-.admin-header__content {
-  display: flex;
-  align-items: center;
+.admin-header .agora-header {
+  background-color: var(--color-brand-blue-secondary);
+}
+
+.admin-header .agora-header .agora-general-bar {
   justify-content: flex-end;
-  height: 100%;
   padding: 0 112px;
-}
-
-.admin-header__options {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  height: 100%;
-}
-
-.admin-header__option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  height: 60px;
-  padding: 0;
-}
-
-.admin-header__option-label {
-  font-size: 16px;
-  line-height: 28px;
-  color: var(--color-primary-300, #bbb8ff);
-}
-
-.admin-header__option-icon {
-  width: 24px;
-  height: 24px;
-}
-
-.admin-header__option-icon,
-.admin-header__option-icon svg.icon,
-.admin-header__option-icon svg,
-.admin-header__option-icon svg path,
-.admin-header__lang-icon svg.icon,
-.admin-header__lang-icon svg,
-.admin-header__lang-icon svg path {
-  fill: #BBB8FF !important;
-}
-
-.admin-header__lang-wrapper {
-  position: relative;
-}
-
-.admin-header__lang-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  z-index: 100;
-  min-width: 160px;
-  overflow: hidden;
-}
-
-.admin-header__lang-item {
-  display: block;
-  width: 100%;
-  padding: 12px 16px;
-  background: none;
-  border: none;
-  text-align: left;
-  font-size: 16px;
-  line-height: 28px;
-  color: var(--color-neutral-900);
-  cursor: pointer;
-}
-
-.admin-header__lang-item:hover {
-  background-color: var(--color-neutral-100);
-}
-
-.admin-header__lang-item--active {
-  font-weight: 600;
-  color: var(--color-primary-600);
-}
-
-.admin-header__search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--color-primary-300, #bbb8ff);
-}
-
-.admin-header__search .agora-search-bar,
-.admin-header__search .header-search-wrapper {
-  background: transparent;
-}
-
-.admin-header__search svg,
-.admin-header__search svg path {
-  fill: var(--color-primary-300, #bbb8ff);
-}
-
-/* Avatar */
-.admin-header__avatar-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.admin-header__avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  background-color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.admin-header__avatar-initials {
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 28px;
-  color: var(--color-primary-500, #0e02f2);
-  text-align: center;
-}
-
-.admin-header__notification {
-  position: absolute;
-  top: 2px;
-  right: -2px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: var(--color-danger-600, #d12332);
-  border: 2px solid var(--color-brand-blue-secondary);
 }
 
 /* Admin layout: sidebar + content */
@@ -890,9 +762,12 @@ body:has(.admin-wrapper) footer:last-child {
   height: 24px;
 }
 
+.admin-side-nav__icon,
 .admin-side-nav__icon svg,
 .admin-side-nav__icon svg path {
   fill: var(--color-white);
+  stroke: var(--color-white);
+  color: var(--color-white);
 }
 
 .admin-side-nav__label {
@@ -910,10 +785,16 @@ body:has(.admin-wrapper) footer:last-child {
 /* Datasets Admin Page */
 .datasets-admin-page {
   padding: 32px 112px 64px 104px;
-  max-width: 1224px;
 }
 
 .datasets-admin-page__breadcrumb {
+  margin-bottom: 64px;
+}
+
+.datasets-admin-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 64px;
 }
 
@@ -922,7 +803,6 @@ body:has(.admin-wrapper) footer:last-child {
   font-weight: 700;
   line-height: 48px;
   color: var(--color-brand-blue-secondary);
-  margin-bottom: 64px;
 }
 
 .datasets-admin-page__step-header {
@@ -934,28 +814,34 @@ body:has(.admin-wrapper) footer:last-child {
   line-height: 32px;
 }
 
-.datasets-admin-page__progress {
+.datasets-admin-page__stepper {
   background-color: var(--color-neutral-100);
   border-radius: 4px;
   padding: 12px;
   margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.datasets-admin-page__progress-bar {
+.datasets-admin-page__stepper-bar {
   display: flex;
   width: 100%;
   height: 4px;
   background-color: var(--color-neutral-200);
-  margin-bottom: 8px;
 }
 
-.datasets-admin-page__progress-fill {
-  width: 30%;
+.datasets-admin-page__stepper-segment {
+  flex: 1;
   height: 100%;
+  background-color: var(--color-neutral-200);
+}
+
+.datasets-admin-page__stepper-segment--filled {
   background-color: var(--color-primary-900);
 }
 
-.datasets-admin-page__progress-label {
+.datasets-admin-page__stepper-label {
   font-size: 14px;
   line-height: 18px;
   color: var(--color-neutral-700);
@@ -1099,7 +985,80 @@ body:has(.admin-wrapper) footer:last-child {
   color: var(--color-primary-900);
 }
 
+/* Datasets Page - Toolbar and empty state */
+.datasets-page__body {
+  display: flex;
+  gap: 32px;
+}
+
+.datasets-page__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-shrink: 0;
+  width: 340px;
+}
+
+.datasets-page__count {
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--color-neutral-900);
+  text-transform: uppercase;
+}
+
+.datasets-page__content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.datasets-page__empty .agora-card-no-results__anchor {
+  background-color: var(--color-primary-900);
+  color: var(--color-white);
+  border: none;
+  border-radius: 4px;
+  padding: 8px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 28px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.datasets-page__empty .agora-card-no-results__anchor:hover {
+  background-color: var(--color-primary-700);
+  text-decoration: none;
+}
+
+.datasets-page__empty-icon {
+  width: 80px;
+  height: 80px;
+}
+
+.datasets-page__empty-icon svg {
+  width: 80px;
+  height: 80px;
+  fill: var(--color-brand-blue-secondary);
+}
+
+/* Datasets New Page - Cards layout */
+.datasets-new-page__cards {
+  display: flex;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+.datasets-new-page__cards > * {
+  flex: 1;
+}
+
 @media (max-width: 1024px) {
+  .datasets-new-page__cards {
+    flex-direction: column;
+  }
+
   .datasets-admin-page {
     padding: 32px 24px;
   }
