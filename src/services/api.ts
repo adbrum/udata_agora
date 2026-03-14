@@ -358,6 +358,15 @@ export async function fetchReuses(
   pageSize: number = 20,
   filters?: ReuseFilters
 ): Promise<APIResponse<Reuse>> {
+  const empty: APIResponse<Reuse> = {
+    data: [],
+    page: 1,
+    page_size: pageSize,
+    total: 0,
+    next_page: null,
+    previous_page: null,
+  };
+
   try {
     const params = new URLSearchParams();
     params.set("page", String(page));
@@ -372,25 +381,17 @@ export async function fetchReuses(
     }
 
     const url = `${API_BASE_URL}/reuses/?${params.toString()}`;
-    const res = await fetch(url, {
-      cache: "no-store",
-    });
+    const res = await fetch(url, { cache: "no-store" });
 
     if (!res.ok) {
-      throw new Error(`Failed to fetch reuses: ${res.statusText}`);
+      console.error(`Failed to fetch reuses: ${res.status} ${res.statusText}`);
+      return empty;
     }
 
     return await res.json();
   } catch (error) {
     console.error("Error fetching reuses:", error);
-    return {
-      data: [],
-      page: 1,
-      page_size: pageSize,
-      total: 0,
-      next_page: null,
-      previous_page: null,
-    };
+    return empty;
   }
 }
 export async function fetchReuse(rid: string): Promise<Reuse> {
