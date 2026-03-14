@@ -741,10 +741,6 @@ body:has(.admin-wrapper)>div>header.sticky {
   padding-left: 16px !important;
 }
 
-.admin-sidebar-nav__home-item .agora-sidebar-anchor-item {
-  padding-left: 16px !important;
-}
-
 .admin-sidebar-nav__group-label {
   display: flex;
   align-items: center;
