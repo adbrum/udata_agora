@@ -11,9 +11,16 @@ interface NavItem {
   href: string;
   icon?: string;
   customIcon?: string;
+  disableActive?: boolean;
 }
 
 const navItems: NavItem[] = [
+  {
+    label: "dados.gov",
+    href: "/",
+    icon: "agora-line-home",
+    disableActive: true,
+  },
   {
     label: "APIS",
     href: "/pages/admin/dataservices/new",
@@ -53,7 +60,7 @@ export function AdminSideNavigation() {
     <nav className="admin-side-nav">
       <div className="admin-side-nav__items">
         {navItems.map((item) => {
-          const isActive = pathname?.startsWith(item.href);
+          const isActive = !item.disableActive && pathname?.startsWith(item.href);
           return (
             <Link
               key={item.href}
