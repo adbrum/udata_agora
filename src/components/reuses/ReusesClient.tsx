@@ -12,6 +12,7 @@ import {
   DropdownOption,
   Icon,
   CardNoResults,
+  DropdownOptionProps,
 } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { APIResponse, Reuse, ReuseFilters, ReuseType } from '@/types/api';
@@ -157,8 +158,8 @@ export default function ReusesClient({
                       label="Tipo:"
                       id="filter-type"
                       defaultValue={initialFilters?.type || ''}
-                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                        handleTypeFilter(e.target.value)
+                      onChange={(options: DropdownOptionProps[]) =>
+                        handleTypeFilter(options[0]?.value || '')
                       }
                     >
                       <DropdownSection name="types">
@@ -190,8 +191,8 @@ export default function ReusesClient({
                     id="sort-reuses"
                     defaultValue={sortDefault}
                     className="selectReuse"
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                      handleSortChange(e.target.value)
+                    onChange={(options: DropdownOptionProps[]) =>
+                      handleSortChange(options[0]?.value || 'reutilizacoes')
                     }
                   >
                     <DropdownSection name="order">
