@@ -57,7 +57,7 @@ export default function DatasetsAdminClient({
       content: (
         <>
           <p>
-            A descrição do seu conjunto de dados permite que os usuários obtenham informações sobre
+            A descrição do seu conjunto de dados permite que os utilizadores obtenham informações sobre
             o conteúdo e a estrutura dos recursos publicados; você pode, em particular, fornecer
             informações como:
           </p>
@@ -84,7 +84,7 @@ export default function DatasetsAdminClient({
         <>
           <p>
             A descrição resumida apresenta seu conjunto de dados em uma ou duas frases. Isso ajuda
-            os usuários a entenderem rapidamente o conteúdo e melhora sua visibilidade nos
+            os utilizadores a entenderem rapidamente o conteúdo e melhora sua visibilidade nos
             resultados de busca.
           </p>
           <p className="font-bold mt-3">Sugestões automáticas</p>
@@ -108,7 +108,7 @@ export default function DatasetsAdminClient({
         <>
           <p>
             As palavras-chave descrevem seu conjunto de dados e facilitam sua descoberta. Elas
-            melhoram seu posicionamento nos mecanismos de busca e ajudam os usuários a encontrar
+            melhoram seu posicionamento nos mecanismos de busca e ajudam os utilizadores a encontrar
             com mais facilidade os dados que procuram.
           </p>
           <p className="font-bold mt-3">Sugestões automáticas</p>

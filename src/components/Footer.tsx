@@ -23,7 +23,7 @@ const linkColumns = [
     links: [
       { href: '#', label: 'API do portal' },
       { href: '#', label: 'Motor de código aberto: udata (14.7.2)' },
-      { href: '#', label: 'Interface de usuário de data.gov.pt: cdata (jj2422c)' },
+      { href: '#', label: 'Interface de utilizador de data.gov.pt: cdata (jj2422c)' },
     ],
   },
 ];

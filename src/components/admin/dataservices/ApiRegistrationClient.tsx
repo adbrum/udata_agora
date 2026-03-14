@@ -32,7 +32,7 @@ export default function ApiRegistrationClient({
     {
       title: "Como dar nome à sua API",
       content:
-        'Dê à sua API um nome relevante e descritivo que reflita sua função ou área de aplicação. Um bom nome facilita a busca e a identificação por parte dos usuários. Sempre adicione o prefixo "API" para manter a consistência.',
+        'Dê à sua API um nome relevante e descritivo que reflita sua função ou área de aplicação. Um bom nome facilita a busca e a identificação por parte dos utilizadores. Sempre adicione o prefixo "API" para manter a consistência.',
     },
     {
       title: "Adicione uma abreviação ou sigla à API.",
@@ -42,7 +42,7 @@ export default function ApiRegistrationClient({
     {
       title: "Escreva uma boa descrição",
       content:
-        "Escreva uma descrição clara e precisa da API. Os usuários precisam entender a finalidade da API, os dados fornecidos, o escopo abrangido (os dados são completos? Há alguma lacuna?), a frequência de atualização dos dados e os parâmetros que podem ser usados para fazer uma chamada.",
+        "Escreva uma descrição clara e precisa da API. Os utilizadores precisam entender a finalidade da API, os dados fornecidos, o escopo abrangido (os dados são completos? Há alguma lacuna?), a frequência de atualização dos dados e os parâmetros que podem ser usados para fazer uma chamada.",
     },
     {
       title: "Defina o link correto para a API.",
@@ -72,7 +72,7 @@ export default function ApiRegistrationClient({
     {
       title: "Selecione um tipo de acesso",
       content:
-        'Escolha o tipo de acesso (aberto, aberto com conta ou restrito). Selecione "aberto" se os dados forem públicos. Selecione "aberto com conta" se o acesso aos dados exigir uma conta. Se selecionar "restrito", especifique os tipos de usuários que podem acessar esta API.',
+        'Escolha o tipo de acesso (aberto, aberto com conta ou restrito). Selecione "aberto" se os dados forem públicos. Selecione "aberto com conta" se o acesso aos dados exigir uma conta. Se selecionar "restrito", especifique os tipos de utilizadores que podem aceder a esta API.',
     },
     {
       title: "Adicione um link à solicitação de autorização.",
