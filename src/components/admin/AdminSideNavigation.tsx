@@ -175,14 +175,26 @@ export function AdminSideNavigation() {
 
   return (
     <nav className="admin-side-nav">
-      <div className="admin-side-nav__home">
-        <Link href="/" className="admin-side-nav__item">
-          <Icon name="agora-line-home" className="admin-side-nav__icon" />
-          <span className="admin-side-nav__label">dados.gov</span>
-        </Link>
-      </div>
       <Sidebar variant="navigation" darkMode className="admin-sidebar-nav">
-        {navGroups.map((group) => {
+        {[
+          <SidebarItem
+            key="home"
+            variant="navigation"
+            darkMode
+            className="admin-sidebar-nav__home-item"
+            item={{
+              children: (
+                <Link href="/" className="admin-sidebar-nav__group-label">
+                  <Icon
+                    name="agora-line-home"
+                    className="admin-sidebar-nav__group-icon"
+                  />
+                  Ir dados.gov
+                </Link>
+              ),
+            }}
+          />,
+          ...navGroups.map((group) => {
           const hasActiveChild = group.children.some((child) =>
             pathname?.startsWith(child.href),
           );
@@ -195,7 +207,7 @@ export function AdminSideNavigation() {
               open={hasActiveChild}
               item={{
                 children: (
-                  <span className="admin-sidebar-nav__group-label">
+                  <span className={`admin-sidebar-nav__group-label ${hasActiveChild ? "admin-sidebar-nav__group-label--active" : ""}`}>
                     {group.icon && (
                       <Icon
                         name={group.icon}
@@ -247,7 +259,8 @@ export function AdminSideNavigation() {
               </ul>
             </SidebarItem>
           );
-        })}
+        }),
+        ]}
       </Sidebar>
     </nav>
   );
