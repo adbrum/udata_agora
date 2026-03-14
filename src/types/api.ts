@@ -132,15 +132,18 @@ export interface Dataservice {
   private: boolean;
 }
 
+export interface SiteMetrics {
+  datasets: number;
+  dataservices?: number;
+  organizations: number;
+  reuses: number;
+  users: number;
+}
+
 export interface SiteInfo {
   id: string;
   title?: string;
-  metrics: {
-    datasets: number;
-    organizations: number;
-    reuses: number;
-    users: number;
-  };
+  metrics: SiteMetrics;
 }
 
 export interface Post {

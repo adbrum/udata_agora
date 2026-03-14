@@ -2,8 +2,13 @@
 
 import React from 'react';
 import { Sidebar, SidebarItem, Checkbox, InputSearch, Icon, Toggle, Pill } from '@ama-pt/agora-design-system';
+import { SiteMetrics } from '@/types/api';
 
-export const OrganizationsFilters = () => {
+interface OrganizationsFiltersProps {
+  siteMetrics: SiteMetrics;
+}
+
+export const OrganizationsFilters = ({ siteMetrics }: OrganizationsFiltersProps) => {
   const [searchQueries, setSearchQueries] = React.useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = React.useState('reutilizacoes');
 
@@ -48,7 +53,7 @@ export const OrganizationsFilters = () => {
               circular={false}
               className="text-xs font-medium text-neutral-500 ml-16"
             >
-              99
+              {siteMetrics.reuses.toLocaleString('pt-PT')}
             </Pill>
           </div>
         </Toggle>
@@ -79,7 +84,7 @@ export const OrganizationsFilters = () => {
               circular={false}
               className="text-xs font-medium text-neutral-500 ml-16"
             >
-              99
+              {siteMetrics.datasets.toLocaleString('pt-PT')}
             </Pill>
           </div>
         </Toggle>
@@ -110,7 +115,7 @@ export const OrganizationsFilters = () => {
               circular={false}
               className="text-xs font-medium text-neutral-500 ml-16"
             >
-              99
+              {(siteMetrics.dataservices ?? 0).toLocaleString('pt-PT')}
             </Pill>
           </div>
         </Toggle>

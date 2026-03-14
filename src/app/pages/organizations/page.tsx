@@ -1,4 +1,4 @@
-import { fetchOrganizations } from '@/services/api';
+import { fetchOrganizations, fetchSiteInfo } from '@/services/api';
 import OrganizationsClient from '@/components/organizations/OrganizationsClient';
 import { OrganizationFilters } from '@/types/api';
 import { Metadata } from 'next';
@@ -21,7 +21,16 @@ export default async function OrganizationsPage({
     if (resolved?.badge) filters.badge = String(resolved.badge);
     if (resolved?.sort) filters.sort = String(resolved.sort);
 
-    const initialData = await fetchOrganizations(page, 20, filters);
+    const [initialData, siteInfo] = await Promise.all([
+        fetchOrganizations(page, 20, filters),
+        fetchSiteInfo(),
+    ]);
 
-    return <OrganizationsClient initialData={initialData} currentPage={page} />;
+    return (
+        <OrganizationsClient
+            initialData={initialData}
+            currentPage={page}
+            siteMetrics={siteInfo.metrics}
+        />
+    );
 }

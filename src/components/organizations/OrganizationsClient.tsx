@@ -15,7 +15,7 @@ import {
 } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { OrganizationsFilters } from './OrganizationsFilters';
-import { APIResponse, Organization } from '@/types/api';
+import { APIResponse, Organization, SiteMetrics } from '@/types/api';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -24,6 +24,7 @@ import PageBanner from '@/components/PageBanner';
 interface OrganizationsClientProps {
   initialData: APIResponse<Organization>;
   currentPage: number;
+  siteMetrics: SiteMetrics;
 }
 
 const SORT_OPTIONS: Record<string, string> = {
@@ -35,6 +36,7 @@ const SORT_OPTIONS: Record<string, string> = {
 export default function OrganizationsClient({
   initialData,
   currentPage,
+  siteMetrics,
 }: OrganizationsClientProps) {
   const router = useRouter();
   const { data: organizations, total, page_size } = initialData;
@@ -129,7 +131,7 @@ export default function OrganizationsClient({
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
             {/* Sidebar */}
             <div className="xl:col-span-4 xl:block p-32 pl-0">
-              <OrganizationsFilters />
+              <OrganizationsFilters siteMetrics={siteMetrics} />
             </div>
 
             {/* Results Area */}
