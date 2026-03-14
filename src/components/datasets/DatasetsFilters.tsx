@@ -36,7 +36,7 @@ export const DatasetsFilters = () => {
     async function loadFilterData() {
       try {
         const [orgsRes, licensesRes, frequenciesRes, badgesRes] = await Promise.all([
-          fetchOrganizations(1, 100, '-datasets'),
+          fetchOrganizations(1, 100, { sort: "-datasets" }),
           fetchLicenses(),
           fetchFrequencies(),
           fetchDatasetBadges(),

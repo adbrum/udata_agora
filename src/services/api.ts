@@ -6,12 +6,14 @@ import {
   DatasetFilters,
   DatasetSuggestion,
   Discussion,
-
   FormatSuggestion,
   Frequency,
   GlobalSearchSuggestion,
   License,
+  OrgBadge,
   Organization,
+  OrganizationFilters,
+  OrganizationSuggestion,
   Post,
   Reuse,
   SiteInfo,
@@ -153,11 +155,20 @@ export async function fetchDataset(slug: string): Promise<Dataset> {
 export async function fetchOrganizations(
   page: number = 1,
   pageSize: number = 20,
-  sort?: string
+  filters?: OrganizationFilters
 ): Promise<APIResponse<Organization>> {
   try {
-    let url = `${API_BASE_URL}/organizations/?page=${page}&page_size=${pageSize}`;
-    if (sort) url += `&sort=${encodeURIComponent(sort)}`;
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("page_size", String(pageSize));
+
+    if (filters) {
+      if (filters.q) params.set("q", filters.q);
+      if (filters.badge) params.set("badge", filters.badge);
+      if (filters.sort) params.set("sort", filters.sort);
+    }
+
+    const url = `${API_BASE_URL}/organizations/?${params.toString()}`;
     const res = await fetch(url, {
       cache: "no-store",
     });
