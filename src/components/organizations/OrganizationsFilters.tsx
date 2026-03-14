@@ -11,6 +11,14 @@ interface OrganizationsFiltersProps {
   orgBadges: OrgBadges;
 }
 
+const BADGE_LABELS_PT: Record<string, string> = {
+  association: 'Associação',
+  certified: 'Certificado',
+  company: 'Empresa',
+  'local-authority': 'Autoridade Local',
+  'public-service': 'Serviço Público',
+};
+
 export const OrganizationsFilters = ({ siteMetrics, orgBadges }: OrganizationsFiltersProps) => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -20,11 +28,14 @@ export const OrganizationsFilters = ({ siteMetrics, orgBadges }: OrganizationsFi
   );
   const activeBadge = params.get('badge') || '';
 
-  const entries = Object.entries(orgBadges);
+  const entries = Object.keys(orgBadges).map((kind) => ({
+    kind,
+    label: BADGE_LABELS_PT[kind] || orgBadges[kind],
+  }));
 
   const filteredEntries = searchQuery.trim()
-    ? entries.filter(([, label]) =>
-        label.toLowerCase().includes(searchQuery.toLowerCase())
+    ? entries.filter((entry) =>
+        entry.label.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : entries;
 
@@ -79,18 +90,17 @@ export const OrganizationsFilters = ({ siteMetrics, orgBadges }: OrganizationsFi
               </div>
             )}
             <div className="flex flex-col gap-12 mt-16 pb-16">
-              {filteredEntries.map(([kind, label]) => (
+              {filteredEntries.map((entry) => (
                 <Checkbox
-                  key={kind}
-                  value={kind}
-                  checked={activeBadge === kind}
+                  key={entry.kind}
+                  label={entry.label}
+                  value={entry.kind}
+                  checked={activeBadge === entry.kind}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleBadgeChange(kind, e.target.checked)
+                    handleBadgeChange(entry.kind, e.target.checked)
                   }
                   className="font-bold"
-                >
-                  {label}
-                </Checkbox>
+                />
               ))}
               {filteredEntries.length === 0 && (
                 <span className="text-sm text-neutral-500">
