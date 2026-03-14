@@ -21,9 +21,10 @@ export default async function OrganizationsPage({
     if (resolved?.badge) filters.badge = String(resolved.badge);
     if (resolved?.sort) filters.sort = String(resolved.sort);
 
-    const [initialData, siteInfo] = await Promise.all([
+    const [initialData, siteInfo, allOrgsData] = await Promise.all([
         fetchOrganizations(page, 20, filters),
         fetchSiteInfo(),
+        fetchOrganizations(1, 500, { sort: 'name' }),
     ]);
 
     return (
@@ -31,6 +32,7 @@ export default async function OrganizationsPage({
             initialData={initialData}
             currentPage={page}
             siteMetrics={siteInfo.metrics}
+            allOrganizations={allOrgsData.data}
         />
     );
 }

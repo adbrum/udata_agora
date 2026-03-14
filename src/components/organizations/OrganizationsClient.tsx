@@ -25,6 +25,7 @@ interface OrganizationsClientProps {
   initialData: APIResponse<Organization>;
   currentPage: number;
   siteMetrics: SiteMetrics;
+  allOrganizations: Organization[];
 }
 
 const SORT_OPTIONS: Record<string, string> = {
@@ -37,6 +38,7 @@ export default function OrganizationsClient({
   initialData,
   currentPage,
   siteMetrics,
+  allOrganizations,
 }: OrganizationsClientProps) {
   const router = useRouter();
   const { data: organizations, total, page_size } = initialData;
@@ -131,7 +133,7 @@ export default function OrganizationsClient({
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
             {/* Sidebar */}
             <div className="xl:col-span-4 xl:block p-32 pl-0">
-              <OrganizationsFilters siteMetrics={siteMetrics} />
+              <OrganizationsFilters siteMetrics={siteMetrics} organizations={allOrganizations} />
             </div>
 
             {/* Results Area */}
