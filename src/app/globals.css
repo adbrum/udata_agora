@@ -569,8 +569,11 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 }
 
 .agora-header .card-general-neutral-100 .icon-set img {
-  width: 16px;
-  height: 16px;
+  width: 16px !important;
+  min-width: 16px;
+  height: 16px !important;
+  min-height: 16px;
+  object-fit: contain;
   filter: brightness(0) invert(1);
 }
 
@@ -811,28 +814,34 @@ body:has(.admin-wrapper) footer:last-child {
   line-height: 32px;
 }
 
-.datasets-admin-page__progress {
+.datasets-admin-page__stepper {
   background-color: var(--color-neutral-100);
   border-radius: 4px;
   padding: 12px;
   margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.datasets-admin-page__progress-bar {
+.datasets-admin-page__stepper-bar {
   display: flex;
   width: 100%;
   height: 4px;
   background-color: var(--color-neutral-200);
-  margin-bottom: 8px;
 }
 
-.datasets-admin-page__progress-fill {
-  width: 30%;
+.datasets-admin-page__stepper-segment {
+  flex: 1;
   height: 100%;
+  background-color: var(--color-neutral-200);
+}
+
+.datasets-admin-page__stepper-segment--filled {
   background-color: var(--color-primary-900);
 }
 
-.datasets-admin-page__progress-label {
+.datasets-admin-page__stepper-label {
   font-size: 14px;
   line-height: 18px;
   color: var(--color-neutral-700);

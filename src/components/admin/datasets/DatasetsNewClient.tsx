@@ -4,6 +4,9 @@ import React from "react";
 import { Breadcrumb, CardAction } from "@ama-pt/agora-design-system";
 
 export default function DatasetsNewClient() {
+  const totalSteps = 3;
+  const currentStep = 1;
+
   return (
     <div className="datasets-admin-page">
       <div className="datasets-admin-page__breadcrumb">
@@ -17,6 +20,24 @@ export default function DatasetsNewClient() {
       </div>
 
       <h1 className="datasets-admin-page__title">Publicar em dados.gov</h1>
+
+      <div className="datasets-admin-page__stepper">
+        <div className="datasets-admin-page__stepper-bar">
+          {Array.from({ length: totalSteps }).map((_, i) => (
+            <div
+              key={i}
+              className={`datasets-admin-page__stepper-segment ${
+                i < currentStep
+                  ? "datasets-admin-page__stepper-segment--filled"
+                  : ""
+              }`}
+            />
+          ))}
+        </div>
+        <span className="datasets-admin-page__stepper-label">
+          Passo {currentStep}/{totalSteps}
+        </span>
+      </div>
 
       <div className="datasets-new-page__cards">
         <CardAction

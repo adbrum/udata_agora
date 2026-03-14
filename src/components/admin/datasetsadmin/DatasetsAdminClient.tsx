@@ -97,11 +97,18 @@ export default function DatasetsAdminClient() {
       </div>
 
       {/* Progress bar */}
-      <div className="datasets-admin-page__progress">
-        <div className="datasets-admin-page__progress-bar">
-          <div className="datasets-admin-page__progress-fill" />
+      <div className="datasets-admin-page__stepper">
+        <div className="datasets-admin-page__stepper-bar">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className={`datasets-admin-page__stepper-segment ${
+                i < 1 ? "datasets-admin-page__stepper-segment--filled" : ""
+              }`}
+            />
+          ))}
         </div>
-        <span className="datasets-admin-page__progress-label">Passo 1/3</span>
+        <span className="datasets-admin-page__stepper-label">Passo 1/3</span>
       </div>
 
       {/* Main content area: form + auxiliar sidebar */}
