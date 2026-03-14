@@ -29,7 +29,7 @@ interface OrganizationsClientProps {
 const SORT_OPTIONS: Record<string, string> = {
   relevancia: '',
   alfabetica: 'name',
-  recentes: '-created',
+  recentes: '-last_modified',
 };
 
 export default function OrganizationsClient({
