@@ -424,7 +424,7 @@ const handleDatasetUrlChange = (index: number, value: string) => {
                     trailingIconHover="agora-solid-arrow-right-circle"
                     onClick={onNextStep}
                   >
-                    Seguindo
+                    Seguinte
                   </Button>
                 </div>
               </form>
