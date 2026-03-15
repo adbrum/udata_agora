@@ -59,6 +59,11 @@ const nextConfig: NextConfig = {
           source: "/saml/sso_logout",
           destination: `${BACKEND_URL}/saml/sso_logout`,
         },
+        // Account migration routes
+        {
+          source: "/saml/migration/:path*",
+          destination: `${BACKEND_URL}/saml/migration/:path*`,
+        },
         // eIDAS routes
         {
           source: "/saml/eidas/login",

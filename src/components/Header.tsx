@@ -63,10 +63,10 @@ export const Header = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('pt');
   const [submenu, setSubmenu] = useState<string | null>(null);
   const [selectedArea, setSelectedArea] = useState(
-    pathname === '/pages/login' || pathname === '/pages/loginregister' ? '2' : '1'
+    pathname === '/pages/login' || pathname === '/pages/login' ? '2' : '1'
   );
   React.useEffect(() => {
-    if (pathname === '/pages/login' || pathname === '/pages/loginregister') {
+    if (pathname === '/pages/login' || pathname === '/pages/login') {
       setSelectedArea('2');
     } else {
       setSelectedArea('1');
@@ -96,7 +96,7 @@ export const Header = () => {
   }, [pathname]);
 
   // Mark header when on auth pages so CSS can style the "Autenticar" button
-  const isAuthPage = pathname === '/pages/loginregister' || pathname === '/pages/login';
+  const isAuthPage = pathname === '/pages/login' || pathname === '/pages/login';
 
   // Reset submenu when clicking anywhere outside the card grid (.links)
   const handleHeaderClickCapture = React.useCallback(
@@ -407,7 +407,7 @@ export const Header = () => {
               leadingIcon="agora-line-user"
               leadingIconHover="agora-solid-user"
             >
-              <Link href={user ? "/pages/admin/me/datasets" : "/pages/loginregister"}>
+              <Link href={user ? "/pages/admin/me/datasets" : "/pages/login"}>
                 {user ? "Administração" : "Autenticar"}
               </Link>
             </UnauthenticatedLink>

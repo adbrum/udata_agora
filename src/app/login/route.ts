@@ -29,6 +29,42 @@ export async function POST(request: NextRequest) {
 
   // 302 = login succeeded (backend redirects to /)
   if (backendResponse.status === 302) {
+    // Build a cookie string with the session cookies from the login response
+    // so the migration check call uses the authenticated session
+    const existingCookies = request.headers.get("cookie") || "";
+    const newCookies = setCookies.map((c) => c.split(";")[0]).join("; ");
+    const allCookies = [existingCookies, newCookies].filter(Boolean).join("; ");
+
+    // Check if this is a legacy user that needs CMD migration
+    try {
+      const checkResponse = await fetch(`${BACKEND_URL}/saml/migration/check`, {
+        headers: { Cookie: allCookies },
+      });
+
+      if (checkResponse.ok) {
+        const checkData = await checkResponse.json();
+
+        if (checkData.needs_migration) {
+          // Log the user out — they must migrate via CMD first
+          await fetch(`${BACKEND_URL}/logout/`, {
+            headers: { Cookie: allCookies },
+            redirect: "manual",
+          });
+
+          responseHeaders.set("Content-Type", "application/json");
+          return NextResponse.json(
+            {
+              message: "migration_required",
+              redirect: "/pages/login",
+            },
+            { status: 403, headers: responseHeaders }
+          );
+        }
+      }
+    } catch {
+      // If check fails, allow login to proceed normally
+    }
+
     responseHeaders.set("Content-Type", "application/json");
     return NextResponse.json(
       { message: "Login successful", redirect: backendResponse.headers.get("location") || "/" },
