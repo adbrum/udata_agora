@@ -112,7 +112,7 @@ export default function ProfileClient() {
                   reuse: "/pages/admin/me/reuses/new",
                   harvester: "/pages/admin/me/datasets/new",
                   api: "/pages/admin/dataservices/new",
-    article: "/pages/admin/system/articles/new",
+    article: "/pages/admin/system/posts/new",
                   organization: "/pages/admin/organizations/new",
                 };
                 if (options.length > 0) {

@@ -15,7 +15,7 @@ import {
   RadioButton,
 } from "@ama-pt/agora-design-system";
 
-export default function ArticlesNewClient() {
+export default function PostsNewClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
@@ -48,7 +48,7 @@ export default function ArticlesNewClient() {
       return;
     }
     setFormErrors({});
-    router.push("/pages/admin/system/articles/new?step=2");
+    router.push("/pages/admin/system/posts/new?step=2");
   };
 
   const stepTitles: Record<number, string> = {
@@ -61,7 +61,7 @@ export default function ArticlesNewClient() {
     reuse: "/pages/admin/me/reuses/new",
     harvester: "/pages/admin/me/datasets/new",
     api: "/pages/admin/dataservices/new",
-    article: "/pages/admin/system/articles/new",
+    article: "/pages/admin/system/posts/new",
     organization: "/pages/admin/organizations/new",
   };
 
@@ -71,10 +71,10 @@ export default function ArticlesNewClient() {
         <Breadcrumb
           items={[
             { label: "Bem-vindo", url: "/pages/admin" },
-            { label: "Artigos", url: "/pages/admin/system/articles" },
+            { label: "Artigos", url: "/pages/admin/system/posts" },
             {
               label: "Formulário de inscrição",
-              url: "/pages/admin/system/articles/new",
+              url: "/pages/admin/system/posts/new",
             },
           ]}
         />
@@ -290,14 +290,14 @@ export default function ArticlesNewClient() {
                   appearance="outline"
                   variant="neutral"
                   onClick={() =>
-                    router.push("/pages/admin/system/articles/new?step=1")
+                    router.push("/pages/admin/system/posts/new?step=1")
                   }
                 >
                   Anterior
                 </Button>
                 <Button
                   variant="primary"
-                  onClick={() => router.push("/pages/admin/system/articles")}
+                  onClick={() => router.push("/pages/admin/system/posts")}
                 >
                   Guardar
                 </Button>
