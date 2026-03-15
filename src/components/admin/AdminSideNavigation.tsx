@@ -153,7 +153,7 @@ const navGroups: NavGroup[] = [
       },
       {
         label: "Artigos",
-        href: "/pages/admin/system/articles",
+        href: "/pages/admin/system/posts",
         icon: "agora-line-document",
       },
       {

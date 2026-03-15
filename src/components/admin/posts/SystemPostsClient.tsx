@@ -93,7 +93,7 @@ const mockArticles: MockArticle[] = [
   },
 ];
 
-export default function SystemArticlesClient() {
+export default function SystemPostsClient() {
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
@@ -104,7 +104,7 @@ export default function SystemArticlesClient() {
     reuse: "/pages/admin/me/reuses/new",
     harvester: "/pages/admin/me/datasets/new",
     api: "/pages/admin/dataservices/new",
-    article: "/pages/admin/system/articles/new",
+    article: "/pages/admin/system/posts/new",
     organization: "/pages/admin/organizations/new",
   };
 
@@ -114,7 +114,7 @@ export default function SystemArticlesClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Artigos", url: "/pages/admin/system/articles" },
+            { label: "Artigos", url: "/pages/admin/system/posts" },
           ]}
         />
       </div>
@@ -206,7 +206,7 @@ export default function SystemArticlesClient() {
           hasIcon={true}
           leadingIcon="agora-line-plus-circle"
           leadingIconHover="agora-solid-plus-circle"
-          onClick={() => router.push("/pages/admin/system/articles/new")}
+          onClick={() => router.push("/pages/admin/system/posts/new")}
         >
           Criar um artigo
         </Button>
@@ -245,7 +245,7 @@ export default function SystemArticlesClient() {
             <TableRow key={index}>
               <TableCell headerLabel="Título">
                 <a
-                  href={`/pages/admin/system/articles/${article.slug}`}
+                  href={`/pages/admin/system/posts/${article.slug}`}
                   className="text-primary-600 underline"
                 >
                   {article.title}
@@ -262,11 +262,11 @@ export default function SystemArticlesClient() {
               </TableCell>
               <TableCell headerLabel="Ação">
                 <div className="flex gap-[8px]">
-                  <a href={`/pages/admin/system/articles/${article.slug}`}>
+                  <a href={`/pages/admin/system/posts/${article.slug}`}>
                     <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                   </a>
                   <a
-                    href={`/pages/admin/system/articles/edit?slug=${article.slug}`}
+                    href={`/pages/admin/system/posts/edit?slug=${article.slug}`}
                   >
                     <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                   </a>
