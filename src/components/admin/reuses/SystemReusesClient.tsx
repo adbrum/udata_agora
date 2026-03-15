@@ -78,9 +78,10 @@ export default function SystemReusesClient() {
   const publishRoutes: Record<string, string> = {
     dataset: "/pages/admin/me/datasets/new",
     reuse: "/pages/admin/me/reuses/new",
-    harvester: "/pages/admin/me/datasets/new",
+    harvester: "/pages/admin/harvesters/new",
     api: "/pages/admin/dataservices/new",
-    organization: "/pages/admin/me/datasets/new",
+    article: "/pages/admin/system/posts/new",
+    organization: "/pages/admin/organizations/new",
   };
 
   return (
@@ -122,7 +123,7 @@ export default function SystemReusesClient() {
             showDropdown={showPublishDropdown}
             onHide={() => setShowPublishDropdown(false)}
             hideSectionNames={true}
-            optionsVisible={5}
+            optionsVisible={6}
             onChange={(options) => {
               if (options.length > 0) {
                 const route = publishRoutes[options[0].value as string];
@@ -139,6 +140,7 @@ export default function SystemReusesClient() {
               <DropdownOption value="reuse">Uma reutilização</DropdownOption>
               <DropdownOption value="harvester">Um harvester</DropdownOption>
               <DropdownOption value="api">Uma API</DropdownOption>
+              <DropdownOption value="article">Um artigo</DropdownOption>
               <DropdownOption value="organization">Uma organização</DropdownOption>
             </DropdownSection>
           </Dropdown>

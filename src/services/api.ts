@@ -10,10 +10,13 @@ import {
   Frequency,
   GlobalSearchSuggestion,
   License,
+  MembershipRequest,
   Notification,
   OrgBadges,
+  OrgRole,
   Organization,
   OrganizationFilters,
+  OrganizationMember,
   OrganizationSuggestion,
   Post,
   Reuse,
@@ -1162,4 +1165,121 @@ export async function createReport(payload: ReportCreatePayload): Promise<Report
   }
 
   return await res.json();
+
+// --- Organization Membership ---
+
+export async function requestMembership(org: string, comment?: string): Promise<MembershipRequest> {
+  const res = await fetch(`${API_BASE_URL}/organizations/${org}/membership/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ comment: comment || "" }),
+  });
+  if (!res.ok) throw new Error(`Failed to request membership: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function fetchMembershipRequests(org: string): Promise<MembershipRequest[]> {
+  const res = await fetch(`${API_BASE_URL}/organizations/${org}/membership/`, {
+    cache: "no-store",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to fetch membership requests: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function acceptMembership(org: string, requestId: string): Promise<MembershipRequest> {
+  const res = await fetch(
+    `${API_BASE_URL}/organizations/${org}/membership/${requestId}/accept/`,
+    { method: "POST", credentials: "include" }
+  );
+  if (!res.ok) throw new Error(`Failed to accept membership: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function refuseMembership(
+  org: string,
+  requestId: string,
+  comment?: string
+): Promise<MembershipRequest> {
+  const res = await fetch(
+    `${API_BASE_URL}/organizations/${org}/membership/${requestId}/refuse/`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ comment: comment || "" }),
+    }
+  );
+  if (!res.ok) throw new Error(`Failed to refuse membership: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function addMember(
+  org: string,
+  userId: string,
+  role: string
+): Promise<OrganizationMember> {
+  const res = await fetch(`${API_BASE_URL}/organizations/${org}/member/${userId}/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ role }),
+  });
+  if (!res.ok) throw new Error(`Failed to add member: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function updateMemberRole(
+  org: string,
+  userId: string,
+  role: string
+): Promise<OrganizationMember> {
+  const res = await fetch(`${API_BASE_URL}/organizations/${org}/member/${userId}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ role }),
+  });
+  if (!res.ok) throw new Error(`Failed to update member role: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function removeMember(org: string, userId: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/organizations/${org}/member/${userId}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to remove member: ${res.statusText}`);
+}
+
+export async function fetchOrgRoles(): Promise<OrgRole[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/organizations/roles/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch org roles: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org roles:", error);
+    return [];
+  }
+}
+
+// --- CSV Export URL Builders ---
+
+type OrgExportType = "datasets" | "dataservices" | "discussions" | "datasets-resources";
+type SiteExportType =
+  | "datasets"
+  | "resources"
+  | "organizations"
+  | "reuses"
+  | "dataservices"
+  | "harvests"
+  | "tags";
+
+export function getOrgExportUrl(org: string, type: OrgExportType): string {
+  return `${API_BASE_URL}/organizations/${org}/${type}.csv`;
+}
+
+export function getSiteExportUrl(type: SiteExportType): string {
+  return `${API_BASE_URL}/site/${type}.csv`;
 }

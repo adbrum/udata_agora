@@ -153,18 +153,13 @@ const navGroups: NavGroup[] = [
       },
       {
         label: "Artigos",
-        href: "/pages/admin/system/articles",
+        href: "/pages/admin/system/posts",
         icon: "agora-line-document",
       },
       {
         label: "Editorial",
         href: "/pages/admin/system/editorial",
         icon: "agora-line-edit",
-      },
-      {
-        label: "Moderação",
-        href: "/pages/admin/system/moderation",
-        icon: "agora-line-shield",
       },
     ],
   },

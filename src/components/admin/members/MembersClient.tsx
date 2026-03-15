@@ -7,90 +7,88 @@ import {
   Button,
   Dropdown,
   Icon,
-  InputSelect,
-  InputSearchBar,
   DropdownSection,
   DropdownOption,
+  InputSelect,
   Table,
   TableHeader,
   TableHeaderCell,
   TableBody,
   TableRow,
   TableCell,
+  Pill,
+  usePopupContext,
 } from "@ama-pt/agora-design-system";
 
-interface MockOrganization {
+interface MockMember {
   name: string;
   slug: string;
-  createdAt: string;
-  datasets: number;
-  api: number;
-  reuses: number;
-  members: number;
+  email: string;
+  status: string;
+  memberSince: string;
+  lastConnection: string;
 }
 
-const mockOrganizations: MockOrganization[] = [
+const mockMembers: MockMember[] = [
   {
-    name: "SOBRANA",
-    slug: "sobrana",
-    createdAt: "15 de janeiro de 2026",
-    datasets: 0,
-    api: 0,
-    reuses: 1,
-    members: 0,
-  },
-  {
-    name: "dados.gov",
-    slug: "data-gouv-fr",
-    createdAt: "15 de janeiro de 2026",
-    datasets: 1,
-    api: 1,
-    reuses: 0,
-    members: 0,
-  },
-  {
-    name: "L'Apporteur d'Immo",
-    slug: "lapporteur-dimmo",
-    createdAt: "15 de janeiro de 2026",
-    datasets: 0,
-    api: 0,
-    reuses: 1,
-    members: 0,
-  },
-  {
-    name: "iudo",
-    slug: "iudo",
-    createdAt: "15 de janeiro de 2026",
-    datasets: 0,
-    api: 0,
-    reuses: 1,
-    members: 0,
-  },
-  {
-    name: "2803 MEDIA",
-    slug: "2803-media",
-    createdAt: "15 de janeiro de 2026",
-    datasets: 0,
-    api: 0,
-    reuses: 1,
-    members: 0,
-  },
-  {
-    name: "CasaGoCo",
-    slug: "casagoco",
-    createdAt: "15 de janeiro de 2026",
-    datasets: 0,
-    api: 0,
-    reuses: 1,
-    members: 0,
+    name: "inescorreia correia",
+    slug: "inescorreia-correia",
+    email: "ines.correia@babelgroup.com",
+    status: "Administrador",
+    memberSince: "15 de março de 2026",
+    lastConnection: "hoje",
   },
 ];
 
-export default function SystemOrganizationsClient() {
+function AddMemberPopupContent() {
+  const { hide } = usePopupContext();
+
+  return (
+    <div className="flex flex-col gap-[24px]">
+      <InputSelect
+        label="Utilizador"
+        placeholder="Pesquisar um utilizador"
+        id="member-user"
+        searchable
+        searchInputPlaceholder="Escreva para pesquisar..."
+        searchNoResultsText="Nenhum resultado encontrado"
+      >
+        <DropdownSection name="users">
+          <DropdownOption value="user1">Utilizador 1</DropdownOption>
+          <DropdownOption value="user2">Utilizador 2</DropdownOption>
+        </DropdownSection>
+      </InputSelect>
+
+      <InputSelect
+        label="Papel do membro"
+        placeholder="Selecionar uma opção"
+        id="member-role"
+      >
+        <DropdownSection name="roles">
+          <DropdownOption value="admin">Administrador</DropdownOption>
+          <DropdownOption value="editor">Editor</DropdownOption>
+          <DropdownOption value="member">Membro</DropdownOption>
+        </DropdownSection>
+      </InputSelect>
+
+      <div className="flex gap-[16px]">
+        <Button appearance="outline" variant="neutral" onClick={() => hide()}>
+          Cancelar
+        </Button>
+        <Button variant="primary" onClick={() => hide()}>
+          Adicionar à organização
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export default function MembersClient() {
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
-  const organizations = mockOrganizations;
+  const { show } = usePopupContext();
+  const members = mockMembers;
 
   const publishRoutes: Record<string, string> = {
     dataset: "/pages/admin/me/datasets/new",
@@ -107,14 +105,14 @@ export default function SystemOrganizationsClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Sistema", url: "#" },
-            { label: "Organizações", url: "/pages/admin/system/organizations" },
+            { label: "Minha organização", url: "#" },
+            { label: "Membros", url: "/pages/admin/org/members" },
           ]}
         />
       </div>
 
       <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Organizações</h1>
+        <h1 className="datasets-admin-page__title">Membros</h1>
         <div
           className="relative inline-block publish-dropdown-wrapper"
           ref={publishDropdownWrapperRef}
@@ -164,38 +162,32 @@ export default function SystemOrganizationsClient() {
         </div>
       </div>
 
-      <p className="text-neutral-700 text-sm mb-[16px]">
-        {organizations.length} resultados
-      </p>
-
-      <div className="flex items-center gap-[16px] mb-[24px]">
-        <div className="flex-1">
-          <InputSearchBar
-            label="Pesquisar"
-            placeholder="Pesquise o nome da organização"
-            aria-label="Pesquisar organizações"
-          />
-        </div>
-        <InputSelect
-          label=""
-          hideLabel
-          placeholder="Filtrar por estado"
-          id="filter-status"
+      <div className="flex items-center justify-between mb-[24px]">
+        <p className="text-neutral-700 text-sm font-semibold uppercase">
+          {members.length} membro
+        </p>
+        <Button
+          variant="primary"
+          hasIcon={true}
+          leadingIcon="agora-line-plus-circle"
+          leadingIconHover="agora-solid-plus-circle"
+          onClick={() =>
+            show(<AddMemberPopupContent />, {
+              title: "Adicionar um membro à organização",
+              closeAriaLabel: "Fechar",
+              dimensions: "M",
+            })
+          }
         >
-          <DropdownSection name="status">
-            <DropdownOption value="public">Público</DropdownOption>
-            <DropdownOption value="archived">Arquivo</DropdownOption>
-            <DropdownOption value="draft">Rascunho</DropdownOption>
-            <DropdownOption value="deleted">Excluído</DropdownOption>
-          </DropdownSection>
-        </InputSelect>
+          Adicionar um membro
+        </Button>
       </div>
 
       <Table
         paginationProps={{
           itemsPerPageLabel: "Linhas por página",
           itemsPerPage: 10,
-          totalItems: organizations.length,
+          totalItems: members.length,
           availablePageSizes: [5, 10, 20],
           currentPage: 1,
           buttonDropdownAriaLabel: "Selecionar linhas por página",
@@ -207,64 +199,50 @@ export default function SystemOrganizationsClient() {
         <TableHeader>
           <TableRow>
             <TableHeaderCell sortType="string" sortOrder="descending">
-              Nome
+              Membros
+            </TableHeaderCell>
+            <TableHeaderCell>Estatuto</TableHeaderCell>
+            <TableHeaderCell sortType="date" sortOrder="none">
+              Membro desde
             </TableHeaderCell>
             <TableHeaderCell sortType="date" sortOrder="none">
-              Criado em
-            </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
-              Conjuntos de dados
-            </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
-              API
-            </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
-              Reutilizações
-            </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
-              Membros
+              Última conexão
             </TableHeaderCell>
             <TableHeaderCell>Ações</TableHeaderCell>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {organizations.map((org, index) => (
+          {members.map((member, index) => (
             <TableRow key={index}>
-              <TableCell headerLabel="Nome">
-                <a
-                  href={`/pages/organizations/${org.slug}`}
-                  className="text-primary-600 underline"
-                >
-                  {org.name}
-                </a>
-              </TableCell>
-              <TableCell headerLabel="Criado em">{org.createdAt}</TableCell>
-              <TableCell headerLabel="Conjuntos de dados">
-                <a href="#" className="text-primary-600 underline">
-                  {org.datasets}
-                </a>
-              </TableCell>
-              <TableCell headerLabel="API">
-                <a href="#" className="text-primary-600 underline">
-                  {org.api}
-                </a>
-              </TableCell>
-              <TableCell headerLabel="Reutilizações">
-                <a href="#" className="text-primary-600 underline">
-                  {org.reuses}
-                </a>
-              </TableCell>
               <TableCell headerLabel="Membros">
-                <a href="#" className="text-primary-600 underline">
-                  {org.members}
-                </a>
+                <div>
+                  <a
+                    href={`/pages/users/${member.slug}`}
+                    className="text-primary-600 underline"
+                  >
+                    {member.name}
+                  </a>
+                  <div className="text-sm text-neutral-500 flex items-center gap-[4px]">
+                    <Icon name="agora-line-mail" className="w-[14px] h-[14px]" />
+                    {member.email}
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell headerLabel="Estatuto">
+                <Pill variant="informative">{member.status.toUpperCase()}</Pill>
+              </TableCell>
+              <TableCell headerLabel="Membro desde">
+                {member.memberSince}
+              </TableCell>
+              <TableCell headerLabel="Última conexão">
+                {member.lastConnection}
               </TableCell>
               <TableCell headerLabel="Ações">
                 <div className="flex gap-[8px]">
-                  <a href={`/pages/organizations/${org.slug}`}>
+                  <a href={`/pages/users/${member.slug}`}>
                     <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                   </a>
-                  <a href={`/pages/admin/system/organizations/edit?slug=${org.slug}`}>
+                  <a href={`/pages/admin/org/members/edit?slug=${member.slug}`}>
                     <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                   </a>
                 </div>

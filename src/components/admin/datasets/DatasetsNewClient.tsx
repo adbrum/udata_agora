@@ -65,14 +65,15 @@ export default function DatasetsNewClient() {
             showDropdown={showPublishDropdown}
             onHide={() => setShowPublishDropdown(false)}
             hideSectionNames={true}
-            optionsVisible={5}
+            optionsVisible={6}
             onChange={(options) => {
               const routes: Record<string, string> = {
                 dataset: "/pages/admin/me/datasets/new",
                 reuse: "/pages/admin/me/reuses/new",
-                harvester: "/pages/admin/me/datasets/new",
+                harvester: "/pages/admin/harvesters/new",
                 api: "/pages/admin/dataservices/new",
-                organization: "/pages/admin/me/datasets/new",
+    article: "/pages/admin/system/posts/new",
+                organization: "/pages/admin/organizations/new",
               };
               if (options.length > 0) {
                 const route = routes[options[0].value as string];
@@ -89,6 +90,7 @@ export default function DatasetsNewClient() {
               <DropdownOption value="reuse">Uma reutilização</DropdownOption>
               <DropdownOption value="harvester">Um harvester</DropdownOption>
               <DropdownOption value="api">Uma API</DropdownOption>
+              <DropdownOption value="article">Um artigo</DropdownOption>
               <DropdownOption value="organization">Uma organização</DropdownOption>
             </DropdownSection>
           </Dropdown>
@@ -168,7 +170,7 @@ export default function DatasetsNewClient() {
               </p>
               <p className="text-neutral-700 text-sm leading-relaxed">
                 Você pode publicar automaticamente via API ou vinculando seu portal de dados
-                abertos ao data.gouv.fr com um coletor de dados.
+                abertos ao dados.gov com um coletor de dados.
               </p>
               <div className="flex gap-4 flex-wrap">
                 <Button

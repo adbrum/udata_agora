@@ -1,21 +1,30 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
   Button,
   CardNoResults,
   Dropdown,
   Icon,
-  InputSelect,
-  InputSearchBar,
   DropdownSection,
   DropdownOption,
 } from "@ama-pt/agora-design-system";
 
-export default function CommunityResourcesClient() {
+export default function DiscussionsClient() {
+  const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
+
+  const publishRoutes: Record<string, string> = {
+    dataset: "/pages/admin/me/datasets/new",
+    reuse: "/pages/admin/me/reuses/new",
+    harvester: "/pages/admin/harvesters/new",
+    api: "/pages/admin/dataservices/new",
+    article: "/pages/admin/system/posts/new",
+    organization: "/pages/admin/organizations/new",
+  };
 
   return (
     <div className="datasets-admin-page">
@@ -23,14 +32,14 @@ export default function CommunityResourcesClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Lopes Inês", url: "#" },
-            { label: "Recursos comunitários", url: "/pages/admin/community-resources" },
+            { label: "Minha organização", url: "#" },
+            { label: "Discussões", url: "/pages/admin/org/discussions" },
           ]}
         />
       </div>
 
       <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Recursos comunitários</h1>
+        <h1 className="datasets-admin-page__title">Discussões</h1>
         <div
           className="relative inline-block publish-dropdown-wrapper"
           ref={publishDropdownWrapperRef}
@@ -57,6 +66,12 @@ export default function CommunityResourcesClient() {
             onHide={() => setShowPublishDropdown(false)}
             hideSectionNames={true}
             optionsVisible={6}
+            onChange={(options) => {
+              if (options.length > 0) {
+                const route = publishRoutes[options[0].value as string];
+                if (route) router.push(route);
+              }
+            }}
             style={{
               width: "max-content",
               minWidth: "100%",
@@ -75,37 +90,14 @@ export default function CommunityResourcesClient() {
       </div>
 
       <div className="datasets-page__body">
-        <div className="datasets-page__sidebar">
-          <p className="datasets-page__count">
-            <strong>0 RECURSOS COMUNITÁRIOS</strong>
-          </p>
-          <InputSearchBar
-            label="Pesquisar"
-            placeholder="Pesquisar"
-            aria-label="Pesquisar recursos comunitários"
-          />
-          <InputSelect
-            label="Filtrar"
-            placeholder="Filtrar por status"
-            id="filter-status"
-          >
-            <DropdownSection name="status">
-              <DropdownOption value="public">Público</DropdownOption>
-              <DropdownOption value="archived">Arquivo</DropdownOption>
-              <DropdownOption value="draft">Rascunho</DropdownOption>
-              <DropdownOption value="deleted">Excluído</DropdownOption>
-            </DropdownSection>
-          </InputSelect>
-        </div>
-
         <div className="datasets-page__content">
           <CardNoResults
             className="datasets-page__empty"
             position="center"
             icon={
-              <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+              <Icon name="agora-line-chat" className="datasets-page__empty-icon" />
             }
-            description="Você ainda não publicou um recurso comunitário."
+            description="Ainda não há discussões."
           />
         </div>
       </div>

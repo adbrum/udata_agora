@@ -39,7 +39,21 @@ export interface UserPublic {
 export interface OrganizationMember {
   user: UserRef;
   role: string;
+  label?: string;
   since: string;
+}
+
+export interface MembershipRequest {
+  id: string;
+  user: UserRef;
+  created: string;
+  status: "pending" | "accepted" | "refused";
+  comment: string;
+}
+
+export interface OrgRole {
+  id: string;
+  label: string;
 }
 
 export interface Badge {

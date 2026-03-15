@@ -5,92 +5,19 @@ import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
   Button,
+  CardNoResults,
   Dropdown,
   Icon,
   InputSelect,
   InputSearchBar,
   DropdownSection,
   DropdownOption,
-  Table,
-  TableHeader,
-  TableHeaderCell,
-  TableBody,
-  TableRow,
-  TableCell,
 } from "@ama-pt/agora-design-system";
 
-interface MockTopic {
-  name: string;
-  slug: string;
-  createdAt: string;
-  datasets: number;
-  reuses: number;
-}
-
-const mockTopics: MockTopic[] = [
-  {
-    name: "Justiça",
-    slug: "justica",
-    createdAt: "15 de março de 2026",
-    datasets: 0,
-    reuses: 0,
-  },
-  {
-    name: "Defesa e Segurança",
-    slug: "defesa-e-seguranca",
-    createdAt: "15 de março de 2026",
-    datasets: 0,
-    reuses: 0,
-  },
-  {
-    name: "Turismo, Cultura e Esporte",
-    slug: "turismo-cultura-e-esporte",
-    createdAt: "15 de março de 2026",
-    datasets: 0,
-    reuses: 0,
-  },
-  {
-    name: "Transportes e Infraestruturas",
-    slug: "transportes-e-infraestruturas",
-    createdAt: "15 de março de 2026",
-    datasets: 0,
-    reuses: 0,
-  },
-  {
-    name: "Saúde",
-    slug: "saude",
-    createdAt: "15 de março de 2026",
-    datasets: 0,
-    reuses: 0,
-  },
-  {
-    name: "Governo e Administração Pública",
-    slug: "governo-e-administracao-publica",
-    createdAt: "15 de março de 2026",
-    datasets: 0,
-    reuses: 0,
-  },
-  {
-    name: "População e Sociedade",
-    slug: "populacao-e-sociedade",
-    createdAt: "15 de março de 2026",
-    datasets: 0,
-    reuses: 0,
-  },
-  {
-    name: "Educação, Ciência e Tecnologia",
-    slug: "educacao-ciencia-e-tecnologia",
-    createdAt: "15 de março de 2026",
-    datasets: 0,
-    reuses: 0,
-  },
-];
-
-export default function SystemTopicsClient() {
+export default function OrgDatasetsClient() {
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
-  const topics = mockTopics;
 
   const publishRoutes: Record<string, string> = {
     dataset: "/pages/admin/me/datasets/new",
@@ -107,13 +34,14 @@ export default function SystemTopicsClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Temas", url: "/pages/admin/system/topics" },
+            { label: "Minha organização", url: "#" },
+            { label: "Conjuntos de dados", url: "/pages/admin/org/datasets" },
           ]}
         />
       </div>
 
       <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Temas</h1>
+        <h1 className="datasets-admin-page__title">Conjuntos de dados</h1>
         <div
           className="relative inline-block publish-dropdown-wrapper"
           ref={publishDropdownWrapperRef}
@@ -163,16 +91,14 @@ export default function SystemTopicsClient() {
         </div>
       </div>
 
-      <p className="text-neutral-700 text-sm mb-[16px]">
-        {topics.length} resultados
-      </p>
+      <p className="text-neutral-700 text-sm mb-[16px]">0 resultados</p>
 
       <div className="flex items-center gap-[16px] mb-[24px]">
         <div className="flex-1">
           <InputSearchBar
             label="Pesquisar"
-            placeholder="Pesquise o nome do tema"
-            aria-label="Pesquisar temas"
+            placeholder="Pesquise o nome, código ou sigla da entidade"
+            aria-label="Pesquisar conjuntos de dados"
           />
         </div>
         <InputSelect
@@ -190,55 +116,22 @@ export default function SystemTopicsClient() {
         </InputSelect>
       </div>
 
-      <Table
-        paginationProps={{
-          itemsPerPageLabel: "Linhas por página",
-          itemsPerPage: 10,
-          totalItems: topics.length,
-          availablePageSizes: [5, 10, 20],
-          currentPage: 1,
-          buttonDropdownAriaLabel: "Selecionar linhas por página",
-          dropdownListAriaLabel: "Opções de linhas por página",
-          prevButtonAriaLabel: "Página anterior",
-          nextButtonAriaLabel: "Próxima página",
-        }}
-      >
-        <TableHeader>
-          <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="descending">
-              Nome
-            </TableHeaderCell>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Criado em
-            </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
-              Conjuntos de dados
-            </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
-              Reutilizar
-            </TableHeaderCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {topics.map((topic, index) => (
-            <TableRow key={index}>
-              <TableCell headerLabel="Nome">
-                <a
-                  href={`/pages/admin/system/topics/${topic.slug}`}
-                  className="text-primary-600 underline"
-                >
-                  {topic.name}
-                </a>
-              </TableCell>
-              <TableCell headerLabel="Criado em">{topic.createdAt}</TableCell>
-              <TableCell headerLabel="Conjuntos de dados">
-                {topic.datasets}
-              </TableCell>
-              <TableCell headerLabel="Reutilizar">{topic.reuses}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <div className="datasets-page__body">
+        <div className="datasets-page__content">
+          <CardNoResults
+            className="datasets-page__empty"
+            position="center"
+            icon={
+              <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+            }
+            description="Você ainda não publicou um conjunto de dados."
+            hasAnchor
+            valueAnchor="Publicar em dados.gov"
+            anchorHref="/pages/admin/me/datasets/new"
+            anchorTarget="_self"
+          />
+        </div>
+      </div>
     </div>
   );
 }
