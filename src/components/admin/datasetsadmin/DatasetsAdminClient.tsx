@@ -478,7 +478,7 @@ export default function DatasetsAdminClient({
                     trailingIconHover="agora-solid-arrow-right-circle"
                     onClick={onNextStep}
                   >
-                    Seguindo
+                    Seguinte
                   </Button>
                 </div>
               </div>

@@ -47,7 +47,7 @@ export default function ReusesFormClient({
       content: "Escolha o tema associado à sua reutilização.",
     },
     {
-      title: "Descreva sua reutilização.",
+      title: "Descreva a sua reutilização.",
       content:
         "Você pode fornecer detalhes como a forma como a reutilização foi criada, o que ela permite fazer ou demonstrar, e até mesmo falar mais sobre você e o contexto dessa reutilização. É melhor manter um tom neutro: se a reutilização soar muito como uma mensagem promocional, podemos removê-la.",
     },
@@ -246,7 +246,7 @@ export default function ReusesFormClient({
                     trailingIconHover="agora-solid-arrow-right-circle"
                     onClick={onNextStep}
                   >
-                    Seguindo
+                    Seguinte
                   </Button>
                 </div>
               </form>

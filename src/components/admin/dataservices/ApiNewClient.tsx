@@ -22,7 +22,7 @@ export default function ApiNewClient() {
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
   const stepTitles: Record<number, string> = {
-    1: "Descreva sua API",
+    1: "Descreva a sua API",
     2: "Vincular conjuntos de dados",
     3: "Finalizar a publicação",
   };

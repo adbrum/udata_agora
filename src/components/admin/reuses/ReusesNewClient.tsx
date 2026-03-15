@@ -22,7 +22,7 @@ export default function ReusesNewClient() {
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
   const stepTitles: Record<number, string> = {
-    1: "Descreva sua reutilização.",
+    1: "Descreva a sua reutilização.",
     2: "Conectar conjuntos de dados e APIs",
     3: "Finalizar a publicação",
   };
