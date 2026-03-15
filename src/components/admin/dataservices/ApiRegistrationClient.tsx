@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   InputText,
@@ -13,6 +13,7 @@ import {
   InputSelect,
   DropdownSection,
   DropdownOption,
+  CardGeneral,
 } from "@ama-pt/agora-design-system";
 
 interface ApiRegistrationClientProps {
@@ -32,6 +33,10 @@ export default function ApiRegistrationClient({
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
   const [datasetLinkErrors, setDatasetLinkErrors] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    setDatasetLinkErrors({});
+  }, [currentStep]);
 
   const handleStep1Next = () => {
     const errors: Record<string, boolean> = {};
@@ -55,34 +60,43 @@ export default function ApiRegistrationClient({
     }
   };
 
-  const validateDatasetUrl = (url: string): string | null => {
-    if (!url) return null;
-    const datasetUrlPattern = /^https?:\/\/.+\/datasets?\/.+/i;
-    if (!datasetUrlPattern.test(url)) {
-      return "O URL fornecido não se assemelha a um URL de conjunto de dados.";
-    }
-    return null;
-  };
-
-  const handleDatasetUrlChange = (index: number, value: string) => {
+const handleDatasetUrlChange = (index: number, value: string) => {
     const updated = [...datasetLinks];
     updated[index] = { url: value };
     setDatasetLinks(updated);
 
-    const error = validateDatasetUrl(value);
-    setDatasetLinkErrors((prev) => {
-      const next = { ...prev };
-      if (error) {
-        next[index] = error;
-      } else {
+    if (value.trim() && datasetLinkErrors[index]) {
+      setDatasetLinkErrors((prev) => {
+        const next = { ...prev };
         delete next[index];
-      }
-      return next;
-    });
+        return next;
+      });
+    }
   };
 
   const addDatasetLink = () => {
+    const lastIndex = datasetLinks.length - 1;
+    if (!datasetLinks[lastIndex].url.trim()) {
+      setDatasetLinkErrors((prev) => ({
+        ...prev,
+        [lastIndex]: "Campo obrigatório",
+      }));
+      return;
+    }
     setDatasetLinks((prev) => [...prev, { url: "" }]);
+  };
+
+  const removeDatasetLink = (index: number) => {
+    setDatasetLinks((prev) => prev.filter((_, i) => i !== index));
+    setDatasetLinkErrors((prev) => {
+      const next: Record<number, string> = {};
+      Object.entries(prev).forEach(([key, value]) => {
+        const k = Number(key);
+        if (k < index) next[k] = value;
+        else if (k > index) next[k - 1] = value;
+      });
+      return next;
+    });
   };
 
   const auxiliarItemsStep1 = [
@@ -336,26 +350,20 @@ export default function ApiRegistrationClient({
               />
 
               <form className="datasets-admin-page__form">
+                <InputSelect
+                  label="Pesquisar um conjunto de dados"
+                  placeholder="Procurando um conjunto de dados..."
+                  id="dataset-search"
+                >
+                  <DropdownSection name="datasets">
+                    <DropdownOption value="dataset1">
+                      Conjunto de dados 1
+                    </DropdownOption>
+                  </DropdownSection>
+                </InputSelect>
+
                 {datasetLinks.map((link, index) => (
-                  <div key={index} className="flex flex-col gap-6">
-                    <InputSelect
-                      label="Pesquisar um conjunto de dados"
-                      placeholder="Procurando um conjunto de dados..."
-                      id={`dataset-search-${index}`}
-                    >
-                      <DropdownSection name="datasets">
-                        <DropdownOption value="dataset1">
-                          Conjunto de dados 1
-                        </DropdownOption>
-                      </DropdownSection>
-                    </InputSelect>
-
-                    <div className="flex items-center gap-4">
-                      <hr className="flex-1 border-neutral-300" />
-                      <span className="text-neutral-500 text-sm">ou</span>
-                      <hr className="flex-1 border-neutral-300" />
-                    </div>
-
+                  <div key={index} className="mt-[16px]">
                     <div>
                       <InputText
                         label="Link para o conjunto de dados"
@@ -370,19 +378,34 @@ export default function ApiRegistrationClient({
                         feedbackState="danger"
                         errorFeedbackText={datasetLinkErrors[index]}
                       />
+                      {link.url.trim() && (
+                        <div className="flex justify-end mt-[8px]">
+                          <Button
+                            appearance="link"
+                            variant="danger"
+                            hasIcon
+                            leadingIcon="agora-line-trash"
+                            leadingIconHover="agora-solid-trash"
+                            onClick={() => removeDatasetLink(index)}
+                          >
+                            Eliminar
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
 
                 <div className="flex justify-end">
                   <Button
+                    appearance="outline"
                     variant="primary"
                     hasIcon
-                    leadingIcon="agora-line-add"
-                    leadingIconHover="agora-solid-add"
+                    leadingIcon="agora-line-plus-circle"
+                    leadingIconHover="agora-solid-plus-circle"
                     onClick={addDatasetLink}
                   >
-                    {""}
+                    Adicionar
                   </Button>
                 </div>
 
@@ -405,6 +428,55 @@ export default function ApiRegistrationClient({
                   </Button>
                 </div>
               </form>
+            </>
+          )}
+
+          {/* Step 3: Finalizar a publicação */}
+          {currentStep === 3 && (
+            <>
+              <StatusCard
+                type="success"
+                description={
+                  <>
+                    <strong>A sua API foi criada!</strong>
+                    <br />
+                    Agora você pode publicar ou salvar como rascunho.
+                  </>
+                }
+              />
+
+              <CardGeneral
+                variant="white-outline"
+                isCardHorizontal
+                isBlockedLink
+                iconDefault="agora-line-layers-menu"
+                iconHover="agora-solid-layers-menu"
+                titleText={apiName || "Sem título"}
+                descriptionText={apiDescription || "Sem descrição"}
+                anchor={{
+                  href: `/pages/dataservices/preview?title=${encodeURIComponent(apiName)}&description=${encodeURIComponent(apiDescription)}`,
+                  children: "",
+                }}
+              />
+
+              <Button
+                appearance="link"
+                variant="primary"
+                hasIcon
+                trailingIcon="agora-line-external-link"
+                trailingIconHover="agora-solid-external-link"
+              >
+                Dê-nos o seu feedback sobre o processo de publicação.
+              </Button>
+
+              <div className="datasets-admin-page__actions flex justify-end gap-[18px]">
+                <Button appearance="outline" variant="neutral">
+                  Salvar rascunho
+                </Button>
+                <Button variant="primary">
+                  Publicar API
+                </Button>
+              </div>
             </>
           )}
         </div>

@@ -29,7 +29,8 @@ export default function DatasetDetailClient({ dataset }: DatasetDetailClientProp
           />
         </div>
 
-        <div className="flex justify-end mb-[24px]">
+        <div className="flex justify-end items-center gap-[16px] mb-[24px]">
+          <Pill variant="warning">Rascunho</Pill>
           <Button
             variant="primary"
             appearance={isFavorite ? 'solid' : 'outline'}

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import {
   Button,
+  CardGeneral,
   InputText,
   InputTextArea,
   RadioButton,
@@ -33,12 +34,14 @@ export default function DatasetsAdminClient({
   const [showFileError, setShowFileError] = useState(false);
   const [datasetTitle, setDatasetTitle] = useState("");
   const [datasetDescription, setDatasetDescription] = useState("");
+  const [datasetFrequency, setDatasetFrequency] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
 
   const handleStep2Next = () => {
     const errors: Record<string, boolean> = {};
     if (!datasetTitle.trim()) errors.datasetTitle = true;
     if (!datasetDescription.trim()) errors.datasetDescription = true;
+    if (!datasetFrequency) errors.datasetFrequency = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -331,6 +334,10 @@ export default function DatasetsAdminClient({
                     feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
                   />
+                  <StatusCard
+                    type="info"
+                    description="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
+                  />
                   <InputTextArea
                     label="Descrição resumida"
                     placeholder="Placeholder"
@@ -406,6 +413,15 @@ export default function DatasetsAdminClient({
                     label="Frequência de atualização *"
                     placeholder="Procure uma frequência..."
                     id="dataset-frequency"
+                    onChange={(options) => {
+                      const hasSelection = options.length > 0;
+                      setDatasetFrequency(hasSelection);
+                      if (hasSelection) clearError("datasetFrequency");
+                    }}
+                    hasError={!!formErrors.datasetFrequency}
+                    hasFeedback={!!formErrors.datasetFrequency}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   >
                     <DropdownSection name="frequencies">
                       <DropdownOption value="daily">Diária</DropdownOption>
@@ -500,6 +516,10 @@ export default function DatasetsAdminClient({
                         setShowFileError(false);
                       }
                     }}
+                    hasError={showFileError}
+                    hasFeedback={showFileError}
+                    feedbackState="danger"
+                    feedbackText="Campo obrigatório"
                   />
                 </div>
 
@@ -519,7 +539,13 @@ export default function DatasetsAdminClient({
                     hasIcon
                     trailingIcon="agora-line-arrow-right-circle"
                     trailingIconHover="agora-solid-arrow-right-circle"
-                    onClick={onNextStep}
+                    onClick={() => {
+                      if (uploadedFiles.length === 0) {
+                        setShowFileError(true);
+                        return;
+                      }
+                      onNextStep();
+                    }}
                   >
                     Seguinte
                   </Button>
@@ -540,6 +566,20 @@ export default function DatasetsAdminClient({
                     Agora você pode publicar ou salvar como rascunho.
                   </>
                 }
+              />
+
+              <CardGeneral
+                variant="white-outline"
+                isCardHorizontal
+                isBlockedLink
+                iconDefault="agora-line-layers-menu"
+                iconHover="agora-solid-layers-menu"
+                titleText={datasetTitle || "Sem título"}
+                descriptionText={datasetDescription || "Sem descrição"}
+                anchor={{
+                  href: `/pages/datasets/preview?title=${encodeURIComponent(datasetTitle)}&description=${encodeURIComponent(datasetDescription)}`,
+                  children: "",
+                }}
               />
 
               <Button
