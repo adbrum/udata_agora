@@ -6,7 +6,6 @@ import {
   DatasetSuggestion,
   Discussion,
   DiscussionCreatePayload,
-  DiscussionMessage,
   FormatSuggestion,
   Frequency,
   GlobalSearchSuggestion,
@@ -642,7 +641,7 @@ export async function createDiscussion(
 export async function replyToDiscussion(
   discussionId: string,
   comment: string
-): Promise<DiscussionMessage | null> {
+): Promise<Discussion | null> {
   try {
     const res = await fetch(
       `${API_BASE_URL}/discussions/${discussionId}/`,
@@ -671,16 +670,19 @@ export async function replyToDiscussion(
 
 export async function closeDiscussion(
   discussionId: string,
-  comment: string
+  comment?: string
 ): Promise<Discussion | null> {
   try {
+    const body: Record<string, unknown> = { close: true };
+    if (comment) body.comment = comment;
+
     const res = await fetch(
       `${API_BASE_URL}/discussions/${discussionId}/`,
       {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ comment, close: true }),
+        body: JSON.stringify(body),
       }
     );
 
