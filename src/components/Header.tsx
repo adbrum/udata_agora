@@ -429,14 +429,14 @@ export const Header = () => {
                 iconHover: "agora-solid-layers-menu",
                 title: "Novo Conjunto de Dados",
                 description: "Pesquisar e explorar dados",
-                href: "#",
+                href: "/pages/admin/me/datasets/new",
               },
               {
                 iconDefault: "/Icons/bar_char_white.svg",
                 iconHover: "/Icons/bar_char_white.svg",
                 title: "Nova Reutilização",
                 description: "Casos de uso",
-                href: "#",
+                href: "/pages/admin/me/reuses/new",
               },
               {
                 iconDefault: "agora-line-buildings",

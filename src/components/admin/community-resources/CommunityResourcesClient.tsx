@@ -56,7 +56,7 @@ export default function CommunityResourcesClient() {
             showDropdown={showPublishDropdown}
             onHide={() => setShowPublishDropdown(false)}
             hideSectionNames={true}
-            optionsVisible={5}
+            optionsVisible={6}
             style={{
               width: "max-content",
               minWidth: "100%",
@@ -67,6 +67,7 @@ export default function CommunityResourcesClient() {
               <DropdownOption value="reuse">Uma reutilização</DropdownOption>
               <DropdownOption value="harvester">Um harvester</DropdownOption>
               <DropdownOption value="api">Uma API</DropdownOption>
+              <DropdownOption value="article">Um artigo</DropdownOption>
               <DropdownOption value="organization">Uma organização</DropdownOption>
             </DropdownSection>
           </Dropdown>
