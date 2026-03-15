@@ -1232,3 +1232,23 @@ export async function fetchOrgRoles(): Promise<OrgRole[]> {
     return [];
   }
 }
+
+// --- CSV Export URL Builders ---
+
+type OrgExportType = "datasets" | "dataservices" | "discussions" | "datasets-resources";
+type SiteExportType =
+  | "datasets"
+  | "resources"
+  | "organizations"
+  | "reuses"
+  | "dataservices"
+  | "harvests"
+  | "tags";
+
+export function getOrgExportUrl(org: string, type: OrgExportType): string {
+  return `${API_BASE_URL}/organizations/${org}/${type}.csv`;
+}
+
+export function getSiteExportUrl(type: SiteExportType): string {
+  return `${API_BASE_URL}/site/${type}.csv`;
+}
