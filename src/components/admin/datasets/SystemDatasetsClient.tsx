@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -23,24 +23,27 @@ import {
 import { fetchDatasets } from "@/services/api";
 import { Dataset } from "@/types/api";
 
+type SortOrder = "none" | "ascending" | "descending";
+type SortField = "title" | "created_at" | "last_modified" | "resources";
+
 export default function SystemDatasetsClient() {
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
 
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [allDatasets, setAllDatasets] = useState<Dataset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [sortField, setSortField] = useState<SortField>("last_modified");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("descending");
 
   useEffect(() => {
     async function loadDatasets() {
       setIsLoading(true);
       try {
-        const response = await fetchDatasets(currentPage, pageSize);
-        setDatasets(response.data || []);
-        setTotalItems(response.total || 0);
+        const response = await fetchDatasets(1, 9999);
+        setAllDatasets(response.data || []);
       } catch (error) {
         console.error("Error loading datasets:", error);
       } finally {
@@ -48,7 +51,44 @@ export default function SystemDatasetsClient() {
       }
     }
     loadDatasets();
-  }, [currentPage, pageSize]);
+  }, []);
+
+  const sortedDatasets = useMemo(() => {
+    if (sortOrder === "none") return allDatasets;
+
+    return [...allDatasets].sort((a, b) => {
+      let cmp = 0;
+      switch (sortField) {
+        case "title":
+          cmp = (a.title || "").localeCompare(b.title || "");
+          break;
+        case "created_at":
+          cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          break;
+        case "last_modified":
+          cmp = new Date(a.last_modified).getTime() - new Date(b.last_modified).getTime();
+          break;
+        case "resources":
+          cmp = (a.resources?.length || 0) - (b.resources?.length || 0);
+          break;
+      }
+      return sortOrder === "descending" ? -cmp : cmp;
+    });
+  }, [allDatasets, sortField, sortOrder]);
+
+  const totalItems = sortedDatasets.length;
+  const start = (currentPage - 1) * pageSize;
+  const datasets = sortedDatasets.slice(start, start + pageSize);
+
+  const handleSort = (field: SortField) => (newOrder: SortOrder) => {
+    setSortField(field);
+    setSortOrder(newOrder);
+    setCurrentPage(1);
+  };
+
+  const getSortOrder = (field: SortField): SortOrder => {
+    return sortField === field ? sortOrder : "none";
+  };
 
   const publishRoutes: Record<string, string> = {
     dataset: "/pages/admin/me/datasets/new",
@@ -179,17 +219,35 @@ export default function SystemDatasetsClient() {
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
+              <TableHeaderCell
+                sortType="string"
+                sortOrder={getSortOrder("title")}
+                onSortChange={handleSort("title")}
+              >
                 Título do conjunto de dados
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
-              <TableHeaderCell sortType="string" sortOrder="none">
+              <TableHeaderCell
+                sortType="date"
+                sortOrder={getSortOrder("created_at")}
+                onSortChange={handleSort("created_at")}
+              >
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell sortType="string" sortOrder="none">
+              <TableHeaderCell
+                sortType="date"
+                sortOrder={getSortOrder("last_modified")}
+                onSortChange={handleSort("last_modified")}
+              >
                 Última modificação
               </TableHeaderCell>
-              <TableHeaderCell>Ficheiros</TableHeaderCell>
+              <TableHeaderCell
+                sortType="numeric"
+                sortOrder={getSortOrder("resources")}
+                onSortChange={handleSort("resources")}
+              >
+                Ficheiros
+              </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
@@ -216,7 +274,7 @@ export default function SystemDatasetsClient() {
                   {formatDate(dataset.last_modified)}
                 </TableCell>
                 <TableCell headerLabel="Ficheiros">
-                  {dataset.resources.length}
+                  {dataset.resources?.length || 0}
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">
