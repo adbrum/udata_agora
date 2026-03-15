@@ -10,6 +10,7 @@ import {
   Frequency,
   GlobalSearchSuggestion,
   License,
+  Notification,
   OrgBadges,
   Organization,
   OrganizationFilters,
@@ -969,6 +970,28 @@ export async function suggestGlobalSearch(
     console.error("Error fetching search suggestions:", error);
     return [];
   }
+}
+
+// --- Notifications ---
+
+export async function fetchNotifications(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Notification>> {
+  const res = await fetch(
+    `${API_BASE_URL}/notifications/?page=${page}&page_size=${pageSize}`,
+    { cache: "no-store", credentials: "include" }
+  );
+
+  if (res.status === 401) {
+    throw new Error("Authentication required");
+  }
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch notifications: ${res.statusText}`);
+  }
+
+  return await res.json();
 }
 
 // --- Topics (API v2) ---
