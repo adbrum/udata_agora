@@ -693,6 +693,27 @@ export async function fetchPosts(
   }
 }
 
+export async function fetchPost(slugOrId: string): Promise<Post | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/posts/${slugOrId}/`, {
+      cache: "no-store",
+    });
+
+    if (res.status === 404) {
+      return null;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch post: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    return null;
+  }
+}
+
 export async function searchDatasets(
   query: string,
   page: number = 1,
