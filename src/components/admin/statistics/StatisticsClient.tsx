@@ -176,7 +176,7 @@ export default function StatisticsClient() {
                         harvester: "/pages/admin/me/datasets/new",
                         api: "/pages/admin/dataservices/new",
     article: "/pages/admin/system/articles/new",
-                        organization: "/pages/admin/me/datasets/new",
+                        organization: "/pages/admin/organizations/new",
                       };
                       if (options.length > 0) {
                         const route = routes[options[0].value as string];

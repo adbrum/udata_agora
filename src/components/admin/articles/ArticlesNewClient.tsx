@@ -37,7 +37,7 @@ export default function ArticlesNewClient() {
     harvester: "/pages/admin/me/datasets/new",
     api: "/pages/admin/dataservices/new",
     article: "/pages/admin/system/articles/new",
-    organization: "/pages/admin/me/datasets/new",
+    organization: "/pages/admin/organizations/new",
   };
 
   return (
@@ -251,7 +251,12 @@ export default function ArticlesNewClient() {
                 >
                   Anterior
                 </Button>
-                <Button variant="primary">Para salvaguardar</Button>
+                <Button
+                  variant="primary"
+                  onClick={() => router.push("/pages/admin/system/articles")}
+                >
+                  Guardar
+                </Button>
               </div>
             </form>
           )}

@@ -82,7 +82,7 @@ export default function DatasetsClient() {
     harvester: "/pages/admin/me/datasets/new",
     api: "/pages/admin/dataservices/new",
     article: "/pages/admin/system/articles/new",
-    organization: "/pages/admin/me/datasets/new",
+    organization: "/pages/admin/organizations/new",
   };
 
   return (
