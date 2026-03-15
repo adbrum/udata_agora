@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import {
   Breadcrumb,
   Button,
+  CardFrame,
   CardNoResults,
   Dropdown,
   DropdownSection,
@@ -50,18 +51,21 @@ export default function StatisticsClient() {
         <Tab active>
           <TabHeader>Utilizador</TabHeader>
           <TabBody>
-            <div className="statistics-grid mt-[24px]">
-              <div className="statistics-item">
-                <p className="text-neutral-500 text-sm">Conjuntos de dados</p>
-                <p className="text-neutral-700 text-3xl font-bold">0</p>
+            <div className="flex gap-[24px] mt-[48px]">
+              <div className="flex-1">
+                <CardFrame label="0">
+                  <p className="text-neutral-700 text-base">Conjuntos de dados</p>
+                </CardFrame>
               </div>
-              <div className="statistics-item">
-                <p className="text-neutral-500 text-sm">API</p>
-                <p className="text-neutral-700 text-3xl font-bold">0</p>
+              <div className="flex-1">
+                <CardFrame label="0">
+                  <p className="text-neutral-700 text-base">API</p>
+                </CardFrame>
               </div>
-              <div className="statistics-item">
-                <p className="text-neutral-500 text-sm">Reutilizar</p>
-                <p className="text-neutral-700 text-3xl font-bold">0</p>
+              <div className="flex-1">
+                <CardFrame label="0">
+                  <p className="text-neutral-700 text-base">Reutilizar</p>
+                </CardFrame>
               </div>
             </div>
           </TabBody>

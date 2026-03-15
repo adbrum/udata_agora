@@ -1198,8 +1198,18 @@ header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-lin
   background-color: transparent;
 }
 
-.datasets-admin-page .tab-panel-content {
+.datasets-admin-page .agora-tabs.desktop .tab-list.desktop {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.datasets-admin-page .tab-panel-content,
+.datasets-admin-page .agora-tabs.desktop .tab-panel .tab-panel-content {
   padding: 0;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
   background-color: transparent;
 }
 

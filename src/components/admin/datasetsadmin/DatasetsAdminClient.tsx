@@ -31,6 +31,31 @@ export default function DatasetsAdminClient({
   const [accessType, setAccessType] = useState("open");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showFileError, setShowFileError] = useState(false);
+  const [datasetTitle, setDatasetTitle] = useState("");
+  const [datasetDescription, setDatasetDescription] = useState("");
+  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+
+  const handleStep2Next = () => {
+    const errors: Record<string, boolean> = {};
+    if (!datasetTitle.trim()) errors.datasetTitle = true;
+    if (!datasetDescription.trim()) errors.datasetDescription = true;
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
+    onNextStep();
+  };
+
+  const clearError = (field: string) => {
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
 
   const auxiliarItemsStep2 = [
     {
@@ -275,6 +300,15 @@ export default function DatasetsAdminClient({
                     label="Título*"
                     placeholder="Placeholder"
                     id="api-name"
+                    value={datasetTitle}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setDatasetTitle(e.target.value);
+                      if (e.target.value.trim()) clearError("datasetTitle");
+                    }}
+                    hasError={!!formErrors.datasetTitle}
+                    hasFeedback={!!formErrors.datasetTitle}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <InputText
                     label="Acrônimo"
@@ -287,6 +321,15 @@ export default function DatasetsAdminClient({
                     id="dataset-description"
                     rows={4}
                     maxLength={246}
+                    value={datasetDescription}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                      setDatasetDescription(e.target.value);
+                      if (e.target.value.trim()) clearError("datasetDescription");
+                    }}
+                    hasError={!!formErrors.datasetDescription}
+                    hasFeedback={!!formErrors.datasetDescription}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <InputTextArea
                     label="Descrição resumida"
@@ -416,7 +459,7 @@ export default function DatasetsAdminClient({
                     hasIcon
                     trailingIcon="agora-line-arrow-right-circle"
                     trailingIconHover="agora-solid-arrow-right-circle"
-                    onClick={onNextStep}
+                    onClick={handleStep2Next}
                   >
                     Seguinte
                   </Button>
