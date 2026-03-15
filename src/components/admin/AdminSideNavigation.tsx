@@ -147,9 +147,9 @@ const navGroups: NavGroup[] = [
         icon: "agora-line-user-group",
       },
       {
-        label: "Temáticas",
+        label: "Temas",
         href: "/pages/admin/system/topics",
-        icon: "agora-line-chart",
+        icon: "agora-line-bookmark-card",
       },
       {
         label: "Artigos",
@@ -157,7 +157,7 @@ const navGroups: NavGroup[] = [
         icon: "agora-line-document",
       },
       {
-        label: "Edito",
+        label: "Editorial",
         href: "/pages/admin/system/editorial",
         icon: "agora-line-edit",
       },
