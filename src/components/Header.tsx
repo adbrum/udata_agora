@@ -32,7 +32,7 @@ export const Header = () => {
   const headerRef = useRef<any>(null);
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, samlLogin } = useAuth();
 
   // Create a DOM node for the "Desconectar" portal
   const [logoutPortalNode, setLogoutPortalNode] = useState<HTMLLIElement | null>(null);
@@ -63,10 +63,10 @@ export const Header = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('pt');
   const [submenu, setSubmenu] = useState<string | null>(null);
   const [selectedArea, setSelectedArea] = useState(
-    pathname === '/pages/login' || pathname === '/pages/loginregister' ? '2' : '1'
+    pathname === '/pages/login' || pathname === '/pages/login' ? '2' : '1'
   );
   React.useEffect(() => {
-    if (pathname === '/pages/login' || pathname === '/pages/loginregister') {
+    if (pathname === '/pages/login' || pathname === '/pages/login') {
       setSelectedArea('2');
     } else {
       setSelectedArea('1');
@@ -96,7 +96,7 @@ export const Header = () => {
   }, [pathname]);
 
   // Mark header when on auth pages so CSS can style the "Autenticar" button
-  const isAuthPage = pathname === '/pages/loginregister' || pathname === '/pages/login';
+  const isAuthPage = pathname === '/pages/login' || pathname === '/pages/login';
 
   // Reset submenu when clicking anywhere outside the card grid (.links)
   const handleHeaderClickCapture = React.useCallback(
@@ -407,7 +407,7 @@ export const Header = () => {
               leadingIcon="agora-line-user"
               leadingIconHover="agora-solid-user"
             >
-              <Link href={user ? "/pages/admin/me/datasets" : "/pages/loginregister"}>
+              <Link href={user ? "/pages/admin/me/datasets" : "/pages/login"}>
                 {user ? "Administração" : "Autenticar"}
               </Link>
             </UnauthenticatedLink>
@@ -641,6 +641,10 @@ export const Header = () => {
             href="#"
             onClick={async (e) => {
               e.preventDefault();
+              if (samlLogin) {
+                window.location.href = "/saml/logout";
+                return;
+              }
               await logout();
               window.location.href = "/";
             }}

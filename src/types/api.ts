@@ -7,6 +7,7 @@ export interface UserRef {
   avatar_thumbnail: string | null;
   uri: string;
   page: string;
+  saml_login?: boolean;
 }
 
 export interface OrganizationMember {
