@@ -26,6 +26,9 @@ import {
   SiteInfo,
   GeoLevel,
   Granularity,
+  Report,
+  ReportCreatePayload,
+  ReportReason,
   SpatialZone,
   TagSuggestion,
   Topic,
@@ -1134,6 +1137,34 @@ export async function fetchGeoLevels(): Promise<GeoLevel[]> {
     return [];
   }
 }
+
+// --- Reports ---
+
+export async function fetchReportReasons(): Promise<ReportReason[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/reports/reasons/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch report reasons: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching report reasons:", error);
+    return [];
+  }
+}
+
+export async function createReport(payload: ReportCreatePayload): Promise<Report> {
+  const res = await fetch(`${API_BASE_URL}/reports/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || `Failed to create report: ${res.statusText}`);
+  }
+
+  return await res.json();
 
 // --- Organization Membership ---
 
