@@ -161,11 +161,6 @@ const navGroups: NavGroup[] = [
         href: "/pages/admin/system/editorial",
         icon: "agora-line-edit",
       },
-      {
-        label: "Moderação",
-        href: "/pages/admin/system/moderation",
-        icon: "agora-line-shield",
-      },
     ],
   },
 ];

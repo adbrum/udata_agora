@@ -97,6 +97,7 @@ export default function SystemTopicsClient() {
     reuse: "/pages/admin/me/reuses/new",
     harvester: "/pages/admin/me/datasets/new",
     api: "/pages/admin/dataservices/new",
+    article: "/pages/admin/system/articles/new",
     organization: "/pages/admin/me/datasets/new",
   };
 
@@ -138,7 +139,7 @@ export default function SystemTopicsClient() {
             showDropdown={showPublishDropdown}
             onHide={() => setShowPublishDropdown(false)}
             hideSectionNames={true}
-            optionsVisible={5}
+            optionsVisible={6}
             onChange={(options) => {
               if (options.length > 0) {
                 const route = publishRoutes[options[0].value as string];
@@ -155,6 +156,7 @@ export default function SystemTopicsClient() {
               <DropdownOption value="reuse">Uma reutilização</DropdownOption>
               <DropdownOption value="harvester">Um harvester</DropdownOption>
               <DropdownOption value="api">Uma API</DropdownOption>
+              <DropdownOption value="article">Um artigo</DropdownOption>
               <DropdownOption value="organization">Uma organização</DropdownOption>
             </DropdownSection>
           </Dropdown>

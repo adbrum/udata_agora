@@ -149,13 +149,14 @@ export default function Home() {
                         showDropdown={showPublishDropdown}
                         onHide={() => setShowPublishDropdown(false)}
                         hideSectionNames={true}
-                        optionsVisible={5}
+                        optionsVisible={6}
                         onChange={(options) => {
                           const routes: Record<string, string> = {
                             dataset: "/pages/admin/me/datasets/new",
                             reuse: "/pages/admin/me/reuses/new",
                             harvester: "/pages/admin/me/datasets/new",
                             api: "/pages/admin/dataservices/new",
+    article: "/pages/admin/system/articles/new",
                             organization: "/pages/admin/me/datasets/new",
                           };
                           if (options.length > 0) {

@@ -65,13 +65,14 @@ export default function DatasetsNewClient() {
             showDropdown={showPublishDropdown}
             onHide={() => setShowPublishDropdown(false)}
             hideSectionNames={true}
-            optionsVisible={5}
+            optionsVisible={6}
             onChange={(options) => {
               const routes: Record<string, string> = {
                 dataset: "/pages/admin/me/datasets/new",
                 reuse: "/pages/admin/me/reuses/new",
                 harvester: "/pages/admin/me/datasets/new",
                 api: "/pages/admin/dataservices/new",
+    article: "/pages/admin/system/articles/new",
                 organization: "/pages/admin/me/datasets/new",
               };
               if (options.length > 0) {
@@ -89,6 +90,7 @@ export default function DatasetsNewClient() {
               <DropdownOption value="reuse">Uma reutilização</DropdownOption>
               <DropdownOption value="harvester">Um harvester</DropdownOption>
               <DropdownOption value="api">Uma API</DropdownOption>
+              <DropdownOption value="article">Um artigo</DropdownOption>
               <DropdownOption value="organization">Uma organização</DropdownOption>
             </DropdownSection>
           </Dropdown>
