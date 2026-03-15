@@ -265,6 +265,24 @@ export interface FormatSuggestion {
   text: string;
 }
 
+export interface SpatialZone {
+  id: string;
+  name: string;
+  code: string;
+  level: string;
+  uri: string;
+}
+
+export interface Granularity {
+  id: string;
+  name: string;
+}
+
+export interface GeoLevel {
+  id: string;
+  name: string;
+}
+
 export interface DatasetFilters {
   q?: string;
   tag?: string | string[];

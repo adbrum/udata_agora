@@ -21,6 +21,9 @@ import {
   ReuseSuggestion,
   ReuseType,
   SiteInfo,
+  GeoLevel,
+  Granularity,
+  SpatialZone,
   TagSuggestion,
   Topic,
   TopicElement,
@@ -1071,5 +1074,60 @@ export async function fetchTopicElements(
       next_page: null,
       previous_page: null,
     };
+  }
+}
+
+// --- Spatial / Geographic ---
+
+export async function suggestSpatialZones(
+  query: string,
+  size: number = 10
+): Promise<SpatialZone[]> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/spatial/zones/suggest/?q=${encodeURIComponent(query)}&size=${size}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) throw new Error(`Failed to suggest spatial zones: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error suggesting spatial zones:", error);
+    return [];
+  }
+}
+
+export async function fetchSpatialZones(ids: string[]): Promise<object> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/spatial/zones/${ids.join(",")}/`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch spatial zones: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching spatial zones:", error);
+    return { type: "FeatureCollection", features: [] };
+  }
+}
+
+export async function fetchGranularities(): Promise<Granularity[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/spatial/granularities/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch granularities: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching granularities:", error);
+    return [];
+  }
+}
+
+export async function fetchGeoLevels(): Promise<GeoLevel[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/spatial/levels/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch geo levels: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching geo levels:", error);
+    return [];
   }
 }
