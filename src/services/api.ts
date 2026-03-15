@@ -1363,6 +1363,7 @@ export async function createReport(payload: ReportCreatePayload): Promise<Report
   }
 
   return await res.json();
+}
 
 // --- Organization Membership ---
 
