@@ -211,8 +211,13 @@ export interface Post {
   headline: string;
   content: string;
   body_type: string;
+  kind: string;
+  published: string | null;
+  owner: UserRef | null;
   image: string | null;
   image_thumbnail: string | null;
+  credit_to: string | null;
+  credit_url: string | null;
   created_at: string;
   last_modified: string;
   tags: string[];
