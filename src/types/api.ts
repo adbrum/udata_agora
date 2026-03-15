@@ -341,6 +341,37 @@ export interface TopicElement {
   element: TopicElementRef | null;
 }
 
+export interface DiscussionNotificationDetails {
+  discussion: string | null;
+  status: string | null;
+  message_id: string | null;
+}
+
+export interface MembershipRequestNotificationDetails {
+  request_organization: Organization | null;
+  request_user: UserRef | null;
+}
+
+export interface TransferRequestNotificationDetails {
+  transfer_owner: object | null;
+  transfer_recipient: object | null;
+  transfer_subject: object | null;
+}
+
+export type NotificationDetails =
+  | DiscussionNotificationDetails
+  | MembershipRequestNotificationDetails
+  | TransferRequestNotificationDetails;
+
+export interface Notification {
+  id: string;
+  created_at: string;
+  last_modified: string;
+  handled_at: string | null;
+  user: UserRef | null;
+  details: NotificationDetails;
+}
+
 export interface APIResponse<T> {
   data: T[];
   page: number;
