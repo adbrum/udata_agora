@@ -26,6 +26,33 @@ export default function ReusesFormClient({
   onNextStep,
   onPreviousStep,
 }: ReusesFormClientProps) {
+  const [reuseName, setReuseName] = useState("");
+  const [reuseLink, setReuseLink] = useState("");
+  const [reuseDescription, setReuseDescription] = useState("");
+  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+
+  const handleNextStep = () => {
+    const errors: Record<string, boolean> = {};
+    if (!reuseName.trim()) errors.reuseName = true;
+    if (!reuseLink.trim()) errors.reuseLink = true;
+    if (!reuseDescription.trim()) errors.reuseDescription = true;
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
+    onNextStep();
+  };
+
+  const clearError = (field: string) => {
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
   const auxiliarItemsStep1 = [
     {
       title: "Dê um nome à sua reutilização.",
@@ -150,11 +177,29 @@ export default function ReusesFormClient({
                     label="Nome da reutilização *"
                     placeholder="Placeholder"
                     id="reuse-title"
+                    value={reuseName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setReuseName(e.target.value);
+                      if (e.target.value.trim()) clearError("reuseName");
+                    }}
+                    hasError={!!formErrors.reuseName}
+                    hasFeedback={!!formErrors.reuseName}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <InputText
                     label="Penhor *"
                     placeholder="https://..."
                     id="reuse-link"
+                    value={reuseLink}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setReuseLink(e.target.value);
+                      if (e.target.value.trim()) clearError("reuseLink");
+                    }}
+                    hasError={!!formErrors.reuseLink}
+                    hasFeedback={!!formErrors.reuseLink}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <InputSelect
                     label="Tipo *"
@@ -186,6 +231,15 @@ export default function ReusesFormClient({
                     id="reuse-description"
                     rows={4}
                     maxLength={246}
+                    value={reuseDescription}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                      setReuseDescription(e.target.value);
+                      if (e.target.value.trim()) clearError("reuseDescription");
+                    }}
+                    hasError={!!formErrors.reuseDescription}
+                    hasFeedback={!!formErrors.reuseDescription}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <InputSelect
                     label="Palavras-chave"
@@ -244,7 +298,7 @@ export default function ReusesFormClient({
                     hasIcon
                     trailingIcon="agora-line-arrow-right-circle"
                     trailingIconHover="agora-solid-arrow-right-circle"
-                    onClick={onNextStep}
+                    onClick={handleNextStep}
                   >
                     Seguinte
                   </Button>

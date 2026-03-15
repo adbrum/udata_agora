@@ -27,8 +27,33 @@ export default function ApiRegistrationClient({
   onPreviousStep,
 }: ApiRegistrationClientProps) {
   const [accessType, setAccessType] = useState("open");
+  const [apiName, setApiName] = useState("");
+  const [apiDescription, setApiDescription] = useState("");
+  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
   const [datasetLinkErrors, setDatasetLinkErrors] = useState<Record<number, string>>({});
+
+  const handleStep1Next = () => {
+    const errors: Record<string, boolean> = {};
+    if (!apiName.trim()) errors.apiName = true;
+    if (!apiDescription.trim()) errors.apiDescription = true;
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
+    onNextStep();
+  };
+
+  const clearError = (field: string) => {
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
 
   const validateDatasetUrl = (url: string): string | null => {
     if (!url) return null;
@@ -186,6 +211,15 @@ export default function ApiRegistrationClient({
                     label="Nome da API *"
                     placeholder="Placeholder"
                     id="api-name"
+                    value={apiName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setApiName(e.target.value);
+                      if (e.target.value.trim()) clearError("apiName");
+                    }}
+                    hasError={!!formErrors.apiName}
+                    hasFeedback={!!formErrors.apiName}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <InputText
                     label="Acrônimo"
@@ -198,6 +232,15 @@ export default function ApiRegistrationClient({
                     id="api-description"
                     rows={4}
                     maxLength={246}
+                    value={apiDescription}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                      setApiDescription(e.target.value);
+                      if (e.target.value.trim()) clearError("apiDescription");
+                    }}
+                    hasError={!!formErrors.apiDescription}
+                    hasFeedback={!!formErrors.apiDescription}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <InputText
                     label="Link raiz da API"
@@ -275,7 +318,7 @@ export default function ApiRegistrationClient({
                     hasIcon
                     trailingIcon="agora-line-arrow-right-circle"
                     trailingIconHover="agora-solid-arrow-right-circle"
-                    onClick={onNextStep}
+                    onClick={handleStep1Next}
                   >
                     Seguinte
                   </Button>
