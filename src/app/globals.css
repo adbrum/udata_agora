@@ -1252,6 +1252,24 @@ header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-lin
   max-width: 50%;
 }
 
+/* CardGeneral overrides in admin step 4 */
+.datasets-admin-page .card-general {
+  width: 100%;
+}
+
+.datasets-admin-page .card-general .icon-container {
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.datasets-admin-page .card-general .icon-set {
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
 /* Hide download icon and separator in profile photo uploader */
 .datasets-admin-page .agora-drag-and-drop-file-uploader .download-icon,
 .datasets-admin-page .agora-drag-and-drop-file-uploader .separator-label {

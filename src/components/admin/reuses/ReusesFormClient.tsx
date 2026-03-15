@@ -28,14 +28,20 @@ export default function ReusesFormClient({
 }: ReusesFormClientProps) {
   const [reuseName, setReuseName] = useState("");
   const [reuseLink, setReuseLink] = useState("");
+  const [reuseType, setReuseType] = useState(false);
+  const [reuseTheme, setReuseTheme] = useState(false);
   const [reuseDescription, setReuseDescription] = useState("");
+  const [reuseCoverImage, setReuseCoverImage] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
 
   const handleNextStep = () => {
     const errors: Record<string, boolean> = {};
     if (!reuseName.trim()) errors.reuseName = true;
     if (!reuseLink.trim()) errors.reuseLink = true;
+    if (!reuseType) errors.reuseType = true;
+    if (!reuseTheme) errors.reuseTheme = true;
     if (!reuseDescription.trim()) errors.reuseDescription = true;
+    if (!reuseCoverImage) errors.reuseCoverImage = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -205,6 +211,15 @@ export default function ReusesFormClient({
                     label="Tipo *"
                     placeholder="Procure por um tipo..."
                     id="reuse-type"
+                    onChange={(options) => {
+                      const hasSelection = options.length > 0;
+                      setReuseType(hasSelection);
+                      if (hasSelection) clearError("reuseType");
+                    }}
+                    hasError={!!formErrors.reuseType}
+                    hasFeedback={!!formErrors.reuseType}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   >
                     <DropdownSection name="types">
                       <DropdownOption value="application">Aplicação</DropdownOption>
@@ -218,6 +233,15 @@ export default function ReusesFormClient({
                     label="Tema *"
                     placeholder="Pesquise um tópico..."
                     id="reuse-theme"
+                    onChange={(options) => {
+                      const hasSelection = options.length > 0;
+                      setReuseTheme(hasSelection);
+                      if (hasSelection) clearError("reuseTheme");
+                    }}
+                    hasError={!!formErrors.reuseTheme}
+                    hasFeedback={!!formErrors.reuseTheme}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   >
                     <DropdownSection name="themes">
                       <DropdownOption value="education">Educação</DropdownOption>
@@ -280,13 +304,21 @@ export default function ReusesFormClient({
                       <DragAndDropUploader
                         dragAndDropLabel="Arraste e solte os ficheiros"
                         separatorLabel="ou"
-                        inputLabel="Navegar"
+                        inputLabel="Selecionar ficheiros"
                         removeFileButtonLabel="Remover ficheiro"
                         replaceFileButtonLabel="Substituir ficheiro"
                         extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
                         accept=".jpg,.jpeg,.png"
                         maxSize={4194304}
                         maxCount={1}
+                        onChange={() => {
+                          setReuseCoverImage(true);
+                          clearError("reuseCoverImage");
+                        }}
+                        hasError={!!formErrors.reuseCoverImage}
+                        hasFeedback={!!formErrors.reuseCoverImage}
+                        feedbackState="danger"
+                        feedbackText="Campo obrigatório"
                       />
                     </div>
                   </div>
