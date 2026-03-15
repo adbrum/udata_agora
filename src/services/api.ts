@@ -110,7 +110,8 @@ export async function fetchMyDatasets(
     }
 
     const raw: Dataset[] = await res.json();
-    const allDatasets = raw.filter((d) => d.owner !== null);
+    // Keep only personal datasets: owner must exist and organization must be absent
+    const allDatasets = raw.filter((d) => !!d.owner && !d.organization);
     const total = allDatasets.length;
     const start = (page - 1) * pageSize;
     const data = allDatasets.slice(start, start + pageSize);
