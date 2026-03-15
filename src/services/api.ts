@@ -21,10 +21,13 @@ import {
   ReuseType,
   SiteInfo,
   TagSuggestion,
+  Topic,
+  TopicElement,
   UserRef,
 } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
+const API_V2_BASE_URL = process.env.NEXT_PUBLIC_API_V2_BASE || "https://dados.gov.pt/api/2";
 
 /**
  * Fetch CSRF token from backend
@@ -826,5 +829,85 @@ export async function suggestGlobalSearch(
   } catch (error) {
     console.error("Error fetching search suggestions:", error);
     return [];
+  }
+}
+
+// --- Topics (API v2) ---
+
+export async function fetchTopics(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Topic>> {
+  try {
+    const res = await fetch(
+      `${API_V2_BASE_URL}/topics/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch topics: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching topics:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchTopic(slugOrId: string): Promise<Topic | null> {
+  try {
+    const res = await fetch(`${API_V2_BASE_URL}/topics/${slugOrId}/`, {
+      cache: "no-store",
+    });
+
+    if (res.status === 404) {
+      return null;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch topic: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching topic:", error);
+    throw error;
+  }
+}
+
+export async function fetchTopicElements(
+  topicId: string,
+  page: number = 1,
+  pageSize: number = 50
+): Promise<APIResponse<TopicElement>> {
+  try {
+    const res = await fetch(
+      `${API_V2_BASE_URL}/topics/${topicId}/elements/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch topic elements: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching topic elements:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
   }
 }
