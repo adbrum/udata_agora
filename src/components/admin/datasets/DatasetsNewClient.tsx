@@ -86,7 +86,7 @@ export default function DatasetsNewClient() {
         <p className="datasets-admin-page__step-text">
           <span className="text-primary-600 font-bold">Passo {currentStep} - </span>
           <span className="text-primary-900 font-bold">
-            {currentStep === 1 && "Escolha como publicar"}
+            {currentStep === 1 && "Descreva o conjunto de dados"}
             {currentStep === 2 && "Descreva o conjunto de dados"}
             {currentStep === 3 && "Adicionar ficheiros"}
             {currentStep === 4 && "Finalizar a publicação"}

@@ -245,7 +245,7 @@ export default function ApiRegistrationClient({
                     trailingIconHover="agora-solid-arrow-right-circle"
                     onClick={onNextStep}
                   >
-                    Seguindo
+                    Seguinte
                   </Button>
                 </div>
               </form>

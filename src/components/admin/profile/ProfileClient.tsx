@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import {
   Avatar,
   Breadcrumb,
@@ -21,6 +22,7 @@ import {
 export default function ProfileClient() {
   const [showEditDropdown, setShowEditDropdown] = useState(false);
   const editDropdownWrapperRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   return (
     <div className="datasets-admin-page">
@@ -38,9 +40,13 @@ export default function ProfileClient() {
 
       <div className="profile-card">
         <Avatar
-          avatarType="image"
-          srcPath="/placeholder-avatar.png"
-          alt="Avatar do utilizador"
+          avatarType={user?.avatar_thumbnail ? "image" : "initials"}
+          srcPath={
+            (user?.avatar_thumbnail ||
+              `${user?.first_name?.charAt(0).toUpperCase() ?? ""}${user?.last_name?.charAt(0).toUpperCase() ?? ""}` ||
+              "U") as unknown as undefined
+          }
+          alt={`${user?.first_name ?? ""} ${user?.last_name ?? ""}`}
           className="profile-card__avatar"
         />
 
@@ -125,16 +131,20 @@ export default function ProfileClient() {
 
                 <div className="datasets-admin-page__fields-group">
                   <div className="flex gap-[18px]">
-                    <InputText
-                      label="Primeiro nome *"
-                      placeholder="Placeholder"
-                      id="first-name"
-                    />
-                    <InputText
-                      label="Nome *"
-                      placeholder="Placeholder"
-                      id="last-name"
-                    />
+                    <div className="flex-1">
+                      <InputText
+                        label="Nome *"
+                        placeholder="Placeholder"
+                        id="first-name"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <InputText
+                        label="Último nome *"
+                        placeholder="Placeholder"
+                        id="last-name"
+                      />
+                    </div>
                   </div>
 
                   <InputTextArea
@@ -158,7 +168,7 @@ export default function ProfileClient() {
                       <DragAndDropUploader
                         dragAndDropLabel="Arraste e solte os ficheiros"
                         separatorLabel="ou"
-                        inputLabel="Navegar"
+                        inputLabel="Selecionar ficheiro"
                         removeFileButtonLabel="Remover ficheiro"
                         replaceFileButtonLabel="Substituir ficheiro"
                         extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
@@ -239,14 +249,14 @@ export default function ProfileClient() {
                 />
 
                 <div className="flex justify-end mt-[8px]">
-                  <Button appearance="outline" variant="danger" hasIcon leadingIcon="agora-line-delete" leadingIconHover="agora-solid-delete">
-                    EXCLUIR
+                  <Button appearance="outline" variant="danger" hasIcon leadingIcon="agora-line-trash" leadingIconHover="agora-solid-trash">
+                    Eliminar
                   </Button>
                 </div>
 
                 <div className="flex justify-end mt-[16px]">
-                  <Button variant="primary" hasIcon leadingIcon="agora-line-save" leadingIconHover="agora-solid-save">
-                    Para salvaguardar
+                  <Button variant="primary">
+                    Guardar
                   </Button>
                 </div>
               </div>

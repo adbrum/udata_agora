@@ -711,6 +711,17 @@ body:has(.admin-wrapper)>div>header.sticky {
   padding: 0 112px;
 }
 
+/* Avatar dark mode in admin header */
+.admin-header .authenticated-panel-menu > .agora-btn {
+  background-color: var(--color-white) !important;
+  color: var(--color-primary-500) !important;
+  border-color: transparent !important;
+}
+
+.admin-header .authenticated-panel-menu > .agora-btn .children-wrapper {
+  color: var(--color-primary-500) !important;
+}
+
 /* Admin layout: sidebar + content */
 .admin-layout {
   display: flex;
@@ -719,7 +730,7 @@ body:has(.admin-wrapper)>div>header.sticky {
 
 /* Side Navigation */
 .admin-side-nav {
-  background-color: var(--color-brand-blue-secondary);
+  background-color: var(--color-primary-900);
   width: 280px;
   min-height: 100%;
   flex-shrink: 0;
@@ -1226,6 +1237,17 @@ header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-lin
   border-right: none;
 }
 
+/* Profile form occupies only left column */
+.admin-layout__content .datasets-admin-page .agora-tabs .datasets-admin-page__form {
+  max-width: 50%;
+}
+
+/* Hide download icon and separator in profile photo uploader */
+.datasets-admin-page .agora-drag-and-drop-file-uploader .download-icon,
+.datasets-admin-page .agora-drag-and-drop-file-uploader .separator-label {
+  display: none;
+}
+
 .profile-card {
   display: flex;
   gap: 16px;
@@ -1240,6 +1262,10 @@ header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-lin
   flex-shrink: 0;
   width: 104px;
   height: 104px;
+}
+
+.profile-card__avatar .avatar.avatar-initials {
+  font-size: 2rem;
 }
 
 .profile-card__avatar-img {
