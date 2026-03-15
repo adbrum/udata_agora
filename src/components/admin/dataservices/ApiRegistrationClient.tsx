@@ -27,6 +27,38 @@ export default function ApiRegistrationClient({
   onPreviousStep,
 }: ApiRegistrationClientProps) {
   const [accessType, setAccessType] = useState("open");
+  const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
+  const [datasetLinkErrors, setDatasetLinkErrors] = useState<Record<number, string>>({});
+
+  const validateDatasetUrl = (url: string): string | null => {
+    if (!url) return null;
+    const datasetUrlPattern = /^https?:\/\/.+\/datasets?\/.+/i;
+    if (!datasetUrlPattern.test(url)) {
+      return "O URL fornecido não se assemelha a um URL de conjunto de dados.";
+    }
+    return null;
+  };
+
+  const handleDatasetUrlChange = (index: number, value: string) => {
+    const updated = [...datasetLinks];
+    updated[index] = { url: value };
+    setDatasetLinks(updated);
+
+    const error = validateDatasetUrl(value);
+    setDatasetLinkErrors((prev) => {
+      const next = { ...prev };
+      if (error) {
+        next[index] = error;
+      } else {
+        delete next[index];
+      }
+      return next;
+    });
+  };
+
+  const addDatasetLink = () => {
+    setDatasetLinks((prev) => [...prev, { url: "" }]);
+  };
 
   const auxiliarItemsStep1 = [
     {
@@ -251,33 +283,116 @@ export default function ApiRegistrationClient({
               </form>
             </>
           )}
+
+          {/* Step 2: Vinculação de conjuntos de dados */}
+          {currentStep === 2 && (
+            <>
+              <StatusCard
+                type="info"
+                description="É importante vincular todos os conjuntos de dados utilizados, pois isso ajuda a compreender as referências cruzadas necessárias e a melhorar a visibilidade da sua reutilização."
+              />
+
+              <form className="datasets-admin-page__form">
+                {datasetLinks.map((link, index) => (
+                  <div key={index} className="flex flex-col gap-6">
+                    <InputSelect
+                      label="Pesquisar um conjunto de dados"
+                      placeholder="Procurando um conjunto de dados..."
+                      id={`dataset-search-${index}`}
+                    >
+                      <DropdownSection name="datasets">
+                        <DropdownOption value="dataset1">
+                          Conjunto de dados 1
+                        </DropdownOption>
+                      </DropdownSection>
+                    </InputSelect>
+
+                    <div className="flex items-center gap-4">
+                      <hr className="flex-1 border-neutral-300" />
+                      <span className="text-neutral-500 text-sm">ou</span>
+                      <hr className="flex-1 border-neutral-300" />
+                    </div>
+
+                    <div>
+                      <InputText
+                        label="Link para o conjunto de dados"
+                        placeholder="https://..."
+                        id={`dataset-url-${index}`}
+                        value={link.url}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleDatasetUrlChange(index, e.target.value)
+                        }
+                        hasError={!!datasetLinkErrors[index]}
+                        hasFeedback={!!datasetLinkErrors[index]}
+                        feedbackState="danger"
+                        errorFeedbackText={datasetLinkErrors[index]}
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                <div className="flex justify-end">
+                  <Button
+                    variant="primary"
+                    hasIcon
+                    leadingIcon="agora-line-add"
+                    leadingIconHover="agora-solid-add"
+                    onClick={addDatasetLink}
+                  >
+                    {""}
+                  </Button>
+                </div>
+
+                <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+                  <Button
+                    appearance="outline"
+                    variant="neutral"
+                    onClick={onPreviousStep}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="primary"
+                    hasIcon
+                    trailingIcon="agora-line-arrow-right-circle"
+                    trailingIconHover="agora-solid-arrow-right-circle"
+                    onClick={onNextStep}
+                  >
+                    Seguindo
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
         </div>
 
-        {/* Right: Auxiliar sidebar */}
-        <aside className="datasets-admin-page__auxiliar">
-          <div className="datasets-admin-page__auxiliar-inner">
-            <div className="datasets-admin-page__auxiliar-header">
-              <Icon
-                name="agora-line-question-mark"
-                className="w-[24px] h-[24px]"
-              />
-              <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+        {/* Right: Auxiliar sidebar (only for step 1) */}
+        {currentStep === 1 && (
+          <aside className="datasets-admin-page__auxiliar">
+            <div className="datasets-admin-page__auxiliar-inner">
+              <div className="datasets-admin-page__auxiliar-header">
+                <Icon
+                  name="agora-line-question-mark"
+                  className="w-[24px] h-[24px]"
+                />
+                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+              </div>
+              <AccordionGroup>
+                {auxiliarItems.map((item, idx) => (
+                  <Accordion
+                    key={idx}
+                    headingTitle={item.title}
+                    headingLevel="h3"
+                  >
+                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
+                      {item.content}
+                    </div>
+                  </Accordion>
+                ))}
+              </AccordionGroup>
             </div>
-            <AccordionGroup>
-              {auxiliarItems.map((item, idx) => (
-                <Accordion
-                  key={idx}
-                  headingTitle={item.title}
-                  headingLevel="h3"
-                >
-                  <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                    {item.content}
-                  </div>
-                </Accordion>
-              ))}
-            </AccordionGroup>
-          </div>
-        </aside>
+          </aside>
+        )}
       </div>
     </>
   );
