@@ -24,7 +24,6 @@ import {
   uploadResource,
   fetchLicenses,
   fetchFrequencies,
-  fetchCurrentUser,
 } from "@/services/api";
 import { License, Frequency, Dataset } from "@/types/api";
 
@@ -53,7 +52,6 @@ export default function DatasetsAdminClient({
   const [selectedFrequency, setSelectedFrequency] = useState("");
   const [temporalStart, setTemporalStart] = useState("");
   const [temporalEnd, setTemporalEnd] = useState("");
-  const [selectedOrg, setSelectedOrg] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
 
   // API state
@@ -64,22 +62,16 @@ export default function DatasetsAdminClient({
   // Dropdown data
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
-  const [userOrgs, setUserOrgs] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
     async function loadDropdownData() {
       try {
-        const [licensesData, frequenciesData, user] = await Promise.all([
+        const [licensesData, frequenciesData] = await Promise.all([
           fetchLicenses(),
           fetchFrequencies(),
-          fetchCurrentUser(),
         ]);
         setLicenses(licensesData);
         setFrequencies(frequenciesData);
-        if (user && "organizations" in user) {
-          const orgs = (user as { organizations: { id: string; name: string }[] }).organizations;
-          if (orgs) setUserOrgs(orgs);
-        }
       } catch (error) {
         console.error("Error loading dropdown data:", error);
       }
@@ -122,7 +114,6 @@ export default function DatasetsAdminClient({
         payload.description_short = datasetShortDescription.trim();
       }
       if (selectedLicense) payload.license = selectedLicense;
-      if (selectedOrg) payload.organization = selectedOrg;
       if (temporalStart) {
         payload.temporal_coverage = {
           start: temporalStart,
@@ -398,50 +389,6 @@ export default function DatasetsAdminClient({
                 <p className="text-neutral-900 text-base leading-7">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
-                <h2 className="datasets-admin-page__section-title">Produtor</h2>
-
-                <InputSelect
-                  label="Verifique a identidade que deseja usar na publicação."
-                  placeholder="Para pesquisar..."
-                  id="producer-identity"
-                  onChange={(options) => {
-                    if (options.length > 0) {
-                      setSelectedOrg(options[0].value as string);
-                    } else {
-                      setSelectedOrg("");
-                    }
-                  }}
-                >
-                  <DropdownSection name="organizations">
-                    {userOrgs.map((org) => (
-                      <DropdownOption key={org.id} value={org.id}>
-                        {org.name}
-                      </DropdownOption>
-                    ))}
-                  </DropdownSection>
-                </InputSelect>
-
-                {userOrgs.length === 0 && (
-                  <div className="datasets-admin-page__org-card">
-                    <p className="datasets-admin-page__org-card-title">
-                      Você não pertence a nenhuma organização.
-                    </p>
-                    <p className="datasets-admin-page__org-card-description">
-                      Recomendamos que publique em nome de uma organização se se
-                      tratar de uma atividade profissional.
-                    </p>
-                    <a
-                      href="#"
-                      className="datasets-admin-page__org-card-link"
-                    >
-                      Crie ou participe de uma organização
-                      <Icon
-                        name="agora-line-arrow-right-circle"
-                        className="w-[24px] h-[24px]"
-                      />
-                    </a>
-                  </div>
-                )}
 
                 <h2 className="datasets-admin-page__section-title">Descrição</h2>
 
