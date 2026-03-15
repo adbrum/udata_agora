@@ -21,59 +21,63 @@ import {
   Pill,
 } from "@ama-pt/agora-design-system";
 
-interface MockReuse {
+interface MockApi {
   title: string;
   slug: string;
-  status: "Público" | "Rascunho";
-  type: string;
+  status: "Público" | "Rascunho" | "Excluído";
+  access: string;
   createdAt: string;
   lastActivity: string;
   lastActivityBy: string;
-  datasets: number;
+  rateLimit: string;
+  availability: string;
 }
 
 const today = new Date();
 const formatDate = (date: Date) =>
   `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
 
-const mockReuses: MockReuse[] = [
+const mockApis: MockApi[] = [
   {
-    title: "Mapa interativo de qualidade do ar",
-    slug: "mapa-qualidade-ar",
+    title: "API de dados geográficos nacionais",
+    slug: "api-dados-geograficos",
     status: "Público",
-    type: "Visualização",
-    createdAt: formatDate(new Date(2025, 7, 20)),
-    lastActivity: formatDate(new Date(2026, 0, 5)),
+    access: "Abrir",
+    createdAt: formatDate(new Date(2025, 9, 10)),
+    lastActivity: formatDate(new Date(2026, 1, 15)),
     lastActivityBy: "Lopes Inês",
-    datasets: 2,
+    rateLimit: "100/min",
+    availability: "99,9%",
   },
   {
-    title: "Dashboard de indicadores de mobilidade urbana",
-    slug: "dashboard-mobilidade-urbana",
-    status: "Público",
-    type: "Aplicação",
-    createdAt: formatDate(new Date(2025, 10, 12)),
-    lastActivity: formatDate(new Date(2026, 1, 28)),
-    lastActivityBy: "Lopes Inês",
-    datasets: 3,
-  },
-  {
-    title: "Análise de dados de acidentes rodoviários",
-    slug: "analise-acidentes-rodoviarios",
+    title: "API de transportes públicos",
+    slug: "api-transportes-publicos",
     status: "Rascunho",
-    type: "Visualização",
+    access: "Abrir",
     createdAt: formatDate(today),
     lastActivity: formatDate(today),
     lastActivityBy: "Lopes Inês",
-    datasets: 1,
+    rateLimit: "",
+    availability: "",
+  },
+  {
+    title: "API de estatísticas de emprego",
+    slug: "api-estatisticas-emprego",
+    status: "Rascunho",
+    access: "Restrito",
+    createdAt: formatDate(today),
+    lastActivity: formatDate(today),
+    lastActivityBy: "Lopes Inês",
+    rateLimit: "50/min",
+    availability: "98%",
   },
 ];
 
-export default function ReusesClient() {
+export default function SystemDataservicesClient() {
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
-  const reuses = mockReuses;
+  const apis = mockApis;
 
   const publishRoutes: Record<string, string> = {
     dataset: "/pages/admin/me/datasets/new",
@@ -89,14 +93,14 @@ export default function ReusesClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Lopes Inês", url: "#" },
-            { label: "Reutilizações", url: "/pages/admin/me/reuses" },
+            { label: "Sistema", url: "#" },
+            { label: "API", url: "/pages/admin/system/dataservices" },
           ]}
         />
       </div>
 
       <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Reutilizações</h1>
+        <h1 className="datasets-admin-page__title">API</h1>
         <div
           className="relative inline-block publish-dropdown-wrapper"
           ref={publishDropdownWrapperRef}
@@ -146,15 +150,15 @@ export default function ReusesClient() {
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {reuses.length} resultados
+        {apis.length} resultados
       </p>
 
       <div className="flex items-center gap-[16px] mb-[24px]">
         <div className="flex-1">
           <InputSearchBar
             label="Pesquisar"
-            placeholder="Pesquise o nome da reutilização"
-            aria-label="Pesquisar reutilizações"
+            placeholder="Pesquise o nome da API"
+            aria-label="Pesquisar APIs"
           />
         </div>
         <InputSelect
@@ -172,12 +176,12 @@ export default function ReusesClient() {
         </InputSelect>
       </div>
 
-      {reuses.length > 0 ? (
+      {apis.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Linhas por página",
             itemsPerPage: 5,
-            totalItems: reuses.length,
+            totalItems: apis.length,
             availablePageSizes: [5, 10, 20],
             currentPage: 1,
             buttonDropdownAriaLabel: "Selecionar linhas por página",
@@ -189,52 +193,70 @@ export default function ReusesClient() {
           <TableHeader>
             <TableRow>
               <TableHeaderCell sortType="string" sortOrder="descending">
-                Título da reutilização
+                Título da API
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
+              <TableHeaderCell>Acesso</TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell sortType="numeric" sortOrder="descending">
-                Conjuntos de dados
+              <TableHeaderCell sortType="date" sortOrder="none">
+                Modificado em
               </TableHeaderCell>
+              <TableHeaderCell>Limite de chamadas</TableHeaderCell>
+              <TableHeaderCell>Disponibilidade</TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {reuses.map((reuse, index) => (
+            {apis.map((api, index) => (
               <TableRow key={index}>
                 <TableCell headerLabel="Título">
                   <a
-                    href={`/pages/reuses/${reuse.slug}`}
+                    href={`/pages/dataservices/${api.slug}`}
                     className="text-primary-600 underline"
                   >
-                    {reuse.title}
+                    {api.title}
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant={reuse.status === "Público" ? "success" : "warning"}>
-                    {reuse.status}
+                  <Pill
+                    variant={
+                      api.status === "Público"
+                        ? "success"
+                        : api.status === "Excluído"
+                          ? "danger"
+                          : "warning"
+                    }
+                  >
+                    {api.status}
                   </Pill>
                 </TableCell>
-                <TableCell headerLabel="Criado em">
-                  {reuse.createdAt}
+                <TableCell headerLabel="Acesso">
+                  <Pill variant="informative">{api.access}</Pill>
+                </TableCell>
+                <TableCell headerLabel="Criado em">{api.createdAt}</TableCell>
+                <TableCell headerLabel="Modificado em">
+                  {api.lastActivity}
                   <br />
                   <span className="text-sm text-neutral-500">
                     sobre{" "}
                     <span className="text-success-600">●</span>{" "}
-                    {reuse.lastActivityBy}
+                    {api.lastActivityBy}
                   </span>
                 </TableCell>
-                <TableCell headerLabel="Conjuntos de dados">
-                  {reuse.datasets}
+                <TableCell headerLabel="Limite de chamadas">
+                  {api.rateLimit || "—"}
+                </TableCell>
+                <TableCell headerLabel="Disponibilidade">
+                  {api.availability || "—"}
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">
-                    <a href={`/pages/reuses/${reuse.slug}`}>
+                    <a href={`/pages/dataservices/${api.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/me/reuses/edit?slug=${reuse.slug}`}>
+                    <a href={`/pages/admin/dataservices/edit?slug=${api.slug}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
@@ -252,10 +274,10 @@ export default function ReusesClient() {
               icon={
                 <Icon name="agora-line-file" className="datasets-page__empty-icon" />
               }
-              description="Você ainda não publicou uma reutilização."
+              description="Você ainda não publicou uma API."
               hasAnchor
               valueAnchor="Publicar em dados.gov"
-              anchorHref="/pages/admin/me/reuses/new"
+              anchorHref="/pages/admin/dataservices/new"
               anchorTarget="_self"
             />
           </div>

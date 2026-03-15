@@ -83,6 +83,7 @@ export default function DataservicesClient() {
     dataset: "/pages/admin/me/datasets/new",
     reuse: "/pages/admin/me/reuses/new",
     harvester: "/pages/admin/me/datasets/new",
+    api: "/pages/admin/dataservices/new",
     organization: "/pages/admin/me/datasets/new",
   };
 
@@ -125,7 +126,7 @@ export default function DataservicesClient() {
             showDropdown={showPublishDropdown}
             onHide={() => setShowPublishDropdown(false)}
             hideSectionNames={true}
-            optionsVisible={4}
+            optionsVisible={5}
             onChange={(options) => {
               if (options.length > 0) {
                 const route = publishRoutes[options[0].value as string];
@@ -141,6 +142,7 @@ export default function DataservicesClient() {
               <DropdownOption value="dataset">Um conjunto de dados</DropdownOption>
               <DropdownOption value="reuse">Uma reutilização</DropdownOption>
               <DropdownOption value="harvester">Um harvester</DropdownOption>
+              <DropdownOption value="api">Uma API</DropdownOption>
               <DropdownOption value="organization">Uma organização</DropdownOption>
             </DropdownSection>
           </Dropdown>
