@@ -82,7 +82,7 @@ export default function SystemDataservicesClient() {
   const publishRoutes: Record<string, string> = {
     dataset: "/pages/admin/me/datasets/new",
     reuse: "/pages/admin/me/reuses/new",
-    harvester: "/pages/admin/me/datasets/new",
+    harvester: "/pages/admin/harvesters/new",
     api: "/pages/admin/dataservices/new",
     article: "/pages/admin/system/posts/new",
     organization: "/pages/admin/organizations/new",
