@@ -558,6 +558,18 @@ export interface Report {
   self_api_url: string;
 }
 
+export type FollowableEntityType = "datasets" | "organizations" | "reuses";
+
+export interface Follow {
+  id: string;
+  follower: UserRef;
+  since: string;
+}
+
+export interface FollowResponse {
+  followers: number;
+}
+
 export interface APIResponse<T> {
   data: T[];
   page: number;

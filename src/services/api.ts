@@ -9,6 +9,9 @@ import {
   DatasetSuggestion,
   DatasetUpdatePayload,
   Discussion,
+  Follow,
+  FollowableEntityType,
+  FollowResponse,
   FormatSuggestion,
   Frequency,
   GlobalSearchSuggestion,
@@ -1481,4 +1484,90 @@ export function getOrgExportUrl(org: string, type: OrgExportType): string {
 
 export function getSiteExportUrl(type: SiteExportType): string {
   return `${API_BASE_URL}/site/${type}.csv`;
+}
+
+// --- Followers ---
+
+export async function fetchFollowers(
+  entityType: FollowableEntityType,
+  id: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Follow>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/${entityType}/${id}/followers/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch followers: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching followers:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function followEntity(
+  entityType: FollowableEntityType,
+  id: string
+): Promise<FollowResponse> {
+  const res = await fetch(`${API_BASE_URL}/${entityType}/${id}/followers/`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (res.status === 401) {
+    throw new Error("Authentication required to follow");
+  }
+
+  if (!res.ok) {
+    throw new Error(`Failed to follow: ${res.statusText}`);
+  }
+
+  return await res.json();
+}
+
+export async function unfollowEntity(
+  entityType: FollowableEntityType,
+  id: string
+): Promise<FollowResponse> {
+  const res = await fetch(`${API_BASE_URL}/${entityType}/${id}/followers/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (res.status === 401) {
+    throw new Error("Authentication required to unfollow");
+  }
+
+  if (!res.ok) {
+    throw new Error(`Failed to unfollow: ${res.statusText}`);
+  }
+
+  return await res.json();
+}
+
+export async function isFollowing(
+  entityType: FollowableEntityType,
+  id: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/${entityType}/${id}/followers/?user=${userId}&page_size=1`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok) return false;
+    const data = await res.json();
+    return data.total > 0;
+  } catch {
+    return false;
+  }
 }
