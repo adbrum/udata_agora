@@ -34,14 +34,6 @@ const nextConfig: NextConfig = {
           source: "/get-csrf",
           destination: `${BACKEND_URL}/get-csrf`,
         },
-        {
-          source: "/reset/",
-          destination: `${BACKEND_URL}/reset/`,
-        },
-        {
-          source: "/reset/:token",
-          destination: `${BACKEND_URL}/reset/:token`,
-        },
         // SAML / Autenticação.gov routes
         {
           source: "/saml/login",
