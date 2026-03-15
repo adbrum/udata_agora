@@ -92,7 +92,8 @@ export async function fetchCurrentUser(): Promise<UserRef | null> {
 }
 
 /**
- * Fetch the authenticated user's datasets (paginated)
+ * Fetch the authenticated user's datasets.
+ * Backend returns a flat array; we wrap it into APIResponse for consistency.
  */
 export async function fetchMyDatasets(
   page: number = 1,
@@ -100,7 +101,7 @@ export async function fetchMyDatasets(
 ): Promise<APIResponse<Dataset>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/me/datasets/?page=${page}&page_size=${pageSize}`,
+      `${API_BASE_URL}/me/datasets/`,
       { cache: "no-store", credentials: "include" }
     );
 
@@ -108,7 +109,19 @@ export async function fetchMyDatasets(
       throw new Error(`Failed to fetch my datasets: ${res.statusText}`);
     }
 
-    return await res.json();
+    const allDatasets: Dataset[] = await res.json();
+    const total = allDatasets.length;
+    const start = (page - 1) * pageSize;
+    const data = allDatasets.slice(start, start + pageSize);
+
+    return {
+      data,
+      page,
+      page_size: pageSize,
+      total,
+      next_page: start + pageSize < total ? String(page + 1) : null,
+      previous_page: page > 1 ? String(page - 1) : null,
+    };
   } catch (error) {
     console.error("Error fetching my datasets:", error);
     return {
@@ -154,7 +167,8 @@ export async function fetchMyReuses(
 }
 
 /**
- * Fetch datasets from the authenticated user's organizations (paginated)
+ * Fetch datasets from the authenticated user's organizations.
+ * Backend returns a flat array; we wrap it into APIResponse for consistency.
  */
 export async function fetchMyOrgDatasets(
   page: number = 1,
@@ -162,7 +176,7 @@ export async function fetchMyOrgDatasets(
 ): Promise<APIResponse<Dataset>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/me/org_datasets/?page=${page}&page_size=${pageSize}`,
+      `${API_BASE_URL}/me/org_datasets/`,
       { cache: "no-store", credentials: "include" }
     );
 
@@ -170,7 +184,19 @@ export async function fetchMyOrgDatasets(
       throw new Error(`Failed to fetch my org datasets: ${res.statusText}`);
     }
 
-    return await res.json();
+    const allDatasets: Dataset[] = await res.json();
+    const total = allDatasets.length;
+    const start = (page - 1) * pageSize;
+    const data = allDatasets.slice(start, start + pageSize);
+
+    return {
+      data,
+      page,
+      page_size: pageSize,
+      total,
+      next_page: start + pageSize < total ? String(page + 1) : null,
+      previous_page: page > 1 ? String(page - 1) : null,
+    };
   } catch (error) {
     console.error("Error fetching my org datasets:", error);
     return {
