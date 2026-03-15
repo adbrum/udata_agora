@@ -69,7 +69,7 @@ const mockReuses: MockReuse[] = [
   },
 ];
 
-export default function ReusesClient() {
+export default function SystemReusesClient() {
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
@@ -89,8 +89,8 @@ export default function ReusesClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Lopes Inês", url: "#" },
-            { label: "Reutilizações", url: "/pages/admin/me/reuses" },
+            { label: "Sistema", url: "#" },
+            { label: "Reutilizações", url: "/pages/admin/system/reuses" },
           ]}
         />
       </div>

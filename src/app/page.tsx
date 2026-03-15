@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   Button,
   Icon,
@@ -30,6 +31,7 @@ function formatStatNumber(value: number): { number: string; suffix: string } {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [siteInfo, setSiteInfo] = useState<SiteInfo | null>(null);
   const [latestDatasets, setFeaturedDatasets] = useState<Dataset[]>([]);
   const [latestReuses, setFeaturedReuses] = useState<Reuse[]>([]);
@@ -147,7 +149,20 @@ export default function Home() {
                         showDropdown={showPublishDropdown}
                         onHide={() => setShowPublishDropdown(false)}
                         hideSectionNames={true}
-                        optionsVisible={4}
+                        optionsVisible={5}
+                        onChange={(options) => {
+                          const routes: Record<string, string> = {
+                            dataset: "/pages/admin/me/datasets/new",
+                            reuse: "/pages/admin/me/reuses/new",
+                            harvester: "/pages/admin/me/datasets/new",
+                            api: "/pages/admin/dataservices/new",
+                            organization: "/pages/admin/me/datasets/new",
+                          };
+                          if (options.length > 0) {
+                            const route = routes[options[0].value as string];
+                            if (route) router.push(route);
+                          }
+                        }}
                         style={{
                           width: "max-content",
                           minWidth: "100%",

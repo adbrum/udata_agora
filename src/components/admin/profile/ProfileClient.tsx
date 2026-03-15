@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import {
   Avatar,
@@ -20,6 +21,7 @@ import {
 } from "@ama-pt/agora-design-system";
 
 export default function ProfileClient() {
+  const router = useRouter();
   const [showEditDropdown, setShowEditDropdown] = useState(false);
   const editDropdownWrapperRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
@@ -103,7 +105,20 @@ export default function ProfileClient() {
               showDropdown={showEditDropdown}
               onHide={() => setShowEditDropdown(false)}
               hideSectionNames={true}
-              optionsVisible={4}
+              optionsVisible={5}
+              onChange={(options) => {
+                const routes: Record<string, string> = {
+                  dataset: "/pages/admin/me/datasets/new",
+                  reuse: "/pages/admin/me/reuses/new",
+                  harvester: "/pages/admin/me/datasets/new",
+                  api: "/pages/admin/dataservices/new",
+                  organization: "/pages/admin/me/datasets/new",
+                };
+                if (options.length > 0) {
+                  const route = routes[options[0].value as string];
+                  if (route) router.push(route);
+                }
+              }}
               style={{
                 width: "max-content",
                 minWidth: "100%",
@@ -113,6 +128,7 @@ export default function ProfileClient() {
                 <DropdownOption value="dataset">Um conjunto de dados</DropdownOption>
                 <DropdownOption value="reuse">Uma reutilização</DropdownOption>
                 <DropdownOption value="harvester">Um harvester</DropdownOption>
+              <DropdownOption value="api">Uma API</DropdownOption>
                 <DropdownOption value="organization">Uma organização</DropdownOption>
               </DropdownSection>
             </Dropdown>

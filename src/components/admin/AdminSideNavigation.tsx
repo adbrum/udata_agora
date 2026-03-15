@@ -129,7 +129,7 @@ const navGroups: NavGroup[] = [
       {
         label: "Organizações",
         href: "/pages/admin/system/organizations",
-        icon: "agora-line-building",
+        icon: "agora-line-buildings",
       },
       {
         label: "Utilizadores",

@@ -66,7 +66,20 @@ export default function ApiNewClient() {
             showDropdown={showPublishDropdown}
             onHide={() => setShowPublishDropdown(false)}
             hideSectionNames={true}
-            optionsVisible={4}
+            optionsVisible={5}
+            onChange={(options) => {
+              const routes: Record<string, string> = {
+                dataset: "/pages/admin/me/datasets/new",
+                reuse: "/pages/admin/me/reuses/new",
+                harvester: "/pages/admin/me/datasets/new",
+                api: "/pages/admin/dataservices/new",
+                organization: "/pages/admin/me/datasets/new",
+              };
+              if (options.length > 0) {
+                const route = routes[options[0].value as string];
+                if (route) router.push(route);
+              }
+            }}
             style={{
               width: "max-content",
               minWidth: "100%",
@@ -76,6 +89,7 @@ export default function ApiNewClient() {
               <DropdownOption value="dataset">Um conjunto de dados</DropdownOption>
               <DropdownOption value="reuse">Uma reutilização</DropdownOption>
               <DropdownOption value="harvester">Um harvester</DropdownOption>
+              <DropdownOption value="api">Uma API</DropdownOption>
               <DropdownOption value="organization">Uma organização</DropdownOption>
             </DropdownSection>
           </Dropdown>

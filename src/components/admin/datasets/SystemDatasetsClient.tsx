@@ -19,61 +19,62 @@ import {
   TableRow,
   TableCell,
   Pill,
+  ProgressBar,
 } from "@ama-pt/agora-design-system";
 
-interface MockReuse {
+interface MockDataset {
   title: string;
   slug: string;
   status: "Público" | "Rascunho";
-  type: string;
   createdAt: string;
   lastActivity: string;
   lastActivityBy: string;
-  datasets: number;
+  files: number;
+  score: number;
 }
 
 const today = new Date();
 const formatDate = (date: Date) =>
   `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
 
-const mockReuses: MockReuse[] = [
+const mockDatasets: MockDataset[] = [
   {
-    title: "Mapa interativo de qualidade do ar",
-    slug: "mapa-qualidade-ar",
+    title: "Estatísticas de acidentes rodoviários em Portugal",
+    slug: "estatisticas-acidentes-rodoviarios",
     status: "Público",
-    type: "Visualização",
-    createdAt: formatDate(new Date(2025, 7, 20)),
-    lastActivity: formatDate(new Date(2026, 0, 5)),
+    createdAt: formatDate(new Date(2025, 10, 3)),
+    lastActivity: formatDate(new Date(2026, 1, 20)),
     lastActivityBy: "Lopes Inês",
-    datasets: 2,
+    files: 3,
+    score: 75,
   },
   {
-    title: "Dashboard de indicadores de mobilidade urbana",
-    slug: "dashboard-mobilidade-urbana",
+    title: "Indicadores de qualidade do ar nas cidades portuguesas",
+    slug: "indicadores-qualidade-ar",
     status: "Público",
-    type: "Aplicação",
-    createdAt: formatDate(new Date(2025, 10, 12)),
-    lastActivity: formatDate(new Date(2026, 1, 28)),
+    createdAt: formatDate(new Date(2025, 8, 15)),
+    lastActivity: formatDate(new Date(2026, 0, 10)),
     lastActivityBy: "Lopes Inês",
-    datasets: 3,
+    files: 2,
+    score: 60,
   },
   {
-    title: "Análise de dados de acidentes rodoviários",
-    slug: "analise-acidentes-rodoviarios",
+    title: "Registo de entidades do setor público",
+    slug: "registo-entidades-setor-publico",
     status: "Rascunho",
-    type: "Visualização",
     createdAt: formatDate(today),
     lastActivity: formatDate(today),
     lastActivityBy: "Lopes Inês",
-    datasets: 1,
+    files: 1,
+    score: 30,
   },
 ];
 
-export default function ReusesClient() {
+export default function SystemDatasetsClient() {
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
-  const reuses = mockReuses;
+  const datasets = mockDatasets;
 
   const publishRoutes: Record<string, string> = {
     dataset: "/pages/admin/me/datasets/new",
@@ -89,14 +90,14 @@ export default function ReusesClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Lopes Inês", url: "#" },
-            { label: "Reutilizações", url: "/pages/admin/me/reuses" },
+            { label: "Sistema", url: "#" },
+            { label: "Conjuntos de dados", url: "/pages/admin/system/datasets" },
           ]}
         />
       </div>
 
       <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Reutilizações</h1>
+        <h1 className="datasets-admin-page__title">Conjuntos de dados</h1>
         <div
           className="relative inline-block publish-dropdown-wrapper"
           ref={publishDropdownWrapperRef}
@@ -146,15 +147,15 @@ export default function ReusesClient() {
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {reuses.length} resultados
+        {datasets.length} resultados
       </p>
 
       <div className="flex items-center gap-[16px] mb-[24px]">
         <div className="flex-1">
           <InputSearchBar
             label="Pesquisar"
-            placeholder="Pesquise o nome da reutilização"
-            aria-label="Pesquisar reutilizações"
+            placeholder="Pesquise o nome, código ou sigla da entidade"
+            aria-label="Pesquisar conjuntos de dados"
           />
         </div>
         <InputSelect
@@ -172,16 +173,16 @@ export default function ReusesClient() {
         </InputSelect>
       </div>
 
-      {reuses.length > 0 ? (
+      {datasets.length > 0 ? (
         <Table
           paginationProps={{
-            itemsPerPageLabel: "Linhas por página",
-            itemsPerPage: 5,
-            totalItems: reuses.length,
+            itemsPerPageLabel: "Itens por página",
+            itemsPerPage: 10,
+            totalItems: datasets.length,
             availablePageSizes: [5, 10, 20],
             currentPage: 1,
-            buttonDropdownAriaLabel: "Selecionar linhas por página",
-            dropdownListAriaLabel: "Opções de linhas por página",
+            buttonDropdownAriaLabel: "Selecionar itens por página",
+            dropdownListAriaLabel: "Opções de itens por página",
             prevButtonAriaLabel: "Página anterior",
             nextButtonAriaLabel: "Próxima página",
           }}
@@ -189,52 +190,59 @@ export default function ReusesClient() {
           <TableHeader>
             <TableRow>
               <TableHeaderCell sortType="string" sortOrder="descending">
-                Título da reutilização
+                Título do conjunto de dados
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
+              <TableHeaderCell sortType="string" sortOrder="none">
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell sortType="numeric" sortOrder="descending">
-                Conjuntos de dados
+              <TableHeaderCell sortType="string" sortOrder="none">
+                Última atividade
               </TableHeaderCell>
+              <TableHeaderCell>Ficheiros</TableHeaderCell>
+              <TableHeaderCell>Pontuação</TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {reuses.map((reuse, index) => (
+            {datasets.map((dataset, index) => (
               <TableRow key={index}>
                 <TableCell headerLabel="Título">
                   <a
-                    href={`/pages/reuses/${reuse.slug}`}
+                    href={`/pages/datasets/${dataset.slug}`}
                     className="text-primary-600 underline"
                   >
-                    {reuse.title}
+                    {dataset.title}
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant={reuse.status === "Público" ? "success" : "warning"}>
-                    {reuse.status}
+                  <Pill variant={dataset.status === "Público" ? "success" : "warning"}>
+                    {dataset.status}
                   </Pill>
                 </TableCell>
-                <TableCell headerLabel="Criado em">
-                  {reuse.createdAt}
+                <TableCell headerLabel="Criado em">{dataset.createdAt}</TableCell>
+                <TableCell headerLabel="Última atividade">
+                  {dataset.lastActivity}
                   <br />
                   <span className="text-sm text-neutral-500">
                     sobre{" "}
                     <span className="text-success-600">●</span>{" "}
-                    {reuse.lastActivityBy}
+                    {dataset.lastActivityBy}
                   </span>
                 </TableCell>
-                <TableCell headerLabel="Conjuntos de dados">
-                  {reuse.datasets}
+                <TableCell headerLabel="Ficheiros">{dataset.files}</TableCell>
+                <TableCell headerLabel="Pontuação">
+                  <ProgressBar
+                    value={dataset.score}
+                    aria-label={`Pontuação: ${dataset.score}%`}
+                  />
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">
-                    <a href={`/pages/reuses/${reuse.slug}`}>
+                    <a href={`/pages/datasets/${dataset.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/me/reuses/edit?slug=${reuse.slug}`}>
+                    <a href={`/pages/admin/me/datasets/edit?slug=${dataset.slug}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
@@ -252,10 +260,10 @@ export default function ReusesClient() {
               icon={
                 <Icon name="agora-line-file" className="datasets-page__empty-icon" />
               }
-              description="Você ainda não publicou uma reutilização."
+              description="Você ainda não publicou um conjunto de dados."
               hasAnchor
               valueAnchor="Publicar em dados.gov"
-              anchorHref="/pages/admin/me/reuses/new"
+              anchorHref="/pages/admin/me/datasets/new"
               anchorTarget="_self"
             />
           </div>
