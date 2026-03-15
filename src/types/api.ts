@@ -10,6 +10,32 @@ export interface UserRef {
   saml_login?: boolean;
 }
 
+export interface UserMetrics {
+  datasets: number;
+  followers: number;
+  reuses: number;
+  views: number;
+}
+
+export interface UserPublic {
+  id: string;
+  slug: string;
+  first_name: string;
+  last_name: string;
+  email: string | null;
+  avatar: string | null;
+  avatar_thumbnail: string | null;
+  website: string | null;
+  about: string | null;
+  roles: string[];
+  active: boolean;
+  organizations: Organization[];
+  since: string;
+  uri: string;
+  page: string;
+  metrics: UserMetrics;
+}
+
 export interface OrganizationMember {
   user: UserRef;
   role: string;

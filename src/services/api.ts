@@ -23,6 +23,7 @@ import {
   TagSuggestion,
   Topic,
   TopicElement,
+  UserPublic,
   UserRef,
 } from "@/types/api";
 
@@ -73,6 +74,123 @@ export async function fetchCurrentUser(): Promise<UserRef | null> {
     return await res.json();
   } catch {
     return null;
+  }
+}
+
+/**
+ * Fetch the authenticated user's datasets (paginated)
+ */
+export async function fetchMyDatasets(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Dataset>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/me/datasets/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch my datasets: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching my datasets:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+/**
+ * Fetch the authenticated user's reuses (paginated)
+ */
+export async function fetchMyReuses(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Reuse>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/me/reuses/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch my reuses: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching my reuses:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+/**
+ * Fetch datasets from the authenticated user's organizations (paginated)
+ */
+export async function fetchMyOrgDatasets(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Dataset>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/me/org_datasets/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch my org datasets: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching my org datasets:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+/**
+ * Fetch the public profile of any user by ID or slug
+ */
+export async function fetchUserProfile(userId: string): Promise<UserPublic | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/${userId}/`, {
+      cache: "no-store",
+    });
+
+    if (res.status === 404) {
+      return null;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch user profile: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    throw error;
   }
 }
 
