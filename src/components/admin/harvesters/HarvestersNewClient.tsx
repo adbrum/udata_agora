@@ -16,6 +16,7 @@ import {
   Accordion,
   AccordionGroup,
   Switch,
+  Pill,
 } from "@ama-pt/agora-design-system";
 
 export default function HarvestersNewClient() {
@@ -277,6 +278,9 @@ export default function HarvestersNewClient() {
                     label="Tipo *"
                     placeholder=""
                     id="harvester-type"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
                   >
                     <DropdownSection name="types">
                       <DropdownOption value="dcat">DCAT</DropdownOption>
@@ -318,10 +322,42 @@ export default function HarvestersNewClient() {
           {/* Step 2: Visualize */}
           {currentStep === 2 && (
             <div className="datasets-admin-page__form">
+              <div className="flex flex-col gap-[8px] mb-[24px]">
+                <p className="text-neutral-700 text-sm flex items-center gap-[6px]">
+                  <Icon name="agora-line-calendar" className="w-[16px] h-[16px]" />
+                  Iniciado em: 15 de março de 2026 às 17h13
+                </p>
+                <p className="text-neutral-700 text-sm flex items-center gap-[6px]">
+                  <Icon name="agora-line-calendar" className="w-[16px] h-[16px]" />
+                  Terminado em: 15 de março de 2026 às 17:13
+                </p>
+                <p className="text-neutral-700 text-sm">
+                  Status : <Pill variant="danger">Erro</Pill>
+                </p>
+                <p className="text-neutral-700 text-sm flex items-center gap-[12px]">
+                  Elementos:
+                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-check" className="w-[16px] h-[16px]" /> 0</span>
+                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-alert-triangle" className="w-[16px] h-[16px]" /> 0</span>
+                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-info-mark" className="w-[16px] h-[16px]" /> 0</span>
+                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-x" className="w-[16px] h-[16px]" /> 0</span>
+                  (0 no total)
+                </p>
+              </div>
+
+              <h2 className="datasets-admin-page__section-title">Erros</h2>
+
               <StatusCard
-                type="info"
-                description="Revise as informações do seu harvester antes de finalizar."
+                type="danger"
+                description={
+                  <>
+                    <strong>ERRO</strong> Tipo MIME não suportado: &quot;text/html&quot;
+                  </>
+                }
               />
+
+              <p className="text-neutral-700 text-sm font-semibold uppercase mt-[24px]">
+                0 itens
+              </p>
 
               <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
                 <Button
