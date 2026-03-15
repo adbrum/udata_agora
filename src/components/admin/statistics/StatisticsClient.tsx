@@ -11,7 +11,6 @@ import {
   DropdownOption,
   Icon,
   InputSearchBar,
-  InputSelect,
   Tabs,
   Tab,
   TabHeader,
@@ -193,18 +192,6 @@ export default function StatisticsClient() {
                     placeholder="Pesquisar"
                     aria-label="Pesquisar APIs"
                   />
-                  <InputSelect
-                    label="Filtrar"
-                    placeholder="Filtrar por status"
-                    id="filter-api-status"
-                  >
-                    <DropdownSection name="status">
-                      <DropdownOption value="public">Público</DropdownOption>
-                      <DropdownOption value="archived">Arquivo</DropdownOption>
-                      <DropdownOption value="draft">Rascunho</DropdownOption>
-                      <DropdownOption value="deleted">Excluído</DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
                 </div>
 
                 <div className="datasets-page__content">
@@ -258,18 +245,6 @@ export default function StatisticsClient() {
                     placeholder="Pesquisar"
                     aria-label="Pesquisar reutilizações"
                   />
-                  <InputSelect
-                    label="Filtrar"
-                    placeholder="Filtrar por status"
-                    id="filter-reuse-status"
-                  >
-                    <DropdownSection name="status">
-                      <DropdownOption value="public">Público</DropdownOption>
-                      <DropdownOption value="archived">Arquivo</DropdownOption>
-                      <DropdownOption value="draft">Rascunho</DropdownOption>
-                      <DropdownOption value="deleted">Excluído</DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
                 </div>
 
                 <div className="datasets-page__content">
