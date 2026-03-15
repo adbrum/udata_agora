@@ -33,6 +33,23 @@ export default function HarvestersNewClient() {
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [isEnabled, setIsEnabled] = useState(true);
   const [isAutoArchive, setIsAutoArchive] = useState(true);
+  const [filters, setFilters] = useState<
+    { mode: string; type: string; value: string }[]
+  >([]);
+
+  const addFilter = () => {
+    setFilters((prev) => [...prev, { mode: "include", type: "organization", value: "" }]);
+  };
+
+  const removeFilter = (index: number) => {
+    setFilters((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateFilter = (index: number, field: string, value: string) => {
+    setFilters((prev) =>
+      prev.map((f, i) => (i === index ? { ...f, [field]: value } : f))
+    );
+  };
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -290,6 +307,85 @@ export default function HarvestersNewClient() {
                     </DropdownSection>
                   </InputSelect>
 
+                  <div>
+                    <p className="text-primary-900 text-base font-medium leading-7">
+                      Filtros
+                    </p>
+
+                    {filters.map((filter, index) => (
+                      <div key={index} className={`mt-[8px] pb-[16px] mb-[8px] ${index < filters.length - 1 ? "border-b border-neutral-200" : ""}`}>
+                        <div className="flex items-center gap-[8px]">
+                          <InputSelect
+                            label=""
+                            hideLabel
+                            placeholder="Incluir"
+                            id={`filter-mode-${index}`}
+                            onChange={(options) => {
+                              if (options.length > 0)
+                                updateFilter(index, "mode", options[0].value as string);
+                            }}
+                          >
+                            <DropdownSection name="mode">
+                              <DropdownOption value="include">Incluir</DropdownOption>
+                              <DropdownOption value="exclude">Excluir</DropdownOption>
+                            </DropdownSection>
+                          </InputSelect>
+                          <InputSelect
+                            label=""
+                            hideLabel
+                            placeholder="Organização"
+                            id={`filter-type-${index}`}
+                            onChange={(options) => {
+                              if (options.length > 0)
+                                updateFilter(index, "type", options[0].value as string);
+                            }}
+                          >
+                            <DropdownSection name="type">
+                              <DropdownOption value="organization">Organização</DropdownOption>
+                              <DropdownOption value="tag">Marcação</DropdownOption>
+                            </DropdownSection>
+                          </InputSelect>
+                        </div>
+                        <div className="flex items-center gap-[8px] mt-[8px]">
+                          <div className="flex-1">
+                            <InputText
+                              label=""
+                              hideLabel
+                              placeholder=""
+                              id={`filter-value-${index}`}
+                              value={filter.value}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                updateFilter(index, "value", e.target.value)
+                              }
+                            />
+                          </div>
+                          <Button
+                            variant="danger"
+                            hasIcon
+                            iconOnly
+                            leadingIcon="agora-line-trash"
+                            leadingIconHover="agora-solid-trash"
+                            onClick={() => removeFilter(index)}
+                            aria-label="Excluir filtro"
+                          >
+                            {" "}
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+
+                    <Button
+                      appearance="link"
+                      variant="primary"
+                      hasIcon
+                      leadingIcon="agora-line-plus-circle"
+                      leadingIconHover="agora-solid-plus-circle"
+                      onClick={addFilter}
+                    >
+                      Adicionar um filtro
+                    </Button>
+                  </div>
+
                   <div className="flex gap-[48px]">
                     <Switch
                       label="Ativado"
@@ -344,6 +440,17 @@ export default function HarvestersNewClient() {
                 </p>
               </div>
 
+              <StatusCard
+                type="success"
+                description={
+                  <>
+                    <strong>O seu harvester foi criado</strong>
+                    <br />
+                    O harvester está a aguardar aprovação. Será notificado após aprovação (ou recusa).
+                  </>
+                }
+              />
+
               <h2 className="datasets-admin-page__section-title">Erros</h2>
 
               <StatusCard
@@ -374,14 +481,9 @@ export default function HarvestersNewClient() {
                 </Button>
                 <Button
                   variant="primary"
-                  hasIcon
-                  trailingIcon="agora-line-arrow-right-circle"
-                  trailingIconHover="agora-solid-arrow-right-circle"
-                  onClick={() =>
-                    router.push("/pages/admin/harvesters/new?step=3")
-                  }
+                  onClick={() => router.push("/pages/admin/system/harvesters")}
                 >
-                  Seguinte
+                  Ver em administração
                 </Button>
               </div>
             </div>
