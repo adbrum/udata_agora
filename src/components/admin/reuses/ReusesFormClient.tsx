@@ -348,6 +348,9 @@ export default function ReusesFormClient({
                     label="Palavras-chave"
                     placeholder="Pesquise por uma palavra-chave..."
                     id="reuse-keywords"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
                   >
                     <DropdownSection name="keywords">
                       <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>

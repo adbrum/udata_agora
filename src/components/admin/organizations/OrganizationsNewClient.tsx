@@ -27,6 +27,32 @@ export default function OrganizationsNewClient() {
   const totalSegments = 12;
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
+  const [orgName, setOrgName] = useState("");
+  const [orgDescription, setOrgDescription] = useState("");
+  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+
+  const clearError = (field: string) => {
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+  const handleCreateOrg = () => {
+    const errors: Record<string, boolean> = {};
+    if (!orgName.trim()) errors.orgName = true;
+    if (!orgDescription.trim()) errors.orgDescription = true;
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
+    router.push("/pages/admin/system/organizations");
+  };
+
   const stepTitles: Record<number, string> = {
     1: "Crie ou participe de uma organização em dados.gov",
     2: "Descreva sua organização",
@@ -263,6 +289,15 @@ export default function OrganizationsNewClient() {
                     label="Nome *"
                     placeholder=""
                     id="org-name"
+                    value={orgName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setOrgName(e.target.value);
+                      if (e.target.value.trim()) clearError("orgName");
+                    }}
+                    hasError={!!formErrors.orgName}
+                    hasFeedback={!!formErrors.orgName}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   />
 
                   <InputText
@@ -276,6 +311,15 @@ export default function OrganizationsNewClient() {
                     placeholder=""
                     id="org-description"
                     rows={6}
+                    value={orgDescription}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                      setOrgDescription(e.target.value);
+                      if (e.target.value.trim()) clearError("orgDescription");
+                    }}
+                    hasError={!!formErrors.orgDescription}
+                    hasFeedback={!!formErrors.orgDescription}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   />
 
                   <InputText
@@ -313,9 +357,7 @@ export default function OrganizationsNewClient() {
                   </Button>
                   <Button
                     variant="primary"
-                    onClick={() =>
-                      router.push("/pages/admin/system/organizations")
-                    }
+                    onClick={handleCreateOrg}
                   >
                     Criar a organização
                   </Button>

@@ -25,6 +25,31 @@ export default function ArticlesNewClient() {
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
   const [contentType, setContentType] = useState("markdown");
+  const [articleTitle, setArticleTitle] = useState("");
+  const [articleHeader, setArticleHeader] = useState("");
+  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+
+  const clearError = (field: string) => {
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+  const handleStep1Next = () => {
+    const errors: Record<string, boolean> = {};
+    if (!articleTitle.trim()) errors.articleTitle = true;
+    if (!articleHeader.trim()) errors.articleHeader = true;
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
+    router.push("/pages/admin/system/articles/new?step=2");
+  };
 
   const stepTitles: Record<number, string> = {
     1: "Descreva seu item",
@@ -152,6 +177,15 @@ export default function ArticlesNewClient() {
                   label="Título do artigo *"
                   placeholder=""
                   id="article-title"
+                  value={articleTitle}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setArticleTitle(e.target.value);
+                    if (e.target.value.trim()) clearError("articleTitle");
+                  }}
+                  hasError={!!formErrors.articleTitle}
+                  hasFeedback={!!formErrors.articleTitle}
+                  feedbackState="danger"
+                  errorFeedbackText="Campo obrigatório"
                 />
 
                 <InputTextArea
@@ -159,6 +193,15 @@ export default function ArticlesNewClient() {
                   placeholder=""
                   id="article-header"
                   rows={3}
+                  value={articleHeader}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                    setArticleHeader(e.target.value);
+                    if (e.target.value.trim()) clearError("articleHeader");
+                  }}
+                  hasError={!!formErrors.articleHeader}
+                  hasFeedback={!!formErrors.articleHeader}
+                  feedbackState="danger"
+                  errorFeedbackText="Campo obrigatório"
                 />
 
                 <div className="flex flex-col gap-[8px]">
@@ -187,6 +230,9 @@ export default function ArticlesNewClient() {
                   label="Palavras-chave"
                   placeholder="Pesquise por uma palavra-chave..."
                   id="article-keywords"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
                 >
                   <DropdownSection name="keywords">
                     <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
@@ -219,9 +265,7 @@ export default function ArticlesNewClient() {
                   hasIcon
                   trailingIcon="agora-line-arrow-right-circle"
                   trailingIconHover="agora-solid-arrow-right-circle"
-                  onClick={() =>
-                    router.push("/pages/admin/system/articles/new?step=2")
-                  }
+                  onClick={handleStep1Next}
                 >
                   Seguinte
                 </Button>
