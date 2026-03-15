@@ -330,24 +330,20 @@ export default function DatasetsAdminClient({
                       if (e.target.value.trim()) clearError("datasetDescription");
                     }}
                     hasError={!!formErrors.datasetDescription}
-                    hasFeedback={!!formErrors.datasetDescription}
-                    feedbackState="danger"
+                    hasFeedback={true}
+                    feedbackState={formErrors.datasetDescription ? "danger" : "warning"}
                     errorFeedbackText="Campo obrigatório"
-                  />
-                  <StatusCard
-                    type="info"
-                    description="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
+                    feedbackText="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
                   />
                   <InputTextArea
                     label="Descrição resumida"
                     placeholder="Placeholder"
                     id="dataset-short-description"
                     rows={3}
+                    hasFeedback={true}
+                    feedbackState="warning"
+                    feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 200 caracteres da sua descrição."
                   />
-                  <p className="text-neutral-500 text-sm leading-relaxed -mt-2">
-                    Se este campo for deixado em branco, serão utilizados os primeiros 200
-                    caracteres da sua descrição.
-                  </p>
                   <div className="w-1/2">
                     <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit" fullWidth>
                       Sugira uma breve descrição.
@@ -358,6 +354,9 @@ export default function DatasetsAdminClient({
                     label="Palavras-chave"
                     placeholder="Pesquise por uma palavra-chave..."
                     id="dataset-keywords"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
                   >
                     <DropdownSection name="keywords">
                       <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
