@@ -40,7 +40,7 @@ const mockOrganizations: MockOrganization[] = [
     members: 0,
   },
   {
-    name: "data.gouv.fr",
+    name: "dados.gov",
     slug: "data-gouv-fr",
     createdAt: "15 de janeiro de 2026",
     datasets: 1,
@@ -98,7 +98,7 @@ export default function SystemOrganizationsClient() {
     harvester: "/pages/admin/me/datasets/new",
     api: "/pages/admin/dataservices/new",
     article: "/pages/admin/system/articles/new",
-    organization: "/pages/admin/me/datasets/new",
+    organization: "/pages/admin/organizations/new",
   };
 
   return (
