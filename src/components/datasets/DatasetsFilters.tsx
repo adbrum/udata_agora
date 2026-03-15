@@ -8,10 +8,12 @@ import {
   fetchLicenses,
   fetchFrequencies,
   fetchDatasetBadges,
+  fetchGranularities,
   suggestFormats,
   suggestTags,
+  suggestSpatialZones,
 } from '@/services/api';
-import { Organization, License, Frequency } from '@/types/api';
+import { Organization, License, Frequency, Granularity } from '@/types/api';
 
 interface FilterOption {
   id: string;
@@ -27,26 +29,31 @@ export const DatasetsFilters = () => {
   const [licenses, setLicenses] = React.useState<License[]>([]);
   const [frequencies, setFrequencies] = React.useState<Frequency[]>([]);
   const [badges, setBadges] = React.useState<FilterOption[]>([]);
+  const [granularities, setGranularities] = React.useState<Granularity[]>([]);
   const [tagOptions, setTagOptions] = React.useState<FilterOption[]>([]);
   const [formatOptions, setFormatOptions] = React.useState<FilterOption[]>([]);
+  const [zoneOptions, setZoneOptions] = React.useState<FilterOption[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [searchQueries, setSearchQueries] = React.useState<Record<string, string>>({});
 
   React.useEffect(() => {
     async function loadFilterData() {
       try {
-        const [orgsRes, licensesRes, frequenciesRes, badgesRes] = await Promise.all([
-          fetchOrganizations(1, 100, { sort: "-datasets" }),
-          fetchLicenses(),
-          fetchFrequencies(),
-          fetchDatasetBadges(),
-        ]);
+        const [orgsRes, licensesRes, frequenciesRes, badgesRes, granularitiesRes] =
+          await Promise.all([
+            fetchOrganizations(1, 100, { sort: "-datasets" }),
+            fetchLicenses(),
+            fetchFrequencies(),
+            fetchDatasetBadges(),
+            fetchGranularities(),
+          ]);
         setOrganizations(orgsRes.data);
         setLicenses(licensesRes);
         setFrequencies(frequenciesRes);
         setBadges(
           Object.entries(badgesRes).map(([key, label]) => ({ id: key, name: label }))
         );
+        setGranularities(granularitiesRes);
       } catch (error) {
         console.error('Failed to load filter data', error);
       } finally {
@@ -82,6 +89,19 @@ export const DatasetsFilters = () => {
     }
   }, []);
 
+  const handleZoneSearch = React.useCallback(async (query: string) => {
+    if (query.length < 2) {
+      setZoneOptions([]);
+      return;
+    }
+    try {
+      const results = await suggestSpatialZones(query);
+      setZoneOptions(results.map((z) => ({ id: z.id, name: z.name })));
+    } catch {
+      setZoneOptions([]);
+    }
+  }, []);
+
   const handleFilterChange = (paramName: string, value: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     const currentValues = current.getAll(paramName);
@@ -113,6 +133,7 @@ export const DatasetsFilters = () => {
 
     if (groupName === 'Etiquetas') handleTagSearch(value);
     if (groupName === 'Formatos') handleFormatSearch(value);
+    if (groupName === 'Cobertura Espacial') handleZoneSearch(value);
   };
 
   const getActiveValues = (paramName: string) => searchParams.getAll(paramName);
@@ -161,6 +182,19 @@ export const DatasetsFilters = () => {
       param: 'badge',
       data: badges,
       searchable: true,
+    },
+    {
+      name: 'Granularidade Espacial',
+      param: 'granularity',
+      data: granularities.map((g) => ({ id: g.id, name: g.name })),
+      searchable: true,
+    },
+    {
+      name: 'Cobertura Espacial',
+      param: 'geozone',
+      data: zoneOptions,
+      searchable: true,
+      suggest: true,
     },
   ];
 
