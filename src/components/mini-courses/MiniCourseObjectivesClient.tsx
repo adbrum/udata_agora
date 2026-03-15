@@ -9,7 +9,7 @@ interface Props {
   slug: string;
 }
 
-export default function MiniCourseDetailClient({ slug }: Props) {
+export default function MiniCourseObjectivesClient({ slug }: Props) {
   const router = useRouter();
   const course = getMiniCourseBySlug(slug);
 
@@ -30,18 +30,26 @@ export default function MiniCourseDetailClient({ slug }: Props) {
               items={[
                 { label: 'Início', url: '/' },
                 { label: 'Mini Cursos', url: '/pages/mini-courses' },
-                { label: course.title, url: '#' },
+                {
+                  label: course.title,
+                  url: `/pages/mini-courses/${slug}`,
+                },
+                { label: 'Objetivos', url: '#' },
               ]}
               className="mb-64"
             />
             <div className="flex gap-[84px]">
               <div className="w-1/2 pr-32">
                 <h1 className="text-[32px] leading-[40px] font-bold text-primary-600 mb-16">
-                  {course.title}
+                  Objetivos do curso
                 </h1>
 
                 <div className="text-[18px] leading-[28px] space-y-16 w-[94%]">
-                  <p className="text-primary-900">{course.description}</p>
+                  <ul className="list-disc pl-24 space-y-12 text-primary-900">
+                    {course.objectives.map((objective, index) => (
+                      <li key={index}>{objective}</li>
+                    ))}
+                  </ul>
                 </div>
 
                 <div className="mt-32">
@@ -52,11 +60,11 @@ export default function MiniCourseDetailClient({ slug }: Props) {
                     trailingIcon="agora-line-arrow-right-circle"
                     trailingIconHover="agora-solid-arrow-right-circle"
                     onClick={() =>
-                      router.push(`/pages/mini-courses/${slug}/objectives`)
+                      router.push(`/pages/mini-courses/${slug}/steps/1`)
                     }
                     className="px-24 h-48"
                   >
-                    Ver objetivos
+                    Iniciar
                   </Button>
                 </div>
 
