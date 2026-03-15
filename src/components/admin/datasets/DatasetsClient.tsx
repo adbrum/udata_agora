@@ -21,7 +21,7 @@ import {
   Pill,
   ProgressBar,
 } from "@ama-pt/agora-design-system";
-import { fetchMyDatasets } from "@/services/api";
+import { fetchMyOrgDatasets } from "@/services/api";
 import { Dataset } from "@/types/api";
 
 export default function DatasetsClient() {
@@ -39,7 +39,7 @@ export default function DatasetsClient() {
     async function loadDatasets() {
       setIsLoading(true);
       try {
-        const response = await fetchMyDatasets(currentPage, pageSize);
+        const response = await fetchMyOrgDatasets(currentPage, pageSize);
         setDatasets(response.data || []);
         setTotalItems(response.total || 0);
       } catch (error) {
