@@ -37,6 +37,8 @@ export default function DatasetsClient() {
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState<SortField>("last_modified");
   const [sortOrder, setSortOrder] = useState<SortOrder>("descending");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => {
     async function loadDatasets() {
@@ -53,10 +55,43 @@ export default function DatasetsClient() {
     loadDatasets();
   }, []);
 
-  const sortedDatasets = useMemo(() => {
-    if (sortOrder === "none") return allDatasets;
+  const filteredDatasets = useMemo(() => {
+    let result = allDatasets;
 
-    return [...allDatasets].sort((a, b) => {
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(
+        (d) =>
+          d.title.toLowerCase().includes(q) ||
+          (d.acronym && d.acronym.toLowerCase().includes(q)) ||
+          d.slug.toLowerCase().includes(q)
+      );
+    }
+
+    if (statusFilter) {
+      result = result.filter((d) => {
+        switch (statusFilter) {
+          case "public":
+            return !d.private && !d.archived && !d.deleted;
+          case "draft":
+            return !!d.private;
+          case "archived":
+            return !!d.archived;
+          case "deleted":
+            return !!d.deleted;
+          default:
+            return true;
+        }
+      });
+    }
+
+    return result;
+  }, [allDatasets, searchQuery, statusFilter]);
+
+  const sortedDatasets = useMemo(() => {
+    if (sortOrder === "none") return filteredDatasets;
+
+    return [...filteredDatasets].sort((a, b) => {
       let cmp = 0;
       switch (sortField) {
         case "title":
@@ -74,7 +109,7 @@ export default function DatasetsClient() {
       }
       return sortOrder === "descending" ? -cmp : cmp;
     });
-  }, [allDatasets, sortField, sortOrder]);
+  }, [filteredDatasets, sortField, sortOrder]);
 
   const totalItems = sortedDatasets.length;
   const start = (currentPage - 1) * pageSize;
@@ -181,6 +216,10 @@ export default function DatasetsClient() {
             label="Pesquisar"
             placeholder="Pesquise o nome, código ou sigla da entidade"
             aria-label="Pesquisar conjuntos de dados"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
           />
         </div>
         <InputSelect
@@ -188,6 +227,10 @@ export default function DatasetsClient() {
           hideLabel
           placeholder="Filtrar por estado"
           id="filter-status"
+          onChange={(options) => {
+            setStatusFilter(options.length > 0 ? (options[0].value as string) : "");
+            setCurrentPage(1);
+          }}
         >
           <DropdownSection name="status">
             <DropdownOption value="public">Público</DropdownOption>
