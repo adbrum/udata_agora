@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   InputText,
@@ -13,6 +13,7 @@ import {
   DropdownSection,
   DropdownOption,
   DragAndDropUploader,
+  CardGeneral,
 } from "@ama-pt/agora-design-system";
 
 interface ReusesFormClientProps {
@@ -34,20 +35,98 @@ export default function ReusesFormClient({
   const [reuseCoverImage, setReuseCoverImage] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
 
+  // Step 2 state
+  const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
+  const [datasetLinkErrors, setDatasetLinkErrors] = useState<Record<number, string>>({});
+  const [apiLinks, setApiLinks] = useState([{ url: "" }]);
+  const [apiLinkErrors, setApiLinkErrors] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    setDatasetLinkErrors({});
+    setApiLinkErrors({});
+  }, [currentStep]);
+
   const handleNextStep = () => {
     const errors: Record<string, boolean> = {};
     if (!reuseName.trim()) errors.reuseName = true;
     if (!reuseLink.trim()) errors.reuseLink = true;
-    if (!reuseType) errors.reuseType = true;
-    if (!reuseTheme) errors.reuseTheme = true;
     if (!reuseDescription.trim()) errors.reuseDescription = true;
-    if (!reuseCoverImage) errors.reuseCoverImage = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
     }
     setFormErrors({});
     onNextStep();
+  };
+
+  const handleDatasetUrlChange = (index: number, value: string) => {
+    const updated = [...datasetLinks];
+    updated[index] = { url: value };
+    setDatasetLinks(updated);
+    if (value.trim() && datasetLinkErrors[index]) {
+      setDatasetLinkErrors((prev) => {
+        const next = { ...prev };
+        delete next[index];
+        return next;
+      });
+    }
+  };
+
+  const addDatasetLink = () => {
+    const lastIndex = datasetLinks.length - 1;
+    if (!datasetLinks[lastIndex].url.trim()) {
+      setDatasetLinkErrors((prev) => ({ ...prev, [lastIndex]: "Campo obrigatório" }));
+      return;
+    }
+    setDatasetLinks((prev) => [...prev, { url: "" }]);
+  };
+
+  const removeDatasetLink = (index: number) => {
+    setDatasetLinks((prev) => prev.filter((_, i) => i !== index));
+    setDatasetLinkErrors((prev) => {
+      const next: Record<number, string> = {};
+      Object.entries(prev).forEach(([key, value]) => {
+        const k = Number(key);
+        if (k < index) next[k] = value;
+        else if (k > index) next[k - 1] = value;
+      });
+      return next;
+    });
+  };
+
+  const handleApiUrlChange = (index: number, value: string) => {
+    const updated = [...apiLinks];
+    updated[index] = { url: value };
+    setApiLinks(updated);
+    if (value.trim() && apiLinkErrors[index]) {
+      setApiLinkErrors((prev) => {
+        const next = { ...prev };
+        delete next[index];
+        return next;
+      });
+    }
+  };
+
+  const addApiLink = () => {
+    const lastIndex = apiLinks.length - 1;
+    if (!apiLinks[lastIndex].url.trim()) {
+      setApiLinkErrors((prev) => ({ ...prev, [lastIndex]: "Campo obrigatório" }));
+      return;
+    }
+    setApiLinks((prev) => [...prev, { url: "" }]);
+  };
+
+  const removeApiLink = (index: number) => {
+    setApiLinks((prev) => prev.filter((_, i) => i !== index));
+    setApiLinkErrors((prev) => {
+      const next: Record<number, string> = {};
+      Object.entries(prev).forEach(([key, value]) => {
+        const k = Number(key);
+        if (k < index) next[k] = value;
+        else if (k > index) next[k - 1] = value;
+      });
+      return next;
+    });
   };
 
   const clearError = (field: string) => {
@@ -194,7 +273,7 @@ export default function ReusesFormClient({
                     errorFeedbackText="Campo obrigatório"
                   />
                   <InputText
-                    label="Penhor *"
+                    label="Reutilização *"
                     placeholder="https://..."
                     id="reuse-link"
                     value={reuseLink}
@@ -338,33 +417,231 @@ export default function ReusesFormClient({
               </form>
             </>
           )}
+
+          {/* Step 2: Vinculando conjuntos de dados e APIs */}
+          {currentStep === 2 && (
+            <>
+              <StatusCard
+                type="info"
+                description="É importante vincular todos os conjuntos de dados utilizados, pois isso ajuda a compreender as referências cruzadas necessárias e a melhorar a visibilidade da sua reutilização."
+              />
+
+              <form className="datasets-admin-page__form">
+                {/* Conjuntos de dados */}
+                <InputSelect
+                  label="Pesquisar um conjunto de dados"
+                  placeholder="Procurando um conjunto de dados..."
+                  id="reuse-dataset-search"
+                >
+                  <DropdownSection name="datasets">
+                    <DropdownOption value="dataset1">
+                      Conjunto de dados 1
+                    </DropdownOption>
+                  </DropdownSection>
+                </InputSelect>
+
+                {datasetLinks.map((link, index) => (
+                  <div key={`dataset-${index}`} className="mt-[16px]">
+                    <InputText
+                      label="Link para o conjunto de dados"
+                      placeholder="https://..."
+                      id={`reuse-dataset-url-${index}`}
+                      value={link.url}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleDatasetUrlChange(index, e.target.value)
+                      }
+                      hasError={!!datasetLinkErrors[index]}
+                      hasFeedback={!!datasetLinkErrors[index]}
+                      feedbackState="danger"
+                      errorFeedbackText={datasetLinkErrors[index]}
+                    />
+                    {link.url.trim() && (
+                      <div className="flex justify-end mt-[8px]">
+                        <Button
+                          appearance="link"
+                          variant="danger"
+                          hasIcon
+                          leadingIcon="agora-line-trash"
+                          leadingIconHover="agora-solid-trash"
+                          onClick={() => removeDatasetLink(index)}
+                        >
+                          Eliminar
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                <div className="flex justify-end">
+                  <Button
+                    appearance="outline"
+                    variant="primary"
+                    hasIcon
+                    leadingIcon="agora-line-plus-circle"
+                    leadingIconHover="agora-solid-plus-circle"
+                    onClick={addDatasetLink}
+                  >
+                    Adicionar
+                  </Button>
+                </div>
+
+                {/* APIs */}
+                <div className="mt-[32px]">
+                  <InputSelect
+                    label="Pesquisar uma API"
+                    placeholder="Pesquise uma API..."
+                    id="reuse-api-search"
+                  >
+                    <DropdownSection name="apis">
+                      <DropdownOption value="api1">API 1</DropdownOption>
+                    </DropdownSection>
+                  </InputSelect>
+                </div>
+
+                {apiLinks.map((link, index) => (
+                  <div key={`api-${index}`} className="mt-[16px]">
+                    <InputText
+                      label="Link para a API"
+                      placeholder="https://..."
+                      id={`reuse-api-url-${index}`}
+                      value={link.url}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleApiUrlChange(index, e.target.value)
+                      }
+                      hasError={!!apiLinkErrors[index]}
+                      hasFeedback={!!apiLinkErrors[index]}
+                      feedbackState="danger"
+                      errorFeedbackText={apiLinkErrors[index]}
+                    />
+                    {link.url.trim() && (
+                      <div className="flex justify-end mt-[8px]">
+                        <Button
+                          appearance="link"
+                          variant="danger"
+                          hasIcon
+                          leadingIcon="agora-line-trash"
+                          leadingIconHover="agora-solid-trash"
+                          onClick={() => removeApiLink(index)}
+                        >
+                          Eliminar
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                <div className="flex justify-end">
+                  <Button
+                    appearance="outline"
+                    variant="primary"
+                    hasIcon
+                    leadingIcon="agora-line-plus-circle"
+                    leadingIconHover="agora-solid-plus-circle"
+                    onClick={addApiLink}
+                  >
+                    Adicionar
+                  </Button>
+                </div>
+
+                <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+                  <Button
+                    appearance="outline"
+                    variant="neutral"
+                    onClick={onPreviousStep}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="primary"
+                    hasIcon
+                    trailingIcon="agora-line-arrow-right-circle"
+                    trailingIconHover="agora-solid-arrow-right-circle"
+                    onClick={onNextStep}
+                  >
+                    Seguinte
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
+
+          {/* Step 3: Finalizar a publicação */}
+          {currentStep === 3 && (
+            <>
+              <StatusCard
+                type="success"
+                description={
+                  <>
+                    <strong>A sua reutilização foi criada!</strong>
+                    <br />
+                    Agora você pode publicar ou salvar como rascunho.
+                  </>
+                }
+              />
+
+              <CardGeneral
+                variant="white-outline"
+                isCardHorizontal
+                isBlockedLink
+                iconDefault="agora-line-layers-menu"
+                iconHover="agora-solid-layers-menu"
+                titleText={reuseName || "Sem título"}
+                descriptionText={reuseDescription || "Sem descrição"}
+                anchor={{
+                  href: `/pages/reuses/preview?title=${encodeURIComponent(reuseName)}&description=${encodeURIComponent(reuseDescription)}`,
+                  children: "",
+                }}
+              />
+
+              <Button
+                appearance="link"
+                variant="primary"
+                hasIcon
+                trailingIcon="agora-line-external-link"
+                trailingIconHover="agora-solid-external-link"
+              >
+                Dê-nos o seu feedback sobre o processo de publicação.
+              </Button>
+
+              <div className="datasets-admin-page__actions flex justify-end gap-[18px]">
+                <Button appearance="outline" variant="neutral">
+                  Salvar rascunho
+                </Button>
+                <Button variant="primary">
+                  Publicar reutilização
+                </Button>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Right: Auxiliar sidebar */}
-        <aside className="datasets-admin-page__auxiliar">
-          <div className="datasets-admin-page__auxiliar-inner">
-            <div className="datasets-admin-page__auxiliar-header">
-              <Icon
-                name="agora-line-question-mark"
-                className="w-[24px] h-[24px]"
-              />
-              <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+        {/* Right: Auxiliar sidebar (only for step 1) */}
+        {currentStep === 1 && (
+          <aside className="datasets-admin-page__auxiliar">
+            <div className="datasets-admin-page__auxiliar-inner">
+              <div className="datasets-admin-page__auxiliar-header">
+                <Icon
+                  name="agora-line-question-mark"
+                  className="w-[24px] h-[24px]"
+                />
+                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+              </div>
+              <AccordionGroup>
+                {auxiliarItems.map((item, idx) => (
+                  <Accordion
+                    key={idx}
+                    headingTitle={item.title}
+                    headingLevel="h3"
+                  >
+                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
+                      {item.content}
+                    </div>
+                  </Accordion>
+                ))}
+              </AccordionGroup>
             </div>
-            <AccordionGroup>
-              {auxiliarItems.map((item, idx) => (
-                <Accordion
-                  key={idx}
-                  headingTitle={item.title}
-                  headingLevel="h3"
-                >
-                  <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                    {item.content}
-                  </div>
-                </Accordion>
-              ))}
-            </AccordionGroup>
-          </div>
-        </aside>
+          </aside>
+        )}
       </div>
     </>
   );

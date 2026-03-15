@@ -7,7 +7,6 @@ import {
   CardNoResults,
   Dropdown,
   Icon,
-  InputSelect,
   InputSearchBar,
   DropdownSection,
   DropdownOption,
@@ -82,18 +81,6 @@ export default function ReusesClient() {
             placeholder="Pesquisar"
             aria-label="Pesquisar reutilizações"
           />
-          <InputSelect
-            label="Filtrar"
-            placeholder="Filtrar por status"
-            id="filter-status"
-          >
-            <DropdownSection name="status">
-              <DropdownOption value="public">Público</DropdownOption>
-              <DropdownOption value="archived">Arquivo</DropdownOption>
-              <DropdownOption value="draft">Rascunho</DropdownOption>
-              <DropdownOption value="deleted">Excluído</DropdownOption>
-            </DropdownSection>
-          </InputSelect>
         </div>
 
         <div className="datasets-page__content">
