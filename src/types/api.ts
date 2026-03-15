@@ -116,28 +116,138 @@ export interface Metric {
   downloads?: number;
 }
 
+export interface Checksum {
+  type: string;
+  value: string;
+}
+
+export interface SchemaRef {
+  name: string | null;
+  version: string | null;
+  url: string | null;
+}
+
+export interface TemporalCoverage {
+  start: string;
+  end?: string;
+}
+
+export interface SpatialCoverage {
+  geom: object | null;
+  zones: string[];
+  granularity: string | null;
+}
+
 export interface Resource {
   id: string;
   title: string;
+  description?: string;
   format: string;
   url: string;
-  created_at: string;
-  filesize?: number;
+  latest?: string;
+  filetype?: string;
   type?: string;
+  mime?: string;
+  filesize?: number;
+  checksum?: Checksum | null;
+  created_at: string;
+  last_modified?: string;
+  schema?: SchemaRef | null;
+  metrics?: Record<string, number>;
+  extras?: Record<string, unknown>;
+  preview_url?: string;
+}
+
+export interface ResourceCreatePayload {
+  title: string;
+  description?: string;
+  type: string;
+  url: string;
+  filetype: string;
+  format: string;
+}
+
+export interface ResourceUpdatePayload {
+  title?: string;
+  description?: string;
+  type?: string;
+  url?: string;
+  filetype?: string;
+  format?: string;
+}
+
+export interface DatasetPermissions {
+  delete: boolean;
+  edit: boolean;
+  edit_resources: boolean;
 }
 
 export interface Dataset {
   id: string;
   title: string;
+  acronym: string | null;
   slug: string;
   description: string;
+  description_short?: string | null;
   organization: Organization | null;
+  owner: UserRef | null;
+  license: string | null;
+  frequency: string;
+  frequency_date?: string | null;
+  temporal_coverage?: TemporalCoverage | null;
+  spatial?: SpatialCoverage | null;
+  schema?: SchemaRef | null;
+  private: boolean;
+  featured: boolean;
+  archived?: string | null;
+  deleted?: string | null;
   last_modified: string;
+  last_update?: string;
   created_at: string;
   tags: string[];
   resources: Resource[];
+  community_resources?: Resource[];
+  badges: Badge[];
   metrics: Metric;
-  page: string; // The URL to the dataset page usually
+  quality?: Record<string, unknown>;
+  extras?: Record<string, unknown>;
+  harvest?: Record<string, unknown> | null;
+  uri: string;
+  page: string;
+  permissions?: DatasetPermissions;
+}
+
+export interface DatasetCreatePayload {
+  title: string;
+  description: string;
+  description_short?: string;
+  acronym?: string;
+  tags?: string[];
+  license?: string;
+  frequency?: string;
+  frequency_date?: string;
+  temporal_coverage?: TemporalCoverage;
+  spatial?: SpatialCoverage;
+  private?: boolean;
+  organization?: string;
+  extras?: Record<string, unknown>;
+}
+
+export interface DatasetUpdatePayload {
+  title?: string;
+  description?: string;
+  description_short?: string;
+  acronym?: string;
+  tags?: string[];
+  license?: string;
+  frequency?: string;
+  frequency_date?: string;
+  temporal_coverage?: TemporalCoverage;
+  spatial?: SpatialCoverage;
+  private?: boolean;
+  archived?: string;
+  organization?: string;
+  extras?: Record<string, unknown>;
 }
 
 export interface DatasetRef {
@@ -269,6 +379,26 @@ export interface Frequency {
 
 export interface DatasetBadges {
   [key: string]: string;
+}
+
+export interface ResourceType {
+  id: string;
+  label: string;
+}
+
+export interface Activity {
+  actor: UserRef;
+  organization: Organization | null;
+  related_to: string;
+  related_to_id: string;
+  related_to_kind: string;
+  related_to_url: string;
+  created_at: string;
+  label: string;
+  key: string;
+  icon: string;
+  changes: string[];
+  extras: Record<string, unknown>;
 }
 
 export interface TagSuggestion {
