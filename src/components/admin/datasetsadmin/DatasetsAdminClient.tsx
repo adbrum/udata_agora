@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Button,
   CardGeneral,
@@ -17,6 +18,14 @@ import {
   DropdownOption,
   ButtonUploader,
 } from "@ama-pt/agora-design-system";
+import {
+  createDataset,
+  updateDataset,
+  uploadResource,
+  fetchLicenses,
+  fetchFrequencies,
+} from "@/services/api";
+import { License, Frequency, Dataset } from "@/types/api";
 
 interface DatasetsAdminClientProps {
   currentStep: number;
@@ -29,26 +38,46 @@ export default function DatasetsAdminClient({
   onNextStep,
   onPreviousStep,
 }: DatasetsAdminClientProps) {
+  const router = useRouter();
+
+  // Form state
   const [accessType, setAccessType] = useState("open");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showFileError, setShowFileError] = useState(false);
   const [datasetTitle, setDatasetTitle] = useState("");
+  const [datasetAcronym, setDatasetAcronym] = useState("");
   const [datasetDescription, setDatasetDescription] = useState("");
-  const [datasetFrequency, setDatasetFrequency] = useState(false);
+  const [datasetShortDescription, setDatasetShortDescription] = useState("");
+  const [selectedLicense, setSelectedLicense] = useState("");
+  const [selectedFrequency, setSelectedFrequency] = useState("");
+  const [temporalStart, setTemporalStart] = useState("");
+  const [temporalEnd, setTemporalEnd] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
 
-  const handleStep2Next = () => {
-    const errors: Record<string, boolean> = {};
-    if (!datasetTitle.trim()) errors.datasetTitle = true;
-    if (!datasetDescription.trim()) errors.datasetDescription = true;
-    if (!datasetFrequency) errors.datasetFrequency = true;
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
+  // API state
+  const [createdDataset, setCreatedDataset] = useState<Dataset | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  // Dropdown data
+  const [licenses, setLicenses] = useState<License[]>([]);
+  const [frequencies, setFrequencies] = useState<Frequency[]>([]);
+
+  useEffect(() => {
+    async function loadDropdownData() {
+      try {
+        const [licensesData, frequenciesData] = await Promise.all([
+          fetchLicenses(),
+          fetchFrequencies(),
+        ]);
+        setLicenses(licensesData);
+        setFrequencies(frequenciesData);
+      } catch (error) {
+        console.error("Error loading dropdown data:", error);
+      }
     }
-    setFormErrors({});
-    onNextStep();
-  };
+    loadDropdownData();
+  }, []);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -58,6 +87,97 @@ export default function DatasetsAdminClient({
         return next;
       });
     }
+  };
+
+  const handleStep2Next = async () => {
+    const errors: Record<string, boolean> = {};
+    if (!datasetTitle.trim()) errors.datasetTitle = true;
+    if (!datasetDescription.trim()) errors.datasetDescription = true;
+    if (!selectedFrequency) errors.datasetFrequency = true;
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
+    setApiError(null);
+    setIsSubmitting(true);
+
+    try {
+      const payload: Parameters<typeof createDataset>[0] = {
+        title: datasetTitle.trim(),
+        description: datasetDescription.trim(),
+        frequency: selectedFrequency,
+        private: true,
+      };
+      if (datasetAcronym.trim()) payload.acronym = datasetAcronym.trim();
+      if (datasetShortDescription.trim()) {
+        payload.description_short = datasetShortDescription.trim();
+      }
+      if (selectedLicense) payload.license = selectedLicense;
+      if (temporalStart) {
+        payload.temporal_coverage = {
+          start: temporalStart,
+          ...(temporalEnd ? { end: temporalEnd } : {}),
+        };
+      }
+
+      const dataset = await createDataset(payload);
+      setCreatedDataset(dataset);
+      onNextStep();
+    } catch (error: unknown) {
+      const err = error as { status?: number; data?: Record<string, unknown> };
+      if (err.data && typeof err.data === "object") {
+        const messages = Object.entries(err.data)
+          .map(([key, val]) => `${key}: ${val}`)
+          .join(", ");
+        setApiError(messages);
+      } else {
+        setApiError("Erro ao criar o conjunto de dados. Tente novamente.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleStep3Next = async () => {
+    if (uploadedFiles.length === 0) {
+      setShowFileError(true);
+      return;
+    }
+    if (!createdDataset) return;
+
+    setApiError(null);
+    setIsSubmitting(true);
+    try {
+      for (const file of uploadedFiles) {
+        await uploadResource(createdDataset.id, file);
+      }
+      onNextStep();
+    } catch (error) {
+      console.error("Error uploading resources:", error);
+      setApiError("Erro ao carregar ficheiros. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!createdDataset) return;
+    setApiError(null);
+    setIsSubmitting(true);
+    try {
+      await updateDataset(createdDataset.id, { private: false });
+      router.push("/pages/admin/me/datasets");
+    } catch (error) {
+      console.error("Error publishing dataset:", error);
+      setApiError("Erro ao publicar o conjunto de dados. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveDraft = () => {
+    router.push("/pages/admin/me/datasets");
   };
 
   const auxiliarItemsStep2 = [
@@ -244,6 +364,10 @@ export default function DatasetsAdminClient({
       <div className="datasets-admin-page__body">
         {/* Left: Form */}
         <div className="datasets-admin-page__form-area">
+          {apiError && (
+            <StatusCard type="danger" description={apiError} />
+          )}
+
           {/* Step 2: Descreva o conjunto de dados */}
           {currentStep === 2 && (
             <>
@@ -258,43 +382,13 @@ export default function DatasetsAdminClient({
                 }
               />
 
-              <form className="datasets-admin-page__form">
+              <form
+                className="datasets-admin-page__form"
+                onSubmit={(e) => e.preventDefault()}
+              >
                 <p className="text-neutral-900 text-base leading-7">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
-                <h2 className="datasets-admin-page__section-title">Produtor</h2>
-
-                <InputSelect
-                  label="Verifique a identidade que deseja usar na publicação."
-                  placeholder="Para pesquisar..."
-                  id="producer-identity"
-                >
-                  <DropdownSection name="organizations">
-                    <DropdownOption value="org1">
-                      Minha Organização
-                    </DropdownOption>
-                  </DropdownSection>
-                </InputSelect>
-
-                <div className="datasets-admin-page__org-card">
-                  <p className="datasets-admin-page__org-card-title">
-                    Você não pertence a nenhuma organização.
-                  </p>
-                  <p className="datasets-admin-page__org-card-description">
-                    Recomendamos que publique em nome de uma organização se se
-                    tratar de uma atividade profissional.
-                  </p>
-                  <a
-                    href="#"
-                    className="datasets-admin-page__org-card-link"
-                  >
-                    Crie ou participe de uma organização
-                    <Icon
-                      name="agora-line-arrow-right-circle"
-                      className="w-[24px] h-[24px]"
-                    />
-                  </a>
-                </div>
 
                 <h2 className="datasets-admin-page__section-title">Descrição</h2>
 
@@ -317,6 +411,10 @@ export default function DatasetsAdminClient({
                     label="Acrônimo"
                     placeholder="Placeholder"
                     id="api-acronym"
+                    value={datasetAcronym}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setDatasetAcronym(e.target.value);
+                    }}
                   />
                   <InputTextArea
                     label="Descrição*"
@@ -340,6 +438,10 @@ export default function DatasetsAdminClient({
                     placeholder="Placeholder"
                     id="dataset-short-description"
                     rows={3}
+                    value={datasetShortDescription}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                      setDatasetShortDescription(e.target.value);
+                    }}
                     hasFeedback={true}
                     feedbackState="warning"
                     feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 200 caracteres da sua descrição."
@@ -398,9 +500,18 @@ export default function DatasetsAdminClient({
                     label="Licença"
                     placeholder="Selecione uma licença"
                     id="dataset-license"
+                    onChange={(options) => {
+                      if (options.length > 0) {
+                        setSelectedLicense(options[0].value as string);
+                      }
+                    }}
                   >
                     <DropdownSection name="licenses">
-                      <DropdownOption value="license1">Licença 1</DropdownOption>
+                      {licenses.map((license) => (
+                        <DropdownOption key={license.id} value={license.id}>
+                          {license.title}
+                        </DropdownOption>
+                      ))}
                     </DropdownSection>
                   </InputSelect>
                 </div>
@@ -413,9 +524,12 @@ export default function DatasetsAdminClient({
                     placeholder="Procure uma frequência..."
                     id="dataset-frequency"
                     onChange={(options) => {
-                      const hasSelection = options.length > 0;
-                      setDatasetFrequency(hasSelection);
-                      if (hasSelection) clearError("datasetFrequency");
+                      if (options.length > 0) {
+                        setSelectedFrequency(options[0].value as string);
+                        clearError("datasetFrequency");
+                      } else {
+                        setSelectedFrequency("");
+                      }
                     }}
                     hasError={!!formErrors.datasetFrequency}
                     hasFeedback={!!formErrors.datasetFrequency}
@@ -423,10 +537,11 @@ export default function DatasetsAdminClient({
                     errorFeedbackText="Campo obrigatório"
                   >
                     <DropdownSection name="frequencies">
-                      <DropdownOption value="daily">Diária</DropdownOption>
-                      <DropdownOption value="weekly">Semanal</DropdownOption>
-                      <DropdownOption value="monthly">Mensal</DropdownOption>
-                      <DropdownOption value="annual">Anual</DropdownOption>
+                      {frequencies.map((freq) => (
+                        <DropdownOption key={freq.id} value={freq.id}>
+                          {freq.label}
+                        </DropdownOption>
+                      ))}
                     </DropdownSection>
                   </InputSelect>
 
@@ -447,6 +562,7 @@ export default function DatasetsAdminClient({
                       todayLabel="Hoje"
                       cancelLabel="Cancelar"
                       okLabel="OK"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTemporalStart(e.target.value)}
                     />
                     <InputDate
                       label="Data de fim"
@@ -464,6 +580,7 @@ export default function DatasetsAdminClient({
                       todayLabel="Hoje"
                       cancelLabel="Cancelar"
                       okLabel="OK"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTemporalEnd(e.target.value)}
                     />
                   </div>
                 </div>
@@ -475,8 +592,9 @@ export default function DatasetsAdminClient({
                     trailingIcon="agora-line-arrow-right-circle"
                     trailingIconHover="agora-solid-arrow-right-circle"
                     onClick={handleStep2Next}
+                    disabled={isSubmitting}
                   >
-                    Seguinte
+                    {isSubmitting ? "A criar..." : "Seguinte"}
                   </Button>
                 </div>
               </form>
@@ -530,6 +648,7 @@ export default function DatasetsAdminClient({
                     leadingIcon="agora-line-arrow-left-circle"
                     leadingIconHover="agora-solid-arrow-left-circle"
                     onClick={onPreviousStep}
+                    disabled={isSubmitting}
                   >
                     Anterior
                   </Button>
@@ -538,15 +657,10 @@ export default function DatasetsAdminClient({
                     hasIcon
                     trailingIcon="agora-line-arrow-right-circle"
                     trailingIconHover="agora-solid-arrow-right-circle"
-                    onClick={() => {
-                      if (uploadedFiles.length === 0) {
-                        setShowFileError(true);
-                        return;
-                      }
-                      onNextStep();
-                    }}
+                    onClick={handleStep3Next}
+                    disabled={isSubmitting}
                   >
-                    Seguinte
+                    {isSubmitting ? "A carregar..." : "Seguinte"}
                   </Button>
                 </div>
               </div>
@@ -573,10 +687,12 @@ export default function DatasetsAdminClient({
                 isBlockedLink
                 iconDefault="agora-line-layers-menu"
                 iconHover="agora-solid-layers-menu"
-                titleText={datasetTitle || "Sem título"}
-                descriptionText={datasetDescription || "Sem descrição"}
+                titleText={createdDataset?.title || datasetTitle || "Sem título"}
+                descriptionText={createdDataset?.description || datasetDescription || "Sem descrição"}
                 anchor={{
-                  href: `/pages/datasets/preview?title=${encodeURIComponent(datasetTitle)}&description=${encodeURIComponent(datasetDescription)}`,
+                  href: createdDataset
+                    ? `/pages/datasets/${createdDataset.slug}`
+                    : `/pages/datasets/preview?title=${encodeURIComponent(datasetTitle)}&description=${encodeURIComponent(datasetDescription)}`,
                   children: "",
                 }}
               />
@@ -592,11 +708,20 @@ export default function DatasetsAdminClient({
               </Button>
 
               <div className="datasets-admin-page__actions flex justify-end gap-[18px]">
-                <Button appearance="outline" variant="neutral">
+                <Button
+                  appearance="outline"
+                  variant="neutral"
+                  onClick={handleSaveDraft}
+                  disabled={isSubmitting}
+                >
                   Salvar rascunho
                 </Button>
-                <Button variant="primary">
-                  Publique o conjunto de dados
+                <Button
+                  variant="primary"
+                  onClick={handlePublish}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "A publicar..." : "Publique o conjunto de dados"}
                 </Button>
               </div>
             </>

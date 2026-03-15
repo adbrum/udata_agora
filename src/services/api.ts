@@ -1,10 +1,13 @@
 import {
+  Activity,
   APIResponse,
   Dataservice,
   Dataset,
   DatasetBadges,
+  DatasetCreatePayload,
   DatasetFilters,
   DatasetSuggestion,
+  DatasetUpdatePayload,
   Discussion,
   FormatSuggestion,
   Frequency,
@@ -19,6 +22,10 @@ import {
   OrganizationMember,
   OrganizationSuggestion,
   Post,
+  Resource,
+  ResourceCreatePayload,
+  ResourceType,
+  ResourceUpdatePayload,
   Reuse,
   ReuseFilters,
   ReuseSuggestion,
@@ -88,7 +95,8 @@ export async function fetchCurrentUser(): Promise<UserRef | null> {
 }
 
 /**
- * Fetch the authenticated user's datasets (paginated)
+ * Fetch the authenticated user's personal datasets (owner = current user).
+ * Backend returns a flat array; we filter out org-owned and wrap into APIResponse.
  */
 export async function fetchMyDatasets(
   page: number = 1,
@@ -96,7 +104,7 @@ export async function fetchMyDatasets(
 ): Promise<APIResponse<Dataset>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/me/datasets/?page=${page}&page_size=${pageSize}`,
+      `${API_BASE_URL}/me/datasets/`,
       { cache: "no-store", credentials: "include" }
     );
 
@@ -104,7 +112,21 @@ export async function fetchMyDatasets(
       throw new Error(`Failed to fetch my datasets: ${res.statusText}`);
     }
 
-    return await res.json();
+    const raw: Dataset[] = await res.json();
+    // Keep only personal datasets: owner must exist and organization must be absent
+    const allDatasets = raw.filter((d) => !!d.owner && !d.organization);
+    const total = allDatasets.length;
+    const start = (page - 1) * pageSize;
+    const data = allDatasets.slice(start, start + pageSize);
+
+    return {
+      data,
+      page,
+      page_size: pageSize,
+      total,
+      next_page: start + pageSize < total ? String(page + 1) : null,
+      previous_page: page > 1 ? String(page - 1) : null,
+    };
   } catch (error) {
     console.error("Error fetching my datasets:", error);
     return {
@@ -150,7 +172,8 @@ export async function fetchMyReuses(
 }
 
 /**
- * Fetch datasets from the authenticated user's organizations (paginated)
+ * Fetch datasets from the authenticated user's organizations.
+ * Backend returns a flat array; we wrap it into APIResponse for consistency.
  */
 export async function fetchMyOrgDatasets(
   page: number = 1,
@@ -158,7 +181,7 @@ export async function fetchMyOrgDatasets(
 ): Promise<APIResponse<Dataset>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/me/org_datasets/?page=${page}&page_size=${pageSize}`,
+      `${API_BASE_URL}/me/org_datasets/`,
       { cache: "no-store", credentials: "include" }
     );
 
@@ -166,7 +189,19 @@ export async function fetchMyOrgDatasets(
       throw new Error(`Failed to fetch my org datasets: ${res.statusText}`);
     }
 
-    return await res.json();
+    const allDatasets: Dataset[] = await res.json();
+    const total = allDatasets.length;
+    const start = (page - 1) * pageSize;
+    const data = allDatasets.slice(start, start + pageSize);
+
+    return {
+      data,
+      page,
+      page_size: pageSize,
+      total,
+      next_page: start + pageSize < total ? String(page + 1) : null,
+      previous_page: page > 1 ? String(page - 1) : null,
+    };
   } catch (error) {
     console.error("Error fetching my org datasets:", error);
     return {
@@ -846,6 +881,169 @@ export async function fetchDatasetBadges(): Promise<DatasetBadges> {
   } catch (error) {
     console.error("Error fetching dataset badges:", error);
     return {};
+  }
+}
+
+export async function fetchResourceTypes(): Promise<ResourceType[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/datasets/resource_types/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch resource types: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching resource types:", error);
+    return [];
+  }
+}
+
+// --- Dataset CRUD ---
+
+export async function createDataset(payload: DatasetCreatePayload): Promise<Dataset> {
+  const res = await fetch(`${API_BASE_URL}/datasets/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function updateDataset(id: string, payload: DatasetUpdatePayload): Promise<Dataset> {
+  const res = await fetch(`${API_BASE_URL}/datasets/${id}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteDataset(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/datasets/${id}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete dataset: ${res.statusText}`);
+}
+
+// --- Resource CRUD ---
+
+export async function createResource(
+  datasetId: string,
+  payload: ResourceCreatePayload
+): Promise<Resource> {
+  const res = await fetch(`${API_BASE_URL}/datasets/${datasetId}/resources/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function uploadResource(datasetId: string, file: File): Promise<Resource> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE_URL}/datasets/${datasetId}/upload/`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function updateResource(
+  datasetId: string,
+  resourceId: string,
+  payload: ResourceUpdatePayload
+): Promise<Resource> {
+  const res = await fetch(
+    `${API_BASE_URL}/datasets/${datasetId}/resources/${resourceId}/`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    }
+  );
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteResource(datasetId: string, resourceId: string): Promise<void> {
+  const res = await fetch(
+    `${API_BASE_URL}/datasets/${datasetId}/resources/${resourceId}/`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+  if (!res.ok) throw new Error(`Failed to delete resource: ${res.statusText}`);
+}
+
+export async function reorderResources(datasetId: string, resourceIds: string[]): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/datasets/${datasetId}/resources/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(resourceIds),
+  });
+  if (!res.ok) throw new Error(`Failed to reorder resources: ${res.statusText}`);
+}
+
+// --- Dataset Featured Toggle ---
+
+export async function toggleDatasetFeatured(id: string, featured: boolean): Promise<Dataset> {
+  const res = await fetch(`${API_BASE_URL}/datasets/${id}/featured/`, {
+    method: featured ? "POST" : "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to toggle dataset featured: ${res.statusText}`);
+  return await res.json();
+}
+
+// --- Activity ---
+
+export async function fetchActivity(
+  relatedTo: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Activity>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/activity/?related_to=${relatedTo}&sort=-created_at&page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch activity: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching activity:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
   }
 }
 

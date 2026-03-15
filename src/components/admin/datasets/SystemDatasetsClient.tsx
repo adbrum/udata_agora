@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -19,62 +19,111 @@ import {
   TableRow,
   TableCell,
   Pill,
-  ProgressBar,
 } from "@ama-pt/agora-design-system";
+import { fetchDatasets } from "@/services/api";
+import { Dataset } from "@/types/api";
 
-interface MockDataset {
-  title: string;
-  slug: string;
-  status: "Público" | "Rascunho";
-  createdAt: string;
-  lastActivity: string;
-  lastActivityBy: string;
-  files: number;
-  score: number;
-}
-
-const today = new Date();
-const formatDate = (date: Date) =>
-  `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
-
-const mockDatasets: MockDataset[] = [
-  {
-    title: "Estatísticas de acidentes rodoviários em Portugal",
-    slug: "estatisticas-acidentes-rodoviarios",
-    status: "Público",
-    createdAt: formatDate(new Date(2025, 10, 3)),
-    lastActivity: formatDate(new Date(2026, 1, 20)),
-    lastActivityBy: "Lopes Inês",
-    files: 3,
-    score: 75,
-  },
-  {
-    title: "Indicadores de qualidade do ar nas cidades portuguesas",
-    slug: "indicadores-qualidade-ar",
-    status: "Público",
-    createdAt: formatDate(new Date(2025, 8, 15)),
-    lastActivity: formatDate(new Date(2026, 0, 10)),
-    lastActivityBy: "Lopes Inês",
-    files: 2,
-    score: 60,
-  },
-  {
-    title: "Registo de entidades do setor público",
-    slug: "registo-entidades-setor-publico",
-    status: "Rascunho",
-    createdAt: formatDate(today),
-    lastActivity: formatDate(today),
-    lastActivityBy: "Lopes Inês",
-    files: 1,
-    score: 30,
-  },
-];
+type SortOrder = "none" | "ascending" | "descending";
+type SortField = "title" | "created_at" | "last_modified" | "resources";
 
 export default function SystemDatasetsClient() {
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
-  const datasets = mockDatasets;
+
+  const [allDatasets, setAllDatasets] = useState<Dataset[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortField, setSortField] = useState<SortField>("last_modified");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("descending");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
+  useEffect(() => {
+    async function loadDatasets() {
+      setIsLoading(true);
+      try {
+        const response = await fetchDatasets(1, 9999);
+        setAllDatasets(response.data || []);
+      } catch (error) {
+        console.error("Error loading datasets:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadDatasets();
+  }, []);
+
+  const filteredDatasets = useMemo(() => {
+    let result = allDatasets;
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(
+        (d) =>
+          d.title.toLowerCase().includes(q) ||
+          (d.acronym && d.acronym.toLowerCase().includes(q)) ||
+          d.slug.toLowerCase().includes(q)
+      );
+    }
+
+    if (statusFilter) {
+      result = result.filter((d) => {
+        switch (statusFilter) {
+          case "public":
+            return !d.private && !d.archived && !d.deleted;
+          case "draft":
+            return !!d.private;
+          case "archived":
+            return !!d.archived;
+          case "deleted":
+            return !!d.deleted;
+          default:
+            return true;
+        }
+      });
+    }
+
+    return result;
+  }, [allDatasets, searchQuery, statusFilter]);
+
+  const sortedDatasets = useMemo(() => {
+    if (sortOrder === "none") return filteredDatasets;
+
+    return [...filteredDatasets].sort((a, b) => {
+      let cmp = 0;
+      switch (sortField) {
+        case "title":
+          cmp = (a.title || "").localeCompare(b.title || "");
+          break;
+        case "created_at":
+          cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          break;
+        case "last_modified":
+          cmp = new Date(a.last_modified).getTime() - new Date(b.last_modified).getTime();
+          break;
+        case "resources":
+          cmp = (a.resources?.length || 0) - (b.resources?.length || 0);
+          break;
+      }
+      return sortOrder === "descending" ? -cmp : cmp;
+    });
+  }, [filteredDatasets, sortField, sortOrder]);
+
+  const totalItems = sortedDatasets.length;
+  const start = (currentPage - 1) * pageSize;
+  const datasets = sortedDatasets.slice(start, start + pageSize);
+
+  const handleSort = (field: SortField) => (newOrder: SortOrder) => {
+    setSortField(field);
+    setSortOrder(newOrder);
+    setCurrentPage(1);
+  };
+
+  const getSortOrder = (field: SortField): SortOrder => {
+    return sortField === field ? sortOrder : "none";
+  };
 
   const publishRoutes: Record<string, string> = {
     dataset: "/pages/admin/me/datasets/new",
@@ -83,6 +132,15 @@ export default function SystemDatasetsClient() {
     api: "/pages/admin/dataservices/new",
     article: "/pages/admin/system/posts/new",
     organization: "/pages/admin/organizations/new",
+  };
+
+  const formatDate = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+    } catch {
+      return dateStr;
+    }
   };
 
   return (
@@ -149,7 +207,7 @@ export default function SystemDatasetsClient() {
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {datasets.length} resultados
+        {isLoading ? "A carregar..." : `${totalItems} resultados`}
       </p>
 
       <div className="flex items-center gap-[16px] mb-[24px]">
@@ -158,6 +216,10 @@ export default function SystemDatasetsClient() {
             label="Pesquisar"
             placeholder="Pesquise o nome, código ou sigla da entidade"
             aria-label="Pesquisar conjuntos de dados"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
           />
         </div>
         <InputSelect
@@ -165,6 +227,10 @@ export default function SystemDatasetsClient() {
           hideLabel
           placeholder="Filtrar por estado"
           id="filter-status"
+          onChange={(options) => {
+            setStatusFilter(options.length > 0 ? (options[0].value as string) : "");
+            setCurrentPage(1);
+          }}
         >
           <DropdownSection name="status">
             <DropdownOption value="public">Público</DropdownOption>
@@ -175,40 +241,62 @@ export default function SystemDatasetsClient() {
         </InputSelect>
       </div>
 
-      {datasets.length > 0 ? (
+      {!isLoading && datasets.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Itens por página",
-            itemsPerPage: 10,
-            totalItems: datasets.length,
+            itemsPerPage: pageSize,
+            totalItems: totalItems,
             availablePageSizes: [5, 10, 20],
-            currentPage: 1,
+            currentPage: currentPage,
             buttonDropdownAriaLabel: "Selecionar itens por página",
             dropdownListAriaLabel: "Opções de itens por página",
             prevButtonAriaLabel: "Página anterior",
             nextButtonAriaLabel: "Próxima página",
+            onPageChange: (page: number) => setCurrentPage(page),
+            onPageSizeChange: (size: number) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            },
           }}
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
+              <TableHeaderCell
+                sortType="string"
+                sortOrder={getSortOrder("title")}
+                onSortChange={handleSort("title")}
+              >
                 Título do conjunto de dados
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
-              <TableHeaderCell sortType="string" sortOrder="none">
+              <TableHeaderCell
+                sortType="date"
+                sortOrder={getSortOrder("created_at")}
+                onSortChange={handleSort("created_at")}
+              >
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell sortType="string" sortOrder="none">
-                Última atividade
+              <TableHeaderCell
+                sortType="date"
+                sortOrder={getSortOrder("last_modified")}
+                onSortChange={handleSort("last_modified")}
+              >
+                Última modificação
               </TableHeaderCell>
-              <TableHeaderCell>Ficheiros</TableHeaderCell>
-              <TableHeaderCell>Pontuação</TableHeaderCell>
+              <TableHeaderCell
+                sortType="numeric"
+                sortOrder={getSortOrder("resources")}
+                onSortChange={handleSort("resources")}
+              >
+                Ficheiros
+              </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {datasets.map((dataset, index) => (
-              <TableRow key={index}>
+            {datasets.map((dataset) => (
+              <TableRow key={dataset.id}>
                 <TableCell headerLabel="Título">
                   <a
                     href={`/pages/datasets/${dataset.slug}`}
@@ -218,26 +306,18 @@ export default function SystemDatasetsClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant={dataset.status === "Público" ? "success" : "warning"}>
-                    {dataset.status}
+                  <Pill variant={dataset.private ? "warning" : "success"}>
+                    {dataset.private ? "Rascunho" : "Público"}
                   </Pill>
                 </TableCell>
-                <TableCell headerLabel="Criado em">{dataset.createdAt}</TableCell>
-                <TableCell headerLabel="Última atividade">
-                  {dataset.lastActivity}
-                  <br />
-                  <span className="text-sm text-neutral-500">
-                    sobre{" "}
-                    <span className="text-success-600">●</span>{" "}
-                    {dataset.lastActivityBy}
-                  </span>
+                <TableCell headerLabel="Criado em">
+                  {formatDate(dataset.created_at)}
                 </TableCell>
-                <TableCell headerLabel="Ficheiros">{dataset.files}</TableCell>
-                <TableCell headerLabel="Pontuação">
-                  <ProgressBar
-                    value={dataset.score}
-                    aria-label={`Pontuação: ${dataset.score}%`}
-                  />
+                <TableCell headerLabel="Última modificação">
+                  {formatDate(dataset.last_modified)}
+                </TableCell>
+                <TableCell headerLabel="Ficheiros">
+                  {dataset.resources?.length || 0}
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">
@@ -253,7 +333,7 @@ export default function SystemDatasetsClient() {
             ))}
           </TableBody>
         </Table>
-      ) : (
+      ) : !isLoading ? (
         <div className="datasets-page__body">
           <div className="datasets-page__content">
             <CardNoResults
@@ -270,7 +350,7 @@ export default function SystemDatasetsClient() {
             />
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

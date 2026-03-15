@@ -10,14 +10,22 @@ export default function DatasetPreviewPage() {
   const dataset: Dataset = {
     id: "preview",
     title: searchParams.get("title") || "Sem título",
+    acronym: null,
     slug: "preview",
     description: searchParams.get("description") || "Sem descrição",
     organization: null,
+    owner: null,
+    license: null,
+    frequency: "unknown",
+    private: false,
+    featured: false,
     last_modified: new Date().toISOString(),
     created_at: new Date().toISOString(),
     tags: [],
     resources: [],
+    badges: [],
     metrics: {},
+    uri: "",
     page: "",
   };
 
