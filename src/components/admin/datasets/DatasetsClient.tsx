@@ -40,8 +40,8 @@ export default function DatasetsClient() {
       setIsLoading(true);
       try {
         const response = await fetchMyDatasets(currentPage, pageSize);
-        setDatasets(response.data);
-        setTotalItems(response.total);
+        setDatasets(response.data || []);
+        setTotalItems(response.total || 0);
       } catch (error) {
         console.error("Error loading datasets:", error);
       } finally {

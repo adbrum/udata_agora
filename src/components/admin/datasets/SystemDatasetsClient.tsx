@@ -39,8 +39,8 @@ export default function SystemDatasetsClient() {
       setIsLoading(true);
       try {
         const response = await fetchDatasets(currentPage, pageSize);
-        setDatasets(response.data);
-        setTotalItems(response.total);
+        setDatasets(response.data || []);
+        setTotalItems(response.total || 0);
       } catch (error) {
         console.error("Error loading datasets:", error);
       } finally {
