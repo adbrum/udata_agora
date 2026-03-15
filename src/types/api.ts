@@ -390,6 +390,30 @@ export interface Notification {
   details: NotificationDetails;
 }
 
+export interface ReportReason {
+  value: string;
+  label: string;
+}
+
+export interface ReportCreatePayload {
+  subject: { class: string; id: string };
+  reason: string;
+  message?: string;
+}
+
+export interface Report {
+  id: string;
+  by: UserRef | null;
+  subject: { class: string; id: string };
+  reason: string;
+  message: string | null;
+  reported_at: string;
+  dismissed_at: string | null;
+  dismissed_by: UserRef | null;
+  subject_deleted_at: string | null;
+  self_api_url: string;
+}
+
 export interface APIResponse<T> {
   data: T[];
   page: number;
