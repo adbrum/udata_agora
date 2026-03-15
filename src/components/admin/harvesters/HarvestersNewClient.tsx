@@ -11,14 +11,14 @@ import {
   InputText,
   InputTextArea,
   InputSelect,
-  DragAndDropUploader,
   Icon,
   StatusCard,
   Accordion,
   AccordionGroup,
+  Switch,
 } from "@ama-pt/agora-design-system";
 
-export default function OrganizationsNewClient() {
+export default function HarvestersNewClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
@@ -27,9 +27,11 @@ export default function OrganizationsNewClient() {
   const totalSegments = 12;
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
-  const [orgName, setOrgName] = useState("");
-  const [orgDescription, setOrgDescription] = useState("");
+  const [harvesterName, setHarvesterName] = useState("");
+  const [harvesterUrl, setHarvesterUrl] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [isEnabled, setIsEnabled] = useState(true);
+  const [isAutoArchive, setIsAutoArchive] = useState(true);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -41,22 +43,22 @@ export default function OrganizationsNewClient() {
     }
   };
 
-  const handleCreateOrg = () => {
+  const handleStep1Next = () => {
     const errors: Record<string, boolean> = {};
-    if (!orgName.trim()) errors.orgName = true;
-    if (!orgDescription.trim()) errors.orgDescription = true;
+    if (!harvesterName.trim()) errors.harvesterName = true;
+    if (!harvesterUrl.trim()) errors.harvesterUrl = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
     }
     setFormErrors({});
-    router.push("/pages/admin/system/organizations");
+    router.push("/pages/admin/harvesters/new?step=2");
   };
 
   const stepTitles: Record<number, string> = {
-    1: "Crie ou participe de uma organização em dados.gov",
-    2: "Descreva sua organização",
-    3: "Finalize sua organização",
+    1: "Descreva o seu harvester",
+    2: "Visualize o seu harvester",
+    3: "Finalizar",
   };
 
   const publishRoutes: Record<string, string> = {
@@ -70,48 +72,24 @@ export default function OrganizationsNewClient() {
 
   const auxiliarItems = [
     {
-      title: "Dê um nome à sua organização.",
-      content: "Nome público da sua organização.",
-    },
-    {
-      title: "Escolha uma sigla",
-      content: "A sigla da sua organização, se houver.",
-    },
-    {
-      title: "Por que fornecer um número SIRET?",
-      content: (
-        <>
-          <p>
-            Um número SIRET nos permitirá atribuir um tipo à sua organização
-            (agências governamentais, autoridades locais, empresas, etc.) e
-            facilitará sua certificação. O número deve ter 14 dígitos.
-          </p>
-          <p className="mt-2">
-            Observe que todas as agências governamentais possuem um número SIRET.
-          </p>
-          <p className="mt-2">
-            Você pode encontrar o seu número SIRET no{" "}
-            <a href="#" className="text-primary-600 underline">
-              Diretório Comercial.
-            </a>
-          </p>
-        </>
-      ),
-    },
-    {
-      title: "Escreva uma boa descrição",
+      title: "Escolha um nome",
       content:
-        "Por favor, descreva aqui o que sua organização faz e qual é a sua missão. Inclua todas as informações que permitam aos usuários entrar em contato com você: endereço de e-mail, endereço postal, conta do Twitter, etc.",
+        "Dê um nome ao seu harvester. Essa é uma referência interna que ajudará você a identificá-lo caso crie vários harvesters. O nome do seu harvester não será público.",
     },
     {
-      title: "Digite um site",
+      title: "Descreva o seu harvester",
       content:
-        "Se a sua organização possui um site, por favor, forneça o endereço URL.",
+        "Adicione detalhes no campo de descrição para seu uso interno. A descrição é opcional.",
     },
     {
-      title: "Escolher o logotipo certo",
+      title: "Selecione o URL correto",
       content:
-        'Se a sua organização tiver um logotipo ou foto de perfil, faça o upload aqui. Para fazer o upload de um logotipo, clique no botão "Escolher um arquivo do seu computador". Os seguintes formatos de imagem são aceitos: PNG, JPG/JPEG.',
+        "Insira aqui o URL do portal que deseja recolher. Normalmente, trata-se do URL da página inicial do seu portal de dados abertos. O URL permite que o harvester navegue e recupere todos os seus conjuntos de dados.",
+    },
+    {
+      title: "Selecione o tipo de implementação",
+      content:
+        "Escolha o formato dos metadados (por exemplo, DCAT, CKAN, etc.). Esse formato permite que o harvester saiba como ler e interpretar seus metadados, para que possam ser transcritos corretamente em dados.gov.",
     },
   ];
 
@@ -121,10 +99,10 @@ export default function OrganizationsNewClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Organizações", url: "/pages/admin/system/organizations" },
+            { label: "Harvesters", url: "/pages/admin/system/harvesters" },
             {
               label: "Formulário de inscrição",
-              url: "/pages/admin/organizations/new",
+              url: "/pages/admin/harvesters/new",
             },
           ]}
         />
@@ -212,67 +190,18 @@ export default function OrganizationsNewClient() {
       {/* Main content area */}
       <div className="datasets-admin-page__body">
         <div className="datasets-admin-page__form-area">
-          {/* Step 1: Ingressar ou criar */}
+          {/* Step 1: Descreva o seu harvester */}
           {currentStep === 1 && (
-            <div className="datasets-admin-page__form">
-              <StatusCard
-                type="info"
-                description={
-                  <>
-                    <strong>Ingressar em uma organização</strong>
-                    <br />
-                    Uma organização é uma entidade na qual os usuários podem
-                    colaborar. Conjuntos de dados publicados dentro de uma
-                    organização podem ser editados por seus membros.
-                  </>
-                }
-              />
-
-              <div>
-                <InputSelect
-                  label="Pesquisar organização"
-                  placeholder="Pesquise uma organização em dados.gov"
-                  id="search-organization"
-                  searchable
-                  searchInputPlaceholder="Escreva para pesquisar..."
-                  searchNoResultsText="Nenhum resultado encontrado"
-                >
-                  <DropdownSection name="organizations">
-                    <DropdownOption value="org1">Organização 1</DropdownOption>
-                    <DropdownOption value="org2">Organização 2</DropdownOption>
-                  </DropdownSection>
-                </InputSelect>
-
-                <div className="flex items-center justify-center gap-[16px] mt-[16px]">
-                  <span className="text-neutral-500">ou</span>
-                </div>
-
-                <div className="flex justify-center mt-[16px]">
-                  <Button
-                    variant="primary"
-                    onClick={() =>
-                      router.push("/pages/admin/organizations/new?step=2")
-                    }
-                  >
-                    Criar uma organização
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Descreva sua organização */}
-          {currentStep === 2 && (
             <>
               <StatusCard
                 type="info"
                 description={
                   <>
-                    <strong>O que é uma organização?</strong>
+                    <strong>O que é um harvester?</strong>
                     <br />
-                    Uma organização é uma entidade na qual muitos usuários podem
-                    colaborar. Conjuntos de dados publicados sob a égide da
-                    organização podem ser editados por seus membros.
+                    Um harvester é um mecanismo para reunir metadados de um catálogo
+                    remoto e armazená-los em outra plataforma, fornecendo um
+                    segundo ponto de acesso aos dados.
                   </>
                 }
               />
@@ -282,88 +211,144 @@ export default function OrganizationsNewClient() {
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
 
+                <h2 className="datasets-admin-page__section-title">Produtor</h2>
+
+                <div className="datasets-admin-page__fields-group">
+                  <InputSelect
+                    label="Verifique a identidade que deseja usar para publicar *"
+                    placeholder="Para pesquisar..."
+                    id="harvester-producer"
+                  >
+                    <DropdownSection name="organizations">
+                      <DropdownOption value="org1">
+                        Minha Organização
+                      </DropdownOption>
+                    </DropdownSection>
+                  </InputSelect>
+                </div>
+
                 <h2 className="datasets-admin-page__section-title">Descrição</h2>
 
                 <div className="datasets-admin-page__fields-group">
                   <InputText
                     label="Nome *"
                     placeholder=""
-                    id="org-name"
-                    value={orgName}
+                    id="harvester-name"
+                    value={harvesterName}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setOrgName(e.target.value);
-                      if (e.target.value.trim()) clearError("orgName");
+                      setHarvesterName(e.target.value);
+                      if (e.target.value.trim()) clearError("harvesterName");
                     }}
-                    hasError={!!formErrors.orgName}
-                    hasFeedback={!!formErrors.orgName}
+                    hasError={!!formErrors.harvesterName}
+                    hasFeedback={!!formErrors.harvesterName}
                     feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
-                  />
-
-                  <InputText
-                    label="Acrônimo"
-                    placeholder=""
-                    id="org-acronym"
                   />
 
                   <InputTextArea
-                    label="Descrição *"
+                    label="Descrição"
                     placeholder=""
-                    id="org-description"
+                    id="harvester-description"
                     rows={6}
-                    value={orgDescription}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                      setOrgDescription(e.target.value);
-                      if (e.target.value.trim()) clearError("orgDescription");
-                    }}
-                    hasError={!!formErrors.orgDescription}
-                    hasFeedback={!!formErrors.orgDescription}
-                    feedbackState="danger"
-                    errorFeedbackText="Campo obrigatório"
                   />
 
                   <InputText
-                    label="Site da Internet"
+                    label="URL *"
                     placeholder=""
-                    id="org-website"
+                    id="harvester-url"
+                    value={harvesterUrl}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setHarvesterUrl(e.target.value);
+                      if (e.target.value.trim()) clearError("harvesterUrl");
+                    }}
+                    hasError={!!formErrors.harvesterUrl}
+                    hasFeedback={!!formErrors.harvesterUrl}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   />
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Logotipo</h2>
+                <h2 className="datasets-admin-page__section-title">
+                  Implementação
+                </h2>
 
                 <div className="datasets-admin-page__fields-group">
-                  <DragAndDropUploader
-                    dragAndDropLabel="Arraste e solte os arquivos"
-                    separatorLabel="ou"
-                    inputLabel="Selecione o ficheiro"
-                    removeFileButtonLabel="Remover ficheiro"
-                    replaceFileButtonLabel="Substituir ficheiro"
-                    extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
-                    accept=".jpg,.jpeg,.png"
-                    maxSize={4194304}
-                    maxCount={1}
-                  />
+                  <InputSelect
+                    label="Tipo *"
+                    placeholder=""
+                    id="harvester-type"
+                  >
+                    <DropdownSection name="types">
+                      <DropdownOption value="dcat">DCAT</DropdownOption>
+                      <DropdownOption value="ckan">CKAN</DropdownOption>
+                      <DropdownOption value="csw">CSW</DropdownOption>
+                      <DropdownOption value="ods">ODS</DropdownOption>
+                    </DropdownSection>
+                  </InputSelect>
+
+                  <div className="flex gap-[48px]">
+                    <Switch
+                      label="Ativado"
+                      checked={isEnabled}
+                      onChange={() => setIsEnabled((v) => !v)}
+                    />
+                    <Switch
+                      label="Arquivamento automático"
+                      checked={isAutoArchive}
+                      onChange={() => setIsAutoArchive((v) => !v)}
+                    />
+                  </div>
                 </div>
 
-                <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
-                  <Button
-                    appearance="outline"
-                    variant="neutral"
-                    onClick={() =>
-                      router.push("/pages/admin/organizations/new?step=1")
-                    }
-                  >
-                    Anterior
-                  </Button>
+                <div className="datasets-admin-page__actions">
                   <Button
                     variant="primary"
-                    onClick={handleCreateOrg}
+                    hasIcon
+                    trailingIcon="agora-line-arrow-right-circle"
+                    trailingIconHover="agora-solid-arrow-right-circle"
+                    onClick={handleStep1Next}
                   >
-                    Criar a organização
+                    Seguinte
                   </Button>
                 </div>
               </form>
             </>
+          )}
+
+          {/* Step 2: Visualize */}
+          {currentStep === 2 && (
+            <div className="datasets-admin-page__form">
+              <StatusCard
+                type="info"
+                description="Revise as informações do seu harvester antes de finalizar."
+              />
+
+              <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+                <Button
+                  appearance="outline"
+                  variant="neutral"
+                  hasIcon
+                  leadingIcon="agora-line-arrow-left-circle"
+                  leadingIconHover="agora-solid-arrow-left-circle"
+                  onClick={() =>
+                    router.push("/pages/admin/harvesters/new?step=1")
+                  }
+                >
+                  Anterior
+                </Button>
+                <Button
+                  variant="primary"
+                  hasIcon
+                  trailingIcon="agora-line-arrow-right-circle"
+                  trailingIconHover="agora-solid-arrow-right-circle"
+                  onClick={() =>
+                    router.push("/pages/admin/harvesters/new?step=3")
+                  }
+                >
+                  Seguinte
+                </Button>
+              </div>
+            </div>
           )}
 
           {/* Step 3: Finalizar */}
@@ -373,9 +358,9 @@ export default function OrganizationsNewClient() {
                 type="success"
                 description={
                   <>
-                    <strong>A sua organização foi criada!</strong>
+                    <strong>O seu harvester foi criado!</strong>
                     <br />
-                    Agora pode gerir a sua organização.
+                    Agora pode gerir o seu harvester.
                   </>
                 }
               />
@@ -385,7 +370,7 @@ export default function OrganizationsNewClient() {
                   appearance="outline"
                   variant="neutral"
                   onClick={() =>
-                    router.push("/pages/admin/organizations/new?step=2")
+                    router.push("/pages/admin/harvesters/new?step=2")
                   }
                 >
                   Anterior
@@ -393,7 +378,7 @@ export default function OrganizationsNewClient() {
                 <Button
                   variant="primary"
                   onClick={() =>
-                    router.push("/pages/admin/system/organizations")
+                    router.push("/pages/admin/system/harvesters")
                   }
                 >
                   Guardar
@@ -403,8 +388,8 @@ export default function OrganizationsNewClient() {
           )}
         </div>
 
-        {/* Right: Auxiliar sidebar (only for step 2) */}
-        {currentStep === 2 && (
+        {/* Right: Auxiliar sidebar (only for step 1) */}
+        {currentStep === 1 && (
           <aside className="datasets-admin-page__auxiliar">
             <div className="datasets-admin-page__auxiliar-inner">
               <div className="datasets-admin-page__auxiliar-header">
