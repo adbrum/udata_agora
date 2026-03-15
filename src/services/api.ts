@@ -92,8 +92,8 @@ export async function fetchCurrentUser(): Promise<UserRef | null> {
 }
 
 /**
- * Fetch the authenticated user's datasets.
- * Backend returns a flat array; we wrap it into APIResponse for consistency.
+ * Fetch the authenticated user's personal datasets (owner = current user).
+ * Backend returns a flat array; we filter out org-owned and wrap into APIResponse.
  */
 export async function fetchMyDatasets(
   page: number = 1,
@@ -109,7 +109,8 @@ export async function fetchMyDatasets(
       throw new Error(`Failed to fetch my datasets: ${res.statusText}`);
     }
 
-    const allDatasets: Dataset[] = await res.json();
+    const raw: Dataset[] = await res.json();
+    const allDatasets = raw.filter((d) => d.owner !== null);
     const total = allDatasets.length;
     const start = (page - 1) * pageSize;
     const data = allDatasets.slice(start, start + pageSize);
