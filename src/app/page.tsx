@@ -17,6 +17,7 @@ import { fetchLatestDatasets, fetchLatestReuses, fetchPosts, fetchSiteInfo } fro
 import { Dataset, Post, Reuse, SiteInfo } from "@/types/api";
 import { formatDistanceToNow, format } from "date-fns";
 import { pt } from "date-fns/locale";
+import { useAuth } from "@/context/AuthContext";
 
 function formatStatNumber(value: number): { number: string; suffix: string } {
   if (value >= 1_000_000) {
@@ -39,6 +40,7 @@ function formatStatNumber(value: number): { number: string; suffix: string } {
 
 export default function Home() {
   const router = useRouter();
+  const { user } = useAuth();
   const [siteInfo, setSiteInfo] = useState<SiteInfo | null>(null);
   const [latestDatasets, setFeaturedDatasets] = useState<Dataset[]>([]);
   const [latestReuses, setFeaturedReuses] = useState<Reuse[]>([]);
@@ -145,7 +147,13 @@ export default function Home() {
                         trailingIcon={showPublishDropdown ? "agora-line-arrow-up" : "agora-line-arrow-down"}
                         trailingIconHover={showPublishDropdown ? "agora-solid-arrow-up" : "agora-solid-arrow-down"}
                         className="px-24 py-16 rounded-8 h-auto relative z-10"
-                        onClick={() => setShowPublishDropdown((v) => !v)}
+                        onClick={() => {
+                          if (!user) {
+                            router.push("/pages/login");
+                            return;
+                          }
+                          setShowPublishDropdown((v) => !v);
+                        }}
                       >
                         <span className="text-lg font-medium">
                           Publicar <span className="font-bold">dados.gov</span>
