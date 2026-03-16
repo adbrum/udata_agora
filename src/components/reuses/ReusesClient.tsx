@@ -14,7 +14,8 @@ import {
   CardNoResults,
 } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
-import { APIResponse, Reuse, ReuseFilters, ReuseType } from '@/types/api';
+import { CategoryToggles } from '@/components/CategoryToggles';
+import { APIResponse, Reuse, ReuseFilters, ReuseType, SiteMetrics } from '@/types/api';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -162,6 +163,7 @@ interface ReusesClientProps {
   currentPage: number;
   initialFilters?: ReuseFilters;
   reuseTypes?: ReuseType[];
+  siteMetrics?: SiteMetrics;
 }
 
 export default function ReusesClient({
@@ -169,6 +171,7 @@ export default function ReusesClient({
   currentPage,
   initialFilters,
   reuseTypes = [],
+  siteMetrics,
 }: ReusesClientProps) {
   const router = useRouter();
   const { data: reuses, total, page_size } = initialData;
@@ -241,8 +244,8 @@ export default function ReusesClient({
   );
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 reuse">
-      <main className="flex-grow bg-white">
+    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters reuse">
+      <main className="flex-grow bg-primary-50">
         <PageBanner
           title="Reutilizações"
           backgroundImageUrl="/Banner/hero-bg.png"
@@ -273,9 +276,18 @@ export default function ReusesClient({
           <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
         </PageBanner>
 
-        {/* Main Content - Grid of Reuses */}
-        <div className="container mx-auto md:gap-32 xl:gap-64">
-          <div className="pt-32 pb-64">
+        <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
+            {/* Sidebar */}
+            <div className="xl:col-span-4 xl:block p-32 pl-0">
+              {siteMetrics && (
+                <CategoryToggles siteMetrics={siteMetrics} searchQuery={initialFilters?.q} />
+              )}
+            </div>
+
+            {/* Results Area */}
+            <div className="xl:col-span-8 mt-[36px]">
+              <div>
             <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
               <span className="text-neutral-900 font-medium text-base xl:col-span-7 mt-[32px]">
                 {total.toLocaleString('pt-PT')} Resultados
@@ -453,6 +465,8 @@ export default function ReusesClient({
                 pageSize={page_size}
                 baseUrl={buildUrl()}
               />
+            </div>
+              </div>
             </div>
           </div>
         </div>
