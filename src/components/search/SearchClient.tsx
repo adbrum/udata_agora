@@ -10,7 +10,7 @@ import {
   InputSearchBar,
   CardNoResults,
 } from "@ama-pt/agora-design-system";
-import PageLoader from "@/components/common/PageLoader";
+
 import PageBanner from "@/components/PageBanner";
 import { Pagination } from "@/components/Pagination";
 import {
@@ -275,9 +275,7 @@ export default function SearchClient() {
                 </p>
               </div>
 
-              {isLoading ? (
-                <PageLoader />
-              ) : (
+              {!isLoading && (
                 <>
                   {activeTab === "datasets" && (
                     <div className="flex flex-col gap-0">

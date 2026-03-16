@@ -26,7 +26,7 @@ import {
   fetchOrgDataservices,
   fetchOrgReuses,
 } from "@/services/api";
-import PageLoader from "@/components/common/PageLoader";
+
 
 interface OrganizationTabsProps {
   organization: Organization;
@@ -172,9 +172,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
               <h2 className="text-sm text-neutral-500 mb-16">
                 Conjuntos de dados da organização
               </h2>
-              {isLoadingDatasets ? (
-                <PageLoader />
-              ) : datasets.length > 0 ? (
+              {!isLoadingDatasets && datasets.length > 0 ? (
                 <>
                   <div className="text-sm text-neutral-500 mb-16">
                     {datasetsResponse?.total || 0} conjuntos de dados
@@ -301,9 +299,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
               <h2 className="text-sm text-neutral-500 mb-16">
                 API da organização
               </h2>
-              {isLoadingDataservices ? (
-                <PageLoader />
-              ) : dataservices.length > 0 ? (
+              {!isLoadingDataservices && dataservices.length > 0 ? (
                 <>
                   <div className="text-sm text-neutral-500 mb-16">
                     {dataservicesResponse?.total || 0} APIs
@@ -416,9 +412,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
               <h2 className="text-sm text-neutral-500 mb-16">
                 Reutilizações da organização
               </h2>
-              {isLoadingReuses ? (
-                <PageLoader />
-              ) : reuses.length > 0 ? (
+              {!isLoadingReuses && reuses.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets-px0 gap-32">
                   {reuses.map((reuse) => (
                     <div key={reuse.id} className="h-full">

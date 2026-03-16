@@ -15,7 +15,7 @@ const linkColumns = [
   {
     title: 'Plataforma',
     links: [
-      { href: '/pages/about-open-data', label: 'Sobre nós' },
+      { href: '/pages/faqs/about_dadosgov', label: 'Sobre nós' },
       { href: '/pages/support', label: 'Contactar-nos' },
       { href: '/pages/faqs/terms', label: 'Termos de utilização' },
     ],
