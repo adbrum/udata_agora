@@ -56,6 +56,9 @@ import {
   UserRef,
   UserUpdatePayload,
   OrgInvitation,
+  CommunityResource,
+  CommunityResourceCreatePayload,
+  CommunityResourceUpdatePayload,
 } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
@@ -2118,4 +2121,115 @@ export async function fetchUserActivity(
       previous_page: null,
     };
   }
+}
+
+// ── Community Resources CRUD (TICKET-31) ─────────────────────────────
+
+export async function fetchMyCommunityResources(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<CommunityResource>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/datasets/community_resources/?owner=me&page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok)
+      throw new Error(`Failed to fetch my community resources: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching my community resources:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchMyOrgCommunityResources(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<CommunityResource>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/me/org_community_resources/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok)
+      throw new Error(`Failed to fetch org community resources: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org community resources:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function createCommunityResource(
+  payload: CommunityResourceCreatePayload
+): Promise<CommunityResource> {
+  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function updateCommunityResource(
+  id: string,
+  payload: CommunityResourceUpdatePayload
+): Promise<CommunityResource> {
+  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/${id}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteCommunityResource(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/${id}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete community resource: ${res.statusText}`);
+}
+
+export async function uploadCommunityResourceFile(
+  id: string,
+  file: File
+): Promise<CommunityResource> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/${id}/upload/`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
 }
