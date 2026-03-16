@@ -1,13 +1,11 @@
-import { fetchDataset } from '@/services/api';
-import DatasetDetailClient from '@/components/datasets/DatasetDetailClient';
+import DatasetDetailClient from "@/components/datasets/DatasetDetailClient";
 
 export default async function Page({
-    params,
+  params,
 }: {
-    params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-    const { slug } = await params;
-    const dataset = await fetchDataset(slug);
+  const { slug } = await params;
 
-    return <DatasetDetailClient dataset={dataset} />;
+  return <DatasetDetailClient slug={slug} />;
 }

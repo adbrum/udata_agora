@@ -302,6 +302,7 @@ export async function fetchDataset(slug: string): Promise<Dataset> {
   try {
     const res = await fetch(`${API_BASE_URL}/datasets/${slug}/`, {
       cache: "no-store",
+      credentials: "include",
     });
 
     if (!res.ok) {

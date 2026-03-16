@@ -1,19 +1,52 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { Button, Icon, Tag, Breadcrumb, Pill, ProgressBar } from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
+import { fetchDataset } from '@/services/api';
 import { DatasetTabs } from '@/components/datasets/DatasetTabs';
 
 interface DatasetDetailClientProps {
-  dataset: Dataset;
+  slug: string;
 }
 
-export default function DatasetDetailClient({ dataset }: DatasetDetailClientProps) {
+export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) {
+  const [dataset, setDataset] = useState<Dataset | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    async function loadDataset() {
+      try {
+        const data = await fetchDataset(slug);
+        setDataset(data);
+      } catch (error) {
+        console.error("Error loading dataset:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadDataset();
+  }, [slug]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-neutral-500">A carregar...</p>
+      </div>
+    );
+  }
+
+  if (!dataset) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-neutral-500">Conjunto de dados não encontrado.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col font-sans text-neutral-900 bg-white min-h-screen overflow-x-hidden">
