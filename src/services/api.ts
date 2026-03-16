@@ -24,9 +24,11 @@ import {
   OrgBadges,
   OrgRole,
   Organization,
+  OrganizationCreatePayload,
   OrganizationFilters,
   OrganizationMember,
   OrganizationSuggestion,
+  OrganizationUpdatePayload,
   Post,
   Resource,
   ResourceCreatePayload,
@@ -409,6 +411,62 @@ export async function fetchOrganization(slugOrId: string): Promise<Organization 
     console.error("Error fetching organization:", error);
     throw error;
   }
+}
+
+export async function createOrganization(
+  payload: OrganizationCreatePayload
+): Promise<Organization> {
+  const res = await fetch(`${API_BASE_URL}/organizations/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function updateOrganization(
+  org: string,
+  payload: OrganizationUpdatePayload
+): Promise<Organization> {
+  const res = await fetch(`${API_BASE_URL}/organizations/${org}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteOrganization(org: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/organizations/${org}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete organization: ${res.statusText}`);
+}
+
+export async function uploadOrgLogo(org: string, file: File): Promise<Organization> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE_URL}/organizations/${org}/logo`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
 }
 
 export async function fetchOrgDatasets(
