@@ -8,6 +8,8 @@ export interface UserRef {
   uri: string;
   page: string;
   saml_login?: boolean;
+  roles?: string[];
+  organizations?: Organization[];
 }
 
 export interface UserMetrics {

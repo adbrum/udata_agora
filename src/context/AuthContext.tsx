@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  ReactNode,
+} from "react";
 import { UserRef } from "@/types/api";
 import { fetchCurrentUser } from "@/services/api";
 
@@ -8,6 +16,8 @@ interface AuthContextProps {
   user: UserRef | null;
   isLoading: boolean;
   samlLogin: boolean;
+  isAdmin: boolean;
+  hasOrganization: boolean;
   refresh: () => Promise<void>;
 }
 
@@ -15,6 +25,8 @@ const AuthContext = createContext<AuthContextProps>({
   user: null,
   isLoading: true,
   samlLogin: false,
+  isAdmin: false,
+  hasOrganization: false,
   refresh: async () => {},
 });
 
@@ -39,8 +51,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refresh();
   }, [refresh]);
 
+  const isAdmin = useMemo(
+    () => user?.roles?.includes("admin") ?? false,
+    [user],
+  );
+
+  const hasOrganization = useMemo(
+    () => (user?.organizations?.length ?? 0) > 0,
+    [user],
+  );
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, samlLogin, refresh }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, samlLogin, isAdmin, hasOrganization, refresh }}
+    >
       {children}
     </AuthContext.Provider>
   );
