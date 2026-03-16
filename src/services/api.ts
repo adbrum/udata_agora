@@ -30,6 +30,8 @@ import {
   OrganizationSuggestion,
   OrganizationUpdatePayload,
   Post,
+  PostCreatePayload,
+  PostUpdatePayload,
   Resource,
   ResourceCreatePayload,
   ResourceType,
@@ -1064,6 +1066,110 @@ export async function fetchPost(slugOrId: string): Promise<Post | null> {
     return await res.json();
   } catch (error) {
     console.error("Error fetching post:", error);
+    return null;
+  }
+}
+
+export async function createPost(
+  payload: PostCreatePayload
+): Promise<Post | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/posts/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to create a post");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to create post: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error creating post:", error);
+    return null;
+  }
+}
+
+export async function updatePost(
+  id: string,
+  payload: PostUpdatePayload
+): Promise<Post | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/posts/${id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to update a post");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to update post: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating post:", error);
+    return null;
+  }
+}
+
+export async function deletePost(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/posts/${id}/`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to delete a post");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to delete post: ${res.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    return false;
+  }
+}
+
+export async function uploadPostImage(
+  id: string,
+  file: File
+): Promise<Post | null> {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch(`${API_BASE_URL}/posts/${id}/image/`, {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to upload a post image");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to upload post image: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error uploading post image:", error);
     return null;
   }
 }
