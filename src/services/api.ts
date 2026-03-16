@@ -565,6 +565,76 @@ export async function fetchOrgDataservices(
   }
 }
 
+/**
+ * Fetch a single dataservice by ID
+ */
+export async function fetchDataservice(id: string): Promise<Dataservice> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/dataservices/${id}/`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch dataservice: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching dataservice:", error);
+    throw error;
+  }
+}
+
+/**
+ * Create a new dataservice
+ */
+export async function createDataservice(
+  payload: DataserviceCreatePayload
+): Promise<Dataservice> {
+  const res = await fetch(`${API_BASE_URL}/dataservices/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+/**
+ * Update an existing dataservice
+ */
+export async function updateDataservice(
+  id: string,
+  payload: DataserviceUpdatePayload
+): Promise<Dataservice> {
+  const res = await fetch(`${API_BASE_URL}/dataservices/${id}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+/**
+ * Delete a dataservice
+ */
+export async function deleteDataservice(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/dataservices/${id}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete dataservice: ${res.statusText}`);
+}
+
 export async function fetchReuses(
   page: number = 1,
   pageSize: number = 20,
