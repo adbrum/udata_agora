@@ -13,7 +13,7 @@ import {
 } from "@ama-pt/agora-design-system";
 import PageBanner from "@/components/PageBanner";
 import { Pagination } from "@/components/Pagination";
-import PageLoader from "@/components/common/PageLoader";
+
 import { fetchPosts } from "@/services/api";
 import { Post } from "@/types/api";
 import { format } from "date-fns";
@@ -113,9 +113,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
 
             <div className="divider-neutral-200 mt-[14px] mb-24" />
 
-            {isLoading ? (
-              <PageLoader />
-            ) : posts.length === 0 ? (
+            {isLoading ? null : posts.length === 0 ? (
               <div className="flex justify-center py-64">
                 <span className="text-neutral-600">Nenhum artigo encontrado.</span>
               </div>
