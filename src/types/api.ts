@@ -860,6 +860,30 @@ export interface HarvestSourceUpdatePayload {
   autoarchive?: boolean;
 }
 
+export type UserRole = string;
+
+export interface UserAdmin extends UserPublic {
+  datasets_count: number;
+  reuses_count: number;
+  last_login: string | null;
+}
+
+export interface UserAdminUpdatePayload {
+  first_name?: string;
+  last_name?: string;
+  roles?: UserRole[];
+  active?: boolean;
+}
+
+export interface UserSuggestion {
+  id: string;
+  first_name: string;
+  last_name: string;
+  slug: string;
+  avatar_thumbnail: string | null;
+  score: number;
+}
+
 export interface APIResponse<T> {
   data: T[];
   page: number;
