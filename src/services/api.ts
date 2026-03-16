@@ -1265,6 +1265,15 @@ export async function fetchDiscussions(
 
     if (!res.ok) {
       throw new Error(`Failed to fetch discussions: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching discussions:", error);
+    return { data: [], page: 1, page_size: pageSize, total: 0, next_page: null, previous_page: null };
+  }
+}
+
 // --- Notifications ---
 
 export async function fetchNotifications(
@@ -1335,6 +1344,15 @@ export async function createDiscussion(
 
     if (!res.ok) {
       throw new Error(`Failed to create discussion: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error creating discussion:", error);
+    return null;
+  }
+}
+
 export async function fetchTopic(slugOrId: string): Promise<Topic | null> {
   try {
     const res = await fetch(`${API_V2_BASE_URL}/topics/${slugOrId}/`, {
@@ -1377,8 +1395,12 @@ export async function replyToDiscussion(
 
     if (!res.ok) {
       throw new Error(`Failed to reply to discussion: ${res.statusText}`);
-    console.error("Error fetching topic:", error);
-    throw error;
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error replying to discussion:", error);
+    return null;
   }
 }
 
