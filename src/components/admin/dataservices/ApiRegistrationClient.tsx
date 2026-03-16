@@ -1,158 +1,274 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Button,
   InputText,
   InputTextArea,
   RadioButton,
   Icon,
-  Breadcrumb,
+  StatusCard,
   Accordion,
   AccordionGroup,
   InputSelect,
   DropdownSection,
   DropdownOption,
-  Stepper,
-  Step,
-} from '@ama-pt/agora-design-system';
+  CardGeneral,
+} from "@ama-pt/agora-design-system";
 
-export default function ApiRegistrationClient() {
-  const [accessType, setAccessType] = useState('open');
+interface ApiRegistrationClientProps {
+  currentStep: number;
+  onNextStep: () => void;
+  onPreviousStep: () => void;
+}
 
+export default function ApiRegistrationClient({
+  currentStep,
+  onNextStep,
+  onPreviousStep,
+}: ApiRegistrationClientProps) {
+  const [accessType, setAccessType] = useState("open");
+  const [apiName, setApiName] = useState("");
+  const [apiDescription, setApiDescription] = useState("");
+  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
+  const [datasetLinkErrors, setDatasetLinkErrors] = useState<Record<number, string>>({});
 
-  const auxiliarItems = [
-    { title: 'Como dar nomes à sua API', content: 'Explore nomes claros e concisos que descrevam a função principal da sua API.' },
-    { title: 'Adicione uma abreviação ou sigla à API.', content: 'Abreviações ajudam na identificação rápida em listas e dashboards.' },
-    { title: 'Escreva uma boa descrição', content: 'Uma boa descrição deve resumir o que a API faz, quem a deve usar e os principais benefícios.' },
-    { title: 'Defina o link correto para a API.', content: 'Use o endpoint base da sua API.' },
-    { title: 'Adicione um link para a documentação da máquina.', content: 'Ficheiros como OpenAPI (Swagger) ou RAML.' },
-    { title: 'Adicione um link para a documentação técnica.', content: 'Guias de integração, autenticação e exemplos de código.' },
-    { title: 'Especifique o limite de chamadas', content: 'Indique o número máximo de pedidos por minuto/hora.' },
-    { title: 'Indique a disponibilidade', content: 'Ex: 24/7, Dias úteis, 99.9% uptime.' },
-    { title: 'Selecione um tipo de acesso', content: 'Explique a diferença entre acesso aberto, com conta ou restrito.' },
-    { title: 'Adicione um link à solicitação de autorização', content: 'Onde os utilizadores podem pedir acesso se a API for restrita.' },
-    { title: 'Adicione um link para a documentação da empresa.', content: 'Termos de serviço e políticas de privacidade.' },
+  useEffect(() => {
+    setDatasetLinkErrors({});
+  }, [currentStep]);
+
+  const handleStep1Next = () => {
+    const errors: Record<string, boolean> = {};
+    if (!apiName.trim()) errors.apiName = true;
+    if (!apiDescription.trim()) errors.apiDescription = true;
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
+    onNextStep();
+  };
+
+  const clearError = (field: string) => {
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+const handleDatasetUrlChange = (index: number, value: string) => {
+    const updated = [...datasetLinks];
+    updated[index] = { url: value };
+    setDatasetLinks(updated);
+
+    if (value.trim() && datasetLinkErrors[index]) {
+      setDatasetLinkErrors((prev) => {
+        const next = { ...prev };
+        delete next[index];
+        return next;
+      });
+    }
+  };
+
+  const addDatasetLink = () => {
+    const lastIndex = datasetLinks.length - 1;
+    if (!datasetLinks[lastIndex].url.trim()) {
+      setDatasetLinkErrors((prev) => ({
+        ...prev,
+        [lastIndex]: "Campo obrigatório",
+      }));
+      return;
+    }
+    setDatasetLinks((prev) => [...prev, { url: "" }]);
+  };
+
+  const removeDatasetLink = (index: number) => {
+    setDatasetLinks((prev) => prev.filter((_, i) => i !== index));
+    setDatasetLinkErrors((prev) => {
+      const next: Record<number, string> = {};
+      Object.entries(prev).forEach(([key, value]) => {
+        const k = Number(key);
+        if (k < index) next[k] = value;
+        else if (k > index) next[k - 1] = value;
+      });
+      return next;
+    });
+  };
+
+  const auxiliarItemsStep1 = [
+    {
+      title: "Como dar nome à sua API",
+      content:
+        'Dê à sua API um nome relevante e descritivo que reflita sua função ou área de aplicação. Um bom nome facilita a busca e a identificação por parte dos utilizadores. Sempre adicione o prefixo "API" para manter a consistência.',
+    },
+    {
+      title: "Adicione uma abreviação ou sigla à API.",
+      content:
+        "Você tem a opção de adicionar uma sigla à sua API. As letras que compõem essa sigla não precisam ser separadas por pontos.",
+    },
+    {
+      title: "Escreva uma boa descrição",
+      content:
+        "Escreva uma descrição clara e precisa da API. Os utilizadores precisam entender a finalidade da API, os dados fornecidos, o escopo abrangido (os dados são completos? Há alguma lacuna?), a frequência de atualização dos dados e os parâmetros que podem ser usados para fazer uma chamada.",
+    },
+    {
+      title: "Defina o link correto para a API.",
+      content:
+        "A URL base de uma API é o ponto de entrada comum para todas as requisições, geralmente consistindo em um domínio ou endereço de servidor. Ela serve como base para a qual caminhos específicos (endpoints) são adicionados para acessar os diversos recursos da API.",
+    },
+    {
+      title: "Adicione um link para a documentação da máquina.",
+      content:
+        "Idealmente, forneça um link OpenAPI (Swagger) que permita aos desenvolvedores explorar os endpoints, visualizar os métodos disponíveis e testar consultas diretamente da documentação. Para serviços geográficos, você pode fornecer um link para o serviço com uma consulta GetCapabilities para recuperar os metadados do serviço.",
+    },
+    {
+      title: "Adicione um link para a documentação técnica.",
+      content:
+        "Adicione um link para a documentação técnica geral da API, descrevendo os passos de integração.",
+    },
+    {
+      title: "Especifique o limite de chamadas",
+      content:
+        "Caso o número de chamadas à sua API seja limitado, defina aqui o número máximo de chamadas por minuto, ou mesmo por IP e/ou token.",
+    },
+    {
+      title: "Indique a disponibilidade",
+      content:
+        "Especifique a disponibilidade média da sua API. O valor deve ser uma porcentagem.",
+    },
+    {
+      title: "Selecione um tipo de acesso",
+      content:
+        'Escolha o tipo de acesso (aberto, aberto com conta ou restrito). Selecione "aberto" se os dados forem públicos. Selecione "aberto com conta" se o acesso aos dados exigir uma conta. Se selecionar "restrito", especifique os tipos de utilizadores que podem aceder a esta API.',
+    },
+    {
+      title: "Adicione um link à solicitação de autorização.",
+      content:
+        "Se a sua API tiver acesso restrito, adicione o link ao formulário de solicitação de acesso. Você é administrador? A solução Datapass permite criar e gerenciar formulários de solicitação de acesso a dados com facilidade.",
+    },
+    {
+      title: "Adicione um link para a documentação da empresa.",
+      content:
+        "A documentação comercial da sua API explica seu escopo e casos de uso. Ela complementa a documentação técnica.",
+    },
   ];
 
+  const auxiliarItems = auxiliarItemsStep1;
+
   return (
-    <div className="min-h-screen bg-white font-sans">
-      <main className="container mx-auto px-16 py-32 max-w-7xl">
-        {/* Breadcrumbs */}
-        <div className="mb-48 border-b border-neutral-100 pb-16">
-          <Breadcrumb
-            items={[
-              { label: 'Home', url: '/' },
-              { label: 'APIs', url: '#' },
-              { label: 'Formulário de inscrição', url: '#' },
-            ]}
-          />
-        </div>
+    <>
+      {/* Main content area: form + auxiliar sidebar */}
+      <div className="datasets-admin-page__body">
+        {/* Left: Form */}
+        <div className="datasets-admin-page__form-area">
+          {/* Step 1: Descreva a sua API */}
+          {currentStep === 1 && (
+            <>
+              <StatusCard
+                type="info"
+                description={
+                  <>
+                    <strong>O que é uma API?</strong>
+                    <br />
+                    Uma API é uma ferramenta informática que permite que um website
+                    ou software se comunique com outro computador e troque dados.
+                  </>
+                }
+              />
 
-        <div className="grid grid-cols-12 gap-48">
-          {/* Stepper (Left) */}
-          <div className="col-span-12 lg:col-span-3">
-            <div className="sticky top-120">
-              <Stepper>
-                <Step status="current">
-                  Descreva a sua API
-                </Step>
-                <Step status="default">
-                  Vincular conjuntos de dados
-                </Step>
-                <Step status="default">
-                  Morada do titular
-                </Step>
-              </Stepper>
-            </div>
-          </div>
-
-          {/* Main Content (Middle) */}
-          <div className="col-span-12 lg:col-span-6">
-            <h1 className="text-4xl font-bold text-[#002D72] mb-32">Descreva a sua API</h1>
-
-            {/* Info Box: O que é uma API? */}
-            <div className="bg-[#E6F0FF] rounded-8 p-32 mb-40 flex gap-20 border border-[#B3D1FF]">
-              <Icon name="agora-solid-info-circle" className="text-[#002D72] w-28 h-28 flex-shrink-0" />
-              <div>
-                <h2 className="text-lg font-bold text-[#002D72] mb-6">O que é uma API?</h2>
-                <p className="text-sm text-[#374151] leading-relaxed">
-                  Uma API é uma ferramenta informática que permite que um website ou software se comunique com outro computador e troque dados.
+              <form className="datasets-admin-page__form">
+                <p className="text-neutral-900 text-base leading-7">
+                  Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
-              </div>
-            </div>
+                <h2 className="datasets-admin-page__section-title">Produtor</h2>
 
-            <p className="text-sm text-[#4B5563] mb-40 italic">
-              Os campos marcados com um asterisco ( * ) são obrigatórios.
-            </p>
+                <InputSelect
+                  label="Verifique a identidade que deseja usar na publicação."
+                  placeholder="Para pesquisar..."
+                  id="producer-identity"
+                >
+                  <DropdownSection name="organizations">
+                    <DropdownOption value="org1">
+                      Minha Organização
+                    </DropdownOption>
+                  </DropdownSection>
+                </InputSelect>
 
-            <form className="flex flex-col gap-48">
-              {/* Produtor Section */}
-              <section>
-                <h2 className="text-2xl font-bold text-[#111827] mb-24">Produtor</h2>
-                <div className="flex flex-col gap-32">
-                  <InputSelect
-                    label="Verifique a identidade que deseja usar na publicação."
-                    placeholder="Para pesquisar..."
-                    id="producer-identity"
+                <div className="datasets-admin-page__org-card">
+                  <p className="datasets-admin-page__org-card-title">
+                    Você não pertence a nenhuma organização.
+                  </p>
+                  <p className="datasets-admin-page__org-card-description">
+                    Recomendamos que publique em nome de uma organização se se
+                    tratar de uma atividade profissional.
+                  </p>
+                  <a
+                    href="#"
+                    className="datasets-admin-page__org-card-link"
                   >
-                    <DropdownSection name="organizations">
-                      <DropdownOption value="org1">Minha Organização</DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
-
-                  <div className="bg-[#F8FAFC] rounded-8 p-32 border border-[#E2E8F0]">
-                    <h3 className="text-lg font-bold text-[#111827] mb-12">Você não pertence a nenhuma organização.</h3>
-                    <p className="text-sm text-[#4B5563] mb-20 leading-relaxed">
-                      Recomendamos que publique em nome de uma organização se se tratar de uma atividade profissional.
-                    </p>
-                    <a href="#" className="text-[#0052CC] font-bold text-sm flex items-center gap-8 hover:underline group">
-                      Crie ou participe de uma organização
-                      <Icon name="agora-line-arrow-right-circle" className="w-20 h-20 transition-transform group-hover:translate-x-4" />
-                    </a>
-                  </div>
+                    Crie ou participe de uma organização
+                    <Icon
+                      name="agora-line-arrow-right-circle"
+                      className="w-[24px] h-[24px]"
+                    />
+                  </a>
                 </div>
-              </section>
 
-              {/* Descrição Section */}
-              <section>
-                <h2 className="text-2xl font-bold text-[#111827] mb-32 border-b border-[#F3F4F6] pb-12">Descrição</h2>
-                <div className="flex flex-col gap-32">
+                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+
+                <div className="datasets-admin-page__fields-group">
                   <InputText
-                    label="Nome da API*"
+                    label="Nome da API *"
                     placeholder="Placeholder"
                     id="api-name"
+                    value={apiName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setApiName(e.target.value);
+                      if (e.target.value.trim()) clearError("apiName");
+                    }}
+                    hasError={!!formErrors.apiName}
+                    hasFeedback={!!formErrors.apiName}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <InputText
-                    label="Acrónimo"
+                    label="Acrônimo"
                     placeholder="Placeholder"
                     id="api-acronym"
                   />
-                  <div className="relative">
-                    <InputTextArea
-                      label="Descrição*"
-                      placeholder="Placeholder"
-                      id="api-description"
-                      rows={6}
-                      maxLength={246}
-                    />
-                    <div className="text-right text-xs text-neutral-400 mt-4">
-                      123 / 246
-                    </div>
-                  </div>
+                  <InputTextArea
+                    label="Descrição *"
+                    placeholder="Placeholder"
+                    id="api-description"
+                    rows={4}
+                    maxLength={246}
+                    value={apiDescription}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                      setApiDescription(e.target.value);
+                      if (e.target.value.trim()) clearError("apiDescription");
+                    }}
+                    hasError={!!formErrors.apiDescription}
+                    hasFeedback={!!formErrors.apiDescription}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
+                  />
                   <InputText
                     label="Link raiz da API"
-                    placeholder="Placeholder"
+                    placeholder="https://..."
                     id="api-root-link"
                   />
                   <InputText
-                    label="Link para a documentação da API (arquivo OpenAPI ou Swagger)"
-                    placeholder="Placeholder"
+                    label="Link para a documentação da API (ficheiro OpenAPI ou Swagger)"
+                    placeholder="https://..."
                     id="api-doc-openapi"
                   />
                   <InputText
                     label="Link para a documentação técnica da API"
-                    placeholder="Placeholder"
+                    placeholder="https://..."
                     id="api-doc-technical"
                   />
                   <InputText
@@ -162,88 +278,237 @@ export default function ApiRegistrationClient() {
                   />
                   <InputText
                     label="Disponibilidade"
-                    placeholder="Placeholder"
+                    placeholder="99,9"
                     id="api-availability"
                   />
                 </div>
-              </section>
 
-              {/* Acesso Section */}
-              <section>
-                <h2 className="text-2xl font-bold text-[#111827] mb-32 border-b border-[#F3F4F6] pb-12">Acesso</h2>
-                <div className="flex flex-col gap-32">
-                  <div className="flex flex-col gap-16">
-                    <span className="text-sm font-bold text-[#374151]">Tipo de acesso</span>
-                    <div className="flex flex-col gap-12">
+                <h2 className="datasets-admin-page__section-title">Acesso</h2>
+
+                <div className="datasets-admin-page__fields-group">
+                  <div className="flex flex-col gap-[8px]">
+                    <span className="text-primary-900 text-base font-medium leading-7">
+                      Tipo de acesso
+                    </span>
+                    <div className="flex flex-row gap-4">
                       <RadioButton
                         label="Abrir"
                         id="access-open"
                         name="access-type"
-                        checked={accessType === 'open'}
-                        onChange={() => setAccessType('open')}
+                        checked={accessType === "open"}
+                        onChange={() => setAccessType("open")}
                       />
                       <RadioButton
                         label="Abrir com conta"
                         id="access-account"
                         name="access-type"
-                        checked={accessType === 'account'}
-                        onChange={() => setAccessType('account')}
+                        checked={accessType === "account"}
+                        onChange={() => setAccessType("account")}
                       />
                       <RadioButton
                         label="Restrito"
                         id="access-restricted"
                         name="access-type"
-                        checked={accessType === 'restricted'}
-                        onChange={() => setAccessType('restricted')}
+                        checked={accessType === "restricted"}
+                        onChange={() => setAccessType("restricted")}
                       />
                     </div>
                   </div>
                   <InputText
                     label="Link para a ferramenta de autorização de acesso"
-                    placeholder="Placeholder"
+                    placeholder="https://..."
                     id="api-auth-tool"
                   />
                   <InputText
                     label="Link para a documentação comercial da API"
-                    placeholder="Placeholder"
+                    placeholder="https://..."
                     id="api-doc-commercial"
                   />
                 </div>
-              </section>
 
-              <div className="flex justify-end mt-48 pb-64">
-                <Button
-                  variant="primary"
-                  className="px-48 h-56 rounded-8 text-lg font-bold shadow-lg shadow-primary-100"
-                  hasIcon
-                  trailingIcon="agora-line-arrow-right-circle"
+                <div className="datasets-admin-page__actions">
+                  <Button
+                    variant="primary"
+                    hasIcon
+                    trailingIcon="agora-line-arrow-right-circle"
+                    trailingIconHover="agora-solid-arrow-right-circle"
+                    onClick={handleStep1Next}
+                  >
+                    Seguinte
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
+
+          {/* Step 2: Vinculação de conjuntos de dados */}
+          {currentStep === 2 && (
+            <>
+              <StatusCard
+                type="info"
+                description="É importante vincular todos os conjuntos de dados utilizados, pois isso ajuda a compreender as referências cruzadas necessárias e a melhorar a visibilidade da sua reutilização."
+              />
+
+              <form className="datasets-admin-page__form">
+                <InputSelect
+                  label="Pesquisar um conjunto de dados"
+                  placeholder="Procurando um conjunto de dados..."
+                  id="dataset-search"
                 >
-                  Seguinte
+                  <DropdownSection name="datasets">
+                    <DropdownOption value="dataset1">
+                      Conjunto de dados 1
+                    </DropdownOption>
+                  </DropdownSection>
+                </InputSelect>
+
+                {datasetLinks.map((link, index) => (
+                  <div key={index} className="mt-[16px]">
+                    <div>
+                      <InputText
+                        label="Link para o conjunto de dados"
+                        placeholder="https://..."
+                        id={`dataset-url-${index}`}
+                        value={link.url}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleDatasetUrlChange(index, e.target.value)
+                        }
+                        hasError={!!datasetLinkErrors[index]}
+                        hasFeedback={!!datasetLinkErrors[index]}
+                        feedbackState="danger"
+                        errorFeedbackText={datasetLinkErrors[index]}
+                      />
+                      {link.url.trim() && (
+                        <div className="flex justify-end mt-[8px]">
+                          <Button
+                            appearance="link"
+                            variant="danger"
+                            hasIcon
+                            leadingIcon="agora-line-trash"
+                            leadingIconHover="agora-solid-trash"
+                            onClick={() => removeDatasetLink(index)}
+                          >
+                            Eliminar
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                <div className="flex justify-end">
+                  <Button
+                    appearance="outline"
+                    variant="primary"
+                    hasIcon
+                    leadingIcon="agora-line-plus-circle"
+                    leadingIconHover="agora-solid-plus-circle"
+                    onClick={addDatasetLink}
+                  >
+                    Adicionar
+                  </Button>
+                </div>
+
+                <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+                  <Button
+                    appearance="outline"
+                    variant="neutral"
+                    onClick={onPreviousStep}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="primary"
+                    hasIcon
+                    trailingIcon="agora-line-arrow-right-circle"
+                    trailingIconHover="agora-solid-arrow-right-circle"
+                    onClick={onNextStep}
+                  >
+                    Seguinte
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
+
+          {/* Step 3: Finalizar a publicação */}
+          {currentStep === 3 && (
+            <>
+              <StatusCard
+                type="success"
+                description={
+                  <>
+                    <strong>A sua API foi criada!</strong>
+                    <br />
+                    Agora você pode publicar ou salvar como rascunho.
+                  </>
+                }
+              />
+
+              <CardGeneral
+                variant="white-outline"
+                isCardHorizontal
+                isBlockedLink
+                iconDefault="agora-line-layers-menu"
+                iconHover="agora-solid-layers-menu"
+                titleText={apiName || "Sem título"}
+                descriptionText={apiDescription || "Sem descrição"}
+                anchor={{
+                  href: `/pages/dataservices/preview?title=${encodeURIComponent(apiName)}&description=${encodeURIComponent(apiDescription)}`,
+                  children: "",
+                }}
+              />
+
+              <Button
+                appearance="link"
+                variant="primary"
+                hasIcon
+                trailingIcon="agora-line-external-link"
+                trailingIconHover="agora-solid-external-link"
+              >
+                Dê-nos o seu feedback sobre o processo de publicação.
+              </Button>
+
+              <div className="datasets-admin-page__actions flex justify-end gap-[18px]">
+                <Button appearance="outline" variant="neutral">
+                  Salvar rascunho
+                </Button>
+                <Button variant="primary">
+                  Publicar API
                 </Button>
               </div>
-            </form>
-          </div>
+            </>
+          )}
+        </div>
 
-          {/* Auxiliar (Right) */}
-          <div className="col-span-12 lg:col-span-3">
-            <div className="sticky top-120 bg-[#F9FAFB] rounded-8 p-24 border border-[#F1F5F9]">
-              <div className="flex items-center gap-10 mb-32 text-[#002D72]">
-                <Icon name="agora-line-help-support" className="w-24 h-24" />
-                <h2 className="text-xl font-bold">Auxiliar</h2>
+        {/* Right: Auxiliar sidebar (only for step 1) */}
+        {currentStep === 1 && (
+          <aside className="datasets-admin-page__auxiliar">
+            <div className="datasets-admin-page__auxiliar-inner">
+              <div className="datasets-admin-page__auxiliar-header">
+                <Icon
+                  name="agora-line-question-mark"
+                  className="w-[24px] h-[24px]"
+                />
+                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
               </div>
               <AccordionGroup>
                 {auxiliarItems.map((item, idx) => (
-                  <Accordion key={idx} headingTitle={item.title} headingLevel="h3">
-                    <div className="py-12 text-sm text-[#4B5563] leading-relaxed">
+                  <Accordion
+                    key={idx}
+                    headingTitle={item.title}
+                    headingLevel="h3"
+                  >
+                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
                       {item.content}
                     </div>
                   </Accordion>
                 ))}
               </AccordionGroup>
             </div>
-          </div>
-        </div>
-      </main>
-    </div>
+          </aside>
+        )}
+      </div>
+    </>
   );
 }

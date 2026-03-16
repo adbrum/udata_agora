@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import NextImage from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
@@ -15,25 +16,57 @@ import {
   Language,
   Unauthenticated,
   UnauthenticatedLink,
+  Icon,
   NavigationBar,
   NavigationLink,
   NavigationRoot,
+  Button,
 } from '@ama-pt/agora-design-system';
 import SearchDropdown from '@/components/search/SearchDropdown';
 import { HeaderCard } from '@/components/HeaderCard';
+import { useAuth } from '@/context/AuthContext';
+import { logout } from '@/services/api';
 
 export const Header = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const headerRef = useRef<any>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const { user, samlLogin } = useAuth();
+
+  // Create a DOM node for the "Desconectar" portal
+  const [logoutPortalNode, setLogoutPortalNode] = useState<HTMLLIElement | null>(null);
+  React.useEffect(() => {
+    const panelsList = document.querySelector("header.sticky .panels-menu > ul");
+    if (!panelsList) return;
+
+    if (user) {
+      let li = panelsList.querySelector(".logout-panel-menu") as HTMLLIElement | null;
+      if (!li) {
+        li = document.createElement("li");
+        li.className = "logout-panel-menu";
+        panelsList.appendChild(li);
+      }
+      setLogoutPortalNode(li);
+    } else {
+      const existing = panelsList.querySelector(".logout-panel-menu");
+      if (existing) existing.remove();
+      setLogoutPortalNode(null);
+    }
+
+    return () => {
+      panelsList.querySelector(".logout-panel-menu")?.remove();
+      setLogoutPortalNode(null);
+    };
+  }, [user]);
 
   const [selectedLanguage, setSelectedLanguage] = useState('pt');
+  const [submenu, setSubmenu] = useState<string | null>(null);
   const [selectedArea, setSelectedArea] = useState(
-    pathname === '/pages/login' || pathname === '/pages/register' ? '2' : '1'
+    pathname === '/pages/login' || pathname === '/pages/login' ? '2' : '1'
   );
   React.useEffect(() => {
-    if (pathname === '/pages/login' || pathname === '/pages/register') {
+    if (pathname === '/pages/login' || pathname === '/pages/login') {
       setSelectedArea('2');
     } else {
       setSelectedArea('1');
@@ -58,8 +91,70 @@ export const Header = () => {
 
     // Small timeout to ensure the route change has started and the DOM is accessible
     const timer = setTimeout(closeMenu, 100);
+    setSubmenu(null);
     return () => clearTimeout(timer);
   }, [pathname]);
+
+  // Mark header when on auth pages so CSS can style the "Autenticar" button
+  const isAuthPage = pathname === '/pages/login' || pathname === '/pages/login';
+
+  // Reset submenu when clicking anywhere outside the card grid (.links)
+  const handleHeaderClickCapture = React.useCallback(
+    (e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.links')) {
+        setSubmenu(null);
+      }
+    },
+    []
+  );
+
+  // Apply submenu styles directly on DOM (NavigationRoot doesn't forward className/styles)
+  // Only targets the Conhecimento panel via data attribute marker
+  React.useEffect(() => {
+    const applySubmenuStyles = () => {
+      // Clean up any previously modified panel
+      const modified = document.querySelector(
+        '.navigation-links-layout[data-submenu]'
+      ) as HTMLElement | null;
+      if (modified) {
+        const titleEl = modified.querySelector(':scope > .title') as HTMLElement | null;
+        modified.removeAttribute('data-submenu');
+        if (titleEl && titleEl.dataset.originalTitle) {
+          titleEl.textContent = titleEl.dataset.originalTitle;
+          delete titleEl.dataset.originalTitle;
+        }
+      }
+
+      // Mark the Conhecimento panel and apply submenu title
+      const submenuTitles: Record<string, string> = {
+        desenvolvimento: 'Desenvolvimento',
+        publicacoes: 'Publicações',
+      };
+
+      document.querySelectorAll('.navigation-links-layout').forEach((el) => {
+        const titleEl = el.querySelector(':scope > .title') as HTMLElement | null;
+        if (!titleEl) return;
+        const isConhecimento =
+          titleEl.textContent === 'Conhecimento' ||
+          titleEl.dataset.originalTitle === 'Conhecimento';
+        if (!isConhecimento) return;
+
+        const htmlEl = el as HTMLElement;
+        htmlEl.setAttribute('data-conhecimento', '');
+
+        if (submenu && submenuTitles[submenu]) {
+          htmlEl.setAttribute('data-submenu', submenu);
+          titleEl.dataset.originalTitle = 'Conhecimento';
+          titleEl.textContent = submenuTitles[submenu];
+        }
+      });
+    };
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(applySubmenuStyles);
+    });
+  }, [submenu]);
 
   const languages = [
     { value: 'pt', label: 'Português', abbr: 'PT' },
@@ -77,6 +172,132 @@ export const Header = () => {
     languages.find((l) => l.value === selectedLanguage)?.label || 'Português';
   const currentAreaLabel =
     areas.find((a) => a.value === selectedArea)?.label || 'Portal';
+
+  type KnowledgeItem =
+    | { type: "back"; key: string }
+    | {
+      type: "card";
+      key: string;
+      iconDefault: string;
+      iconHover?: string;
+      title: string;
+      description: string;
+      href: string;
+      isSubmenuTrigger?: boolean;
+    };
+
+  const conhecimentoItems: KnowledgeItem[] =
+    submenu === "desenvolvimento"
+      ? [
+        { type: "back", key: "voltar" },
+        {
+          type: "card",
+          key: "dev-api-ref",
+          iconDefault: "agora-line-plus-circle",
+          iconHover: "agora-solid-plus-circle",
+          title: "Referência da API",
+          description: "Documentação técnica",
+          href: "#",
+        },
+        {
+          type: "card",
+          key: "dev-pub",
+          iconDefault: "agora-line-document",
+          iconHover: "agora-solid-document",
+          title: "Relatórios/Estudos",
+          description: "Submeter estudos",
+          href: "#",
+        },
+      ]
+      : submenu === "publicacoes"
+        ? [
+          { type: "back", key: "voltar" },
+          {
+            type: "card",
+            key: "pub-guias",
+            iconDefault: "agora-line-book-open",
+            iconHover: "agora-solid-book-open",
+            title: "Relatórios/Estudos",
+            description: "Relatórios e estudos",
+            href: "#",
+          },
+        ]
+        : [
+          {
+            type: "card",
+            key: "sobre",
+            iconDefault: "agora-line-info-mark",
+            iconHover: "agora-solid-info-mark",
+            title: "Sobre dados abertos",
+            description: "Informação geral",
+            href: "/pages/about-open-data",
+          },
+          {
+            type: "card",
+            key: "publicar",
+            iconDefault: "agora-line-layers-menu",
+            iconHover: "agora-solid-layers-menu",
+            title: "Como publicar dados?",
+            description: "Guia de publicação",
+            href: "#",
+          },
+          {
+            type: "card",
+            key: "reutilizar",
+            iconDefault: "agora-line-layers-menu",
+            iconHover: "agora-solid-layers-menu",
+            title: "Como reutilizar dados?",
+            description: "Guia de reutilização",
+            href: "#",
+          },
+          {
+            type: "card",
+            key: "dados-gov",
+            iconDefault: "agora-line-question-mark",
+            iconHover: "agora-solid-question-mark",
+            title: "O que é o dados.gov",
+            description: "Sobre o portal",
+            href: "#",
+          },
+          {
+            type: "card",
+            key: "desenvolvimento",
+            iconDefault: "agora-line-user-group",
+            iconHover: "agora-solid-user-group",
+            title: "Desenvolvimento",
+            description: "Plataforma e código",
+            href: "#",
+            isSubmenuTrigger: true,
+          },
+          {
+            type: "card",
+            key: "publicacoes",
+            iconDefault: "agora-line-book-open",
+            iconHover: "agora-solid-book-open",
+            title: "Publicações",
+            description: "Relatórios e estudos",
+            href: "#",
+            isSubmenuTrigger: true,
+          },
+          {
+            type: "card",
+            key: "noticias",
+            iconDefault: "agora-line-mega-phone",
+            iconHover: "agora-solid-mega-phone",
+            title: "Notícias",
+            description: "Últimas novidades",
+            href: "/pages/article",
+          },
+          {
+            type: "card",
+            key: "minicursos",
+            iconDefault: "agora-line-folder",
+            iconHover: "agora-solid-folder",
+            title: "Minicursos",
+            description: "Formação online",
+            href: "/pages/mini-courses",
+          },
+        ];
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     // Force close the menu immediately
@@ -99,7 +320,8 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-sticky">
+    <>
+    <header className="sticky top-0 z-sticky" data-auth-page={isAuthPage || undefined} data-no-user={!user || undefined} onClickCapture={handleHeaderClickCapture}>
       <AgoraHeader ref={headerRef}>
         <Brand>
           <Logo>
@@ -176,13 +398,18 @@ export const Header = () => {
             />
           </div>
 
-          <Unauthenticated label="Inscrever-se" aria-label="Registar">
+          <Unauthenticated
+            label={user ? "Administração" : "Autenticar"}
+            aria-label={user ? "Administração" : "Autenticar"}
+          >
             <UnauthenticatedLink
               hasIcon
               leadingIcon="agora-line-user"
               leadingIconHover="agora-solid-user"
             >
-              <Link href="/pages/register">Inscrever-se</Link>
+              <Link href={user ? "/pages/admin/me/datasets" : "/pages/login"}>
+                {user ? "Administração" : "Autenticar"}
+              </Link>
             </UnauthenticatedLink>
           </Unauthenticated>
         </GeneralBar>
@@ -202,32 +429,25 @@ export const Header = () => {
                 iconHover: "agora-solid-layers-menu",
                 title: "Novo Conjunto de Dados",
                 description: "Pesquisar e explorar dados",
-                href: "#",
+                href: "/pages/admin/me/datasets/new",
               },
               {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "Nova API",
-                description: "Explorar as APIs",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-book-open",
-                iconHover: "agora-solid-book-open",
+                iconDefault: "/Icons/bar_char_white.svg",
+                iconHover: "/Icons/bar_char_white.svg",
                 title: "Nova Reutilização",
                 description: "Casos de uso",
-                href: "#",
+                href: "/pages/admin/me/reuses/new",
               },
               {
-                iconDefault: "agora-line-star",
-                iconHover: "agora-solid-star",
+                iconDefault: "agora-line-buildings",
+                iconHover: "agora-solid-buildings",
                 title: "Nova Organização",
                 description: "Entidades",
                 href: "#",
               },
               {
-                iconDefault: "agora-line-user-group",
-                iconHover: "agora-solid-user-group",
+                iconDefault: "agora-line-help-support",
+                iconHover: "agora-solid-help-support",
                 title: "Contactar",
                 description: "Fale connosco",
                 href: "/pages/support",
@@ -249,49 +469,29 @@ export const Header = () => {
                 href: "/pages/datasets",
               },
               {
-                iconDefault: "agora-line-eye",
-                iconHover: "agora-solid-eye",
-                title: "Visualizações",
-                description: "Ver dados visualmente",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-document",
+                iconDefault: "agora-line-health",
+                iconHover: "agora-solid-health",
                 title: "HVDs",
                 description: "High Value Datasets",
                 href: "#",
               },
               {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "APIs",
-                description: "Consulte as APIs",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-file",
-                iconHover: "agora-solid-file",
-                title: "Acesso Catalogo via SPARQL",
-                description: "Query de dados",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
+                iconDefault: "/Icons/bar_char_white.svg",
+                iconHover: "/Icons/bar_char_white.svg",
                 title: "Reutilizações",
                 description: "Casos de uso",
                 href: "/pages/reuses",
               },
               {
-                iconDefault: "agora-line-star",
-                iconHover: "agora-solid-star",
+                iconDefault: "agora-line-buildings",
+                iconHover: "agora-solid-buildings",
                 title: "Organizações",
                 description: "Entidades públicas",
                 href: "/pages/organizations",
               },
               {
-                iconDefault: "agora-line-user-group",
-                iconHover: "agora-solid-user-group",
+                iconDefault: "agora-line-bell",
+                iconHover: "agora-solid-bell",
                 title: "Data Stories",
                 description: "Histórias com dados",
                 href: "/pages/datastories",
@@ -304,99 +504,160 @@ export const Header = () => {
           </NavigationRoot>
 
           <NavigationRoot label="Conhecimento">
-            {[
-              {
-                iconDefault: "agora-line-star",
-                iconHover: "agora-solid-star",
-                title: "Sobre dados abertos",
-                description: "Informação geral",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "Como publicar dados?",
-                description: "Guia de publicação",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-book-open",
-                iconHover: "agora-solid-book-open",
-                title: "Como reutilizar dados?",
-                description: "Guia de reutilização",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "O que é o dados.gov",
-                description: "Sobre o portal",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "API Tutorial",
-                description: "Aprenda a usar a API",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "Referência da API",
-                description: "Documentação técnica",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-user-group",
-                iconHover: "agora-solid-user-group",
-                title: "Desenvolvimento",
-                description: "Plataforma e código",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-user-group",
-                iconHover: "agora-solid-user-group",
-                title: "Publicações",
-                description: "Relatórios e estudos",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "Pub. Relatórios/Estudos",
-                description: "Submeter estudos",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-plus-circle",
-                iconHover: "agora-solid-plus-circle",
-                title: "Guias",
-                description: "Tutoriais e manuais",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-file",
-                iconHover: "agora-solid-file",
-                title: "Notícias",
-                description: "Últimas novidades",
-                href: "/pages/article",
-              },
-              {
-                iconDefault: "agora-line-file",
-                iconHover: "agora-solid-file",
-                title: "Minicursos",
-                description: "Formação online",
-                href: "/pages/mini-courses",
-              },
-            ].map((card) => (
-              <NavigationLink key={card.title} appearance="link">
-                <HeaderCard {...card} onLinkClick={handleLinkClick} />
-              </NavigationLink>
-            ))}
+            {conhecimentoItems.map((item) => {
+
+              if (item.type === "back") {
+
+                return (
+                  <NavigationLink key={item.key} appearance="link">
+                    <div
+
+                      onClickCapture={(e) => {
+
+                        e.stopPropagation();
+
+                        e.preventDefault();
+
+                        setSubmenu(null);
+
+                      }}
+                    >
+                      <Button
+
+                        appearance="link"
+
+                        hasIcon
+
+                        leadingIcon="agora-line-arrow-left-anchor"
+
+                        leadingIconHover="agora-solid-arrow-left-anchor"
+                      >
+
+                        Voltar
+                      </Button>
+                    </div>
+                  </NavigationLink>
+
+                );
+
+              }
+
+              if (item.isSubmenuTrigger) {
+
+                return (
+                  <NavigationLink key={item.key} appearance="link">
+                    <div
+
+                      role="button"
+
+                      tabIndex={0}
+
+                      onClickCapture={(e) => {
+
+                        e.stopPropagation();
+
+                        e.preventDefault();
+
+                        setSubmenu(item.key);
+
+                      }}
+
+                      onKeyDown={(e) => {
+
+                        if (e.key === "Enter" || e.key === " ") {
+
+                          e.preventDefault();
+
+                          setSubmenu(item.key);
+
+                        }
+
+                      }}
+
+                      className="cursor-pointer"
+                    >
+                      <HeaderCard
+
+                        iconDefault={item.iconDefault}
+
+                        iconHover={item.iconHover}
+
+                        title={item.title}
+
+                        description={item.description}
+
+                        href={item.href}
+
+                        onLinkClick={(e) => {
+
+                          e.preventDefault();
+
+                          e.stopPropagation();
+
+                          setSubmenu(item.key);
+
+                        }}
+
+                      />
+                    </div>
+                  </NavigationLink>
+
+                );
+
+              }
+
+              return (
+                <NavigationLink key={item.key} appearance="link">
+                  <HeaderCard
+
+                    iconDefault={item.iconDefault}
+
+                    iconHover={item.iconHover}
+
+                    title={item.title}
+
+                    description={item.description}
+
+                    href={item.href}
+
+                    onLinkClick={handleLinkClick}
+
+                  />
+                </NavigationLink>
+
+              );
+
+            })}
+
           </NavigationRoot>
         </NavigationBar>
       </AgoraHeader>
     </header>
+    {logoutPortalNode && createPortal(
+      <div className="panel-menu unauthenticated-panel-menu">
+        <span className="agora-link-wrapper agora-link-wrapper-link-neutral full-width inline-flex items-center justify-center min-h-[44px] min-w-[44px] py-8 custom-header-link-wrapper panel-menu-link-wrapper">
+          <a
+            className="link-with-icon"
+            href="#"
+            onClick={async (e) => {
+              e.preventDefault();
+              if (samlLogin) {
+                window.location.href = "/saml/logout";
+                return;
+              }
+              await logout();
+              window.location.href = "/";
+            }}
+          >
+            <div className="icon-wrapper leading">
+              <Icon name="agora-line-log-out" dimensions="s" />
+            </div>
+            <span className="children-wrapper">Desconectar</span>
+          </a>
+        </span>
+      </div>,
+      logoutPortalNode
+    )}
+    </>
   );
 };

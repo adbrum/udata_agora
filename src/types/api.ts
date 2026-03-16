@@ -1,9 +1,109 @@
+export interface UserRef {
+  id: string;
+  slug: string;
+  first_name: string;
+  last_name: string;
+  avatar: string | null;
+  avatar_thumbnail: string | null;
+  uri: string;
+  page: string;
+  saml_login?: boolean;
+}
+
+export interface UserMetrics {
+  datasets: number;
+  followers: number;
+  reuses: number;
+  views: number;
+}
+
+export interface UserPublic {
+  id: string;
+  slug: string;
+  first_name: string;
+  last_name: string;
+  email: string | null;
+  avatar: string | null;
+  avatar_thumbnail: string | null;
+  website: string | null;
+  about: string | null;
+  roles: string[];
+  active: boolean;
+  organizations: Organization[];
+  since: string;
+  uri: string;
+  page: string;
+  metrics: UserMetrics;
+}
+
+export interface OrganizationMember {
+  user: UserRef;
+  role: string;
+  label?: string;
+  since: string;
+}
+
+export interface MembershipRequest {
+  id: string;
+  user: UserRef;
+  created: string;
+  status: "pending" | "accepted" | "refused";
+  comment: string;
+}
+
+export interface OrgRole {
+  id: string;
+  label: string;
+}
+
+export interface Badge {
+  kind: string;
+}
+
+export interface OrganizationMetrics {
+  datasets: number;
+  dataservices: number;
+  followers: number;
+  members: number;
+  reuses: number;
+  views: number;
+}
+
 export interface Organization {
+  id: string;
+  name: string;
+  acronym: string | null;
+  slug: string;
+  logo: string | null;
+  logo_thumbnail: string | null;
+  description: string | null;
+  url: string | null;
+  business_number_id: string | null;
+  members: OrganizationMember[];
+  badges: Badge[];
+  metrics: OrganizationMetrics;
+  created_at: string;
+  last_modified: string;
+  page: string;
+  uri: string;
+}
+
+export interface OrganizationSuggestion {
   id: string;
   name: string;
   slug: string;
   logo: string | null;
-  description: string | null;
+  score: number;
+}
+
+export interface OrgBadges {
+  [kind: string]: string;
+}
+
+export interface OrganizationFilters {
+  q?: string;
+  badge?: string;
+  sort?: string;
 }
 
 export interface Metric {
@@ -16,28 +116,166 @@ export interface Metric {
   downloads?: number;
 }
 
+export interface Checksum {
+  type: string;
+  value: string;
+}
+
+export interface SchemaRef {
+  name: string | null;
+  version: string | null;
+  url: string | null;
+}
+
+export interface TemporalCoverage {
+  start: string;
+  end?: string;
+}
+
+export interface SpatialCoverage {
+  geom: object | null;
+  zones: string[];
+  granularity: string | null;
+}
+
 export interface Resource {
   id: string;
   title: string;
+  description?: string;
   format: string;
   url: string;
-  created_at: string;
-  filesize?: number;
+  latest?: string;
+  filetype?: string;
   type?: string;
+  mime?: string;
+  filesize?: number;
+  checksum?: Checksum | null;
+  created_at: string;
+  last_modified?: string;
+  schema?: SchemaRef | null;
+  metrics?: Record<string, number>;
+  extras?: Record<string, unknown>;
+  preview_url?: string;
+}
+
+export interface ResourceCreatePayload {
+  title: string;
+  description?: string;
+  type: string;
+  url: string;
+  filetype: string;
+  format: string;
+}
+
+export interface ResourceUpdatePayload {
+  title?: string;
+  description?: string;
+  type?: string;
+  url?: string;
+  filetype?: string;
+  format?: string;
+}
+
+export interface DatasetPermissions {
+  delete: boolean;
+  edit: boolean;
+  edit_resources: boolean;
 }
 
 export interface Dataset {
   id: string;
   title: string;
+  acronym: string | null;
   slug: string;
   description: string;
+  description_short?: string | null;
   organization: Organization | null;
+  owner: UserRef | null;
+  license: string | null;
+  frequency: string;
+  frequency_date?: string | null;
+  temporal_coverage?: TemporalCoverage | null;
+  spatial?: SpatialCoverage | null;
+  schema?: SchemaRef | null;
+  private: boolean;
+  featured: boolean;
+  archived?: string | null;
+  deleted?: string | null;
   last_modified: string;
+  last_update?: string;
   created_at: string;
   tags: string[];
   resources: Resource[];
+  community_resources?: Resource[];
+  badges: Badge[];
   metrics: Metric;
-  page: string; // The URL to the dataset page usually
+  quality?: Record<string, unknown>;
+  extras?: Record<string, unknown>;
+  harvest?: Record<string, unknown> | null;
+  uri: string;
+  page: string;
+  permissions?: DatasetPermissions;
+}
+
+export interface DatasetCreatePayload {
+  title: string;
+  description: string;
+  description_short?: string;
+  acronym?: string;
+  tags?: string[];
+  license?: string;
+  frequency?: string;
+  frequency_date?: string;
+  temporal_coverage?: TemporalCoverage;
+  spatial?: SpatialCoverage;
+  private?: boolean;
+  organization?: string;
+  extras?: Record<string, unknown>;
+}
+
+export interface DatasetUpdatePayload {
+  title?: string;
+  description?: string;
+  description_short?: string;
+  acronym?: string;
+  tags?: string[];
+  license?: string;
+  frequency?: string;
+  frequency_date?: string;
+  temporal_coverage?: TemporalCoverage;
+  spatial?: SpatialCoverage;
+  private?: boolean;
+  archived?: string;
+  organization?: string;
+  extras?: Record<string, unknown>;
+}
+
+export interface DatasetRef {
+  id: string;
+  title: string;
+  page: string;
+  uri: string;
+}
+
+export interface ReuseType {
+  id: string;
+  label: string;
+}
+
+export interface ReuseSuggestion {
+  id: string;
+  title: string;
+  slug: string;
+  image_url: string | null;
+  score: number;
+}
+
+export interface ReuseFilters {
+  q?: string;
+  type?: string;
+  tag?: string;
+  organization?: string;
+  sort?: string;
 }
 
 export interface Reuse {
@@ -49,23 +287,45 @@ export interface Reuse {
   image: string | null;
   image_thumbnail: string | null;
   organization: Organization | null;
+  owner: UserRef | null;
   created_at: string;
   last_modified: string;
   metrics: Metric;
   url: string;
   tags: string[];
-  datasets?: Dataset[];
+  badges: Badge[];
+  datasets: DatasetRef[];
+  dataservices: Dataservice[];
+}
+
+export interface Dataservice {
+  id: string;
+  title: string;
+  acronym: string | null;
+  slug: string;
+  description: string;
+  base_api_url: string | null;
+  format: string | null;
+  organization: Organization | null;
+  created_at: string;
+  last_modified: string;
+  metrics: Metric;
+  tags: string[];
+  private: boolean;
+}
+
+export interface SiteMetrics {
+  datasets: number;
+  dataservices?: number;
+  organizations: number;
+  reuses: number;
+  users: number;
 }
 
 export interface SiteInfo {
   id: string;
   title?: string;
-  metrics: {
-    datasets: number;
-    organizations: number;
-    reuses: number;
-    users: number;
-  };
+  metrics: SiteMetrics;
 }
 
 export interface Post {
@@ -75,8 +335,13 @@ export interface Post {
   headline: string;
   content: string;
   body_type: string;
+  kind: string;
+  published: string | null;
+  owner: UserRef | null;
   image: string | null;
   image_thumbnail: string | null;
+  credit_to: string | null;
+  credit_url: string | null;
   created_at: string;
   last_modified: string;
   tags: string[];
@@ -177,12 +442,50 @@ export interface DatasetBadges {
   [key: string]: string;
 }
 
+export interface ResourceType {
+  id: string;
+  label: string;
+}
+
+export interface Activity {
+  actor: UserRef;
+  organization: Organization | null;
+  related_to: string;
+  related_to_id: string;
+  related_to_kind: string;
+  related_to_url: string;
+  created_at: string;
+  label: string;
+  key: string;
+  icon: string;
+  changes: string[];
+  extras: Record<string, unknown>;
+}
+
 export interface TagSuggestion {
   text: string;
 }
 
 export interface FormatSuggestion {
   text: string;
+}
+
+export interface SpatialZone {
+  id: string;
+  name: string;
+  code: string;
+  level: string;
+  uri: string;
+}
+
+export interface Granularity {
+  id: string;
+  name: string;
+}
+
+export interface GeoLevel {
+  id: string;
+  name: string;
 }
 
 export interface DatasetFilters {
@@ -197,6 +500,135 @@ export interface DatasetFilters {
   badge?: string | string[];
   featured?: boolean;
   sort?: string;
+}
+
+export interface DiscussionMessage {
+  content: string;
+  posted_by: UserRef;
+  posted_on: string;
+}
+
+export interface Discussion {
+  id: string;
+  title: string;
+  user: UserRef;
+  created: string;
+  closed: string | null;
+  closed_by: UserRef | null;
+  discussion: DiscussionMessage[];
+  url: string;
+}
+
+export interface TopicElementsLink {
+  rel: string;
+  href: string;
+  type: string;
+  total: number;
+}
+
+export interface TopicSpatialCoverage {
+  geom: object | null;
+  zones: string[];
+  granularity: string | null;
+}
+
+export interface Topic {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  tags: string[];
+  elements: TopicElementsLink;
+  featured: boolean;
+  private: boolean;
+  created_at: string;
+  last_modified: string;
+  spatial: TopicSpatialCoverage | null;
+  organization: Organization | null;
+  owner: UserRef | null;
+  uri: string;
+  extras: Record<string, unknown> | null;
+}
+
+export interface TopicElementRef {
+  class: "Dataset" | "Reuse" | "Dataservice";
+  id: string;
+}
+
+export interface TopicElement {
+  id: string;
+  title: string | null;
+  description: string | null;
+  tags: string[] | null;
+  extras: Record<string, unknown> | null;
+  element: TopicElementRef | null;
+}
+
+export interface DiscussionNotificationDetails {
+  discussion: string | null;
+  status: string | null;
+  message_id: string | null;
+}
+
+export interface MembershipRequestNotificationDetails {
+  request_organization: Organization | null;
+  request_user: UserRef | null;
+}
+
+export interface TransferRequestNotificationDetails {
+  transfer_owner: object | null;
+  transfer_recipient: object | null;
+  transfer_subject: object | null;
+}
+
+export type NotificationDetails =
+  | DiscussionNotificationDetails
+  | MembershipRequestNotificationDetails
+  | TransferRequestNotificationDetails;
+
+export interface Notification {
+  id: string;
+  created_at: string;
+  last_modified: string;
+  handled_at: string | null;
+  user: UserRef | null;
+  details: NotificationDetails;
+}
+
+export interface ReportReason {
+  value: string;
+  label: string;
+}
+
+export interface ReportCreatePayload {
+  subject: { class: string; id: string };
+  reason: string;
+  message?: string;
+}
+
+export interface Report {
+  id: string;
+  by: UserRef | null;
+  subject: { class: string; id: string };
+  reason: string;
+  message: string | null;
+  reported_at: string;
+  dismissed_at: string | null;
+  dismissed_by: UserRef | null;
+  subject_deleted_at: string | null;
+  self_api_url: string;
+}
+
+export type FollowableEntityType = "datasets" | "organizations" | "reuses";
+
+export interface Follow {
+  id: string;
+  follower: UserRef;
+  since: string;
+}
+
+export interface FollowResponse {
+  followers: number;
 }
 
 export interface APIResponse<T> {

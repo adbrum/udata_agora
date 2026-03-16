@@ -74,3 +74,7 @@ When fetching dynamic data in a client component, enforce the following pattern 
 - `src/types/api.ts` - TypeScript type definitions
 - `src/components/Header.tsx` / `Footer.tsx` - Layout components
 - `tailwind.config.ts` - Theme config with Agora design system
+
+## Git Commits
+
+- **Never add `Co-Authored-By`** or any AI attribution to commit messages. Commits must appear as made solely by the developer working on the branch.

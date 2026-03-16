@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import { fetchOrganization } from '@/services/api';
 import OrganizationDetailClient from '@/components/organizations/OrganizationDetailClient';
 
@@ -8,6 +9,10 @@ export default async function Page({
 }) {
     const { slug } = await params;
     const organization = await fetchOrganization(slug);
+
+    if (!organization) {
+        notFound();
+    }
 
     return <OrganizationDetailClient organization={organization} />;
 }

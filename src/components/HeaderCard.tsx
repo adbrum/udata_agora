@@ -23,30 +23,46 @@ export const HeaderCard = ({
   const hasNavigation = href !== "#";
 
   return (
-    <CardGeneral
-      isCardHorizontal={true}
-      isBlockedLink={true}
-      variant="neutral-100"
-      iconDefault={iconDefault}
-      iconHover={iconHover}
-      titleText={title}
-      descriptionText={description}
-      anchor={{
-        href,
-        children: "",
-        hasIcon: true,
-        trailingIcon: "agora-line-arrow-right-circle",
-        trailingIconHover: "agora-solid-arrow-right-circle",
-        ...(hasNavigation && {
+    <div
+      role="link"
+      tabIndex={0}
+      className="cursor-pointer"
+      onClick={(e) => {
+        if (hasNavigation) {
+          e.preventDefault();
+          e.stopPropagation();
+          onLinkClick(e as unknown as React.MouseEvent<HTMLAnchorElement>, href);
+        }
+      }}
+      onKeyDown={(e) => {
+        if (hasNavigation && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onLinkClick(e as unknown as React.MouseEvent<HTMLAnchorElement>, href);
+        }
+      }}
+    >
+      <CardGeneral
+        isCardHorizontal={true}
+        isBlockedLink={true}
+        variant="neutral-100"
+        iconDefault={iconDefault}
+        iconHover={iconHover}
+        titleText={title}
+        descriptionText={description}
+        anchor={{
+          href,
+          children: "",
+          hasIcon: true,
+          trailingIcon: "agora-line-arrow-right-circle",
+          trailingIconHover: "agora-solid-arrow-right-circle",
           onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
             e.preventDefault();
-            onLinkClick(e, href);
+            if (hasNavigation) {
+              onLinkClick(e, href);
+            }
           },
-        }),
-        ...(!hasNavigation && {
-          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => onLinkClick(e, href),
-        }),
-      }}
-    />
+        }}
+      />
+    </div>
   );
 };

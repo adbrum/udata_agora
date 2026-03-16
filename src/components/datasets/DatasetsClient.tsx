@@ -22,6 +22,21 @@ export default function DatasetsClient({
   initialData,
   currentPage,
 }: DatasetsClientProps) {
+  const publishDropdownRef = React.useRef<HTMLDivElement>(null);
+  const [showPublishDropdown, setShowPublishDropdown] = React.useState(false);
+
+  React.useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (publishDropdownRef.current && !publishDropdownRef.current.contains(e.target as Node)) {
+        setShowPublishDropdown(false);
+      }
+    }
+    if (showPublishDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showPublishDropdown]);
+
   const router = useRouter();
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const { data: datasets, total, page_size } = initialData;
@@ -76,17 +91,41 @@ export default function DatasetsClient({
           <div className="mt-8 text-s-regular text-neutral-200">
             Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
           </div>
-          <div className="mt-[32px]">
+          <div className="mt-[32px] relative" ref={publishDropdownRef}>
             <Button
               variant="primary"
               darkMode={true}
-              hasIcon={false}
+              hasIcon={true}
+              trailingIcon="agora-line-arrow-down"
+              trailingIconHover="agora-solid-arrow-down"
               className="px-24 py-16 rounded-8 h-auto"
+              onClick={() => setShowPublishDropdown((v) => !v)}
             >
               <span className="text-lg font-medium">
                 Publicar <span className="font-bold">dados.gov</span>
               </span>
             </Button>
+            {showPublishDropdown && (
+              <div
+                className="absolute top-full left-0 mt-8 z-[9999] bg-white rounded shadow-lg min-w-[220px] py-8"
+                style={{ border: '1px solid var(--color-neutral-200)' }}
+              >
+                {[
+                  { label: 'Um conjunto de dados', value: 'dataset' },
+                  { label: 'Uma reutilização', value: 'reuse' },
+                  { label: 'Um harvester', value: 'harvester' },
+                  { label: 'Uma organização', value: 'organization' },
+                ].map((item) => (
+                  <button
+                    key={item.value}
+                    className="w-full text-left px-16 py-12 text-m-regular text-neutral-900 hover:bg-primary-50 transition-colors"
+                    onClick={() => setShowPublishDropdown(false)}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
         </PageBanner>

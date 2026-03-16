@@ -15,21 +15,146 @@ import {
 } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { OrganizationsFilters } from './OrganizationsFilters';
-import { APIResponse, Organization } from '@/types/api';
+import { APIResponse, OrgBadges, Organization, OrganizationFilters, SiteMetrics } from '@/types/api';
+import { formatDistanceToNow } from 'date-fns';
+import { pt } from 'date-fns/locale';
 
 import PageBanner from '@/components/PageBanner';
 
 interface OrganizationsClientProps {
   initialData: APIResponse<Organization>;
   currentPage: number;
+  siteMetrics: SiteMetrics;
+  orgBadges: OrgBadges;
+  orgBadgeCounts: Record<string, number>;
+  initialFilters: OrganizationFilters;
+}
+
+const SORT_OPTIONS: Record<string, string> = {
+  relevancia: '',
+  alfabetica: 'name',
+  recentes: '-last_modified',
+};
+
+function SortSelect({
+  currentSortKey,
+  onSortChange,
+}: {
+  currentSortKey: string;
+  onSortChange: (value: string) => void;
+}) {
+  const [mounted, setMounted] = React.useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const selectRef = React.useRef<any>(null);
+  const lastValue = React.useRef(currentSortKey);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    if (!mounted) return;
+    const interval = setInterval(() => {
+      const selected = selectRef.current?.selectedOptions?.[0]?.value;
+      if (selected && selected !== lastValue.current) {
+        lastValue.current = selected;
+        onSortChange(selected);
+      }
+    }, 150);
+    return () => clearInterval(interval);
+  }, [mounted, onSortChange]);
+
+  if (!mounted) {
+    return (
+      <div className="selectOrganization">
+        <label className="text-s-regular text-neutral-700 mb-4 block">
+          Ordenar por:
+        </label>
+        <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
+          {currentSortKey === 'alfabetica' ? 'Ordem alfabética'
+            : currentSortKey === 'recentes' ? 'Mais recentes'
+            : 'Relevância'}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <InputSelect
+      label="Ordenar por:"
+      id="sort-organizations"
+      className="selectOrganization"
+      ref={selectRef}
+    >
+      <DropdownSection name="order">
+        <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
+          Relevância
+        </DropdownOption>
+        <DropdownOption value="alfabetica" selected={currentSortKey === 'alfabetica'}>
+          Ordem alfabética
+        </DropdownOption>
+        <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
+          Mais recentes
+        </DropdownOption>
+      </DropdownSection>
+    </InputSelect>
+  );
 }
 
 export default function OrganizationsClient({
   initialData,
   currentPage,
+  siteMetrics,
+  orgBadges,
+  orgBadgeCounts,
+  initialFilters,
 }: OrganizationsClientProps) {
   const router = useRouter();
   const { data: organizations, total, page_size } = initialData;
+
+  const currentQuery = initialFilters.q || '';
+  const currentSort = initialFilters.sort || '';
+  const [searchQuery, setSearchQuery] = React.useState(currentQuery);
+
+  const currentSortKey = Object.entries(SORT_OPTIONS).find(
+    ([, v]) => v === currentSort
+  )?.[0] || 'relevancia';
+
+  const buildUrl = React.useCallback(
+    (overrides: Record<string, string | null>) => {
+      const params = new URLSearchParams();
+      if (initialFilters.q) params.set('q', initialFilters.q);
+      if (initialFilters.badge) params.set('badge', initialFilters.badge);
+      if (initialFilters.sort) params.set('sort', initialFilters.sort);
+      for (const [key, value] of Object.entries(overrides)) {
+        if (value) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      }
+      params.set('page', '1');
+      const qs = params.toString();
+      return `/pages/organizations${qs ? `?${qs}` : ''}`;
+    },
+    [initialFilters]
+  );
+
+  const handleSearch = React.useCallback(() => {
+    router.replace(
+      buildUrl({ q: searchQuery.trim() || null }),
+      { scroll: false }
+    );
+  }, [searchQuery, router, buildUrl]);
+
+  const handleSort = React.useCallback(
+    (selectedKey: string) => {
+      const sortValue = SORT_OPTIONS[selectedKey] || null;
+      if (sortValue === (currentSort || null)) return;
+      router.replace(buildUrl({ sort: sortValue }), { scroll: false });
+    },
+    [router, buildUrl, currentSort]
+  );
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters organization">
@@ -46,12 +171,16 @@ export default function OrganizationsClient({
         >
           <InputSearchBar
             label="O que procura nas organizações?"
-            placeholder="Pesquisar datasets, organizações, temas..."
-            id="datasets-search"
+            placeholder="Pesquisar organizações..."
+            id="organizations-search"
             hasVoiceActionButton={true}
             voiceActionAltText="Pesquisar por voz"
             searchActionAltText="Pesquisar"
             darkMode={true}
+            value={searchQuery}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSearch(); }}
+            onSearchActivate={() => handleSearch()}
           />
           <div className="mt-8 text-s-regular text-neutral-200">
             Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
@@ -67,7 +196,7 @@ export default function OrganizationsClient({
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
             {/* Sidebar */}
             <div className="xl:col-span-4 xl:block p-32 pl-0">
-              <OrganizationsFilters />
+              <OrganizationsFilters siteMetrics={siteMetrics} orgBadges={orgBadges} orgBadgeCounts={orgBadgeCounts} initialFilters={initialFilters} />
             </div>
 
             {/* Results Area */}
@@ -78,18 +207,7 @@ export default function OrganizationsClient({
                     {total.toLocaleString('pt-PT')} Resultados
                   </span>
                   <div className="w-full md:w-auto xl:col-span-6">
-                    <InputSelect
-                      label="Ordenar por:"
-                      id="sort-organizations"
-                      defaultValue="relevancia"
-                      className="selectOrganization"
-                    >
-                      <DropdownSection name="order">
-                        <DropdownOption value="relevancia">Por relevância</DropdownOption>
-                        <DropdownOption value="alfabetica">Ordem alfabética</DropdownOption>
-                        <DropdownOption value="recentes">Mais recentes</DropdownOption>
-                      </DropdownSection>
-                    </InputSelect>
+                    <SortSelect currentSortKey={currentSortKey} onSortChange={handleSort} />
                   </div>
                 </div>
 
@@ -116,7 +234,11 @@ export default function OrganizationsClient({
                               </p>
                             ) : undefined
                           }
-                          date={<span className="font-[300]">Atualizado há 3 dias</span>}
+                          date={
+                            <span className="font-[300]">
+                              {`Atualizado há ${formatDistanceToNow(new Date(org.last_modified), { locale: pt })}`}
+                            </span>
+                          }
                           links={[
                             {
                               href: '#',
@@ -126,7 +248,13 @@ export default function OrganizationsClient({
                               trailingIcon: '',
                               trailingIconHover: '',
                               trailingIconActive: '',
-                              children: '2 M',
+                              children: org.metrics?.views
+                                ? org.metrics.views >= 1000000
+                                  ? (org.metrics.views / 1000000).toFixed(1).replace('.', ',') + ' M'
+                                  : org.metrics.views >= 1000
+                                    ? (org.metrics.views / 1000).toFixed(0) + ' mil'
+                                    : String(org.metrics.views)
+                                : '0',
                               title: 'Visualizações',
                               onClick: (e: React.MouseEvent) => e.preventDefault(),
                               className: 'text-[#034AD8]',
@@ -139,7 +267,7 @@ export default function OrganizationsClient({
                               trailingIcon: '',
                               trailingIconHover: '',
                               trailingIconActive: '',
-                              children: `${Math.floor(Math.random() * 1000)} mil`,
+                              children: String(org.metrics?.datasets || 0),
                               title: 'Datasets',
                               onClick: (e: React.MouseEvent) => e.preventDefault(),
                               className: 'text-[#034AD8]',
@@ -150,7 +278,7 @@ export default function OrganizationsClient({
                               children: (
                                 <span className="flex items-center gap-8">
                                   <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
-                                  <span>{Math.floor(Math.random() * 200)}</span>
+                                  <span>{org.metrics?.reuses || 0}</span>
                                 </span>
                               ),
                               title: 'Reutilizações',
@@ -164,7 +292,7 @@ export default function OrganizationsClient({
                               trailingIcon: '',
                               trailingIconHover: '',
                               trailingIconActive: '',
-                              children: '412',
+                              children: String(org.metrics?.followers || 0),
                               title: 'Favoritos',
                               onClick: (e: React.MouseEvent) => e.preventDefault(),
                               className: 'text-[#034AD8]',

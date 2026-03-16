@@ -34,14 +34,6 @@ const nextConfig: NextConfig = {
           source: "/get-csrf",
           destination: `${BACKEND_URL}/get-csrf`,
         },
-        {
-          source: "/reset/",
-          destination: `${BACKEND_URL}/reset/`,
-        },
-        {
-          source: "/reset/:token",
-          destination: `${BACKEND_URL}/reset/:token`,
-        },
         // SAML / Autenticação.gov routes
         {
           source: "/saml/login",
@@ -58,6 +50,11 @@ const nextConfig: NextConfig = {
         {
           source: "/saml/sso_logout",
           destination: `${BACKEND_URL}/saml/sso_logout`,
+        },
+        // Account migration routes
+        {
+          source: "/saml/migration/:path*",
+          destination: `${BACKEND_URL}/saml/migration/:path*`,
         },
         // eIDAS routes
         {

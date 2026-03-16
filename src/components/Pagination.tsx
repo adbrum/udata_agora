@@ -27,7 +27,11 @@ export const Pagination = ({
     // Only navigate if the page is different from current to avoid infinite loops
     // since SearchPagination might trigger onChange(0) on mount
     if (targetPage !== currentPage) {
-      router.push(`${baseUrl}?page=${targetPage}`);
+      const params = new URLSearchParams(
+        typeof window !== 'undefined' ? window.location.search : ''
+      );
+      params.set('page', String(targetPage));
+      router.push(`${baseUrl}?${params.toString()}`);
     }
   };
 

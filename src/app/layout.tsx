@@ -4,6 +4,8 @@ import '@ama-pt/agora-design-system/artifacts/dist/tailwind.css';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { PopupProviderWrapper } from '@/components/PopupProviderWrapper';
+import { AuthProvider } from '@/context/AuthContext';
 import { siteConfig } from '@/config/site';
 
 const notoSans = Noto_Sans({
@@ -38,11 +40,15 @@ export default function RootLayout({
   return (
     <html lang="pt">
       <body className={`${notoSans.variable} antialiased font-sans`}>
-        <div className="min-h-screen w-full mx-auto flex flex-col">
-          <Header />
-          <div className="grow">{children}</div>
-          <Footer />
-        </div>
+        <AuthProvider>
+          <PopupProviderWrapper>
+            <div className="min-h-screen w-full mx-auto flex flex-col">
+              <Header />
+              <div className="grow">{children}</div>
+              <Footer />
+            </div>
+          </PopupProviderWrapper>
+        </AuthProvider>
       </body>
     </html>
   );

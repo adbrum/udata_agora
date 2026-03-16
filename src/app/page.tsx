@@ -1,7 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Button, Icon, CardArticle, CardGeneral } from "@ama-pt/agora-design-system";
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Button,
+  Icon,
+  CardArticle,
+  CardGeneral,
+  Dropdown,
+  DropdownSection,
+  DropdownOption,
+} from "@ama-pt/agora-design-system";
 import Link from "next/link";
 import SearchDropdown from "@/components/search/SearchDropdown";
 import { fetchLatestDatasets, fetchLatestReuses, fetchPosts, fetchSiteInfo } from "@/services/api";
@@ -15,18 +24,40 @@ function formatStatNumber(value: number): { number: string; suffix: string } {
     return { number: formatted, suffix: "milhões" };
   }
   if (value >= 1_000) {
-    const formatted = new Intl.NumberFormat("pt-PT").format(value);
-    return { number: formatted, suffix: "" };
+    const parts: string[] = [];
+    let remaining = value;
+    while (remaining >= 1000) {
+      parts.unshift(String(remaining % 1000).padStart(3, "0"));
+      remaining = Math.floor(remaining / 1000);
+    }
+    parts.unshift(String(remaining));
+    const formatted = parts.join("\u2009");
+    return { number: formatted, suffix: "mil" };
   }
   return { number: String(value), suffix: "" };
 }
 
 export default function Home() {
+  const router = useRouter();
   const [siteInfo, setSiteInfo] = useState<SiteInfo | null>(null);
   const [latestDatasets, setFeaturedDatasets] = useState<Dataset[]>([]);
   const [latestReuses, setFeaturedReuses] = useState<Reuse[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showPublishDropdown, setShowPublishDropdown] = useState(false);
+  const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (publishDropdownWrapperRef.current && !publishDropdownWrapperRef.current.contains(e.target as Node)) {
+        setShowPublishDropdown(false);
+      }
+    }
+    if (showPublishDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPublishDropdown]);
 
   useEffect(() => {
     async function loadHomepageData() {
@@ -103,19 +134,64 @@ export default function Home() {
                       Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;,
                       &quot;ambiente&quot;
                     </div>
-                    <div className="mt-64">
+                    <div
+                      className="mt-64 relative inline-block publish-dropdown-wrapper"
+                      ref={publishDropdownWrapperRef}
+                    >
                       <Button
                         variant="primary"
                         darkMode={true}
-                        hasIcon={false}
-                        className="px-24 py-16 rounded-8 h-auto"
+                        hasIcon={true}
+                        trailingIcon={showPublishDropdown ? "agora-line-arrow-up" : "agora-line-arrow-down"}
+                        trailingIconHover={showPublishDropdown ? "agora-solid-arrow-up" : "agora-solid-arrow-down"}
+                        className="px-24 py-16 rounded-8 h-auto relative z-10"
+                        onClick={() => setShowPublishDropdown((v) => !v)}
                       >
                         <span className="text-lg font-medium">
                           Publicar <span className="font-bold">dados.gov</span>
                         </span>
                       </Button>
+                      <Dropdown
+                        type="text"
+                        showDropdown={showPublishDropdown}
+                        onHide={() => setShowPublishDropdown(false)}
+                        hideSectionNames={true}
+                        optionsVisible={6}
+                        onChange={(options) => {
+                          const routes: Record<string, string> = {
+                            dataset: "/pages/admin/me/datasets/new",
+                            reuse: "/pages/admin/me/reuses/new",
+                            harvester: "/pages/admin/harvesters/new",
+                            api: "/pages/admin/dataservices/new",
+    article: "/pages/admin/system/posts/new",
+                            organization: "/pages/admin/organizations/new",
+                          };
+                          if (options.length > 0) {
+                            const route = routes[options[0].value as string];
+                            if (route) router.push(route);
+                          }
+                        }}
+                        style={{
+                          width: "max-content",
+                          minWidth: "100%",
+                        }}
+                      >
+                        <DropdownSection name="publish" label="">
+                          <DropdownOption value="dataset">
+                            Um conjunto de dados
+                          </DropdownOption>
+                          <DropdownOption value="reuse">
+                            Uma reutilização
+                          </DropdownOption>
+                          <DropdownOption value="harvester">
+                            Um harvester
+                          </DropdownOption>
+                          <DropdownOption value="organization">
+                            Uma organização
+                          </DropdownOption>
+                        </DropdownSection>
+                      </Dropdown>
                     </div>
-                    <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
                   </div>
                 </div>
               </div>
@@ -156,7 +232,7 @@ export default function Home() {
                         />
                       </div>
                       <div className="flex flex-col">
-                        <div className="flex items-baseline gap-8">
+                        <div className="flex items-baseline gap-[6px]">
                           {isLoading ? (
                             <span className="text-2xl-semibold">...</span>
                           ) : (
@@ -194,7 +270,7 @@ export default function Home() {
                         </svg>
                       </div>
                       <div className="flex flex-col">
-                        <div className="flex items-baseline gap-8">
+                        <div className="flex items-baseline gap-[6px]">
                           {isLoading ? (
                             <span className="text-2xl-semibold">...</span>
                           ) : (
@@ -225,7 +301,7 @@ export default function Home() {
                         />
                       </div>
                       <div className="flex flex-col">
-                        <div className="flex items-baseline gap-8">
+                        <div className="flex items-baseline gap-[6px]">
                           {isLoading ? (
                             <span className="text-2xl-semibold">...</span>
                           ) : (
@@ -255,7 +331,7 @@ export default function Home() {
                         />
                       </div>
                       <div className="flex flex-col">
-                        <div className="flex items-baseline gap-8">
+                        <div className="flex items-baseline gap-[6px]">
                           {isLoading ? (
                             <span className="text-2xl-semibold">...</span>
                           ) : (
@@ -385,7 +461,7 @@ export default function Home() {
         {/* Reuses / Storytelling */}
         <div className="xl:py-64 bg-primary-900">
           <div className="container mx-auto px-4">
-            <h2 className="text-xl-bold text-white">Storytelling</h2>
+            <h2 className="text-xl-bold text-white">Data Stories</h2>
             <p className="mt-16 mb-32 max-w-3xl text-white">
               Precisa de uma descrição uma vez que é um titulo estrangeiro e novidade no dados.gov
             </p>

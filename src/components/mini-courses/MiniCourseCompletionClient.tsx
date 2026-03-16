@@ -76,7 +76,7 @@ export default function MiniCourseCompletionClient({ slug }: Props) {
 
 
                   <h1
-                    className="leading-60 mb-16 text-40 text-brand-blue-primary"
+                    className="text-[32px] leading-[40px] mb-16 text-brand-blue-primary"
                   >
                     <span className="font-bold">Parabéns!</span> Concluiu o<br />
                     minicurso de Dados Abertos

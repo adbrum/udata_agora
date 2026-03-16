@@ -1,5 +1,6 @@
-import { fetchOrganizations } from '@/services/api';
+import { fetchOrganizations, fetchSiteInfo, fetchOrgBadges } from '@/services/api';
 import OrganizationsClient from '@/components/organizations/OrganizationsClient';
+import { OrganizationFilters } from '@/types/api';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -10,11 +11,38 @@ export const metadata: Metadata = {
 export default async function OrganizationsPage({
     searchParams,
 }: {
-    searchParams: Promise<{ page?: string }>;
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-    const resolvedSearchParams = await searchParams;
-    const page = Number(resolvedSearchParams?.page) || 1;
-    const initialData = await fetchOrganizations(page, 20);
+    const resolved = await searchParams;
+    const page = Number(resolved?.page) || 1;
 
-    return <OrganizationsClient initialData={initialData} currentPage={page} />;
+    const filters: OrganizationFilters = {};
+    if (resolved?.q) filters.q = String(resolved.q);
+    if (resolved?.badge) filters.badge = String(resolved.badge);
+    if (resolved?.sort) filters.sort = String(resolved.sort);
+
+    const [initialData, siteInfo, orgBadges] = await Promise.all([
+        fetchOrganizations(page, 20, filters),
+        fetchSiteInfo(),
+        fetchOrgBadges(),
+    ]);
+
+    const badgeKeys = Object.keys(orgBadges);
+    const badgeCounts = await Promise.all(
+        badgeKeys.map((badge) => fetchOrganizations(1, 1, { badge }))
+    );
+    const orgBadgesWithCounts = Object.fromEntries(
+        badgeKeys.map((kind, i) => [kind, badgeCounts[i].total])
+    );
+
+    return (
+        <OrganizationsClient
+            initialData={initialData}
+            currentPage={page}
+            siteMetrics={siteInfo.metrics}
+            orgBadges={orgBadges}
+            orgBadgeCounts={orgBadgesWithCounts}
+            initialFilters={filters}
+        />
+    );
 }
