@@ -23,6 +23,7 @@ import {
 import { fetchMyReuses } from "@/services/api";
 import { Reuse } from "@/types/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import PageLoader from "@/components/common/PageLoader";
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -153,7 +154,7 @@ export default function ReusesClient() {
       </div>
 
       {isLoading ? (
-        <p>A carregar...</p>
+        <PageLoader />
       ) : reuses.length > 0 ? (
         <Table
           paginationProps={{

@@ -22,6 +22,7 @@ import {
 } from "@ama-pt/agora-design-system";
 import { fetchDatasets } from "@/services/api";
 import { Dataset } from "@/types/api";
+import PageLoader from "@/components/common/PageLoader";
 
 type SortOrder = "none" | "ascending" | "descending";
 type SortField = "title" | "created_at" | "last_modified" | "resources";
@@ -241,7 +242,9 @@ export default function SystemDatasetsClient() {
         </InputSelect>
       </div>
 
-      {!isLoading && datasets.length > 0 ? (
+      {isLoading ? (
+        <PageLoader />
+      ) : datasets.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Itens por página",
@@ -333,7 +336,7 @@ export default function SystemDatasetsClient() {
             ))}
           </TableBody>
         </Table>
-      ) : !isLoading ? (
+      ) : (
         <div className="datasets-page__body">
           <div className="datasets-page__content">
             <CardNoResults
@@ -350,7 +353,7 @@ export default function SystemDatasetsClient() {
             />
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

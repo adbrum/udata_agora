@@ -6,16 +6,10 @@ import { InputSearchBar } from "@ama-pt/agora-design-system";
 
 type SearchType = "datasets" | "reuses" | "organizations";
 
-interface SearchOption {
-  type: SearchType;
-  label: string;
-  icon: string;
-}
-
-const SEARCH_OPTIONS: SearchOption[] = [
-  { type: "datasets", label: "conjuntos de dados", icon: "\u{1F4CA}" },
-  { type: "reuses", label: "reutilizações", icon: "\u{1F4C8}" },
-  { type: "organizations", label: "organizações", icon: "\u{1F3E2}" },
+const SEARCH_OPTIONS: { type: SearchType; label: string }[] = [
+  { type: "datasets", label: "conjuntos de dados" },
+  { type: "reuses", label: "reutilizações" },
+  { type: "organizations", label: "organizações" },
 ];
 
 interface SearchDropdownProps {
@@ -39,7 +33,6 @@ export default function SearchDropdown({
   const [activeIndex, setActiveIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -50,25 +43,38 @@ export default function SearchDropdown({
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Listen for input changes via native event on the wrapper
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const handleInput = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (target.tagName === "INPUT") {
+        const val = target.value;
+        setQuery(val);
+        setIsOpen(val.trim().length > 0);
+        setActiveIndex(-1);
+      }
+    };
+
+    wrapper.addEventListener("input", handleInput);
+    return () => wrapper.removeEventListener("input", handleInput);
   }, []);
 
   const navigateToSearch = (type: SearchType) => {
     const q = query.trim();
     if (q) {
-      router.push(
-        `/pages/search?q=${encodeURIComponent(q)}&type=${type}`,
-      );
+      router.push(`/pages/search?q=${encodeURIComponent(q)}&type=${type}`);
       setIsOpen(false);
       setQuery("");
+      // Clear the input
+      const input = wrapperRef.current?.querySelector("input");
+      if (input) input.value = "";
     }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-    setIsOpen(e.target.value.trim().length > 0);
-    setActiveIndex(-1);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -83,13 +89,13 @@ export default function SearchDropdown({
       case "ArrowDown":
         e.preventDefault();
         setActiveIndex((prev) =>
-          prev < SEARCH_OPTIONS.length - 1 ? prev + 1 : 0,
+          prev < SEARCH_OPTIONS.length - 1 ? prev + 1 : 0
         );
         break;
       case "ArrowUp":
         e.preventDefault();
         setActiveIndex((prev) =>
-          prev > 0 ? prev - 1 : SEARCH_OPTIONS.length - 1,
+          prev > 0 ? prev - 1 : SEARCH_OPTIONS.length - 1
         );
         break;
       case "Enter":
@@ -114,17 +120,16 @@ export default function SearchDropdown({
   };
 
   return (
-    <div ref={wrapperRef} className="relative">
+    <div ref={wrapperRef} className="relative" style={{ zIndex: 40 }}>
       <InputSearchBar
         label={label}
         placeholder={placeholder}
         id={id}
-        value={query}
-        onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         onSearchActivate={handleSearchActivate}
         onFocus={() => {
-          if (query.trim()) setIsOpen(true);
+          const input = wrapperRef.current?.querySelector("input");
+          if (input && input.value.trim()) setIsOpen(true);
         }}
         darkMode={darkMode}
         hasVoiceActionButton={hasVoiceActionButton}
@@ -133,48 +138,38 @@ export default function SearchDropdown({
         autoComplete="off"
       />
 
-      {/* Dropdown */}
       {isOpen && query.trim() && (
-        <div className="absolute z-50 w-full mt-4 bg-white rounded-8 shadow-lg border border-neutral-200 overflow-hidden">
+        <div
+          className="absolute w-full bg-white"
+          style={{
+            zIndex: 9999,
+            border: "1px solid #0C1932",
+            borderTop: "1px solid #DCE1E8",
+          }}
+        >
           <ul className="list-none m-0 p-0" role="listbox">
             {SEARCH_OPTIONS.map((option, index) => (
               <li
                 key={option.type}
                 role="option"
                 aria-selected={activeIndex === index}
-                className={`flex items-center gap-12 px-16 py-12 cursor-pointer border-b border-neutral-100 last:border-b-0 transition-colors ${
-                  activeIndex === index
-                    ? "bg-primary-50 text-primary-700"
-                    : "hover:bg-neutral-50"
-                }`}
+                style={{
+                  padding: "10px 16px",
+                  cursor: "pointer",
+                  backgroundColor:
+                    activeIndex === index ? "#F7F7FF" : "white",
+                  borderTop: index > 0 ? "1px solid #DCE1E8" : "none",
+                  fontSize: "14px",
+                  color: "#2B363C",
+                  transition: "background-color 0.15s",
+                }}
                 onMouseEnter={() => setActiveIndex(index)}
+                onMouseLeave={() => setActiveIndex(-1)}
                 onClick={() => navigateToSearch(option.type)}
               >
-                <span className="text-base" aria-hidden="true">
-                  {option.icon}
-                </span>
-                <span className="flex-1 text-s-regular">
-                  Pesquisar{" "}
-                  <em className="not-italic font-semibold">
-                    &laquo;{query.trim()}&raquo;
-                  </em>{" "}
-                  nos/nas{" "}
-                  <strong>{option.label}</strong>
-                </span>
-                <svg
-                  className="w-16 h-16 text-neutral-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+                Pesquisar{" "}
+                <strong>&laquo;{query.trim()}&raquo;</strong>{" "}
+                nos/nas <strong>{option.label}</strong>
               </li>
             ))}
           </ul>

@@ -18,6 +18,7 @@ import { Dataset, Post, Reuse, SiteInfo } from "@/types/api";
 import { formatDistanceToNow, format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { useAuth } from "@/context/AuthContext";
+import PageLoader from "@/components/common/PageLoader";
 
 function formatStatNumber(value: number): { number: string; suffix: string } {
   if (value >= 1_000_000) {
@@ -372,8 +373,8 @@ export default function Home() {
 
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {isLoading ? (
-                <div className="xl:col-span-3 text-center py-32 text-neutral-500">
-                  A carregar conjuntos de dados...
+                <div className="xl:col-span-3">
+                  <PageLoader />
                 </div>
               ) : latestDatasets.length > 0 ? (
                 latestDatasets.map((dataset) => (
@@ -475,8 +476,8 @@ export default function Home() {
             </p>
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32 storytellings">
               {isLoading ? (
-                <div className="xl:col-span-3 text-center py-32 text-neutral-300">
-                  A carregar reutilizações...
+                <div className="xl:col-span-3">
+                  <PageLoader />
                 </div>
               ) : latestReuses.length > 0 ? (
                 latestReuses.map((reuse) => (
@@ -529,8 +530,8 @@ export default function Home() {
             <h2 className="text-xl-bold mb-32 text-primary-900">Últimas novidades</h2>
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {isLoading ? (
-                <div className="xl:col-span-3 text-center py-32 text-neutral-500">
-                  A carregar novidades...
+                <div className="xl:col-span-3">
+                  <PageLoader />
                 </div>
               ) : posts.length > 0 ? (
                 posts.map((post) => (

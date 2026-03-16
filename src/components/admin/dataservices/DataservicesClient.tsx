@@ -23,6 +23,7 @@ import {
 import { fetchMyDataservices } from "@/services/api";
 import { Dataservice } from "@/types/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import PageLoader from "@/components/common/PageLoader";
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -163,7 +164,7 @@ export default function DataservicesClient() {
       </div>
 
       {isLoading ? (
-        <p>A carregar...</p>
+        <PageLoader />
       ) : apis.length > 0 ? (
         <Table
           paginationProps={{

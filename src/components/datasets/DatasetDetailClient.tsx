@@ -7,6 +7,7 @@ import { pt } from 'date-fns/locale';
 import { Button, Icon, Tag, Breadcrumb, Pill, ProgressBar } from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
 import { fetchDataset } from '@/services/api';
+import PageLoader from "@/components/common/PageLoader";
 import { DatasetTabs } from '@/components/datasets/DatasetTabs';
 
 interface DatasetDetailClientProps {
@@ -33,11 +34,7 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
   }, [slug]);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-neutral-500">A carregar...</p>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (!dataset) {

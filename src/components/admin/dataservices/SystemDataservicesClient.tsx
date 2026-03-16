@@ -22,6 +22,7 @@ import {
 } from "@ama-pt/agora-design-system";
 import { fetchDataservices } from "@/services/api";
 import { Dataservice } from "@/types/api";
+import PageLoader from "@/components/common/PageLoader";
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -161,7 +162,7 @@ export default function SystemDataservicesClient() {
       </div>
 
       {isLoading ? (
-        <p>A carregar...</p>
+        <PageLoader />
       ) : apis.length > 0 ? (
         <Table
           paginationProps={{
