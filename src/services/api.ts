@@ -31,9 +31,12 @@ import {
   ResourceType,
   ResourceUpdatePayload,
   Reuse,
+  ReuseCreatePayload,
   ReuseFilters,
   ReuseSuggestion,
+  ReuseTopic,
   ReuseType,
+  ReuseUpdatePayload,
   SiteInfo,
   GeoLevel,
   Granularity,
@@ -626,6 +629,105 @@ export async function fetchReuseTypes(): Promise<ReuseType[]> {
     console.error("Error fetching reuse types:", error);
     return [];
   }
+}
+
+export async function fetchReuseTopics(): Promise<ReuseTopic[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/reuses/topics/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch reuse topics: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching reuse topics:", error);
+    return [];
+  }
+}
+
+export async function createReuse(payload: ReuseCreatePayload): Promise<Reuse> {
+  const res = await fetch(`${API_BASE_URL}/reuses/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function updateReuse(
+  id: string,
+  payload: ReuseUpdatePayload
+): Promise<Reuse> {
+  const res = await fetch(`${API_BASE_URL}/reuses/${id}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteReuse(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/reuses/${id}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete reuse: ${res.statusText}`);
+}
+
+export async function uploadReuseImage(id: string, file: File): Promise<Reuse> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE_URL}/reuses/${id}/image`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function linkDatasetToReuse(
+  reuseId: string,
+  datasetId: string
+): Promise<Reuse> {
+  const res = await fetch(`${API_BASE_URL}/reuses/${reuseId}/datasets/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ id: datasetId }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function linkDataserviceToReuse(
+  reuseId: string,
+  dataserviceId: string
+): Promise<Reuse> {
+  const res = await fetch(`${API_BASE_URL}/reuses/${reuseId}/dataservices/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ id: dataserviceId }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
 }
 
 export async function suggestReuses(
