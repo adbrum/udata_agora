@@ -15,6 +15,8 @@ import {
   DropdownOption,
   CardGeneral,
 } from "@ama-pt/agora-design-system";
+import { createDataservice } from "@/services/api";
+import type { Dataservice } from "@/types/api";
 
 interface ApiRegistrationClientProps {
   currentStep: number;
@@ -29,8 +31,19 @@ export default function ApiRegistrationClient({
 }: ApiRegistrationClientProps) {
   const [accessType, setAccessType] = useState("open");
   const [apiName, setApiName] = useState("");
+  const [apiAcronym, setApiAcronym] = useState("");
   const [apiDescription, setApiDescription] = useState("");
+  const [baseApiUrl, setBaseApiUrl] = useState("");
+  const [machineDocUrl, setMachineDocUrl] = useState("");
+  const [technicalDocUrl, setTechnicalDocUrl] = useState("");
+  const [rateLimiting, setRateLimiting] = useState("");
+  const [availability, setAvailability] = useState("");
+  const [authRequestUrl, setAuthRequestUrl] = useState("");
+  const [businessDocUrl, setBusinessDocUrl] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createdDataservice, setCreatedDataservice] = useState<Dataservice | null>(null);
   const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
   const [datasetLinkErrors, setDatasetLinkErrors] = useState<Record<number, string>>({});
 
@@ -38,7 +51,7 @@ export default function ApiRegistrationClient({
     setDatasetLinkErrors({});
   }, [currentStep]);
 
-  const handleStep1Next = () => {
+  const handleStep1Next = async () => {
     const errors: Record<string, boolean> = {};
     if (!apiName.trim()) errors.apiName = true;
     if (!apiDescription.trim()) errors.apiDescription = true;
@@ -47,7 +60,40 @@ export default function ApiRegistrationClient({
       return;
     }
     setFormErrors({});
-    onNextStep();
+    setApiError(null);
+    setIsSubmitting(true);
+
+    try {
+      const dataservice = await createDataservice({
+        title: apiName.trim(),
+        description: apiDescription.trim(),
+        acronym: apiAcronym.trim() || undefined,
+        base_api_url: baseApiUrl.trim() || undefined,
+        machine_documentation_url: machineDocUrl.trim() || undefined,
+        technical_documentation_url: technicalDocUrl.trim() || undefined,
+        business_documentation_url: businessDocUrl.trim() || undefined,
+        authorization_request_url: authRequestUrl.trim() || undefined,
+        rate_limiting: rateLimiting.trim() || undefined,
+        availability: availability.trim() ? parseFloat(availability) : undefined,
+        access_type: accessType,
+        private: true,
+      });
+
+      setCreatedDataservice(dataservice);
+      onNextStep();
+    } catch (error: unknown) {
+      const err = error as { status?: number; data?: Record<string, unknown> };
+      if (err.data && typeof err.data === "object") {
+        const messages = Object.entries(err.data)
+          .map(([key, val]) => `${key}: ${val}`)
+          .join(", ");
+        setApiError(messages);
+      } else {
+        setApiError("Erro ao criar a API. Tente novamente.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const clearError = (field: string) => {
@@ -60,7 +106,7 @@ export default function ApiRegistrationClient({
     }
   };
 
-const handleDatasetUrlChange = (index: number, value: string) => {
+  const handleDatasetUrlChange = (index: number, value: string) => {
     const updated = [...datasetLinks];
     updated[index] = { url: value };
     setDatasetLinks(updated);
@@ -180,6 +226,10 @@ const handleDatasetUrlChange = (index: number, value: string) => {
                 }
               />
 
+              {apiError && (
+                <StatusCard type="danger" description={apiError} />
+              )}
+
               <form className="datasets-admin-page__form">
                 <p className="text-neutral-900 text-base leading-7">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
@@ -239,6 +289,10 @@ const handleDatasetUrlChange = (index: number, value: string) => {
                     label="Acrônimo"
                     placeholder="Placeholder"
                     id="api-acronym"
+                    value={apiAcronym}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setApiAcronym(e.target.value)
+                    }
                   />
                   <InputTextArea
                     label="Descrição *"
@@ -260,26 +314,46 @@ const handleDatasetUrlChange = (index: number, value: string) => {
                     label="Link raiz da API"
                     placeholder="https://..."
                     id="api-root-link"
+                    value={baseApiUrl}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setBaseApiUrl(e.target.value)
+                    }
                   />
                   <InputText
                     label="Link para a documentação da API (ficheiro OpenAPI ou Swagger)"
                     placeholder="https://..."
                     id="api-doc-openapi"
+                    value={machineDocUrl}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setMachineDocUrl(e.target.value)
+                    }
                   />
                   <InputText
                     label="Link para a documentação técnica da API"
                     placeholder="https://..."
                     id="api-doc-technical"
+                    value={technicalDocUrl}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setTechnicalDocUrl(e.target.value)
+                    }
                   />
                   <InputText
                     label="Limite de chamadas"
                     placeholder="Placeholder"
                     id="api-rate-limit"
+                    value={rateLimiting}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setRateLimiting(e.target.value)
+                    }
                   />
                   <InputText
                     label="Disponibilidade"
                     placeholder="99,9"
                     id="api-availability"
+                    value={availability}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setAvailability(e.target.value)
+                    }
                   />
                 </div>
 
@@ -318,11 +392,19 @@ const handleDatasetUrlChange = (index: number, value: string) => {
                     label="Link para a ferramenta de autorização de acesso"
                     placeholder="https://..."
                     id="api-auth-tool"
+                    value={authRequestUrl}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setAuthRequestUrl(e.target.value)
+                    }
                   />
                   <InputText
                     label="Link para a documentação comercial da API"
                     placeholder="https://..."
                     id="api-doc-commercial"
+                    value={businessDocUrl}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setBusinessDocUrl(e.target.value)
+                    }
                   />
                 </div>
 
@@ -333,8 +415,9 @@ const handleDatasetUrlChange = (index: number, value: string) => {
                     trailingIcon="agora-line-arrow-right-circle"
                     trailingIconHover="agora-solid-arrow-right-circle"
                     onClick={handleStep1Next}
+                    disabled={isSubmitting}
                   >
-                    Seguinte
+                    {isSubmitting ? "A criar..." : "Seguinte"}
                   </Button>
                 </div>
               </form>
@@ -451,10 +534,14 @@ const handleDatasetUrlChange = (index: number, value: string) => {
                 isBlockedLink
                 iconDefault="agora-line-layers-menu"
                 iconHover="agora-solid-layers-menu"
-                titleText={apiName || "Sem título"}
-                descriptionText={apiDescription || "Sem descrição"}
+                titleText={createdDataservice?.title || apiName || "Sem título"}
+                descriptionText={
+                  createdDataservice?.description || apiDescription || "Sem descrição"
+                }
                 anchor={{
-                  href: `/pages/dataservices/preview?title=${encodeURIComponent(apiName)}&description=${encodeURIComponent(apiDescription)}`,
+                  href: createdDataservice
+                    ? `/pages/dataservices/${createdDataservice.id}`
+                    : "#",
                   children: "",
                 }}
               />
