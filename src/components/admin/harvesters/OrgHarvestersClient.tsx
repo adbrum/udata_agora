@@ -20,8 +20,8 @@ import {
   TableCell,
   Pill,
 } from "@ama-pt/agora-design-system";
-import { fetchOrgDatasets } from "@/services/api";
-import { Dataset } from "@/types/api";
+import { fetchOrgHarvesters } from "@/services/api";
+import { HarvestSource } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
 const formatDate = (dateStr: string) => {
@@ -29,13 +29,30 @@ const formatDate = (dateStr: string) => {
   return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
 };
 
-export default function OrgDatasetsClient() {
+const getStatusLabel = (source: HarvestSource) => {
+  const job = source.last_job;
+  if (!job) return "Sem execução";
+  if (job.status === "done") return "Terminado";
+  if (job.status === "failed") return "Falhado";
+  if (job.status === "running") return "Em execução";
+  return job.status;
+};
+
+const getStatusVariant = (source: HarvestSource) => {
+  const job = source.last_job;
+  if (!job) return "informative" as const;
+  if (job.status === "done") return "success" as const;
+  if (job.status === "failed") return "danger" as const;
+  return "warning" as const;
+};
+
+export default function OrgHarvestersClient() {
   const router = useRouter();
   const { activeOrg, isLoading: isOrgLoading } = useActiveOrganization();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
 
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [harvesters, setHarvesters] = useState<HarvestSource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -43,18 +60,18 @@ export default function OrgDatasetsClient() {
       setIsLoading(false);
       return;
     }
-    async function loadDatasets() {
+    async function loadHarvesters() {
       setIsLoading(true);
       try {
-        const response = await fetchOrgDatasets(activeOrg!.id, 1, 9999);
-        setDatasets(response.data || []);
+        const response = await fetchOrgHarvesters(activeOrg!.id, 1, 9999);
+        setHarvesters(response.data || []);
       } catch (error) {
-        console.error("Error loading org datasets:", error);
+        console.error("Error loading org harvesters:", error);
       } finally {
         setIsLoading(false);
       }
     }
-    loadDatasets();
+    loadHarvesters();
   }, [activeOrg]);
 
   const publishRoutes: Record<string, string> = {
@@ -89,13 +106,13 @@ export default function OrgDatasetsClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: "Minha organização", url: "#" },
-            { label: "Conjuntos de dados", url: "/pages/admin/org/datasets" },
+            { label: "Harvesters", url: "/pages/admin/org/harvesters" },
           ]}
         />
       </div>
 
       <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Conjuntos de dados</h1>
+        <h1 className="datasets-admin-page__title">Harvesters</h1>
         <div
           className="relative inline-block publish-dropdown-wrapper"
           ref={publishDropdownWrapperRef}
@@ -146,15 +163,15 @@ export default function OrgDatasetsClient() {
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {datasets.length} resultados
+        {harvesters.length} resultados
       </p>
 
       <div className="flex items-center gap-[16px] mb-[24px]">
         <div className="flex-1">
           <InputSearchBar
             label="Pesquisar"
-            placeholder="Pesquise o nome, código ou sigla da entidade"
-            aria-label="Pesquisar conjuntos de dados"
+            placeholder="Pesquise o nome do harvester"
+            aria-label="Pesquisar harvesters"
           />
         </div>
         <InputSelect
@@ -174,12 +191,12 @@ export default function OrgDatasetsClient() {
 
       {isLoading ? (
         <p>A carregar...</p>
-      ) : datasets.length > 0 ? (
+      ) : harvesters.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Linhas por página",
-            itemsPerPage: 5,
-            totalItems: datasets.length,
+            itemsPerPage: 10,
+            totalItems: harvesters.length,
             availablePageSizes: [5, 10, 20],
             currentPage: 1,
             buttonDropdownAriaLabel: "Selecionar linhas por página",
@@ -191,53 +208,50 @@ export default function OrgDatasetsClient() {
           <TableHeader>
             <TableRow>
               <TableHeaderCell sortType="string" sortOrder="descending">
-                Título do conjunto de dados
+                Nome
               </TableHeaderCell>
-              <TableHeaderCell>Estado</TableHeaderCell>
+              <TableHeaderCell>Estatuto</TableHeaderCell>
+              <TableHeaderCell>Implementação</TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
                 Criado em
               </TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
-                Modificado em
+                Última execução
               </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {datasets.map((dataset, index) => (
+            {harvesters.map((harvester, index) => (
               <TableRow key={index}>
-                <TableCell headerLabel="Título">
+                <TableCell headerLabel="Nome">
                   <a
-                    href={`/pages/datasets/${dataset.slug}`}
+                    href={`/pages/admin/org/harvesters/${harvester.id}`}
                     className="text-primary-600 underline"
                   >
-                    {dataset.title}
+                    {harvester.name}
                   </a>
                 </TableCell>
-                <TableCell headerLabel="Estado">
-                  <Pill variant={dataset.private ? "warning" : "success"}>
-                    {dataset.private ? "Rascunho" : "Público"}
+                <TableCell headerLabel="Estatuto">
+                  <Pill variant={getStatusVariant(harvester)}>
+                    {getStatusLabel(harvester)}
                   </Pill>
                 </TableCell>
-                <TableCell headerLabel="Criado em">
-                  {formatDate(dataset.created_at)}
+                <TableCell headerLabel="Implementação">
+                  {harvester.backend}
                 </TableCell>
-                <TableCell headerLabel="Modificado em">
-                  {formatDate(dataset.last_modified)}
-                  <br />
-                  <span className="text-sm text-neutral-500">
-                    sobre{" "}
-                    <span className="text-success-600">●</span>{" "}
-                    {dataset.organization?.name ?? "—"}
-                  </span>
+                <TableCell headerLabel="Criado em">
+                  {formatDate(harvester.created_at)}
+                </TableCell>
+                <TableCell headerLabel="Última execução">
+                  {harvester.last_job
+                    ? formatDate(harvester.last_job.created)
+                    : "Ainda não"}
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">
-                    <a href={`/pages/datasets/${dataset.slug}`}>
+                    <a href={`/pages/admin/org/harvesters/${harvester.id}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
-                    </a>
-                    <a href={`/pages/admin/me/datasets/edit?slug=${dataset.slug}`}>
-                      <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
                 </TableCell>
@@ -252,12 +266,12 @@ export default function OrgDatasetsClient() {
               className="datasets-page__empty"
               position="center"
               icon={
-                <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+                <Icon name="agora-line-document" className="datasets-page__empty-icon" />
               }
-              description="A organização ainda não publicou conjuntos de dados."
+              description="A organização ainda não tem harvesters."
               hasAnchor
-              valueAnchor="Publicar em dados.gov"
-              anchorHref="/pages/admin/me/datasets/new"
+              valueAnchor="Criar harvester"
+              anchorHref="/pages/admin/harvesters/new"
               anchorTarget="_self"
             />
           </div>

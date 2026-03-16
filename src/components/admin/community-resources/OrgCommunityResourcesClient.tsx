@@ -20,8 +20,8 @@ import {
   TableCell,
   Pill,
 } from "@ama-pt/agora-design-system";
-import { fetchOrgDatasets } from "@/services/api";
-import { Dataset } from "@/types/api";
+import { fetchOrgCommunityResources } from "@/services/api";
+import { CommunityResource } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
 const formatDate = (dateStr: string) => {
@@ -29,13 +29,13 @@ const formatDate = (dateStr: string) => {
   return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
 };
 
-export default function OrgDatasetsClient() {
+export default function OrgCommunityResourcesClient() {
   const router = useRouter();
   const { activeOrg, isLoading: isOrgLoading } = useActiveOrganization();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
 
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [resources, setResources] = useState<CommunityResource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -43,18 +43,18 @@ export default function OrgDatasetsClient() {
       setIsLoading(false);
       return;
     }
-    async function loadDatasets() {
+    async function loadResources() {
       setIsLoading(true);
       try {
-        const response = await fetchOrgDatasets(activeOrg!.id, 1, 9999);
-        setDatasets(response.data || []);
+        const response = await fetchOrgCommunityResources(activeOrg!.id, 1, 9999);
+        setResources(response.data || []);
       } catch (error) {
-        console.error("Error loading org datasets:", error);
+        console.error("Error loading org community resources:", error);
       } finally {
         setIsLoading(false);
       }
     }
-    loadDatasets();
+    loadResources();
   }, [activeOrg]);
 
   const publishRoutes: Record<string, string> = {
@@ -89,13 +89,16 @@ export default function OrgDatasetsClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: "Minha organização", url: "#" },
-            { label: "Conjuntos de dados", url: "/pages/admin/org/datasets" },
+            {
+              label: "Recursos comunitários",
+              url: "/pages/admin/org/community-resources",
+            },
           ]}
         />
       </div>
 
       <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Conjuntos de dados</h1>
+        <h1 className="datasets-admin-page__title">Recursos comunitários</h1>
         <div
           className="relative inline-block publish-dropdown-wrapper"
           ref={publishDropdownWrapperRef}
@@ -146,15 +149,15 @@ export default function OrgDatasetsClient() {
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {datasets.length} resultados
+        {resources.length} resultados
       </p>
 
       <div className="flex items-center gap-[16px] mb-[24px]">
         <div className="flex-1">
           <InputSearchBar
             label="Pesquisar"
-            placeholder="Pesquise o nome, código ou sigla da entidade"
-            aria-label="Pesquisar conjuntos de dados"
+            placeholder="Pesquisar recursos comunitários"
+            aria-label="Pesquisar recursos comunitários"
           />
         </div>
         <InputSelect
@@ -174,12 +177,12 @@ export default function OrgDatasetsClient() {
 
       {isLoading ? (
         <p>A carregar...</p>
-      ) : datasets.length > 0 ? (
+      ) : resources.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Linhas por página",
             itemsPerPage: 5,
-            totalItems: datasets.length,
+            totalItems: resources.length,
             availablePageSizes: [5, 10, 20],
             currentPage: 1,
             buttonDropdownAriaLabel: "Selecionar linhas por página",
@@ -191,7 +194,7 @@ export default function OrgDatasetsClient() {
           <TableHeader>
             <TableRow>
               <TableHeaderCell sortType="string" sortOrder="descending">
-                Título do conjunto de dados
+                Título
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
@@ -204,41 +207,31 @@ export default function OrgDatasetsClient() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {datasets.map((dataset, index) => (
+            {resources.map((resource, index) => (
               <TableRow key={index}>
                 <TableCell headerLabel="Título">
-                  <a
-                    href={`/pages/datasets/${dataset.slug}`}
-                    className="text-primary-600 underline"
-                  >
-                    {dataset.title}
-                  </a>
+                  <span className="text-primary-600">{resource.title}</span>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant={dataset.private ? "warning" : "success"}>
-                    {dataset.private ? "Rascunho" : "Público"}
-                  </Pill>
+                  <Pill variant="success">Público</Pill>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
-                  {formatDate(dataset.created_at)}
+                  {formatDate(resource.created_at)}
                 </TableCell>
                 <TableCell headerLabel="Modificado em">
-                  {formatDate(dataset.last_modified)}
+                  {formatDate(resource.last_modified)}
                   <br />
                   <span className="text-sm text-neutral-500">
                     sobre{" "}
                     <span className="text-success-600">●</span>{" "}
-                    {dataset.organization?.name ?? "—"}
+                    {resource.owner
+                      ? `${resource.owner.first_name} ${resource.owner.last_name}`
+                      : "—"}
                   </span>
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">
-                    <a href={`/pages/datasets/${dataset.slug}`}>
-                      <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
-                    </a>
-                    <a href={`/pages/admin/me/datasets/edit?slug=${dataset.slug}`}>
-                      <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
-                    </a>
+                    <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                   </div>
                 </TableCell>
               </TableRow>
@@ -252,13 +245,12 @@ export default function OrgDatasetsClient() {
               className="datasets-page__empty"
               position="center"
               icon={
-                <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+                <Icon
+                  name="agora-line-user-group"
+                  className="datasets-page__empty-icon"
+                />
               }
-              description="A organização ainda não publicou conjuntos de dados."
-              hasAnchor
-              valueAnchor="Publicar em dados.gov"
-              anchorHref="/pages/admin/me/datasets/new"
-              anchorTarget="_self"
+              description="A organização ainda não tem recursos comunitários."
             />
           </div>
         </div>

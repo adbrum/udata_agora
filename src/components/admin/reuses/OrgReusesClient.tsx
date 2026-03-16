@@ -20,8 +20,8 @@ import {
   TableCell,
   Pill,
 } from "@ama-pt/agora-design-system";
-import { fetchOrgDatasets } from "@/services/api";
-import { Dataset } from "@/types/api";
+import { fetchOrgReuses } from "@/services/api";
+import { Reuse } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
 const formatDate = (dateStr: string) => {
@@ -29,13 +29,13 @@ const formatDate = (dateStr: string) => {
   return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
 };
 
-export default function OrgDatasetsClient() {
+export default function OrgReusesClient() {
   const router = useRouter();
   const { activeOrg, isLoading: isOrgLoading } = useActiveOrganization();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
 
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [reuses, setReuses] = useState<Reuse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -43,18 +43,18 @@ export default function OrgDatasetsClient() {
       setIsLoading(false);
       return;
     }
-    async function loadDatasets() {
+    async function loadReuses() {
       setIsLoading(true);
       try {
-        const response = await fetchOrgDatasets(activeOrg!.id, 1, 9999);
-        setDatasets(response.data || []);
+        const data = await fetchOrgReuses(activeOrg!.id);
+        setReuses(data || []);
       } catch (error) {
-        console.error("Error loading org datasets:", error);
+        console.error("Error loading org reuses:", error);
       } finally {
         setIsLoading(false);
       }
     }
-    loadDatasets();
+    loadReuses();
   }, [activeOrg]);
 
   const publishRoutes: Record<string, string> = {
@@ -89,13 +89,13 @@ export default function OrgDatasetsClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: "Minha organização", url: "#" },
-            { label: "Conjuntos de dados", url: "/pages/admin/org/datasets" },
+            { label: "Reutilizações", url: "/pages/admin/org/reuses" },
           ]}
         />
       </div>
 
       <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Conjuntos de dados</h1>
+        <h1 className="datasets-admin-page__title">Reutilizações</h1>
         <div
           className="relative inline-block publish-dropdown-wrapper"
           ref={publishDropdownWrapperRef}
@@ -146,15 +146,15 @@ export default function OrgDatasetsClient() {
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {datasets.length} resultados
+        {reuses.length} resultados
       </p>
 
       <div className="flex items-center gap-[16px] mb-[24px]">
         <div className="flex-1">
           <InputSearchBar
             label="Pesquisar"
-            placeholder="Pesquise o nome, código ou sigla da entidade"
-            aria-label="Pesquisar conjuntos de dados"
+            placeholder="Pesquise o nome da reutilização"
+            aria-label="Pesquisar reutilizações"
           />
         </div>
         <InputSelect
@@ -174,12 +174,12 @@ export default function OrgDatasetsClient() {
 
       {isLoading ? (
         <p>A carregar...</p>
-      ) : datasets.length > 0 ? (
+      ) : reuses.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Linhas por página",
             itemsPerPage: 5,
-            totalItems: datasets.length,
+            totalItems: reuses.length,
             availablePageSizes: [5, 10, 20],
             currentPage: 1,
             buttonDropdownAriaLabel: "Selecionar linhas por página",
@@ -191,52 +191,52 @@ export default function OrgDatasetsClient() {
           <TableHeader>
             <TableRow>
               <TableHeaderCell sortType="string" sortOrder="descending">
-                Título do conjunto de dados
+                Título da reutilização
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Modificado em
+              <TableHeaderCell sortType="numeric" sortOrder="descending">
+                Conjuntos de dados
               </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {datasets.map((dataset, index) => (
+            {reuses.map((reuse, index) => (
               <TableRow key={index}>
                 <TableCell headerLabel="Título">
                   <a
-                    href={`/pages/datasets/${dataset.slug}`}
+                    href={`/pages/reuses/${reuse.slug}`}
                     className="text-primary-600 underline"
                   >
-                    {dataset.title}
+                    {reuse.title}
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant={dataset.private ? "warning" : "success"}>
-                    {dataset.private ? "Rascunho" : "Público"}
-                  </Pill>
+                  <Pill variant="success">Público</Pill>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
-                  {formatDate(dataset.created_at)}
-                </TableCell>
-                <TableCell headerLabel="Modificado em">
-                  {formatDate(dataset.last_modified)}
+                  {formatDate(reuse.created_at)}
                   <br />
                   <span className="text-sm text-neutral-500">
                     sobre{" "}
                     <span className="text-success-600">●</span>{" "}
-                    {dataset.organization?.name ?? "—"}
+                    {reuse.owner
+                      ? `${reuse.owner.first_name} ${reuse.owner.last_name}`
+                      : "—"}
                   </span>
+                </TableCell>
+                <TableCell headerLabel="Conjuntos de dados">
+                  {reuse.datasets?.length ?? 0}
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">
-                    <a href={`/pages/datasets/${dataset.slug}`}>
+                    <a href={`/pages/reuses/${reuse.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/me/datasets/edit?slug=${dataset.slug}`}>
+                    <a href={`/pages/admin/me/reuses/edit?slug=${reuse.slug}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
@@ -254,10 +254,10 @@ export default function OrgDatasetsClient() {
               icon={
                 <Icon name="agora-line-file" className="datasets-page__empty-icon" />
               }
-              description="A organização ainda não publicou conjuntos de dados."
+              description="A organização ainda não publicou uma reutilização."
               hasAnchor
               valueAnchor="Publicar em dados.gov"
-              anchorHref="/pages/admin/me/datasets/new"
+              anchorHref="/pages/admin/me/reuses/new"
               anchorTarget="_self"
             />
           </div>

@@ -27,6 +27,7 @@ import {
   OrganizationCreatePayload,
   OrganizationFilters,
   OrganizationMember,
+  OrganizationMetrics,
   OrganizationSuggestion,
   OrganizationUpdatePayload,
   Post,
@@ -2846,4 +2847,80 @@ export async function validateHarvestSource(
   });
   if (!res.ok) throw new Error(`Failed to validate harvest source: ${res.statusText}`);
   return await res.json();
+}
+
+export async function fetchOrgHarvesters(
+  org: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<HarvestSource>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/harvest/sources/?organization=${org}&page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok)
+      throw new Error(`Failed to fetch org harvesters: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org harvesters:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchOrgCommunityResources(
+  org: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<CommunityResource>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/datasets/community_resources/?organization=${org}&page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok)
+      throw new Error(`Failed to fetch org community resources: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org community resources:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchOrgMetrics(
+  org: string
+): Promise<OrganizationMetrics> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/organizations/${org}/`, {
+      cache: "no-store",
+    });
+    if (!res.ok)
+      throw new Error(`Failed to fetch org metrics: ${res.statusText}`);
+    const data = await res.json();
+    return data.metrics;
+  } catch (error) {
+    console.error("Error fetching org metrics:", error);
+    return {
+      datasets: 0,
+      dataservices: 0,
+      followers: 0,
+      members: 0,
+      reuses: 0,
+      views: 0,
+    };
+  }
 }
