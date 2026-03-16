@@ -74,7 +74,6 @@ import {
   HarvestSource,
   HarvestSourceCreatePayload,
   HarvestSourceUpdatePayload,
-  HomeContent,
 } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
