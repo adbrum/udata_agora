@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -12,12 +12,50 @@ import {
   InputSearchBar,
   DropdownSection,
   DropdownOption,
+  Table,
+  TableHeader,
+  TableHeaderCell,
+  TableBody,
+  TableRow,
+  TableCell,
+  Pill,
 } from "@ama-pt/agora-design-system";
+import { fetchOrgDatasets } from "@/services/api";
+import { Dataset } from "@/types/api";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
+
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
+};
 
 export default function OrgDatasetsClient() {
   const router = useRouter();
+  const { activeOrg, isLoading: isOrgLoading } = useActiveOrganization();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
+
+  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!activeOrg) {
+      setIsLoading(false);
+      return;
+    }
+    async function loadDatasets() {
+      setIsLoading(true);
+      try {
+        const response = await fetchOrgDatasets(activeOrg!.id, 1, 9999);
+        setDatasets(response.data || []);
+      } catch (error) {
+        console.error("Error loading org datasets:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadDatasets();
+  }, [activeOrg]);
 
   const publishRoutes: Record<string, string> = {
     dataset: "/pages/admin/me/datasets/new",
@@ -27,6 +65,22 @@ export default function OrgDatasetsClient() {
     article: "/pages/admin/system/posts/new",
     organization: "/pages/admin/organizations/new",
   };
+
+  if (isOrgLoading) return <p>A carregar...</p>;
+  if (!activeOrg) {
+    return (
+      <div className="datasets-admin-page">
+        <CardNoResults
+          className="datasets-page__empty"
+          position="center"
+          icon={
+            <Icon name="agora-line-buildings" className="datasets-page__empty-icon" />
+          }
+          description="Não pertence a nenhuma organização."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="datasets-admin-page">
@@ -91,7 +145,9 @@ export default function OrgDatasetsClient() {
         </div>
       </div>
 
-      <p className="text-neutral-700 text-sm mb-[16px]">0 resultados</p>
+      <p className="text-neutral-700 text-sm mb-[16px]">
+        {datasets.length} resultados
+      </p>
 
       <div className="flex items-center gap-[16px] mb-[24px]">
         <div className="flex-1">
@@ -116,22 +172,97 @@ export default function OrgDatasetsClient() {
         </InputSelect>
       </div>
 
-      <div className="datasets-page__body">
-        <div className="datasets-page__content">
-          <CardNoResults
-            className="datasets-page__empty"
-            position="center"
-            icon={
-              <Icon name="agora-line-file" className="datasets-page__empty-icon" />
-            }
-            description="Você ainda não publicou um conjunto de dados."
-            hasAnchor
-            valueAnchor="Publicar em dados.gov"
-            anchorHref="/pages/admin/me/datasets/new"
-            anchorTarget="_self"
-          />
+      {isLoading ? (
+        <p>A carregar...</p>
+      ) : datasets.length > 0 ? (
+        <Table
+          paginationProps={{
+            itemsPerPageLabel: "Linhas por página",
+            itemsPerPage: 5,
+            totalItems: datasets.length,
+            availablePageSizes: [5, 10, 20],
+            currentPage: 1,
+            buttonDropdownAriaLabel: "Selecionar linhas por página",
+            dropdownListAriaLabel: "Opções de linhas por página",
+            prevButtonAriaLabel: "Página anterior",
+            nextButtonAriaLabel: "Próxima página",
+          }}
+        >
+          <TableHeader>
+            <TableRow>
+              <TableHeaderCell sortType="string" sortOrder="descending">
+                Título do conjunto de dados
+              </TableHeaderCell>
+              <TableHeaderCell>Estado</TableHeaderCell>
+              <TableHeaderCell sortType="date" sortOrder="none">
+                Criado em
+              </TableHeaderCell>
+              <TableHeaderCell sortType="date" sortOrder="none">
+                Modificado em
+              </TableHeaderCell>
+              <TableHeaderCell>Ações</TableHeaderCell>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {datasets.map((dataset, index) => (
+              <TableRow key={index}>
+                <TableCell headerLabel="Título">
+                  <a
+                    href={`/pages/datasets/${dataset.slug}`}
+                    className="text-primary-600 underline"
+                  >
+                    {dataset.title}
+                  </a>
+                </TableCell>
+                <TableCell headerLabel="Estado">
+                  <Pill variant={dataset.private ? "warning" : "success"}>
+                    {dataset.private ? "Rascunho" : "Público"}
+                  </Pill>
+                </TableCell>
+                <TableCell headerLabel="Criado em">
+                  {formatDate(dataset.created_at)}
+                </TableCell>
+                <TableCell headerLabel="Modificado em">
+                  {formatDate(dataset.last_modified)}
+                  <br />
+                  <span className="text-sm text-neutral-500">
+                    sobre{" "}
+                    <span className="text-success-600">●</span>{" "}
+                    {dataset.organization?.name ?? "—"}
+                  </span>
+                </TableCell>
+                <TableCell headerLabel="Ações">
+                  <div className="flex gap-[8px]">
+                    <a href={`/pages/datasets/${dataset.slug}`}>
+                      <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+                    </a>
+                    <a href={`/pages/admin/me/datasets/edit?slug=${dataset.slug}`}>
+                      <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
+                    </a>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <div className="datasets-page__body">
+          <div className="datasets-page__content">
+            <CardNoResults
+              className="datasets-page__empty"
+              position="center"
+              icon={
+                <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+              }
+              description="A organização ainda não publicou conjuntos de dados."
+              hasAnchor
+              valueAnchor="Publicar em dados.gov"
+              anchorHref="/pages/admin/me/datasets/new"
+              anchorTarget="_self"
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
