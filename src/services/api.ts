@@ -74,6 +74,7 @@ import {
   HarvestSource,
   HarvestSourceCreatePayload,
   HarvestSourceUpdatePayload,
+  HomeContent,
 } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
@@ -2923,4 +2924,64 @@ export async function fetchOrgMetrics(
       views: 0,
     };
   }
+}
+
+// ─── Editorial / Home Featured Content ────────────────────────────────
+
+export async function fetchHomeFeaturedDatasets(): Promise<Dataset[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/site/home/datasets/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!res.ok)
+      throw new Error(`Failed to fetch home featured datasets: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching home featured datasets:", error);
+    return [];
+  }
+}
+
+export async function updateHomeFeaturedDatasets(
+  datasetIds: string[]
+): Promise<Dataset[]> {
+  const res = await fetch(`${API_BASE_URL}/site/home/datasets/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(datasetIds),
+  });
+  if (!res.ok)
+    throw new Error(`Failed to update home featured datasets: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function fetchHomeFeaturedReuses(): Promise<Reuse[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/site/home/reuses/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!res.ok)
+      throw new Error(`Failed to fetch home featured reuses: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching home featured reuses:", error);
+    return [];
+  }
+}
+
+export async function updateHomeFeaturedReuses(
+  reuseIds: string[]
+): Promise<Reuse[]> {
+  const res = await fetch(`${API_BASE_URL}/site/home/reuses/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(reuseIds),
+  });
+  if (!res.ok)
+    throw new Error(`Failed to update home featured reuses: ${res.statusText}`);
+  return await res.json();
 }
