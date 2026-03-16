@@ -447,6 +447,11 @@ export interface SiteInfo {
   metrics: SiteMetrics;
 }
 
+export interface SiteConfigUpdatePayload {
+  title?: string;
+  [key: string]: unknown;
+}
+
 export interface Post {
   id: string;
   name: string;
