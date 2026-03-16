@@ -782,6 +782,61 @@ export interface CommunityResourceUpdatePayload {
   dataset?: string;
 }
 
+export interface HarvestJob {
+  id: string;
+  status: "pending" | "started" | "done" | "failed";
+  started: string | null;
+  ended: string | null;
+  errors: number;
+  items: number;
+}
+
+export interface HarvestSource {
+  id: string;
+  name: string;
+  description: string | null;
+  url: string;
+  backend: string;
+  organization: Organization | null;
+  schedule: string | null;
+  config: Record<string, unknown>;
+  filters: Record<string, unknown>[];
+  features: Record<string, boolean>;
+  active: boolean;
+  autoarchive: boolean;
+  created_at: string;
+  last_modified: string;
+  last_job: HarvestJob | null;
+}
+
+export interface HarvestSourceCreatePayload {
+  name: string;
+  description?: string;
+  url: string;
+  backend: string;
+  organization?: string;
+  schedule?: string;
+  config?: Record<string, unknown>;
+  filters?: Record<string, unknown>[];
+  features?: Record<string, boolean>;
+  active?: boolean;
+  autoarchive?: boolean;
+}
+
+export interface HarvestSourceUpdatePayload {
+  name?: string;
+  description?: string;
+  url?: string;
+  backend?: string;
+  organization?: string;
+  schedule?: string;
+  config?: Record<string, unknown>;
+  filters?: Record<string, unknown>[];
+  features?: Record<string, boolean>;
+  active?: boolean;
+  autoarchive?: boolean;
+}
+
 export interface APIResponse<T> {
   data: T[];
   page: number;
