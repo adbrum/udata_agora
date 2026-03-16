@@ -278,24 +278,55 @@ export interface ReuseFilters {
   sort?: string;
 }
 
+export interface ReuseTopic {
+  id: string;
+  label: string;
+}
+
 export interface Reuse {
   id: string;
   title: string;
   slug: string;
   description: string;
   type: string;
+  url: string;
   image: string | null;
   image_thumbnail: string | null;
   organization: Organization | null;
   owner: UserRef | null;
+  private: boolean;
+  featured: boolean;
+  archived: string | null;
+  topic: string | null;
   created_at: string;
   last_modified: string;
   metrics: Metric;
-  url: string;
   tags: string[];
   badges: Badge[];
   datasets: DatasetRef[];
   dataservices: Dataservice[];
+}
+
+export interface ReuseCreatePayload {
+  title: string;
+  description: string;
+  url: string;
+  type: string;
+  topic?: string;
+  tags?: string[];
+  organization?: string;
+  private?: boolean;
+}
+
+export interface ReuseUpdatePayload {
+  title?: string;
+  description?: string;
+  url?: string;
+  type?: string;
+  topic?: string;
+  tags?: string[];
+  organization?: string;
+  private?: boolean;
 }
 
 export interface Dataservice {
