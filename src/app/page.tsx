@@ -24,8 +24,15 @@ function formatStatNumber(value: number): { number: string; suffix: string } {
     return { number: formatted, suffix: "milhões" };
   }
   if (value >= 1_000) {
-    const formatted = new Intl.NumberFormat("pt-PT").format(value);
-    return { number: formatted, suffix: "" };
+    const parts: string[] = [];
+    let remaining = value;
+    while (remaining >= 1000) {
+      parts.unshift(String(remaining % 1000).padStart(3, "0"));
+      remaining = Math.floor(remaining / 1000);
+    }
+    parts.unshift(String(remaining));
+    const formatted = parts.join("\u2009");
+    return { number: formatted, suffix: "mil" };
   }
   return { number: String(value), suffix: "" };
 }
@@ -225,7 +232,7 @@ export default function Home() {
                         />
                       </div>
                       <div className="flex flex-col">
-                        <div className="flex items-baseline gap-8">
+                        <div className="flex items-baseline gap-[6px]">
                           {isLoading ? (
                             <span className="text-2xl-semibold">...</span>
                           ) : (
@@ -263,7 +270,7 @@ export default function Home() {
                         </svg>
                       </div>
                       <div className="flex flex-col">
-                        <div className="flex items-baseline gap-8">
+                        <div className="flex items-baseline gap-[6px]">
                           {isLoading ? (
                             <span className="text-2xl-semibold">...</span>
                           ) : (
@@ -294,7 +301,7 @@ export default function Home() {
                         />
                       </div>
                       <div className="flex flex-col">
-                        <div className="flex items-baseline gap-8">
+                        <div className="flex items-baseline gap-[6px]">
                           {isLoading ? (
                             <span className="text-2xl-semibold">...</span>
                           ) : (
@@ -324,7 +331,7 @@ export default function Home() {
                         />
                       </div>
                       <div className="flex flex-col">
-                        <div className="flex items-baseline gap-8">
+                        <div className="flex items-baseline gap-[6px]">
                           {isLoading ? (
                             <span className="text-2xl-semibold">...</span>
                           ) : (
