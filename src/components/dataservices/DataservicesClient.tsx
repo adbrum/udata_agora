@@ -127,7 +127,7 @@ export default function DataservicesClient({
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       router.push(buildUrl({ q: searchQuery.trim() || null, page: 1 }));
-    }, 400);
+    }, 200);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };

@@ -207,7 +207,7 @@ export default function ReusesClient({
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       router.push(buildUrl({ q: searchQuery || undefined, page: 1 }));
-    }, 400);
+    }, 200);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };

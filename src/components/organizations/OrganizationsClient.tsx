@@ -139,7 +139,7 @@ export default function OrganizationsClient({
         buildUrl({ q: searchQuery.trim() || null }),
         { scroll: false }
       );
-    }, 400);
+    }, 200);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };

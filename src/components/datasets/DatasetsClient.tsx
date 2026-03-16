@@ -64,7 +64,7 @@ export default function DatasetsClient({
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       applySearch(searchQuery);
-    }, 400);
+    }, 200);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
