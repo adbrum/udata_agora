@@ -1299,6 +1299,33 @@ export async function searchReuses(
   }
 }
 
+export async function searchDataservices(
+  query: string,
+  page: number = 1,
+  pageSize: number = 10
+): Promise<APIResponse<Dataservice>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/dataservices/?q=${encodeURIComponent(query)}&page=${page}&page_size=${pageSize}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) {
+      throw new Error(`Failed to search dataservices: ${res.statusText}`);
+    }
+    return await res.json();
+  } catch (error) {
+    console.error("Error searching dataservices:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
 export async function fetchLicenses(): Promise<License[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/datasets/licenses/`, { cache: "no-store" });

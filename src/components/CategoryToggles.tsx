@@ -21,6 +21,25 @@ interface CategoryTogglesProps {
 
 const buildItems = (siteMetrics: SiteMetrics): CategoryToggleItem[] => [
   {
+    id: 'datasets',
+    label: 'Conjunto de dados',
+    href: '/pages/datasets',
+    count: siteMetrics.datasets,
+    leadingIcon: 'agora-line-layers-menu',
+    leadingIconHover: 'agora-solid-layers-menu',
+    className: 'w-full',
+  },
+  {
+    id: 'apis',
+    label: 'APIs',
+    href: '/pages/dataservices',
+    count: siteMetrics.dataservices ?? 0,
+    leadingIcon: (active: boolean) =>
+      active ? '/Icons/reduce_white.svg' : '/Icons/reduce.svg',
+    leadingIconHover: '/Icons/reduce_white.svg',
+    className: 'w-full agora-toggle agora-toggle-icon agora-toggle-icon-primary full-width has-icon',
+  },
+  {
     id: 'reutilizacoes',
     label: 'Reutilizações',
     href: '/pages/reuses',
@@ -29,24 +48,6 @@ const buildItems = (siteMetrics: SiteMetrics): CategoryToggleItem[] => [
       active ? '/Icons/bar_char_white.svg' : '/Icons/bar_chart.svg',
     leadingIconHover: '/Icons/bar_char_white.svg',
     className: 'w-full agora-toggle agora-toggle-icon agora-toggle-icon-primary full-width has-icon',
-  },
-  {
-    id: 'datasets',
-    label: 'Conjunto de dados',
-    href: '/pages/datasets',
-    count: siteMetrics.datasets,
-    leadingIcon: 'agora-line-hardware-settings',
-    leadingIconHover: 'agora-solid-hardware-settings',
-    className: 'w-full',
-  },
-  {
-    id: 'apis',
-    label: 'APIs',
-    href: '/pages/dataservices',
-    count: siteMetrics.dataservices ?? 0,
-    leadingIcon: 'agora-line-star',
-    leadingIconHover: 'agora-solid-star',
-    className: 'w-full',
   },
   {
     id: 'organizacoes',
@@ -75,6 +76,7 @@ export const CategoryToggles = ({ siteMetrics }: CategoryTogglesProps) => {
 
   return (
     <div className="mb-64 pr-32 max-w-[592px] flex flex-col gap-16 mt-[32px]">
+      <h2 className="font-bold text-xl text-neutral-900 mb-16">Tipo</h2>
       {items.map((item) => {
         const isActive = item.id === activeId;
         const icon =
