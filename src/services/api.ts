@@ -2,6 +2,8 @@ import {
   Activity,
   APIResponse,
   Dataservice,
+  DataserviceCreatePayload,
+  DataserviceUpdatePayload,
   Dataset,
   DatasetBadges,
   DatasetCreatePayload,
