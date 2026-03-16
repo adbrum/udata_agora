@@ -185,7 +185,7 @@ export default function DatasetsClient({
                               </p>
                               <div className="flex flex-wrap gap-8 items-center mt-[8px]">
                                 <span className="text-sm font-medium text-neutral-900">
-                                  Metadados: 35%
+                                  Metadados: {dataset.quality?.score != null ? Math.round(dataset.quality.score * 100) : 0}%
                                 </span>
                               </div>
                               <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">

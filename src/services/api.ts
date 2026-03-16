@@ -468,6 +468,39 @@ export async function fetchOrgDiscussions(org: string): Promise<Discussion[]> {
   }
 }
 
+export async function fetchDiscussions(
+  subjectId: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Discussion>> {
+  try {
+    const params = new URLSearchParams({
+      for: subjectId,
+      page: String(page),
+      page_size: String(pageSize),
+    });
+    const res = await fetch(`${API_BASE_URL}/discussions/?${params.toString()}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch discussions: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching discussions:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
 export async function fetchOrgDataservices(
   org: string,
   page: number = 1,
@@ -521,6 +554,7 @@ export async function fetchReuses(
       if (filters.type) params.set("type", filters.type);
       if (filters.tag) params.set("tag", filters.tag);
       if (filters.organization) params.set("organization", filters.organization);
+      if (filters.dataset) params.set("dataset", filters.dataset);
       if (filters.sort) params.set("sort", filters.sort);
     }
 
