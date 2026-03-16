@@ -44,25 +44,10 @@ function SortSelect({
   onSortChange: (value: string) => void;
 }) {
   const [mounted, setMounted] = React.useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const selectRef = React.useRef<any>(null);
-  const lastValue = React.useRef(currentSortKey);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
-
-  React.useEffect(() => {
-    if (!mounted) return;
-    const interval = setInterval(() => {
-      const selected = selectRef.current?.selectedOptions?.[0]?.value;
-      if (selected && selected !== lastValue.current) {
-        lastValue.current = selected;
-        onSortChange(selected);
-      }
-    }, 150);
-    return () => clearInterval(interval);
-  }, [mounted, onSortChange]);
 
   if (!mounted) {
     return (
@@ -84,7 +69,12 @@ function SortSelect({
       label="Ordenar por:"
       id="sort-organizations"
       className="selectOrganization"
-      ref={selectRef}
+      onChange={(options) => {
+        const selected = options?.[0]?.value;
+        if (selected && selected !== currentSortKey) {
+          onSortChange(selected as string);
+        }
+      }}
     >
       <DropdownSection name="order">
         <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
