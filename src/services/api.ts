@@ -7,8 +7,9 @@ import {
   DatasetCreatePayload,
   DatasetFilters,
   DatasetSuggestion,
-  DatasetUpdatePayload,
   Discussion,
+  DiscussionCreatePayload,
+  DatasetUpdatePayload,
   Follow,
   FollowableEntityType,
   FollowResponse,
@@ -1183,6 +1184,25 @@ export async function suggestGlobalSearch(
   }
 }
 
+// --- Discussions ---
+
+export async function fetchDiscussions(
+  subjectId: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Discussion>> {
+  try {
+    const params = new URLSearchParams({
+      for: subjectId,
+      page: String(page),
+      page_size: String(pageSize),
+    });
+    const res = await fetch(`${API_BASE_URL}/discussions/?${params.toString()}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch discussions: ${res.statusText}`);
 // --- Notifications ---
 
 export async function fetchNotifications(
@@ -1223,6 +1243,7 @@ export async function fetchTopics(
 
     return await res.json();
   } catch (error) {
+    console.error("Error fetching discussions:", error);
     console.error("Error fetching topics:", error);
     return {
       data: [],
@@ -1235,6 +1256,23 @@ export async function fetchTopics(
   }
 }
 
+export async function createDiscussion(
+  payload: DiscussionCreatePayload
+): Promise<Discussion | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/discussions/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to create a discussion");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to create discussion: ${res.statusText}`);
 export async function fetchTopic(slugOrId: string): Promise<Topic | null> {
   try {
     const res = await fetch(`${API_V2_BASE_URL}/topics/${slugOrId}/`, {
@@ -1251,6 +1289,32 @@ export async function fetchTopic(slugOrId: string): Promise<Topic | null> {
 
     return await res.json();
   } catch (error) {
+    console.error("Error creating discussion:", error);
+    return null;
+  }
+}
+
+export async function replyToDiscussion(
+  discussionId: string,
+  comment: string
+): Promise<Discussion | null> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/discussions/${discussionId}/`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ comment }),
+      }
+    );
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to reply to a discussion");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to reply to discussion: ${res.statusText}`);
     console.error("Error fetching topic:", error);
     throw error;
   }
@@ -1273,6 +1337,67 @@ export async function fetchTopicElements(
 
     return await res.json();
   } catch (error) {
+    console.error("Error replying to discussion:", error);
+    return null;
+  }
+}
+
+export async function closeDiscussion(
+  discussionId: string,
+  comment?: string
+): Promise<Discussion | null> {
+  try {
+    const body: Record<string, unknown> = { close: true };
+    if (comment) body.comment = comment;
+
+    const res = await fetch(
+      `${API_BASE_URL}/discussions/${discussionId}/`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      }
+    );
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to close a discussion");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to close discussion: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error closing discussion:", error);
+    return null;
+  }
+}
+
+export async function deleteDiscussion(
+  discussionId: string
+): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/discussions/${discussionId}/`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to delete a discussion");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to delete discussion: ${res.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting discussion:", error);
     console.error("Error fetching topic elements:", error);
     return {
       data: [],
