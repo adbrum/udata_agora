@@ -913,6 +913,11 @@ export interface UserSuggestion {
   score: number;
 }
 
+export interface HomeContent {
+  featured_datasets: Dataset[];
+  featured_reuses: Reuse[];
+}
+
 export interface APIResponse<T> {
   data: T[];
   page: number;
