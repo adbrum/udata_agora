@@ -15,6 +15,16 @@ import {
   DragAndDropUploader,
   CardGeneral,
 } from "@ama-pt/agora-design-system";
+import {
+  createReuse,
+  updateReuse,
+  uploadReuseImage,
+  linkDatasetToReuse,
+  linkDataserviceToReuse,
+  fetchReuseTypes,
+  fetchReuseTopics,
+} from "@/services/api";
+import type { Reuse, ReuseType, ReuseTopic } from "@/types/api";
 
 interface ReusesFormClientProps {
   currentStep: number;
@@ -29,11 +39,18 @@ export default function ReusesFormClient({
 }: ReusesFormClientProps) {
   const [reuseName, setReuseName] = useState("");
   const [reuseLink, setReuseLink] = useState("");
-  const [reuseType, setReuseType] = useState(false);
-  const [reuseTheme, setReuseTheme] = useState(false);
+  const [selectedReuseType, setSelectedReuseType] = useState("");
+  const [selectedReuseTopic, setSelectedReuseTopic] = useState("");
   const [reuseDescription, setReuseDescription] = useState("");
-  const [reuseCoverImage, setReuseCoverImage] = useState(false);
+  const [reuseCoverImageFile, setReuseCoverImageFile] = useState<File | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createdReuse, setCreatedReuse] = useState<Reuse | null>(null);
+
+  // Dynamic options from backend
+  const [reuseTypes, setReuseTypes] = useState<ReuseType[]>([]);
+  const [reuseTopics, setReuseTopics] = useState<ReuseTopic[]>([]);
 
   // Step 2 state
   const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
@@ -42,21 +59,58 @@ export default function ReusesFormClient({
   const [apiLinkErrors, setApiLinkErrors] = useState<Record<number, string>>({});
 
   useEffect(() => {
+    fetchReuseTypes().then(setReuseTypes);
+    fetchReuseTopics().then(setReuseTopics);
+  }, []);
+
+  useEffect(() => {
     setDatasetLinkErrors({});
     setApiLinkErrors({});
   }, [currentStep]);
 
-  const handleNextStep = () => {
+  const handleStep1Next = async () => {
     const errors: Record<string, boolean> = {};
     if (!reuseName.trim()) errors.reuseName = true;
     if (!reuseLink.trim()) errors.reuseLink = true;
+    if (!selectedReuseType) errors.reuseType = true;
     if (!reuseDescription.trim()) errors.reuseDescription = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
     }
     setFormErrors({});
-    onNextStep();
+    setApiError(null);
+    setIsSubmitting(true);
+
+    try {
+      const reuse = await createReuse({
+        title: reuseName.trim(),
+        description: reuseDescription.trim(),
+        url: reuseLink.trim(),
+        type: selectedReuseType,
+        topic: selectedReuseTopic || undefined,
+        private: true,
+      });
+
+      if (reuseCoverImageFile) {
+        await uploadReuseImage(reuse.id, reuseCoverImageFile);
+      }
+
+      setCreatedReuse(reuse);
+      onNextStep();
+    } catch (error: unknown) {
+      const err = error as { status?: number; data?: Record<string, unknown> };
+      if (err.data && typeof err.data === "object") {
+        const messages = Object.entries(err.data)
+          .map(([key, val]) => `${key}: ${val}`)
+          .join(", ");
+        setApiError(messages);
+      } else {
+        setApiError("Erro ao criar a reutilização. Tente novamente.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDatasetUrlChange = (index: number, value: string) => {
@@ -217,6 +271,10 @@ export default function ReusesFormClient({
                 }
               />
 
+              {apiError && (
+                <StatusCard type="danger" description={apiError} />
+              )}
+
               <form className="datasets-admin-page__form">
                 <p className="text-neutral-900 text-base leading-7">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
@@ -291,9 +349,12 @@ export default function ReusesFormClient({
                     placeholder="Procure por um tipo..."
                     id="reuse-type"
                     onChange={(options) => {
-                      const hasSelection = options.length > 0;
-                      setReuseType(hasSelection);
-                      if (hasSelection) clearError("reuseType");
+                      if (options.length > 0) {
+                        setSelectedReuseType(options[0].value as string);
+                        clearError("reuseType");
+                      } else {
+                        setSelectedReuseType("");
+                      }
                     }}
                     hasError={!!formErrors.reuseType}
                     hasFeedback={!!formErrors.reuseType}
@@ -301,31 +362,31 @@ export default function ReusesFormClient({
                     errorFeedbackText="Campo obrigatório"
                   >
                     <DropdownSection name="types">
-                      <DropdownOption value="application">Aplicação</DropdownOption>
-                      <DropdownOption value="api">API</DropdownOption>
-                      <DropdownOption value="visualization">Visualização</DropdownOption>
-                      <DropdownOption value="article">Artigo de imprensa</DropdownOption>
-                      <DropdownOption value="idea">Ideia</DropdownOption>
+                      {reuseTypes.map((t) => (
+                        <DropdownOption key={t.id} value={t.id}>
+                          {t.label}
+                        </DropdownOption>
+                      ))}
                     </DropdownSection>
                   </InputSelect>
                   <InputSelect
-                    label="Tema *"
+                    label="Tema"
                     placeholder="Pesquise um tópico..."
                     id="reuse-theme"
                     onChange={(options) => {
-                      const hasSelection = options.length > 0;
-                      setReuseTheme(hasSelection);
-                      if (hasSelection) clearError("reuseTheme");
+                      if (options.length > 0) {
+                        setSelectedReuseTopic(options[0].value as string);
+                      } else {
+                        setSelectedReuseTopic("");
+                      }
                     }}
-                    hasError={!!formErrors.reuseTheme}
-                    hasFeedback={!!formErrors.reuseTheme}
-                    feedbackState="danger"
-                    errorFeedbackText="Campo obrigatório"
                   >
                     <DropdownSection name="themes">
-                      <DropdownOption value="education">Educação</DropdownOption>
-                      <DropdownOption value="health">Saúde</DropdownOption>
-                      <DropdownOption value="transport">Transportes</DropdownOption>
+                      {reuseTopics.map((t) => (
+                        <DropdownOption key={t.id} value={t.id}>
+                          {t.label}
+                        </DropdownOption>
+                      ))}
                     </DropdownSection>
                   </InputSelect>
                   <InputTextArea
@@ -393,14 +454,10 @@ export default function ReusesFormClient({
                         accept=".jpg,.jpeg,.png"
                         maxSize={4194304}
                         maxCount={1}
-                        onChange={() => {
-                          setReuseCoverImage(true);
+                        onChange={(files: File[]) => {
+                          setReuseCoverImageFile(files.length > 0 ? files[0] : null);
                           clearError("reuseCoverImage");
                         }}
-                        hasError={!!formErrors.reuseCoverImage}
-                        hasFeedback={!!formErrors.reuseCoverImage}
-                        feedbackState="danger"
-                        feedbackText="Campo obrigatório"
                       />
                     </div>
                   </div>
@@ -412,9 +469,10 @@ export default function ReusesFormClient({
                     hasIcon
                     trailingIcon="agora-line-arrow-right-circle"
                     trailingIconHover="agora-solid-arrow-right-circle"
-                    onClick={handleNextStep}
+                    onClick={handleStep1Next}
+                    disabled={isSubmitting}
                   >
-                    Seguinte
+                    {isSubmitting ? "A criar..." : "Seguinte"}
                   </Button>
                 </div>
               </form>
@@ -428,6 +486,9 @@ export default function ReusesFormClient({
                 type="info"
                 description="É importante vincular todos os conjuntos de dados utilizados, pois isso ajuda a compreender as referências cruzadas necessárias e a melhorar a visibilidade da sua reutilização."
               />
+              {apiError && (
+                <StatusCard type="danger" description={apiError} />
+              )}
 
               <form className="datasets-admin-page__form">
                 {/* Conjuntos de dados */}
@@ -559,9 +620,39 @@ export default function ReusesFormClient({
                     hasIcon
                     trailingIcon="agora-line-arrow-right-circle"
                     trailingIconHover="agora-solid-arrow-right-circle"
-                    onClick={onNextStep}
+                    disabled={isSubmitting}
+                    onClick={async () => {
+                      if (!createdReuse) return;
+                      setIsSubmitting(true);
+                      setApiError(null);
+                      try {
+                        for (const link of datasetLinks) {
+                          if (link.url.trim()) {
+                            await linkDatasetToReuse(createdReuse.id, link.url.trim());
+                          }
+                        }
+                        for (const link of apiLinks) {
+                          if (link.url.trim()) {
+                            await linkDataserviceToReuse(createdReuse.id, link.url.trim());
+                          }
+                        }
+                        onNextStep();
+                      } catch (error: unknown) {
+                        const err = error as { data?: Record<string, unknown> };
+                        if (err.data && typeof err.data === "object") {
+                          const messages = Object.entries(err.data)
+                            .map(([key, val]) => `${key}: ${val}`)
+                            .join(", ");
+                          setApiError(messages);
+                        } else {
+                          setApiError("Erro ao associar dados. Tente novamente.");
+                        }
+                      } finally {
+                        setIsSubmitting(false);
+                      }
+                    }}
                   >
-                    Seguinte
+                    {isSubmitting ? "A associar..." : "Seguinte"}
                   </Button>
                 </div>
               </form>
@@ -606,12 +697,48 @@ export default function ReusesFormClient({
                 Dê-nos o seu feedback sobre o processo de publicação.
               </Button>
 
+              {apiError && (
+                <StatusCard type="danger" description={apiError} />
+              )}
+
               <div className="datasets-admin-page__actions flex justify-end gap-[18px]">
-                <Button appearance="outline" variant="neutral">
-                  Salvar rascunho
+                <Button
+                  appearance="outline"
+                  variant="neutral"
+                  disabled={isSubmitting}
+                  onClick={async () => {
+                    if (!createdReuse) return;
+                    setIsSubmitting(true);
+                    try {
+                      await updateReuse(createdReuse.id, { private: true });
+                      window.location.href = "/pages/admin/me/reuses";
+                    } catch {
+                      setApiError("Erro ao salvar rascunho. Tente novamente.");
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }}
+                >
+                  {isSubmitting ? "A guardar..." : "Salvar rascunho"}
                 </Button>
-                <Button variant="primary">
-                  Publicar reutilização
+                <Button
+                  variant="primary"
+                  disabled={isSubmitting}
+                  onClick={async () => {
+                    if (!createdReuse) return;
+                    setIsSubmitting(true);
+                    setApiError(null);
+                    try {
+                      await updateReuse(createdReuse.id, { private: false });
+                      window.location.href = "/pages/admin/me/reuses";
+                    } catch {
+                      setApiError("Erro ao publicar. Tente novamente.");
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }}
+                >
+                  {isSubmitting ? "A publicar..." : "Publicar reutilização"}
                 </Button>
               </div>
             </>
