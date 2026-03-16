@@ -148,6 +148,7 @@ export interface Metric {
   followers?: number;
   reuses?: number;
   downloads?: number;
+  discussions?: number;
 }
 
 export interface Checksum {
@@ -216,6 +217,20 @@ export interface DatasetPermissions {
   edit_resources: boolean;
 }
 
+export interface DatasetQuality {
+  all_resources_available: boolean;
+  dataset_description_quality: boolean;
+  has_open_format: boolean;
+  has_resources: boolean;
+  license: boolean;
+  resources_documentation: boolean;
+  score: number;
+  spatial: boolean;
+  temporal_coverage: boolean;
+  update_frequency: boolean;
+  update_fulfilled_in_time: boolean;
+}
+
 export interface Dataset {
   id: string;
   title: string;
@@ -243,7 +258,7 @@ export interface Dataset {
   community_resources?: Resource[];
   badges: Badge[];
   metrics: Metric;
-  quality?: Record<string, unknown>;
+  quality?: DatasetQuality;
   extras?: Record<string, unknown>;
   harvest?: Record<string, unknown> | null;
   uri: string;
@@ -309,6 +324,7 @@ export interface ReuseFilters {
   type?: string;
   tag?: string;
   organization?: string;
+  dataset?: string;
   sort?: string;
 }
 
