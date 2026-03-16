@@ -6,11 +6,11 @@ import { InputSearchBar } from "@ama-pt/agora-design-system";
 
 type SearchType = "datasets" | "dataservices" | "reuses" | "organizations";
 
-const SEARCH_OPTIONS: { type: SearchType; label: string }[] = [
-  { type: "datasets", label: "conjuntos de dados" },
-  { type: "dataservices", label: "APIs" },
-  { type: "reuses", label: "reutilizações" },
-  { type: "organizations", label: "organizações" },
+const SEARCH_OPTIONS: { type: SearchType; label: string; path: string }[] = [
+  { type: "datasets", label: "conjuntos de dados", path: "/pages/datasets" },
+  { type: "dataservices", label: "APIs", path: "/pages/dataservices" },
+  { type: "reuses", label: "reutilizações", path: "/pages/reuses" },
+  { type: "organizations", label: "organizações", path: "/pages/organizations" },
 ];
 
 interface SearchDropdownProps {
@@ -69,10 +69,11 @@ export default function SearchDropdown({
   const navigateToSearch = (type: SearchType) => {
     const q = query.trim();
     if (q) {
-      router.push(`/pages/search?q=${encodeURIComponent(q)}&type=${type}`);
+      const option = SEARCH_OPTIONS.find((o) => o.type === type);
+      const path = option?.path || "/pages/datasets";
+      router.push(`${path}?q=${encodeURIComponent(q)}`);
       setIsOpen(false);
       setQuery("");
-      // Clear the input
       const input = wrapperRef.current?.querySelector("input");
       if (input) input.value = "";
     }
