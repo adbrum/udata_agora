@@ -22,6 +22,7 @@ import {
 } from "@ama-pt/agora-design-system";
 import { fetchReuses } from "@/services/api";
 import { Reuse } from "@/types/api";
+import PageLoader from "@/components/common/PageLoader";
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -151,7 +152,7 @@ export default function SystemReusesClient() {
       </div>
 
       {isLoading ? (
-        <p>A carregar...</p>
+        <PageLoader />
       ) : reuses.length > 0 ? (
         <Table
           paginationProps={{

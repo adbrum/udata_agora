@@ -13,6 +13,7 @@ import {
   suggestTags,
   suggestSpatialZones,
 } from '@/services/api';
+import PageLoader from "@/components/common/PageLoader";
 import { Organization, License, Frequency, Granularity } from '@/types/api';
 
 interface FilterOption {
@@ -270,7 +271,7 @@ export const DatasetsFilters = () => {
                   className={`flex flex-col gap-2 ${showScroll ? 'max-h-[225px] overflow-y-auto' : ''}`}
                 >
                   {isLoading && !group.suggest ? (
-                    <p className="text-sm text-neutral-500">A carregar...</p>
+                    <PageLoader />
                   ) : filteredData.length > 0 ? (
                     filteredData.map((item) => (
                       <Checkbox

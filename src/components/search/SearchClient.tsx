@@ -3,32 +3,48 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button, Icon } from "@ama-pt/agora-design-system";
+import {
+  Icon,
+  Toggle,
+  Pill,
+  InputSearchBar,
+  CardNoResults,
+} from "@ama-pt/agora-design-system";
+import PageLoader from "@/components/common/PageLoader";
+import PageBanner from "@/components/PageBanner";
+import { Pagination } from "@/components/Pagination";
 import {
   searchDatasets,
   searchOrganizations,
   searchReuses,
 } from "@/services/api";
 import { Dataset, Organization, Reuse } from "@/types/api";
-import SearchDropdown from "@/components/search/SearchDropdown";
 
 type SearchType = "datasets" | "organizations" | "reuses";
 
-const TYPES: { type: SearchType; label: string; icon: string }[] = [
+const TYPES: {
+  type: SearchType;
+  label: string;
+  icon: string;
+  iconHover: string;
+}[] = [
   {
     type: "datasets",
-    label: "Conjuntos de Dados",
-    icon: "agora-line-layers-menu",
+    label: "Conjunto de dados",
+    icon: "agora-line-hardware-settings",
+    iconHover: "agora-solid-hardware-settings",
   },
   {
     type: "reuses",
     label: "Reutilizações",
-    icon: "agora-line-arrow-right-circle",
+    icon: "agora-line-bar-chart",
+    iconHover: "agora-solid-bar-chart",
   },
   {
     type: "organizations",
     label: "Organizações",
-    icon: "agora-line-document",
+    icon: "agora-line-buildings",
+    iconHover: "agora-solid-buildings",
   },
 ];
 
@@ -42,8 +58,9 @@ export default function SearchClient() {
   const pageParam = Number(searchParams.get("page")) || 1;
 
   const [activeTab, setActiveTab] = useState<SearchType>(
-    tabParam || "datasets",
+    tabParam || "datasets"
   );
+  const [searchInput, setSearchInput] = useState(query);
 
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -68,10 +85,12 @@ export default function SearchClient() {
     setCurrentPage(pageParam);
   }, [pageParam]);
 
-  // Fetch totals for all types when query changes
+  useEffect(() => {
+    setSearchInput(query);
+  }, [query]);
+
   useEffect(() => {
     if (!query) return;
-
     async function fetchTotals() {
       const [dsRes, orgRes, reuseRes] = await Promise.all([
         searchDatasets(query, 1, 1),
@@ -84,37 +103,22 @@ export default function SearchClient() {
         reuses: reuseRes.total,
       });
     }
-
     fetchTotals();
   }, [query]);
 
-  // Fetch results for active tab
   useEffect(() => {
     if (!query) return;
-
     async function fetchResults() {
       setIsLoading(true);
       try {
         if (activeTab === "datasets") {
-          const res = await searchDatasets(
-            query,
-            currentPage,
-            PAGE_SIZE,
-          );
+          const res = await searchDatasets(query, currentPage, PAGE_SIZE);
           setDatasets(res.data || []);
         } else if (activeTab === "organizations") {
-          const res = await searchOrganizations(
-            query,
-            currentPage,
-            PAGE_SIZE,
-          );
+          const res = await searchOrganizations(query, currentPage, PAGE_SIZE);
           setOrganizations(res.data || []);
         } else if (activeTab === "reuses") {
-          const res = await searchReuses(
-            query,
-            currentPage,
-            PAGE_SIZE,
-          );
+          const res = await searchReuses(query, currentPage, PAGE_SIZE);
           setReuses(res.data || []);
         }
       } catch (error) {
@@ -123,17 +127,17 @@ export default function SearchClient() {
         setIsLoading(false);
       }
     }
-
     fetchResults();
   }, [query, activeTab, currentPage]);
 
   const buildUrl = useCallback(
-    (params: { type?: string; page?: number }) => {
+    (params: { type?: string; page?: number; q?: string }) => {
       const t = params.type || activeTab;
       const p = params.page || 1;
-      return `/pages/search?q=${encodeURIComponent(query)}&type=${t}&page=${p}`;
+      const q = params.q ?? query;
+      return `/pages/search?q=${encodeURIComponent(q)}&type=${t}&page=${p}`;
     },
-    [query, activeTab],
+    [query, activeTab]
   );
 
   const handleTabChange = (tab: SearchType) => {
@@ -142,135 +146,142 @@ export default function SearchClient() {
     router.push(buildUrl({ type: tab, page: 1 }));
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    router.push(buildUrl({ page }));
+  const handleSearch = () => {
+    if (searchInput.trim()) {
+      router.push(buildUrl({ q: searchInput.trim(), page: 1 }));
+    }
   };
 
   const totalForActiveTab = totals[activeTab];
-  const totalPages = Math.ceil(totalForActiveTab / PAGE_SIZE);
-  const headingMap: Record<SearchType, string> = {
-    datasets: "Pesquisa avançada de conjuntos de dados",
-    reuses: "Pesquisa avançada de reutilizações",
-    organizations: "Pesquisa de organizações",
-  };
 
   return (
-    <div className="container mx-auto px-4 py-48">
-      {/* Breadcrumb */}
-      <nav className="text-s-regular text-neutral-500 mb-16">
-        <Link href="/" className="hover:text-primary-600">
-          Início
-        </Link>
-        <span className="mx-8">&gt;</span>
-        <span className="text-neutral-700">Pesquisa</span>
-      </nav>
+    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters">
+      <main className="flex-grow bg-primary-50">
+        <PageBanner
+          title="Pesquisa"
+          backgroundImageUrl="/Banner/hero-bg.png"
+          backgroundPosition="center right"
+          breadcrumbItems={[
+            { label: "Home", url: "/" },
+            { label: "Pesquisa", url: "/pages/search" },
+          ]}
+        >
+          <InputSearchBar
+            label="O que procura no portal?"
+            placeholder="Pesquisar datasets, organizações, reutilizações..."
+            id="search-page-input"
+            hasVoiceActionButton={true}
+            voiceActionAltText="Pesquisar por voz"
+            searchActionAltText="Pesquisar"
+            darkMode={true}
+            value={searchInput}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearchInput(e.target.value)
+            }
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === "Enter") handleSearch();
+            }}
+            onSearchActivate={() => handleSearch()}
+          />
+          <div className="mt-8 text-s-regular text-neutral-200">
+            Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;,
+            &quot;ambiente&quot;
+          </div>
+        </PageBanner>
 
-      {/* Heading */}
-      <h1 className="text-xl-bold text-primary-900 mb-24">
-        {headingMap[activeTab]}
-      </h1>
-
-      {/* Search Bar */}
-      <div className="mb-32">
-        <SearchDropdown
-          id="search-page-input"
-          placeholder="Pesquisar datasets, organizações, reutilizações..."
-          label="Pesquisar no portal"
-        />
-      </div>
-
-      {query && (
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-32">
-          {/* Left Sidebar */}
-          <aside className="md:col-span-3">
-            {/* Type */}
-            <h2 className="text-m-bold text-neutral-900 mb-16">
-              Tipo
-            </h2>
-            <ul className="list-none m-0 p-0 mb-32">
-              {TYPES.map((item) => (
-                <li key={item.type}>
-                  <button
-                    onClick={() => handleTabChange(item.type)}
-                    className={`flex items-center gap-8 w-full px-12 py-10 text-left text-s-regular rounded-4 transition-colors cursor-pointer ${
-                      activeTab === item.type
-                        ? "bg-primary-50 text-primary-700 font-semibold"
-                        : "text-neutral-700 hover:bg-neutral-50"
-                    }`}
-                  >
-                    <Icon
-                      name={item.icon}
-                      className="w-16 h-16 shrink-0"
-                      aria-hidden="true"
-                    />
-                    <span className="flex-1">{item.label}</span>
-                    <span
-                      className={`text-xs font-medium px-8 py-2 rounded-full ${
-                        activeTab === item.type
-                          ? "bg-primary-200 text-primary-800"
-                          : "bg-neutral-100 text-neutral-600"
-                      }`}
+        <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
+            {/* Sidebar */}
+            <div className="xl:col-span-4 xl:block p-32 pl-0">
+              <div className="mb-64 pr-32 max-w-[592px] flex flex-col gap-16 mt-[32px]">
+                {TYPES.map((item) => {
+                  const isActive = item.type === activeTab;
+                  return (
+                    <Toggle
+                      key={item.type}
+                      id={`search-type-${item.type}`}
+                      name="search-type-toggle"
+                      value={item.type}
+                      appearance="icon"
+                      variant="primary"
+                      hasIcon
+                      leadingIcon={item.icon}
+                      leadingIconHover={item.iconHover}
+                      checked={isActive}
+                      onChange={() => handleTabChange(item.type)}
+                      iconOnly={false}
+                      fullWidth={true}
+                      className="w-full"
                     >
-                      {totals[item.type]}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </aside>
-
-          {/* Right Content */}
-          <div className="md:col-span-9">
-            {/* Results header */}
-            <div className="flex items-center justify-between mb-16">
-              <p className="text-s-regular text-neutral-600">
-                {totalForActiveTab} resultado
-                {totalForActiveTab !== 1 ? "s" : ""}
-              </p>
+                      <div className="flex items-center gap-12 font-bold text-sm">
+                        <span
+                          className={
+                            isActive
+                              ? "text-primary-600 font-bold"
+                              : "text-neutral-900 font-bold"
+                          }
+                        >
+                          {item.label}
+                        </span>
+                        <Pill
+                          variant="neutral"
+                          appearance="outline"
+                          circular={false}
+                          className="text-xs font-medium text-neutral-500 ml-16"
+                        >
+                          {totals[item.type].toLocaleString("pt-PT")}
+                        </Pill>
+                      </div>
+                    </Toggle>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Results */}
-            {isLoading ? (
-              <div className="text-center py-48 text-neutral-500">
-                A pesquisar...
+            {/* Main Content */}
+            <div className="xl:col-span-8 p-32 pr-0">
+              <div className="flex items-center justify-between mb-24">
+                <p className="text-m-bold text-neutral-900">
+                  {totalForActiveTab} Resultado
+                  {totalForActiveTab !== 1 ? "s" : ""}
+                </p>
               </div>
-            ) : (
-              <>
-                {/* Datasets */}
-                {activeTab === "datasets" && (
-                  <div className="flex flex-col gap-0">
-                    {datasets.length > 0 ? (
-                      datasets.map((dataset) => (
-                        <Link
-                          key={dataset.id}
-                          href={`/pages/datasets/${dataset.slug}`}
-                          className="block p-20 border border-neutral-200 -mt-px first:rounded-t-8 last:rounded-b-8 hover:border-primary-600 hover:z-10 hover:shadow-sm transition-all relative"
-                        >
-                          <h3 className="text-m-bold text-primary-700">
-                            {dataset.title}
-                          </h3>
-                          {dataset.organization && (
-                            <p className="text-s-regular text-neutral-500 mt-4">
-                              {dataset.organization.name}
-                              {dataset.last_modified && (
-                                <span className="ml-8">
-                                  — Atualizado a{" "}
-                                  {new Date(
-                                    dataset.last_modified,
-                                  ).toLocaleDateString("pt-PT")}
-                                </span>
-                              )}
+
+              {isLoading ? (
+                <PageLoader />
+              ) : (
+                <>
+                  {activeTab === "datasets" && (
+                    <div className="flex flex-col gap-0">
+                      {datasets.length > 0 ? (
+                        datasets.map((dataset) => (
+                          <Link
+                            key={dataset.id}
+                            href={`/pages/datasets/${dataset.slug}`}
+                            className="block p-20 border border-neutral-200 -mt-px first:rounded-t-8 last:rounded-b-8 hover:border-primary-600 hover:z-10 hover:shadow-sm transition-all relative"
+                          >
+                            <h3 className="text-m-bold text-primary-700">
+                              {dataset.title}
+                            </h3>
+                            {dataset.organization && (
+                              <p className="text-s-regular text-neutral-500 mt-4">
+                                {dataset.organization.name}
+                                {dataset.last_modified && (
+                                  <span className="ml-8">
+                                    — Atualizado a{" "}
+                                    {new Date(
+                                      dataset.last_modified
+                                    ).toLocaleDateString("pt-PT")}
+                                  </span>
+                                )}
+                              </p>
+                            )}
+                            <p className="text-s-regular text-neutral-700 mt-8 line-clamp-2">
+                              {dataset.description}
                             </p>
-                          )}
-                          <p className="text-s-regular text-neutral-700 mt-8 line-clamp-2">
-                            {dataset.description}
-                          </p>
-                          {dataset.tags?.length > 0 && (
-                            <div className="flex flex-wrap gap-8 mt-8">
-                              {dataset.tags
-                                .slice(0, 5)
-                                .map((tag) => (
+                            {dataset.tags?.length > 0 && (
+                              <div className="flex flex-wrap gap-8 mt-8">
+                                {dataset.tags.slice(0, 5).map((tag) => (
                                   <span
                                     key={tag}
                                     className="text-xs px-8 py-2 bg-neutral-100 text-neutral-600 rounded-full"
@@ -278,162 +289,134 @@ export default function SearchClient() {
                                     {tag}
                                   </span>
                                 ))}
-                            </div>
-                          )}
-                        </Link>
-                      ))
-                    ) : (
-                      <NoResults query={query} />
-                    )}
-                  </div>
-                )}
+                              </div>
+                            )}
+                          </Link>
+                        ))
+                      ) : (
+                        <CardNoResults
+                          title={`Nenhum resultado encontrado para "${query}"`}
+                          description="Tente pesquisar com termos diferentes."
+                        />
+                      )}
+                    </div>
+                  )}
 
-                {/* Organizations */}
-                {activeTab === "organizations" && (
-                  <div className="flex flex-col gap-0">
-                    {organizations.length > 0 ? (
-                      organizations.map((org) => (
-                        <Link
-                          key={org.id}
-                          href={`/pages/organizations/${org.slug}`}
-                          className="flex items-center gap-20 p-20 border border-neutral-200 -mt-px first:rounded-t-8 last:rounded-b-8 hover:border-primary-600 hover:z-10 hover:shadow-sm transition-all relative"
-                        >
-                          {org.logo ? (
-                            <img
-                              src={org.logo}
-                              alt={org.name}
-                              className="w-48 h-48 object-contain rounded-4 shrink-0"
-                            />
-                          ) : (
-                            <div className="w-48 h-48 bg-neutral-100 rounded-4 flex items-center justify-center shrink-0">
-                              <Icon
-                                name="agora-line-document"
-                                className="w-20 h-20 text-neutral-400"
-                                aria-hidden="true"
+                  {activeTab === "organizations" && (
+                    <div className="flex flex-col gap-0">
+                      {organizations.length > 0 ? (
+                        organizations.map((org) => (
+                          <Link
+                            key={org.id}
+                            href={`/pages/organizations/${org.slug}`}
+                            className="flex items-center gap-20 p-20 border border-neutral-200 -mt-px first:rounded-t-8 last:rounded-b-8 hover:border-primary-600 hover:z-10 hover:shadow-sm transition-all relative"
+                          >
+                            {org.logo ? (
+                              <img
+                                src={org.logo}
+                                alt={org.name}
+                                className="w-48 h-48 object-contain rounded-4 shrink-0"
                               />
+                            ) : (
+                              <div className="w-48 h-48 bg-neutral-100 rounded-4 flex items-center justify-center shrink-0">
+                                <Icon
+                                  name="agora-line-buildings"
+                                  className="w-20 h-20 text-neutral-400"
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <h3 className="text-m-bold text-primary-700">
+                                {org.name}
+                              </h3>
+                              {org.description && (
+                                <p className="text-s-regular text-neutral-700 mt-4 line-clamp-2">
+                                  {org.description}
+                                </p>
+                              )}
                             </div>
-                          )}
-                          <div className="flex-1">
-                            <h3 className="text-m-bold text-primary-700">
-                              {org.name}
-                            </h3>
-                            {org.description && (
+                          </Link>
+                        ))
+                      ) : (
+                        <CardNoResults
+                          title={`Nenhum resultado encontrado para "${query}"`}
+                          description="Tente pesquisar com termos diferentes."
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  {activeTab === "reuses" && (
+                    <div className="flex flex-col gap-0">
+                      {reuses.length > 0 ? (
+                        reuses.map((reuse) => (
+                          <Link
+                            key={reuse.id}
+                            href={`/pages/reuses/${reuse.slug}`}
+                            className="flex items-center gap-20 p-20 border border-neutral-200 -mt-px first:rounded-t-8 last:rounded-b-8 hover:border-primary-600 hover:z-10 hover:shadow-sm transition-all relative"
+                          >
+                            {reuse.image_thumbnail || reuse.image ? (
+                              <img
+                                src={reuse.image_thumbnail || reuse.image || ""}
+                                alt={reuse.title}
+                                className="w-48 h-48 object-cover rounded-4 shrink-0"
+                              />
+                            ) : (
+                              <div className="w-48 h-48 bg-neutral-100 rounded-4 flex items-center justify-center shrink-0">
+                                <Icon
+                                  name="agora-line-bar-chart"
+                                  className="w-20 h-20 text-neutral-400"
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <h3 className="text-m-bold text-primary-700">
+                                {reuse.title}
+                              </h3>
+                              {reuse.organization && (
+                                <p className="text-s-regular text-neutral-500 mt-4">
+                                  {reuse.organization.name}
+                                </p>
+                              )}
                               <p className="text-s-regular text-neutral-700 mt-4 line-clamp-2">
-                                {org.description}
+                                {reuse.description}
                               </p>
-                            )}
-                          </div>
-                        </Link>
-                      ))
-                    ) : (
-                      <NoResults query={query} />
-                    )}
-                  </div>
-                )}
-
-                {/* Reuses */}
-                {activeTab === "reuses" && (
-                  <div className="flex flex-col gap-0">
-                    {reuses.length > 0 ? (
-                      reuses.map((reuse) => (
-                        <Link
-                          key={reuse.id}
-                          href={`/pages/reuses/${reuse.slug}`}
-                          className="flex items-center gap-20 p-20 border border-neutral-200 -mt-px first:rounded-t-8 last:rounded-b-8 hover:border-primary-600 hover:z-10 hover:shadow-sm transition-all relative"
-                        >
-                          {reuse.image_thumbnail || reuse.image ? (
-                            <img
-                              src={
-                                reuse.image_thumbnail ||
-                                reuse.image ||
-                                ""
-                              }
-                              alt={reuse.title}
-                              className="w-48 h-48 object-cover rounded-4 shrink-0"
-                            />
-                          ) : (
-                            <div className="w-48 h-48 bg-neutral-100 rounded-4 flex items-center justify-center shrink-0">
-                              <Icon
-                                name="agora-line-arrow-right-circle"
-                                className="w-20 h-20 text-neutral-400"
-                                aria-hidden="true"
-                              />
                             </div>
-                          )}
-                          <div className="flex-1">
-                            <h3 className="text-m-bold text-primary-700">
-                              {reuse.title}
-                            </h3>
-                            {reuse.organization && (
-                              <p className="text-s-regular text-neutral-500 mt-4">
-                                {reuse.organization.name}
-                              </p>
-                            )}
-                            <p className="text-s-regular text-neutral-700 mt-4 line-clamp-2">
-                              {reuse.description}
-                            </p>
-                          </div>
-                        </Link>
-                      ))
-                    ) : (
-                      <NoResults query={query} />
-                    )}
-                  </div>
-                )}
+                          </Link>
+                        ))
+                      ) : (
+                        <CardNoResults
+                          title={`Nenhum resultado encontrado para "${query}"`}
+                          description="Tente pesquisar com termos diferentes."
+                        />
+                      )}
+                    </div>
+                  )}
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-8 mt-32">
-                    <button
-                      onClick={() =>
-                        handlePageChange(currentPage - 1)
-                      }
-                      disabled={currentPage <= 1}
-                      className="px-16 py-8 text-s-regular border border-neutral-200 rounded-4 disabled:opacity-40 disabled:cursor-not-allowed hover:border-primary-600 cursor-pointer"
-                    >
-                      Anterior
-                    </button>
-                    <span className="text-s-regular text-neutral-600 px-16">
-                      Página {currentPage} de {totalPages}
-                    </span>
-                    <button
-                      onClick={() =>
-                        handlePageChange(currentPage + 1)
-                      }
-                      disabled={currentPage >= totalPages}
-                      className="px-16 py-8 text-s-regular border border-neutral-200 rounded-4 disabled:opacity-40 disabled:cursor-not-allowed hover:border-primary-600 cursor-pointer"
-                    >
-                      Seguinte
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
+                  {totalForActiveTab > PAGE_SIZE && (
+                    <div className="mt-32">
+                      <Pagination
+                        currentPage={currentPage}
+                        totalItems={totalForActiveTab}
+                        pageSize={PAGE_SIZE}
+                        baseUrl={`/pages/search?q=${encodeURIComponent(query)}&type=${activeTab}`}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
-      )}
+      </main>
 
-      {/* Empty state — no query */}
       {!query && (
-        <div className="text-center py-48 text-neutral-500">
+        <div className="container mx-auto text-center py-48 text-neutral-500">
           <p className="text-m-regular">
             Introduza um termo para pesquisar no portal.
           </p>
         </div>
       )}
-    </div>
-  );
-}
-
-function NoResults({ query }: { query: string }) {
-  return (
-    <div className="text-center py-48 text-neutral-500">
-      <p className="text-m-regular">
-        Nenhum resultado encontrado para &quot;{query}&quot;
-      </p>
-      <p className="text-s-regular mt-8">
-        Tente pesquisar com termos diferentes.
-      </p>
     </div>
   );
 }
