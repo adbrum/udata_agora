@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button, InputSearchBar, Icon, CardGeneral, CardLinks, InputSelect, DropdownSection, DropdownOption, Pill, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { DatasetsFilters } from '@/components/datasets/DatasetsFilters';
-import { APIResponse, Dataset } from '@/types/api';
+import { APIResponse, Dataset, SiteMetrics } from '@/types/api';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -16,11 +16,13 @@ import PageBanner from '@/components/PageBanner';
 interface DatasetsClientProps {
   initialData: APIResponse<Dataset>;
   currentPage: number;
+  siteMetrics?: SiteMetrics;
 }
 
 export default function DatasetsClient({
   initialData,
   currentPage,
+  siteMetrics,
 }: DatasetsClientProps) {
   const publishDropdownRef = React.useRef<HTMLDivElement>(null);
   const [showPublishDropdown, setShowPublishDropdown] = React.useState(false);
@@ -138,7 +140,7 @@ export default function DatasetsClient({
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
             {/* Sidebar */}
             <div className="xl:col-span-4 xl:block bg-primary-100 p-32 pl-0">
-              <DatasetsFilters />
+              <DatasetsFilters siteMetrics={siteMetrics} searchQuery={currentQuery} />
             </div>
 
             {/* Results Area */}

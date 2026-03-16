@@ -14,14 +14,20 @@ import {
   suggestSpatialZones,
 } from '@/services/api';
 import PageLoader from "@/components/common/PageLoader";
-import { Organization, License, Frequency, Granularity } from '@/types/api';
+import { Organization, License, Frequency, Granularity, SiteMetrics } from '@/types/api';
+import { CategoryToggles } from '@/components/CategoryToggles';
 
 interface FilterOption {
   id: string;
   name: string;
 }
 
-export const DatasetsFilters = () => {
+interface DatasetsFiltersProps {
+  siteMetrics?: SiteMetrics;
+  searchQuery?: string;
+}
+
+export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -201,6 +207,12 @@ export const DatasetsFilters = () => {
 
   return (
     <div className="h-full">
+      {siteMetrics && (
+        <div className="pl-[64px]">
+          <CategoryToggles siteMetrics={siteMetrics} searchQuery={searchQuery} />
+        </div>
+      )}
+
       <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[64px] pl-[64px]">Filtros</h2>
 
       <Sidebar variant="filter" className="pl-[64px] font-bold">
