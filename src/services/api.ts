@@ -59,6 +59,10 @@ import {
   CommunityResource,
   CommunityResourceCreatePayload,
   CommunityResourceUpdatePayload,
+  HarvestJob,
+  HarvestSource,
+  HarvestSourceCreatePayload,
+  HarvestSourceUpdatePayload,
 } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
@@ -2231,5 +2235,135 @@ export async function uploadCommunityResourceFile(
     const error = await res.json().catch(() => ({}));
     throw { status: res.status, data: error };
   }
+  return await res.json();
+}
+
+// ── Harvesters CRUD (TICKET-32) ──────────────────────────────────────
+
+export async function fetchHarvesters(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<HarvestSource>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/harvest/sources/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch harvesters: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching harvesters:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchHarvester(id: string): Promise<HarvestSource | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Failed to fetch harvester: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching harvester:", error);
+    return null;
+  }
+}
+
+export async function createHarvester(
+  payload: HarvestSourceCreatePayload
+): Promise<HarvestSource> {
+  const res = await fetch(`${API_BASE_URL}/harvest/sources/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function updateHarvester(
+  id: string,
+  payload: HarvestSourceUpdatePayload
+): Promise<HarvestSource> {
+  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteHarvester(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete harvester: ${res.statusText}`);
+}
+
+export async function triggerHarvest(id: string): Promise<HarvestJob> {
+  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/jobs/`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function fetchHarvestJobs(
+  sourceId: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<HarvestJob>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/harvest/sources/${sourceId}/jobs/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch harvest jobs: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching harvest jobs:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function validateHarvestSource(
+  id: string
+): Promise<Record<string, unknown>> {
+  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/validation/`, {
+    cache: "no-store",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to validate harvest source: ${res.statusText}`);
   return await res.json();
 }
