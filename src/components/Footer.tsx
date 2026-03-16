@@ -1,53 +1,81 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FederatedFooter } from '@ama-pt/agora-design-system';
+import { fetchLatestDatasets } from '@/services/api';
 
 const linkColumns = [
   {
     title: 'Dados abertos',
     links: [
-      { href: '#', label: 'Catálogo de dados' },
-      { href: '#', label: 'Portal de dados da empresa' },
+      { href: '/pages/datasets', label: 'Catálogo de dados' },
+      { href: 'https://data.europa.eu/en', label: 'Portal de dados europeu' },
     ],
   },
   {
     title: 'Plataforma',
     links: [
-      { href: '#', label: 'Sobre nós' },
-      { href: '#', label: 'Termos de utilização' },
+      { href: '/pages/about-open-data', label: 'Sobre nós' },
+      { href: '/pages/support', label: 'Contactar-nos' },
+      { href: '/pages/faqs/terms', label: 'Termos de utilização' },
     ],
   },
   {
     title: 'Desenvolvimento',
     links: [
-      { href: '#', label: 'API do portal' },
-      { href: '#', label: 'Motor de código aberto: udata (14.7.2)' },
-      { href: '#', label: 'Interface de utilizador de data.gov.pt: cdata (jj2422c)' },
+      { href: '/pages/docapi', label: 'API do portal' },
+      { href: 'https://github.com/opendatateam/udata', label: 'Motor de código aberto: udata (14.7.2)' },
+      { href: '#', label: 'Interface de utilizador de dados.gov: frontend' },
     ],
   },
 ];
 
 const socialLinksData = [
   { icon: 'agora-line-facebook', iconHover: 'agora-solid-facebook', href: 'https://facebook.com', label: 'Facebook' },
-  { icon: 'agora-line-linkedin', iconHover: 'agora-solid-linkedin', href: 'https://linkedin.com', label: 'LinkedIn' },
+  { icon: 'agora-line-linkedin', iconHover: 'agora-solid-linkedin', href: 'https://www.linkedin.com/company/arte-gov-pt/', label: 'LinkedIn' },
   { icon: 'agora-line-twitter-x', iconHover: 'agora-solid-twitter-x', href: 'https://twitter.com', label: 'X (Twitter)' },
 ];
 
 const usefulLinksData = [
-  { href: '#', label: 'República Portuguesa' },
-  { href: '#', label: 'Compete 2020' },
-  { href: '#', label: 'Portugal 2020' },
-  { href: '#', label: 'Comissão Europeia' },
+  { href: 'https://www.portugal.gov.pt/pt/gc23', label: 'República Portuguesa' },
+  { href: 'https://www.compete2020.gov.pt/', label: 'Compete 2020' },
+  { href: 'https://portugal2020.pt/', label: 'Portugal 2020' },
+  { href: 'https://commission.europa.eu/funding-tenders/find-funding/funding-management-mode/2014-2020-european-structural-and-investment-funds_en?prefLang=pt', label: 'Comissão Europeia' },
 ];
 
 // Element 1: Links Navigation
 const FooterNavigation = () => {
+  const [firstDatasetSlug, setFirstDatasetSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetchLatestDatasets(1, 1);
+        if (res.data && res.data.length > 0) {
+          setFirstDatasetSlug(res.data[0].slug);
+        }
+      } catch {
+        // fallback to datasets list
+      }
+    }
+    load();
+  }, []);
+
+  const resolvedColumns = linkColumns.map((col) => ({
+    ...col,
+    links: col.links.map((link) => {
+      if (link.label === 'Catálogo de dados' && firstDatasetSlug) {
+        return { ...link, href: `/pages/datasets/${firstDatasetSlug}` };
+      }
+      return link;
+    }),
+  }));
+
   return (
     <div className="container mx-auto px-4 py-12 xl:py-64">
       <h3 className="text-l-bold mb-8 text-white mb-[32px]">Mais para descobrir no portal</h3>
       <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-32">
-        {linkColumns.map((column, idx) => (
+        {resolvedColumns.map((column, idx) => (
           <div key={idx}>
             <h4 className="text-m-semibold text-white mb-[16px]">{column.title}</h4>
             <ul className="space-y-2">
@@ -56,6 +84,7 @@ const FooterNavigation = () => {
                   <a
                     href={link.href}
                     className="text-white hover:underline text-sm transition-colors"
+                    {...(link.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   >
                     {link.label}
                   </a>
@@ -82,7 +111,9 @@ const FooterInstitutional = () => {
           <div className="flex items-center gap-32">
             <img src="/Logos/NextGenerationEU.svg" alt="NextGenerationEU" />
             <img src="/Logos/republica-portuguesa.svg" alt="República Portuguesa" />
-            <img src="/Logos/ARTE.svg" alt="ARTE" />
+            <a href="https://www.arte.gov.pt/" target="_blank" rel="noopener noreferrer">
+              <img src="/Logos/ARTE.svg" alt="ARTE" />
+            </a>
           </div>
         </div>
       </div>
@@ -101,6 +132,8 @@ const FooterInstitutional = () => {
                 href={social.href}
                 aria-label={social.label}
                 className="text-white hover:opacity-80 transition-opacity"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Icon name={social.icon} className="w-6 h-6 fill-white" />
               </a>
@@ -119,6 +152,7 @@ const FooterInstitutional = () => {
                   key={idx}
                   href={link.href}
                   className="text-white hover:underline transition-colors"
+                  {...(link.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 >
                   {link.label}
                 </a>
