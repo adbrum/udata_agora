@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sidebar, SidebarItem, Icon } from "@ama-pt/agora-design-system";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
 
 interface NavChild {
   label: string;
@@ -14,6 +15,7 @@ interface NavChild {
 }
 
 interface NavGroup {
+  key: "profile" | "organization" | "system";
   label: string;
   icon?: string;
   children: NavChild[];
@@ -21,6 +23,7 @@ interface NavGroup {
 
 const navGroups: NavGroup[] = [
   {
+    key: "profile",
     label: "Meu perfil",
     icon: "agora-line-user",
     children: [
@@ -57,6 +60,7 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    key: "organization",
     label: "Minha organização",
     icon: "agora-line-user-group",
     children: [
@@ -108,6 +112,7 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    key: "system",
     label: "Sistema",
     icon: "agora-line-settings",
     children: [
@@ -167,6 +172,17 @@ const navGroups: NavGroup[] = [
 
 export function AdminSideNavigation() {
   const pathname = usePathname();
+  const { isAdmin, hasOrganization } = useAuth();
+
+  const visibleGroups = useMemo(
+    () =>
+      navGroups.filter((group) => {
+        if (group.key === "system") return isAdmin;
+        if (group.key === "organization") return hasOrganization;
+        return true;
+      }),
+    [isAdmin, hasOrganization],
+  );
 
   return (
     <nav className="admin-side-nav">
@@ -189,7 +205,7 @@ export function AdminSideNavigation() {
               ),
             }}
           />,
-          ...navGroups.map((group) => {
+          ...visibleGroups.map((group) => {
           const hasActiveChild = group.children.some((child) =>
             pathname?.startsWith(child.href),
           );
