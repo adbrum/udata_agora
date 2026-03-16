@@ -88,6 +88,22 @@ export interface Organization {
   uri: string;
 }
 
+export interface OrganizationCreatePayload {
+  name: string;
+  acronym?: string;
+  description?: string;
+  url?: string;
+  business_number_id?: string;
+}
+
+export interface OrganizationUpdatePayload {
+  name?: string;
+  acronym?: string;
+  description?: string;
+  url?: string;
+  business_number_id?: string;
+}
+
 export interface OrganizationSuggestion {
   id: string;
   name: string;
