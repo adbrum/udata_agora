@@ -58,7 +58,7 @@ export const OrganizationsFilters = ({
 
   return (
     <div className="h-full organizations-filters">
-      <CategoryToggles siteMetrics={siteMetrics} />
+      <CategoryToggles siteMetrics={siteMetrics} searchQuery={initialFilters.q} />
 
       <h2 className="font-bold text-xl text-neutral-900 mt-64 mb-32">Filtros</h2>
 
