@@ -197,16 +197,7 @@ export const Header = () => {
           iconHover: "agora-solid-plus-circle",
           title: "Referência da API",
           description: "Documentação técnica",
-          href: "#",
-        },
-        {
-          type: "card",
-          key: "dev-pub",
-          iconDefault: "agora-line-document",
-          iconHover: "agora-solid-document",
-          title: "Relatórios/Estudos",
-          description: "Submeter estudos",
-          href: "#",
+          href: "/pages/faqs/api-documentation",
         },
       ]
       : submenu === "publicacoes"
@@ -239,7 +230,7 @@ export const Header = () => {
             iconHover: "agora-solid-layers-menu",
             title: "Como publicar dados?",
             description: "Guia de publicação",
-            href: "#",
+            href: "/pages/faqs/publish",
           },
           {
             type: "card",
@@ -248,7 +239,7 @@ export const Header = () => {
             iconHover: "agora-solid-layers-menu",
             title: "Como reutilizar dados?",
             description: "Guia de reutilização",
-            href: "#",
+            href: "/pages/faqs/reuse",
           },
           {
             type: "card",
@@ -257,7 +248,7 @@ export const Header = () => {
             iconHover: "agora-solid-question-mark",
             title: "O que é o dados.gov",
             description: "Sobre o portal",
-            href: "#",
+            href: "/pages/faqs/about_dadosgov",
           },
           {
             type: "card",
@@ -473,7 +464,7 @@ export const Header = () => {
                 iconHover: "agora-solid-health",
                 title: "HVDs",
                 description: "High Value Datasets",
-                href: "#",
+                href: "/pages/hvds",
               },
               {
                 iconDefault: "/Icons/bar_char_white.svg",

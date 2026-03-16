@@ -2,13 +2,16 @@ import {
   Activity,
   APIResponse,
   Dataservice,
+  DataserviceCreatePayload,
+  DataserviceUpdatePayload,
   Dataset,
   DatasetBadges,
   DatasetCreatePayload,
   DatasetFilters,
   DatasetSuggestion,
-  DatasetUpdatePayload,
   Discussion,
+  DiscussionCreatePayload,
+  DatasetUpdatePayload,
   Follow,
   FollowableEntityType,
   FollowResponse,
@@ -21,18 +24,27 @@ import {
   OrgBadges,
   OrgRole,
   Organization,
+  OrganizationCreatePayload,
   OrganizationFilters,
   OrganizationMember,
+  OrganizationMetrics,
   OrganizationSuggestion,
+  OrganizationUpdatePayload,
   Post,
+  PostCreatePayload,
+  PostUpdatePayload,
   Resource,
   ResourceCreatePayload,
   ResourceType,
   ResourceUpdatePayload,
   Reuse,
+  ReuseCreatePayload,
   ReuseFilters,
   ReuseSuggestion,
+  ReuseTopic,
   ReuseType,
+  ReuseUpdatePayload,
+  SiteConfigUpdatePayload,
   SiteInfo,
   GeoLevel,
   Granularity,
@@ -42,9 +54,26 @@ import {
   SpatialZone,
   TagSuggestion,
   Topic,
+  TopicCreatePayload,
   TopicElement,
+  TopicElementCreatePayload,
+  TopicUpdatePayload,
+  UserMetrics,
   UserPublic,
+  UserAdmin,
+  UserAdminUpdatePayload,
   UserRef,
+  UserRole,
+  UserSuggestion,
+  UserUpdatePayload,
+  OrgInvitation,
+  CommunityResource,
+  CommunityResourceCreatePayload,
+  CommunityResourceUpdatePayload,
+  HarvestJob,
+  HarvestSource,
+  HarvestSourceCreatePayload,
+  HarvestSourceUpdatePayload,
 } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
@@ -405,6 +434,62 @@ export async function fetchOrganization(slugOrId: string): Promise<Organization 
   }
 }
 
+export async function createOrganization(
+  payload: OrganizationCreatePayload
+): Promise<Organization> {
+  const res = await fetch(`${API_BASE_URL}/organizations/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function updateOrganization(
+  org: string,
+  payload: OrganizationUpdatePayload
+): Promise<Organization> {
+  const res = await fetch(`${API_BASE_URL}/organizations/${org}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteOrganization(org: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/organizations/${org}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete organization: ${res.statusText}`);
+}
+
+export async function uploadOrgLogo(org: string, file: File): Promise<Organization> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE_URL}/organizations/${org}/logo`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
 export async function fetchOrgDatasets(
   org: string,
   page: number = 1,
@@ -485,11 +570,58 @@ export async function fetchDiscussions(
 
     if (!res.ok) {
       throw new Error(`Failed to fetch discussions: ${res.statusText}`);
+/**
+ * Fetch the authenticated user's dataservices (paginated)
+ */
+export async function fetchMyDataservices(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Dataservice>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/me/dataservices/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch my dataservices: ${res.statusText}`);
     }
 
     return await res.json();
   } catch (error) {
     console.error("Error fetching discussions:", error);
+    console.error("Error fetching my dataservices:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+/**
+ * Fetch all dataservices (paginated)
+ */
+export async function fetchDataservices(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Dataservice>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/dataservices/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch dataservices: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching dataservices:", error);
     return {
       data: [],
       page: 1,
@@ -528,6 +660,76 @@ export async function fetchOrgDataservices(
       previous_page: null,
     };
   }
+}
+
+/**
+ * Fetch a single dataservice by ID
+ */
+export async function fetchDataservice(id: string): Promise<Dataservice> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/dataservices/${id}/`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch dataservice: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching dataservice:", error);
+    throw error;
+  }
+}
+
+/**
+ * Create a new dataservice
+ */
+export async function createDataservice(
+  payload: DataserviceCreatePayload
+): Promise<Dataservice> {
+  const res = await fetch(`${API_BASE_URL}/dataservices/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+/**
+ * Update an existing dataservice
+ */
+export async function updateDataservice(
+  id: string,
+  payload: DataserviceUpdatePayload
+): Promise<Dataservice> {
+  const res = await fetch(`${API_BASE_URL}/dataservices/${id}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+/**
+ * Delete a dataservice
+ */
+export async function deleteDataservice(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/dataservices/${id}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete dataservice: ${res.statusText}`);
 }
 
 export async function fetchReuses(
@@ -599,6 +801,105 @@ export async function fetchReuseTypes(): Promise<ReuseType[]> {
   }
 }
 
+export async function fetchReuseTopics(): Promise<ReuseTopic[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/reuses/topics/`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch reuse topics: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching reuse topics:", error);
+    return [];
+  }
+}
+
+export async function createReuse(payload: ReuseCreatePayload): Promise<Reuse> {
+  const res = await fetch(`${API_BASE_URL}/reuses/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function updateReuse(
+  id: string,
+  payload: ReuseUpdatePayload
+): Promise<Reuse> {
+  const res = await fetch(`${API_BASE_URL}/reuses/${id}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteReuse(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/reuses/${id}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete reuse: ${res.statusText}`);
+}
+
+export async function uploadReuseImage(id: string, file: File): Promise<Reuse> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE_URL}/reuses/${id}/image`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function linkDatasetToReuse(
+  reuseId: string,
+  datasetId: string
+): Promise<Reuse> {
+  const res = await fetch(`${API_BASE_URL}/reuses/${reuseId}/datasets/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ id: datasetId }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function linkDataserviceToReuse(
+  reuseId: string,
+  dataserviceId: string
+): Promise<Reuse> {
+  const res = await fetch(`${API_BASE_URL}/reuses/${reuseId}/dataservices/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ id: dataserviceId }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
 export async function suggestReuses(
   query: string,
   size: number = 5
@@ -651,6 +952,22 @@ export async function fetchSiteInfo(): Promise<SiteInfo> {
       metrics: { datasets: 0, organizations: 0, reuses: 0, users: 0 },
     };
   }
+}
+
+export async function updateSiteConfig(payload: SiteConfigUpdatePayload): Promise<SiteInfo> {
+  const res = await fetch(`${API_BASE_URL}/site/`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || `Failed to update site config: ${res.statusText}`);
+  }
+
+  return await res.json();
 }
 
 export async function fetchFeaturedDatasets(pageSize: number = 3): Promise<APIResponse<Dataset>> {
@@ -793,6 +1110,110 @@ export async function fetchPost(slugOrId: string): Promise<Post | null> {
     return await res.json();
   } catch (error) {
     console.error("Error fetching post:", error);
+    return null;
+  }
+}
+
+export async function createPost(
+  payload: PostCreatePayload
+): Promise<Post | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/posts/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to create a post");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to create post: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error creating post:", error);
+    return null;
+  }
+}
+
+export async function updatePost(
+  id: string,
+  payload: PostUpdatePayload
+): Promise<Post | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/posts/${id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to update a post");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to update post: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating post:", error);
+    return null;
+  }
+}
+
+export async function deletePost(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/posts/${id}/`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to delete a post");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to delete post: ${res.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    return false;
+  }
+}
+
+export async function uploadPostImage(
+  id: string,
+  file: File
+): Promise<Post | null> {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch(`${API_BASE_URL}/posts/${id}/image/`, {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to upload a post image");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to upload post image: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error uploading post image:", error);
     return null;
   }
 }
@@ -1217,6 +1638,34 @@ export async function suggestGlobalSearch(
   }
 }
 
+// --- Discussions ---
+
+export async function fetchDiscussions(
+  subjectId: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Discussion>> {
+  try {
+    const params = new URLSearchParams({
+      for: subjectId,
+      page: String(page),
+      page_size: String(pageSize),
+    });
+    const res = await fetch(`${API_BASE_URL}/discussions/?${params.toString()}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch discussions: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching discussions:", error);
+    return { data: [], page: 1, page_size: pageSize, total: 0, next_page: null, previous_page: null };
+  }
+}
+
 // --- Notifications ---
 
 export async function fetchNotifications(
@@ -1269,6 +1718,32 @@ export async function fetchTopics(
   }
 }
 
+export async function createDiscussion(
+  payload: DiscussionCreatePayload
+): Promise<Discussion | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/discussions/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to create a discussion");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to create discussion: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error creating discussion:", error);
+    return null;
+  }
+}
+
 export async function fetchTopic(slugOrId: string): Promise<Topic | null> {
   try {
     const res = await fetch(`${API_V2_BASE_URL}/topics/${slugOrId}/`, {
@@ -1286,7 +1761,37 @@ export async function fetchTopic(slugOrId: string): Promise<Topic | null> {
     return await res.json();
   } catch (error) {
     console.error("Error fetching topic:", error);
-    throw error;
+    return null;
+  }
+}
+
+export async function replyToDiscussion(
+  discussionId: string,
+  comment: string
+): Promise<Discussion | null> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/discussions/${discussionId}/`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ comment }),
+      }
+    );
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to reply to a discussion");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to reply to discussion: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error replying to discussion:", error);
+    return null;
   }
 }
 
@@ -1307,6 +1812,231 @@ export async function fetchTopicElements(
 
     return await res.json();
   } catch (error) {
+    console.error("Error fetching topic elements:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function createTopic(
+  payload: TopicCreatePayload
+): Promise<Topic | null> {
+  try {
+    const res = await fetch(`${API_V2_BASE_URL}/topics/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to create a topic");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to create topic: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error creating topic:", error);
+    return null;
+  }
+}
+
+export async function updateTopic(
+  id: string,
+  payload: TopicUpdatePayload
+): Promise<Topic | null> {
+  try {
+    const res = await fetch(`${API_V2_BASE_URL}/topics/${id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to update a topic");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to update topic: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating topic:", error);
+    return null;
+  }
+}
+
+export async function deleteTopic(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_V2_BASE_URL}/topics/${id}/`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to delete a topic");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to delete topic: ${res.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting topic:", error);
+    return false;
+  }
+}
+
+export async function addTopicElement(
+  topicId: string,
+  payload: TopicElementCreatePayload
+): Promise<TopicElement | null> {
+  try {
+    const res = await fetch(`${API_V2_BASE_URL}/topics/${topicId}/elements/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to add a topic element");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to add topic element: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error adding topic element:", error);
+    return null;
+  }
+}
+
+export async function removeTopicElement(
+  topicId: string,
+  elementId: string
+): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `${API_V2_BASE_URL}/topics/${topicId}/elements/${elementId}/`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to remove a topic element");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to remove topic element: ${res.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error removing topic element:", error);
+    return false;
+  }
+}
+
+export async function updateTopicElements(
+  topicId: string,
+  elements: TopicElementCreatePayload[]
+): Promise<TopicElement[] | null> {
+  try {
+    const res = await fetch(`${API_V2_BASE_URL}/topics/${topicId}/elements/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(elements),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to update topic elements");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to update topic elements: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating topic elements:", error);
+    return null;
+  }
+}
+
+export async function closeDiscussion(
+  discussionId: string,
+  comment?: string
+): Promise<Discussion | null> {
+  try {
+    const body: Record<string, unknown> = { close: true };
+    if (comment) body.comment = comment;
+
+    const res = await fetch(
+      `${API_BASE_URL}/discussions/${discussionId}/`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      }
+    );
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to close a discussion");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to close discussion: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error closing discussion:", error);
+    return null;
+  }
+}
+
+export async function deleteDiscussion(
+  discussionId: string
+): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/discussions/${discussionId}/`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to delete a discussion");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to delete discussion: ${res.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting discussion:", error);
     console.error("Error fetching topic elements:", error);
     return {
       data: [],
@@ -1398,6 +2128,48 @@ export async function createReport(payload: ReportCreatePayload): Promise<Report
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
     throw new Error(data.message || `Failed to create report: ${res.statusText}`);
+  }
+
+  return await res.json();
+}
+
+export async function fetchReports(
+  page: number = 1,
+  status?: string,
+  sort?: string,
+  pageSize: number = 20
+): Promise<APIResponse<Report>> {
+  try {
+    const params = new URLSearchParams({
+      page: String(page),
+      page_size: String(pageSize),
+    });
+    if (status) params.set("status", status);
+    if (sort) params.set("sort", sort);
+
+    const res = await fetch(`${API_BASE_URL}/reports/?${params.toString()}`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error(`Failed to fetch reports: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching reports:", error);
+    return { data: [], page, page_size: pageSize, total: 0, next_page: null, previous_page: null };
+  }
+}
+
+export async function dismissReport(id: string): Promise<Report> {
+  const res = await fetch(`${API_BASE_URL}/reports/${id}/`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ status: "handled" }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || `Failed to dismiss report: ${res.statusText}`);
   }
 
   return await res.json();
@@ -1605,4 +2377,629 @@ export async function isFollowing(
   } catch {
     return false;
   }
+}
+
+// ── User Profile & Metrics (TICKET-30) ──────────────────────────────
+
+export async function updateProfile(payload: UserUpdatePayload): Promise<UserPublic> {
+  const res = await fetch(`${API_BASE_URL}/me/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function uploadAvatar(file: File): Promise<UserPublic> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE_URL}/me/avatar`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteAccount(): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/me/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete account: ${res.statusText}`);
+}
+
+export async function fetchOrgInvitations(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<OrgInvitation>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/me/org_invitations/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch org invitations: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org invitations:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchMyMetrics(): Promise<UserMetrics> {
+  const res = await fetch(`${API_BASE_URL}/me/metrics/`, {
+    cache: "no-store",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to fetch user metrics: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function fetchUserActivity(
+  userId?: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Activity>> {
+  try {
+    const params = new URLSearchParams({
+      page: String(page),
+      page_size: String(pageSize),
+      sort: "-created_at",
+    });
+    if (userId) params.set("owner", userId);
+    const res = await fetch(`${API_BASE_URL}/activity/?${params.toString()}`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error(`Failed to fetch user activity: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching user activity:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+// --- User Management (Sysadmin) ---
+
+export async function fetchUsers(
+  page: number = 1,
+  q?: string,
+  sort?: string,
+  pageSize: number = 20
+): Promise<APIResponse<UserAdmin>> {
+  try {
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("page_size", String(pageSize));
+    if (q) params.set("q", q);
+    if (sort) params.set("sort", sort);
+
+    const res = await fetch(`${API_BASE_URL}/users/?${params.toString()}`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch users: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchUser(id: string): Promise<UserAdmin | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/${id}/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    if (res.status === 404) {
+      return null;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch user: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
+}
+
+export async function updateUser(
+  id: string,
+  payload: UserAdminUpdatePayload
+): Promise<UserAdmin | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/${id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to update a user");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to update user: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return null;
+  }
+}
+
+export async function deleteUser(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/${id}/`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to delete a user");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to delete user: ${res.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return false;
+  }
+}
+
+export async function fetchUserRoles(): Promise<UserRole[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/roles/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch user roles: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching user roles:", error);
+    return [];
+  }
+}
+
+export async function suggestUsers(query: string): Promise<UserSuggestion[]> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/users/suggest/?q=${encodeURIComponent(query)}`,
+      { cache: "no-store", credentials: "include" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to suggest users: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error suggesting users:", error);
+    return [];
+  }
+}
+
+// ── Community Resources CRUD (TICKET-31) ─────────────────────────────
+
+export async function fetchMyCommunityResources(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<CommunityResource>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/datasets/community_resources/?owner=me&page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok)
+      throw new Error(`Failed to fetch my community resources: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching my community resources:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchMyOrgCommunityResources(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<CommunityResource>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/me/org_community_resources/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok)
+      throw new Error(`Failed to fetch org community resources: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org community resources:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function createCommunityResource(
+  payload: CommunityResourceCreatePayload
+): Promise<CommunityResource> {
+  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function updateCommunityResource(
+  id: string,
+  payload: CommunityResourceUpdatePayload
+): Promise<CommunityResource> {
+  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/${id}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteCommunityResource(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/${id}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete community resource: ${res.statusText}`);
+}
+
+export async function uploadCommunityResourceFile(
+  id: string,
+  file: File
+): Promise<CommunityResource> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/${id}/upload/`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+// ── Harvesters CRUD (TICKET-32) ──────────────────────────────────────
+
+export async function fetchHarvesters(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<HarvestSource>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/harvest/sources/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch harvesters: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching harvesters:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchHarvester(id: string): Promise<HarvestSource | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Failed to fetch harvester: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching harvester:", error);
+    return null;
+  }
+}
+
+export async function createHarvester(
+  payload: HarvestSourceCreatePayload
+): Promise<HarvestSource> {
+  const res = await fetch(`${API_BASE_URL}/harvest/sources/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function updateHarvester(
+  id: string,
+  payload: HarvestSourceUpdatePayload
+): Promise<HarvestSource> {
+  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteHarvester(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete harvester: ${res.statusText}`);
+}
+
+export async function triggerHarvest(id: string): Promise<HarvestJob> {
+  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/jobs/`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function fetchHarvestJobs(
+  sourceId: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<HarvestJob>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/harvest/sources/${sourceId}/jobs/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch harvest jobs: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching harvest jobs:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function validateHarvestSource(
+  id: string
+): Promise<Record<string, unknown>> {
+  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/validation/`, {
+    cache: "no-store",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to validate harvest source: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function fetchOrgHarvesters(
+  org: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<HarvestSource>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/harvest/sources/?organization=${org}&page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok)
+      throw new Error(`Failed to fetch org harvesters: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org harvesters:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchOrgCommunityResources(
+  org: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<CommunityResource>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/datasets/community_resources/?organization=${org}&page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok)
+      throw new Error(`Failed to fetch org community resources: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org community resources:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchOrgMetrics(
+  org: string
+): Promise<OrganizationMetrics> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/organizations/${org}/`, {
+      cache: "no-store",
+    });
+    if (!res.ok)
+      throw new Error(`Failed to fetch org metrics: ${res.statusText}`);
+    const data = await res.json();
+    return data.metrics;
+  } catch (error) {
+    console.error("Error fetching org metrics:", error);
+    return {
+      datasets: 0,
+      dataservices: 0,
+      followers: 0,
+      members: 0,
+      reuses: 0,
+      views: 0,
+    };
+  }
+}
+
+// ─── Editorial / Home Featured Content ────────────────────────────────
+
+export async function fetchHomeFeaturedDatasets(): Promise<Dataset[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/site/home/datasets/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!res.ok)
+      throw new Error(`Failed to fetch home featured datasets: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching home featured datasets:", error);
+    return [];
+  }
+}
+
+export async function updateHomeFeaturedDatasets(
+  datasetIds: string[]
+): Promise<Dataset[]> {
+  const res = await fetch(`${API_BASE_URL}/site/home/datasets/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(datasetIds),
+  });
+  if (!res.ok)
+    throw new Error(`Failed to update home featured datasets: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function fetchHomeFeaturedReuses(): Promise<Reuse[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/site/home/reuses/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!res.ok)
+      throw new Error(`Failed to fetch home featured reuses: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching home featured reuses:", error);
+    return [];
+  }
+}
+
+export async function updateHomeFeaturedReuses(
+  reuseIds: string[]
+): Promise<Reuse[]> {
+  const res = await fetch(`${API_BASE_URL}/site/home/reuses/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(reuseIds),
+  });
+  if (!res.ok)
+    throw new Error(`Failed to update home featured reuses: ${res.statusText}`);
+  return await res.json();
 }

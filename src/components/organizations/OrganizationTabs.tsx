@@ -26,6 +26,7 @@ import {
   fetchOrgDataservices,
   fetchOrgReuses,
 } from "@/services/api";
+import PageLoader from "@/components/common/PageLoader";
 
 interface OrganizationTabsProps {
   organization: Organization;
@@ -172,7 +173,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                 Conjuntos de dados da organização
               </h2>
               {isLoadingDatasets ? (
-                <div className="text-neutral-500">A carregar conjuntos de dados...</div>
+                <PageLoader />
               ) : datasets.length > 0 ? (
                 <>
                   <div className="text-sm text-neutral-500 mb-16">
@@ -301,7 +302,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                 API da organização
               </h2>
               {isLoadingDataservices ? (
-                <div className="text-neutral-500">A carregar APIs...</div>
+                <PageLoader />
               ) : dataservices.length > 0 ? (
                 <>
                   <div className="text-sm text-neutral-500 mb-16">
@@ -416,7 +417,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                 Reutilizações da organização
               </h2>
               {isLoadingReuses ? (
-                <div className="text-neutral-500">A carregar reutilizações...</div>
+                <PageLoader />
               ) : reuses.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets-px0 gap-32">
                   {reuses.map((reuse) => (

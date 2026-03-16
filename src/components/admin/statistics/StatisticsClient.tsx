@@ -23,9 +23,11 @@ import {
   TableRow,
   TableCell,
 } from "@ama-pt/agora-design-system";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function StatisticsClient() {
   const router = useRouter();
+  const { displayName } = useCurrentUser();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
   return (
@@ -34,7 +36,7 @@ export default function StatisticsClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Lopes Inês", url: "#" },
+            { label: displayName || "...", url: "#" },
             { label: "Estatísticas", url: "/pages/admin/statistics" },
           ]}
         />

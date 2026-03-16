@@ -12,10 +12,12 @@ import {
   DropdownOption,
 } from "@ama-pt/agora-design-system";
 import DatasetsAdminClient from "@/components/admin/datasetsadmin/DatasetsAdminClient";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function DatasetsNewClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { displayName } = useCurrentUser();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
   const totalSteps = 4;
@@ -30,7 +32,7 @@ export default function DatasetsNewClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Lopes Inês", url: "#" },
+            { label: displayName || "...", url: "#" },
             { label: "Conjuntos de dados", url: "/pages/admin/me/datasets" },
           ]}
         />

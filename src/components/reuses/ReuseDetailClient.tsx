@@ -18,6 +18,7 @@ import {
 } from '@ama-pt/agora-design-system';
 import { Reuse, Dataset } from '@/types/api';
 import { fetchDataset } from '@/services/api';
+import PageLoader from "@/components/common/PageLoader";
 import { format, formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -344,7 +345,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                 associado{datasetRefs.length !== 1 ? 's' : ''}
               </h2>
               {isLoadingDatasets ? (
-                <div className="text-neutral-500">A carregar conjuntos de dados...</div>
+                <PageLoader />
               ) : fullDatasets.length > 0 ? (
                 <>
                 <div className="text-sm text-neutral-500 mb-16">
