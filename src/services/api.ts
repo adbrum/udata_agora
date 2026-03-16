@@ -51,8 +51,11 @@ import {
   TagSuggestion,
   Topic,
   TopicElement,
+  UserMetrics,
   UserPublic,
   UserRef,
+  UserUpdatePayload,
+  OrgInvitation,
 } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
@@ -2011,5 +2014,108 @@ export async function isFollowing(
     return data.total > 0;
   } catch {
     return false;
+  }
+}
+
+// ── User Profile & Metrics (TICKET-30) ──────────────────────────────
+
+export async function updateProfile(payload: UserUpdatePayload): Promise<UserPublic> {
+  const res = await fetch(`${API_BASE_URL}/me/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function uploadAvatar(file: File): Promise<UserPublic> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE_URL}/me/avatar`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function deleteAccount(): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/me/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to delete account: ${res.statusText}`);
+}
+
+export async function fetchOrgInvitations(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<OrgInvitation>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/me/org_invitations/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch org invitations: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org invitations:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchMyMetrics(): Promise<UserMetrics> {
+  const res = await fetch(`${API_BASE_URL}/me/metrics/`, {
+    cache: "no-store",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to fetch user metrics: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function fetchUserActivity(
+  userId?: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Activity>> {
+  try {
+    const params = new URLSearchParams({
+      page: String(page),
+      page_size: String(pageSize),
+      sort: "-created_at",
+    });
+    if (userId) params.set("owner", userId);
+    const res = await fetch(`${API_BASE_URL}/activity/?${params.toString()}`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error(`Failed to fetch user activity: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching user activity:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
   }
 }
