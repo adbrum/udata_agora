@@ -4,10 +4,11 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { InputSearchBar } from "@ama-pt/agora-design-system";
 
-type SearchType = "datasets" | "reuses" | "organizations";
+type SearchType = "datasets" | "dataservices" | "reuses" | "organizations";
 
 const SEARCH_OPTIONS: { type: SearchType; label: string }[] = [
   { type: "datasets", label: "conjuntos de dados" },
+  { type: "dataservices", label: "APIs" },
   { type: "reuses", label: "reutilizações" },
   { type: "organizations", label: "organizações" },
 ];
