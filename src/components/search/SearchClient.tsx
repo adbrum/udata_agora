@@ -17,28 +17,37 @@ import {
   searchDatasets,
   searchOrganizations,
   searchReuses,
+  searchDataservices,
 } from "@/services/api";
-import { Dataset, Organization, Reuse } from "@/types/api";
+import { Dataset, Organization, Reuse, Dataservice } from "@/types/api";
 
-type SearchType = "datasets" | "organizations" | "reuses";
+type SearchType = "datasets" | "dataservices" | "reuses" | "organizations";
 
 const TYPES: {
   type: SearchType;
   label: string;
-  icon: string;
+  icon: string | ((active: boolean) => string);
   iconHover: string;
 }[] = [
   {
     type: "datasets",
     label: "Conjunto de dados",
-    icon: "agora-line-hardware-settings",
-    iconHover: "agora-solid-hardware-settings",
+    icon: "agora-line-layers-menu",
+    iconHover: "agora-solid-layers-menu",
+  },
+  {
+    type: "dataservices",
+    label: "APIs",
+    icon: (active: boolean) =>
+      active ? "/Icons/reduce_white.svg" : "/Icons/reduce.svg",
+    iconHover: "/Icons/reduce_white.svg",
   },
   {
     type: "reuses",
     label: "Reutilizações",
-    icon: "agora-line-bar-chart",
-    iconHover: "agora-solid-bar-chart",
+    icon: (active: boolean) =>
+      active ? "/Icons/bar_char_white.svg" : "/Icons/bar_chart.svg",
+    iconHover: "/Icons/bar_char_white.svg",
   },
   {
     type: "organizations",
@@ -65,9 +74,11 @@ export default function SearchClient() {
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [reuses, setReuses] = useState<Reuse[]>([]);
+  const [dataservices, setDataservices] = useState<Dataservice[]>([]);
 
   const [totals, setTotals] = useState({
     datasets: 0,
+    dataservices: 0,
     organizations: 0,
     reuses: 0,
   });
@@ -92,13 +103,15 @@ export default function SearchClient() {
   useEffect(() => {
     if (!query) return;
     async function fetchTotals() {
-      const [dsRes, orgRes, reuseRes] = await Promise.all([
+      const [dsRes, orgRes, reuseRes, dsvcRes] = await Promise.all([
         searchDatasets(query, 1, 1),
         searchOrganizations(query, 1, 1),
         searchReuses(query, 1, 1),
+        searchDataservices(query, 1, 1),
       ]);
       setTotals({
         datasets: dsRes.total,
+        dataservices: dsvcRes.total,
         organizations: orgRes.total,
         reuses: reuseRes.total,
       });
@@ -114,6 +127,9 @@ export default function SearchClient() {
         if (activeTab === "datasets") {
           const res = await searchDatasets(query, currentPage, PAGE_SIZE);
           setDatasets(res.data || []);
+        } else if (activeTab === "dataservices") {
+          const res = await searchDataservices(query, currentPage, PAGE_SIZE);
+          setDataservices(res.data || []);
         } else if (activeTab === "organizations") {
           const res = await searchOrganizations(query, currentPage, PAGE_SIZE);
           setOrganizations(res.data || []);
@@ -154,11 +170,18 @@ export default function SearchClient() {
 
   const totalForActiveTab = totals[activeTab];
 
+  const titleMap: Record<SearchType, string> = {
+    datasets: "Conjuntos de dados",
+    dataservices: "APIs",
+    reuses: "Reutilizações",
+    organizations: "Organizações",
+  };
+
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters">
       <main className="flex-grow bg-primary-50">
         <PageBanner
-          title="Pesquisa"
+          title={titleMap[activeTab]}
           backgroundImageUrl="/Banner/hero-bg.png"
           backgroundPosition="center right"
           breadcrumbItems={[
@@ -167,7 +190,7 @@ export default function SearchClient() {
           ]}
         >
           <InputSearchBar
-            label="O que procura no portal?"
+            label="Pesquisa avançada"
             placeholder="Pesquisar datasets, organizações, reutilizações..."
             id="search-page-input"
             hasVoiceActionButton={true}
@@ -183,10 +206,6 @@ export default function SearchClient() {
             }}
             onSearchActivate={() => handleSearch()}
           />
-          <div className="mt-8 text-s-regular text-neutral-200">
-            Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;,
-            &quot;ambiente&quot;
-          </div>
         </PageBanner>
 
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
@@ -194,8 +213,17 @@ export default function SearchClient() {
             {/* Sidebar */}
             <div className="xl:col-span-4 xl:block p-32 pl-0">
               <div className="mb-64 pr-32 max-w-[592px] flex flex-col gap-16 mt-[32px]">
+                <h2 className="font-bold text-xl text-neutral-900 mb-16">Tipo</h2>
                 {TYPES.map((item) => {
                   const isActive = item.type === activeTab;
+                  const icon =
+                    typeof item.icon === "function"
+                      ? item.icon(isActive)
+                      : item.icon;
+                  const className =
+                    item.type === "reuses" || item.type === "dataservices"
+                      ? "w-full agora-toggle agora-toggle-icon agora-toggle-icon-primary full-width has-icon"
+                      : "w-full";
                   return (
                     <Toggle
                       key={item.type}
@@ -205,13 +233,13 @@ export default function SearchClient() {
                       appearance="icon"
                       variant="primary"
                       hasIcon
-                      leadingIcon={item.icon}
+                      leadingIcon={icon}
                       leadingIconHover={item.iconHover}
                       checked={isActive}
                       onChange={() => handleTabChange(item.type)}
                       iconOnly={false}
                       fullWidth={true}
-                      className="w-full"
+                      className={className}
                     >
                       <div className="flex items-center gap-12 font-bold text-sm">
                         <span
@@ -295,6 +323,45 @@ export default function SearchClient() {
                         ))
                       ) : (
                         <CardNoResults
+                          position="center"
+                          icon={
+                            <Icon name="agora-line-search" className="w-48 h-48 text-neutral-400" />
+                          }
+                          title={`Nenhum resultado encontrado para "${query}"`}
+                          description="Tente pesquisar com termos diferentes."
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  {activeTab === "dataservices" && (
+                    <div className="flex flex-col gap-0">
+                      {dataservices.length > 0 ? (
+                        dataservices.map((ds) => (
+                          <Link
+                            key={ds.id}
+                            href={`/pages/dataservices/${ds.id}`}
+                            className="block p-20 border border-neutral-200 -mt-px first:rounded-t-8 last:rounded-b-8 hover:border-primary-600 hover:z-10 hover:shadow-sm transition-all relative"
+                          >
+                            <h3 className="text-m-bold text-primary-700">
+                              {ds.title}
+                            </h3>
+                            {ds.organization && (
+                              <p className="text-s-regular text-neutral-500 mt-4">
+                                {ds.organization.name}
+                              </p>
+                            )}
+                            <p className="text-s-regular text-neutral-700 mt-8 line-clamp-2">
+                              {ds.description}
+                            </p>
+                          </Link>
+                        ))
+                      ) : (
+                        <CardNoResults
+                          position="center"
+                          icon={
+                            <Icon name="agora-line-search" className="w-48 h-48 text-neutral-400" />
+                          }
                           title={`Nenhum resultado encontrado para "${query}"`}
                           description="Tente pesquisar com termos diferentes."
                         />
@@ -339,6 +406,10 @@ export default function SearchClient() {
                         ))
                       ) : (
                         <CardNoResults
+                          position="center"
+                          icon={
+                            <Icon name="agora-line-search" className="w-48 h-48 text-neutral-400" />
+                          }
                           title={`Nenhum resultado encontrado para "${query}"`}
                           description="Tente pesquisar com termos diferentes."
                         />
@@ -386,6 +457,10 @@ export default function SearchClient() {
                         ))
                       ) : (
                         <CardNoResults
+                          position="center"
+                          icon={
+                            <Icon name="agora-line-search" className="w-48 h-48 text-neutral-400" />
+                          }
                           title={`Nenhum resultado encontrado para "${query}"`}
                           description="Tente pesquisar com termos diferentes."
                         />
