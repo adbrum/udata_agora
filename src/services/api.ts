@@ -50,7 +50,10 @@ import {
   SpatialZone,
   TagSuggestion,
   Topic,
+  TopicCreatePayload,
   TopicElement,
+  TopicElementCreatePayload,
+  TopicUpdatePayload,
   UserMetrics,
   UserPublic,
   UserRef,
@@ -1556,7 +1559,6 @@ export async function fetchTopics(
 
     return await res.json();
   } catch (error) {
-    console.error("Error fetching discussions:", error);
     console.error("Error fetching topics:", error);
     return {
       data: [],
@@ -1611,7 +1613,7 @@ export async function fetchTopic(slugOrId: string): Promise<Topic | null> {
 
     return await res.json();
   } catch (error) {
-    console.error("Error creating discussion:", error);
+    console.error("Error fetching topic:", error);
     return null;
   }
 }
@@ -1663,7 +1665,171 @@ export async function fetchTopicElements(
 
     return await res.json();
   } catch (error) {
-    console.error("Error replying to discussion:", error);
+    console.error("Error fetching topic elements:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function createTopic(
+  payload: TopicCreatePayload
+): Promise<Topic | null> {
+  try {
+    const res = await fetch(`${API_V2_BASE_URL}/topics/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to create a topic");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to create topic: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error creating topic:", error);
+    return null;
+  }
+}
+
+export async function updateTopic(
+  id: string,
+  payload: TopicUpdatePayload
+): Promise<Topic | null> {
+  try {
+    const res = await fetch(`${API_V2_BASE_URL}/topics/${id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to update a topic");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to update topic: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating topic:", error);
+    return null;
+  }
+}
+
+export async function deleteTopic(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_V2_BASE_URL}/topics/${id}/`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to delete a topic");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to delete topic: ${res.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting topic:", error);
+    return false;
+  }
+}
+
+export async function addTopicElement(
+  topicId: string,
+  payload: TopicElementCreatePayload
+): Promise<TopicElement | null> {
+  try {
+    const res = await fetch(`${API_V2_BASE_URL}/topics/${topicId}/elements/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to add a topic element");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to add topic element: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error adding topic element:", error);
+    return null;
+  }
+}
+
+export async function removeTopicElement(
+  topicId: string,
+  elementId: string
+): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `${API_V2_BASE_URL}/topics/${topicId}/elements/${elementId}/`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to remove a topic element");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to remove topic element: ${res.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error removing topic element:", error);
+    return false;
+  }
+}
+
+export async function updateTopicElements(
+  topicId: string,
+  elements: TopicElementCreatePayload[]
+): Promise<TopicElement[] | null> {
+  try {
+    const res = await fetch(`${API_V2_BASE_URL}/topics/${topicId}/elements/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(elements),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to update topic elements");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to update topic elements: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating topic elements:", error);
     return null;
   }
 }
