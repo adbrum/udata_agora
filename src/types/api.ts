@@ -750,6 +750,38 @@ export interface FollowResponse {
   followers: number;
 }
 
+export interface CommunityResource {
+  id: string;
+  title: string;
+  description: string | null;
+  url: string;
+  filetype: string | null;
+  format: string | null;
+  dataset: DatasetRef | null;
+  organization: Organization | null;
+  owner: UserRef | null;
+  created_at: string;
+  last_modified: string;
+}
+
+export interface CommunityResourceCreatePayload {
+  title: string;
+  description?: string;
+  url: string;
+  filetype?: string;
+  format?: string;
+  dataset: string;
+}
+
+export interface CommunityResourceUpdatePayload {
+  title?: string;
+  description?: string;
+  url?: string;
+  filetype?: string;
+  format?: string;
+  dataset?: string;
+}
+
 export interface APIResponse<T> {
   data: T[];
   page: number;
