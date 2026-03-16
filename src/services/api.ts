@@ -56,7 +56,11 @@ import {
   TopicUpdatePayload,
   UserMetrics,
   UserPublic,
+  UserAdmin,
+  UserAdminUpdatePayload,
   UserRef,
+  UserRole,
+  UserSuggestion,
   UserUpdatePayload,
   OrgInvitation,
   CommunityResource,
@@ -2290,6 +2294,151 @@ export async function fetchUserActivity(
       next_page: null,
       previous_page: null,
     };
+  }
+}
+
+// --- User Management (Sysadmin) ---
+
+export async function fetchUsers(
+  page: number = 1,
+  q?: string,
+  sort?: string,
+  pageSize: number = 20
+): Promise<APIResponse<UserAdmin>> {
+  try {
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("page_size", String(pageSize));
+    if (q) params.set("q", q);
+    if (sort) params.set("sort", sort);
+
+    const res = await fetch(`${API_BASE_URL}/users/?${params.toString()}`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch users: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchUser(id: string): Promise<UserAdmin | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/${id}/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    if (res.status === 404) {
+      return null;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch user: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
+}
+
+export async function updateUser(
+  id: string,
+  payload: UserAdminUpdatePayload
+): Promise<UserAdmin | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/${id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to update a user");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to update user: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return null;
+  }
+}
+
+export async function deleteUser(id: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/${id}/`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (res.status === 401) {
+      throw new Error("Authentication required to delete a user");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to delete user: ${res.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return false;
+  }
+}
+
+export async function fetchUserRoles(): Promise<UserRole[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/roles/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch user roles: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching user roles:", error);
+    return [];
+  }
+}
+
+export async function suggestUsers(query: string): Promise<UserSuggestion[]> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/users/suggest/?q=${encodeURIComponent(query)}`,
+      { cache: "no-store", credentials: "include" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to suggest users: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error suggesting users:", error);
+    return [];
   }
 }
 
