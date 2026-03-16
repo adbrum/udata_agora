@@ -466,6 +466,30 @@ export interface Post {
   tags: string[];
 }
 
+export interface PostCreatePayload {
+  name: string;
+  headline?: string;
+  content?: string;
+  body_type?: string;
+  kind?: string;
+  published?: string;
+  tags?: string[];
+  credit_to?: string;
+  credit_url?: string;
+}
+
+export interface PostUpdatePayload {
+  name?: string;
+  headline?: string;
+  content?: string;
+  body_type?: string;
+  kind?: string;
+  published?: string;
+  tags?: string[];
+  credit_to?: string;
+  credit_url?: string;
+}
+
 export interface GlobalSearchSuggestion {
   title: string;
   slug: string;
