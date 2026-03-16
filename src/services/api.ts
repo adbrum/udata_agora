@@ -570,6 +570,22 @@ export async function fetchDiscussions(
 
     if (!res.ok) {
       throw new Error(`Failed to fetch discussions: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching discussions:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
 /**
  * Fetch the authenticated user's dataservices (paginated)
  */
@@ -1662,34 +1678,6 @@ export async function suggestGlobalSearch(
   } catch (error) {
     console.error("Error fetching search suggestions:", error);
     return [];
-  }
-}
-
-// --- Discussions ---
-
-export async function fetchDiscussions(
-  subjectId: string,
-  page: number = 1,
-  pageSize: number = 20
-): Promise<APIResponse<Discussion>> {
-  try {
-    const params = new URLSearchParams({
-      for: subjectId,
-      page: String(page),
-      page_size: String(pageSize),
-    });
-    const res = await fetch(`${API_BASE_URL}/discussions/?${params.toString()}`, {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch discussions: ${res.statusText}`);
-    }
-
-    return await res.json();
-  } catch (error) {
-    console.error("Error fetching discussions:", error);
-    return { data: [], page: 1, page_size: pageSize, total: 0, next_page: null, previous_page: null };
   }
 }
 
