@@ -22,12 +22,14 @@ import {
 } from "@ama-pt/agora-design-system";
 import { fetchMyDatasets } from "@/services/api";
 import { Dataset } from "@/types/api";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 type SortOrder = "none" | "ascending" | "descending";
 type SortField = "title" | "created_at" | "last_modified" | "resources";
 
 export default function DatasetsClient() {
   const router = useRouter();
+  const { displayName } = useCurrentUser();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -149,7 +151,7 @@ export default function DatasetsClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Lopes Inês", url: "#" },
+            { label: displayName || "...", url: "#" },
             { label: "Conjuntos de dados", url: "/pages/admin/me/datasets" },
           ]}
         />

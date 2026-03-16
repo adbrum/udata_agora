@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -20,64 +20,46 @@ import {
   TableCell,
   Pill,
 } from "@ama-pt/agora-design-system";
+import { fetchDataservices } from "@/services/api";
+import { Dataservice } from "@/types/api";
 
-interface MockApi {
-  title: string;
-  slug: string;
-  status: "Público" | "Rascunho" | "Excluído";
-  access: string;
-  createdAt: string;
-  lastActivity: string;
-  lastActivityBy: string;
-  rateLimit: string;
-  availability: string;
-}
-
-const today = new Date();
-const formatDate = (date: Date) =>
-  `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
-
-const mockApis: MockApi[] = [
-  {
-    title: "API de dados geográficos nacionais",
-    slug: "api-dados-geograficos",
-    status: "Público",
-    access: "Abrir",
-    createdAt: formatDate(new Date(2025, 9, 10)),
-    lastActivity: formatDate(new Date(2026, 1, 15)),
-    lastActivityBy: "Lopes Inês",
-    rateLimit: "100/min",
-    availability: "99,9%",
-  },
-  {
-    title: "API de transportes públicos",
-    slug: "api-transportes-publicos",
-    status: "Rascunho",
-    access: "Abrir",
-    createdAt: formatDate(today),
-    lastActivity: formatDate(today),
-    lastActivityBy: "Lopes Inês",
-    rateLimit: "",
-    availability: "",
-  },
-  {
-    title: "API de estatísticas de emprego",
-    slug: "api-estatisticas-emprego",
-    status: "Rascunho",
-    access: "Restrito",
-    createdAt: formatDate(today),
-    lastActivity: formatDate(today),
-    lastActivityBy: "Lopes Inês",
-    rateLimit: "50/min",
-    availability: "98%",
-  },
-];
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
+};
 
 export default function SystemDataservicesClient() {
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
-  const apis = mockApis;
+
+  const [apis, setApis] = useState<Dataservice[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadDataservices() {
+      setIsLoading(true);
+      try {
+        const response = await fetchDataservices(1, 9999);
+        setApis(response.data || []);
+      } catch (error) {
+        console.error("Error loading dataservices:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadDataservices();
+  }, []);
+
+  const getStatusLabel = (api: Dataservice) => {
+    if (api.private) return "Rascunho";
+    return "Público";
+  };
+
+  const getStatusVariant = (api: Dataservice) => {
+    if (api.private) return "warning" as const;
+    return "success" as const;
+  };
 
   const publishRoutes: Record<string, string> = {
     dataset: "/pages/admin/me/datasets/new",
@@ -178,7 +160,9 @@ export default function SystemDataservicesClient() {
         </InputSelect>
       </div>
 
-      {apis.length > 0 ? (
+      {isLoading ? (
+        <p>A carregar...</p>
+      ) : apis.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Linhas por página",
@@ -198,15 +182,12 @@ export default function SystemDataservicesClient() {
                 Título da API
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
-              <TableHeaderCell>Acesso</TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
                 Criado em
               </TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
                 Modificado em
               </TableHeaderCell>
-              <TableHeaderCell>Limite de chamadas</TableHeaderCell>
-              <TableHeaderCell>Disponibilidade</TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
@@ -222,36 +203,23 @@ export default function SystemDataservicesClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill
-                    variant={
-                      api.status === "Público"
-                        ? "success"
-                        : api.status === "Excluído"
-                          ? "danger"
-                          : "warning"
-                    }
-                  >
-                    {api.status}
+                  <Pill variant={getStatusVariant(api)}>
+                    {getStatusLabel(api)}
                   </Pill>
                 </TableCell>
-                <TableCell headerLabel="Acesso">
-                  <Pill variant="informative">{api.access}</Pill>
+                <TableCell headerLabel="Criado em">
+                  {formatDate(api.created_at)}
                 </TableCell>
-                <TableCell headerLabel="Criado em">{api.createdAt}</TableCell>
                 <TableCell headerLabel="Modificado em">
-                  {api.lastActivity}
+                  {formatDate(api.last_modified)}
                   <br />
                   <span className="text-sm text-neutral-500">
                     sobre{" "}
                     <span className="text-success-600">●</span>{" "}
-                    {api.lastActivityBy}
+                    {api.owner
+                      ? `${api.owner.first_name} ${api.owner.last_name}`
+                      : "—"}
                   </span>
-                </TableCell>
-                <TableCell headerLabel="Limite de chamadas">
-                  {api.rateLimit || "—"}
-                </TableCell>
-                <TableCell headerLabel="Disponibilidade">
-                  {api.availability || "—"}
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">

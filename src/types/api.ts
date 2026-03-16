@@ -307,6 +307,7 @@ export interface Dataservice {
   base_api_url: string | null;
   format: string | null;
   organization: Organization | null;
+  owner: UserRef | null;
   created_at: string;
   last_modified: string;
   metrics: Metric;

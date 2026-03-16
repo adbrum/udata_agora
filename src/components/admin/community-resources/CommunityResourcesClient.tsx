@@ -12,8 +12,10 @@ import {
   DropdownSection,
   DropdownOption,
 } from "@ama-pt/agora-design-system";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function CommunityResourcesClient() {
+  const { displayName } = useCurrentUser();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +25,7 @@ export default function CommunityResourcesClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Lopes Inês", url: "#" },
+            { label: displayName || "...", url: "#" },
             { label: "Recursos comunitários", url: "/pages/admin/community-resources" },
           ]}
         />

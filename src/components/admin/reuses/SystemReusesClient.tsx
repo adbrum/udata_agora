@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -20,60 +20,36 @@ import {
   TableCell,
   Pill,
 } from "@ama-pt/agora-design-system";
+import { fetchReuses } from "@/services/api";
+import { Reuse } from "@/types/api";
 
-interface MockReuse {
-  title: string;
-  slug: string;
-  status: "Público" | "Rascunho";
-  type: string;
-  createdAt: string;
-  lastActivity: string;
-  lastActivityBy: string;
-  datasets: number;
-}
-
-const today = new Date();
-const formatDate = (date: Date) =>
-  `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
-
-const mockReuses: MockReuse[] = [
-  {
-    title: "Mapa interativo de qualidade do ar",
-    slug: "mapa-qualidade-ar",
-    status: "Público",
-    type: "Visualização",
-    createdAt: formatDate(new Date(2025, 7, 20)),
-    lastActivity: formatDate(new Date(2026, 0, 5)),
-    lastActivityBy: "Lopes Inês",
-    datasets: 2,
-  },
-  {
-    title: "Dashboard de indicadores de mobilidade urbana",
-    slug: "dashboard-mobilidade-urbana",
-    status: "Público",
-    type: "Aplicação",
-    createdAt: formatDate(new Date(2025, 10, 12)),
-    lastActivity: formatDate(new Date(2026, 1, 28)),
-    lastActivityBy: "Lopes Inês",
-    datasets: 3,
-  },
-  {
-    title: "Análise de dados de acidentes rodoviários",
-    slug: "analise-acidentes-rodoviarios",
-    status: "Rascunho",
-    type: "Visualização",
-    createdAt: formatDate(today),
-    lastActivity: formatDate(today),
-    lastActivityBy: "Lopes Inês",
-    datasets: 1,
-  },
-];
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
+};
 
 export default function SystemReusesClient() {
   const router = useRouter();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
-  const reuses = mockReuses;
+
+  const [reuses, setReuses] = useState<Reuse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadReuses() {
+      setIsLoading(true);
+      try {
+        const response = await fetchReuses(1, 9999);
+        setReuses(response.data || []);
+      } catch (error) {
+        console.error("Error loading reuses:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadReuses();
+  }, []);
 
   const publishRoutes: Record<string, string> = {
     dataset: "/pages/admin/me/datasets/new",
@@ -174,7 +150,9 @@ export default function SystemReusesClient() {
         </InputSelect>
       </div>
 
-      {reuses.length > 0 ? (
+      {isLoading ? (
+        <p>A carregar...</p>
+      ) : reuses.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Linhas por página",
@@ -215,21 +193,21 @@ export default function SystemReusesClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant={reuse.status === "Público" ? "success" : "warning"}>
-                    {reuse.status}
-                  </Pill>
+                  <Pill variant="success">Público</Pill>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
-                  {reuse.createdAt}
+                  {formatDate(reuse.created_at)}
                   <br />
                   <span className="text-sm text-neutral-500">
                     sobre{" "}
                     <span className="text-success-600">●</span>{" "}
-                    {reuse.lastActivityBy}
+                    {reuse.owner
+                      ? `${reuse.owner.first_name} ${reuse.owner.last_name}`
+                      : "—"}
                   </span>
                 </TableCell>
                 <TableCell headerLabel="Conjuntos de dados">
-                  {reuse.datasets}
+                  {reuse.datasets?.length ?? 0}
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">

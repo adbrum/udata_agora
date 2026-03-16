@@ -468,6 +468,68 @@ export async function fetchOrgDiscussions(org: string): Promise<Discussion[]> {
   }
 }
 
+/**
+ * Fetch the authenticated user's dataservices (paginated)
+ */
+export async function fetchMyDataservices(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Dataservice>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/me/dataservices/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch my dataservices: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching my dataservices:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+/**
+ * Fetch all dataservices (paginated)
+ */
+export async function fetchDataservices(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Dataservice>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/dataservices/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store" }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch dataservices: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching dataservices:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
 export async function fetchOrgDataservices(
   org: string,
   page: number = 1,
