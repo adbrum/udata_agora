@@ -10,10 +10,12 @@ import {
   DropdownOption,
 } from "@ama-pt/agora-design-system";
 import ApiRegistrationClient from "@/components/admin/dataservices/ApiRegistrationClient";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function ApiNewClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { displayName } = useCurrentUser();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
   const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
   const totalSteps = 3;
@@ -33,7 +35,7 @@ export default function ApiNewClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Lopes Inês", url: "#" },
+            { label: displayName || "...", url: "#" },
             { label: "API", url: "/pages/admin/me/dataservices" },
           ]}
         />

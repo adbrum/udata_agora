@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
   Avatar,
   Breadcrumb,
@@ -22,6 +23,7 @@ import {
 
 export default function ProfileClient() {
   const router = useRouter();
+  const { displayName } = useCurrentUser();
   const [showEditDropdown, setShowEditDropdown] = useState(false);
   const editDropdownWrapperRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
@@ -32,7 +34,7 @@ export default function ProfileClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Lopes Inês", url: "#" },
+            { label: displayName || "...", url: "#" },
             { label: "Perfil", url: "/pages/admin/profile" },
           ]}
         />
