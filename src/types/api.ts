@@ -15,6 +15,21 @@ export interface UserMetrics {
   followers: number;
   reuses: number;
   views: number;
+  downloads: number;
+}
+
+export interface UserUpdatePayload {
+  first_name?: string;
+  last_name?: string;
+  about?: string;
+  website?: string;
+}
+
+export interface OrgInvitation {
+  id: string;
+  organization: Organization | null;
+  status: "pending" | "accepted" | "refused";
+  created: string;
 }
 
 export interface UserPublic {
@@ -34,6 +49,7 @@ export interface UserPublic {
   uri: string;
   page: string;
   metrics: UserMetrics;
+  apikey: string | null;
 }
 
 export interface OrganizationMember {
