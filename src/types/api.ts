@@ -662,6 +662,8 @@ export interface Topic {
   private: boolean;
   created_at: string;
   last_modified: string;
+  datasets_count: number;
+  reuses_count: number;
   spatial: TopicSpatialCoverage | null;
   organization: Organization | null;
   owner: UserRef | null;
@@ -681,6 +683,27 @@ export interface TopicElement {
   tags: string[] | null;
   extras: Record<string, unknown> | null;
   element: TopicElementRef | null;
+}
+
+export interface TopicCreatePayload {
+  name: string;
+  description?: string;
+  tags?: string[];
+  featured?: boolean;
+  private?: boolean;
+}
+
+export interface TopicUpdatePayload {
+  name?: string;
+  description?: string;
+  tags?: string[];
+  featured?: boolean;
+  private?: boolean;
+}
+
+export interface TopicElementCreatePayload {
+  class: "Dataset" | "Reuse" | "Dataservice";
+  id: string;
 }
 
 export interface DiscussionNotificationDetails {
