@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -102,6 +102,8 @@ export default function DataservicesClient({
   const router = useRouter();
   const { data: dataservices, total, page_size } = initialData;
   const [searchQuery, setSearchQuery] = useState(initialFilters?.q || '');
+  const currentQuery = initialFilters?.q || '';
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const buildUrl = useCallback(
     (overrides: { q?: string | null; sort?: string | null; page?: number } = {}) => {
@@ -120,7 +122,19 @@ export default function DataservicesClient({
     [initialFilters, currentPage]
   );
 
+  useEffect(() => {
+    if (searchQuery === currentQuery) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      router.push(buildUrl({ q: searchQuery.trim() || null, page: 1 }));
+    }, 400);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchQuery, currentQuery, router, buildUrl]);
+
   const handleSearch = useCallback(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     router.push(buildUrl({ q: searchQuery.trim() || null, page: 1 }));
   }, [router, buildUrl, searchQuery]);
 

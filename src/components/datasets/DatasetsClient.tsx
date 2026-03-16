@@ -45,18 +45,35 @@ export default function DatasetsClient({
 
   const currentQuery = searchParams.get('q') || '';
   const [searchQuery, setSearchQuery] = React.useState(currentQuery);
+  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleSearch = React.useCallback(() => {
+  const applySearch = React.useCallback((q: string) => {
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-    if (searchQuery.trim()) {
-      params.set('q', searchQuery.trim());
+    if (q.trim()) {
+      params.set('q', q.trim());
     } else {
       params.delete('q');
     }
     params.set('page', '1');
     const search = params.toString();
     router.replace(`/pages/datasets${search ? `?${search}` : ''}`, { scroll: false });
-  }, [searchQuery, router]);
+  }, [router]);
+
+  React.useEffect(() => {
+    if (searchQuery === currentQuery) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      applySearch(searchQuery);
+    }, 400);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchQuery, currentQuery, applySearch]);
+
+  const handleSearch = React.useCallback(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    applySearch(searchQuery);
+  }, [searchQuery, applySearch]);
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters dataset">
