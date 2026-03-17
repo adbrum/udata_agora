@@ -42,7 +42,7 @@ export function AdminHeader() {
           <Search label="Pesquisar">
             <DefaultSearch>
               <SearchInputContainer>
-                <InputSearchBar placeholder="Pesquisar" aria-label="Pesquisar" />
+                <InputSearchBar label="Diga-nos o que procura que nos ajudamos" placeholder="Pesquisar" aria-label="Pesquisar" />
               </SearchInputContainer>
             </DefaultSearch>
           </Search>

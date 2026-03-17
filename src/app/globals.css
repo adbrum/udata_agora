@@ -949,6 +949,17 @@ body:has(.admin-wrapper) > div > header.sticky {
   flex: 1;
 }
 
+.datasets-new-page__cards .card-action {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.datasets-new-page__cards .card-action:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-primary-900);
+}
+
 /* 7.5 Admin Forms (Steps, Fields, Auxiliar) */
 .datasets-admin-page__step-header {
   margin-bottom: 20px;
