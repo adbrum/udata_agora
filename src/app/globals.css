@@ -107,101 +107,109 @@ body {
 }
 
 /* 3.2 Header Cards & Icons */
-.agora-header .card-general-neutral-100 .icon-set {
-  border-width: 2px;
-  border-color: var(--color-primary-600);
+.header-card-custom {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 32px;
+  border-radius: 8px;
+  outline: none;
+}
+
+.header-card-custom:hover {
+  background-color: var(--color-neutral-200);
+}
+
+.header-card-custom:focus-visible {
+  outline: none;
+}
+
+.header-card-custom__icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 8px;
   background-color: var(--color-primary-600);
-  padding: 8px;
-  width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.agora-header .card-general-neutral-100 .icon-set img {
-  width: 16px !important;
-  min-width: 16px;
-  height: 16px !important;
-  min-height: 16px;
+.header-card-custom__icon svg,
+.header-card-custom__icon svg[width] {
+  width: 14px !important;
+  height: 14px !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+}
+
+.header-card-custom__icon img {
+  width: 16px;
+  height: 16px;
   object-fit: contain;
   filter: brightness(0) invert(1);
 }
 
-.agora-header .card-general-neutral-100 .icon-set svg.icon {
-  height: 16px;
-  min-height: 16px;
-  width: 16px;
-  min-width: 16px;
-}
-
-/* Arrow icon in card anchor stays blue */
-.agora-header .card-general-neutral-100 .anchor-container .trailing-icon svg.icon {
-  fill: var(--color-primary-600);
-}
-
-.agora-header .card-general-neutral-100 .icon-container,
-.agora-header .card-general-neutral-100 .content {
-  background: transparent;
-}
-
-.agora-header .card-general {
-  width: 100%;
-}
-
-.agora-header .card-general .title-text {
-  margin-bottom: 4px;
-  font-size: 16px;
-  line-height: 28px;
-}
-
-.agora-header .card-general .description {
-  font-size: 14px;
-  line-height: 24px;
-}
-
-.agora-header .navigation-links-layout .card-general .p-16 {
-  padding-top: 0;
-  flex: 1;
-}
-
-.agora-header .card-general .anchor {
-  margin-right: unset;
-}
-
-.agora-header .card-general .content {
-  flex: 1 1 0%;
-}
-
-.agora-header .card-general .anchor.anchor-blockedLink {
-  margin-right: 0;
-}
-
-/* Hide card-level hover visuals */
-.agora-header .card-general-neutral-100.card-general-hover:hover:not(:active),
-.agora-header .card-general-neutral-100:hover .content-hover {
-  border-color: transparent !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
-}
-
-.navigation-links-layout .agora-link-wrapper:has(.card-general) {
-  padding: 12px 32px;
-  display: block;
-}
-
-.navigation-links-layout .agora-link-wrapper .card-general *:focus,
-.navigation-links-layout .agora-link-wrapper .card-general *:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* 3.3 Header Navigation Panels */
-.agora-header .navigation-links-layout > .title {
+.header-card-custom__icon-hover {
   display: none;
 }
 
-.navigation-links-layout[data-submenu] > .title {
+.header-card-custom:hover .header-card-custom__icon-default {
+  display: none;
+}
+
+.header-card-custom:hover .header-card-custom__icon-hover {
+  display: block;
+}
+
+.header-card-custom__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.header-card-custom__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 28px;
+  color: var(--color-neutral-900);
+}
+
+.header-card-custom__description {
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--color-neutral-700);
+}
+
+.header-card-custom__arrow {
+  display: flex;
+  align-items: center;
+}
+
+.header-card-custom__arrow svg {
+  fill: var(--color-primary-600);
+}
+
+.navigation-links-layout .agora-link-wrapper:has(.header-card-custom) {
+  display: block;
+  width: 100%;
+  background: transparent !important;
+}
+
+.navigation-links-layout .agora-link-wrapper:has(.header-card-custom):hover {
+  background: transparent !important;
+}
+
+.navigation-links-layout .link-wrapper:has(.header-card-custom) {
+  display: block;
+}
+
+/* 3.3 Header Navigation Panels */
+.agora-header .navigation-links-layout>.title {
+  display: none;
+}
+
+.navigation-links-layout[data-submenu]>.title {
   display: block;
 }
 
@@ -210,7 +218,7 @@ body {
   padding-top: 80px;
 }
 
-.navigation-links-layout[data-submenu] > .links > .link-wrapper:first-child {
+.navigation-links-layout[data-submenu]>.links>.link-wrapper:first-child {
   grid-column: 1 / -1 !important;
   position: absolute;
   top: 16px;
@@ -222,15 +230,15 @@ body {
   z-index: 1;
 }
 
-.navigation-links-layout[data-submenu] > .links > .link-wrapper:first-child .agora-btn,
-.navigation-links-layout[data-submenu] > .links > .link-wrapper:first-child .agora-btn .agora-icon {
+.navigation-links-layout[data-submenu]>.links>.link-wrapper:first-child .agora-btn,
+.navigation-links-layout[data-submenu]>.links>.link-wrapper:first-child .agora-btn .agora-icon {
   padding: 8px 0;
   font-weight: 600;
   color: var(--color-neutral-900) !important;
 }
 
 .voltar-btn svg,
-.navigation-links-layout[data-submenu] > .links > .link-wrapper:first-child .agora-btn svg {
+.navigation-links-layout[data-submenu]>.links>.link-wrapper:first-child .agora-btn svg {
   fill: var(--color-neutral-900) !important;
 }
 
@@ -281,11 +289,11 @@ body {
 }
 
 /* Auth page button active state */
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper {
   position: relative;
 }
 
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper::after {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -295,19 +303,19 @@ header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-l
   background-color: var(--color-primary-600);
 }
 
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .children-wrapper {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper .children-wrapper {
   color: var(--color-primary-600);
 }
 
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper .line {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper .icon-wrapper .line {
   display: none;
 }
 
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper .solid {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper .icon-wrapper .solid {
   display: block;
 }
 
-header[data-auth-page][data-no-user] .unauthenticated-panel-menu > .panel-menu-link-wrapper .icon-wrapper svg {
+header[data-auth-page][data-no-user] .unauthenticated-panel-menu>.panel-menu-link-wrapper .icon-wrapper svg {
   fill: var(--color-primary-600);
 }
 
@@ -382,12 +390,10 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 }
 
 .agora-card-highlight-newsletter .card-container:before {
-  background: linear-gradient(
-    90deg,
-    var(--color-brand-blue-dark) 0%,
-    rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%,
-    rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%
-  );
+  background: linear-gradient(90deg,
+      var(--color-brand-blue-dark) 0%,
+      rgba(var(--color-brand-blue-dark-rgb), 0.64) 72%,
+      rgba(var(--color-brand-blue-dark-rgb), 0.24) 100%);
   pointer-events: none;
 }
 
@@ -459,7 +465,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   background-color: var(--color-primary-100);
 }
 
-.tab-panel-content > * {
+.tab-panel-content>* {
   position: relative;
   z-index: 1;
 }
@@ -583,7 +589,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 
 /* Dataset reuse card layout */
 .dataset-reuse-card-wrapper .card-general,
-.dataset-reuse-card-wrapper .card-general > div {
+.dataset-reuse-card-wrapper .card-general>div {
   height: 100% !important;
   display: flex !important;
   overflow: hidden !important;
@@ -700,7 +706,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   min-height: 64px;
 }
 
-.dataset-card-home > * {
+.dataset-card-home>* {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -788,7 +794,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
    ========================================================================== */
 
 /* 7.1 Admin Wrapper & Header */
-body:has(.admin-wrapper) > div > header.sticky {
+body:has(.admin-wrapper)>div>header.sticky {
   display: none;
 }
 
@@ -812,13 +818,13 @@ body:has(.admin-wrapper) > div > header.sticky {
   padding: 0 112px;
 }
 
-.admin-header .authenticated-panel-menu > .agora-btn {
+.admin-header .authenticated-panel-menu>.agora-btn {
   background-color: var(--color-white) !important;
   color: var(--color-primary-500) !important;
   border-color: transparent !important;
 }
 
-.admin-header .authenticated-panel-menu > .agora-btn .children-wrapper {
+.admin-header .authenticated-panel-menu>.agora-btn .children-wrapper {
   color: var(--color-primary-500) !important;
 }
 
@@ -1007,7 +1013,7 @@ body:has(.admin-wrapper) > div > header.sticky {
   margin-top: 32px;
 }
 
-.datasets-new-page__cards > * {
+.datasets-new-page__cards>* {
   flex: 1;
 }
 
