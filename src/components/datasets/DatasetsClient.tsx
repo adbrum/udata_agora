@@ -154,14 +154,14 @@ export default function DatasetsClient({
         {/* Main Content - Full Width Layout Wrapper */}
         {/* Main Content */}
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
-          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
             {/* Sidebar */}
-            <div className="xl:col-span-4 xl:block p-32 pl-0">
+            <div className="xl:col-span-6 xl:block p-32 pl-0">
               <DatasetsFilters siteMetrics={siteMetrics} searchQuery={currentQuery} />
             </div>
 
             {/* Results Area */}
-            <div className="xl:col-span-8 mt-[36px]">
+            <div className="xl:col-span-6 mt-[36px]">
               <div>
                 <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
                   <span className="text-neutral-900 font-medium text-base xl:col-span-6 mt-[32px]">
@@ -183,14 +183,14 @@ export default function DatasetsClient({
                   </div>
                 </div>
                 <div className="divider-neutral-200 mt-[14px] mb-24" />
-                <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets">
+                <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets-px0">
                   {datasets.length > 0 ? (
                     datasets.map((dataset) => (
                       <div key={dataset.id} className="h-full">
                         <CardLinks
                           onClick={() => router.push(`/pages/datasets/${dataset.slug}`)}
                           className="cursor-pointer text-neutral-900"
-                          variant="white"
+                          variant="transparent"
                           image={{
                             src: dataset.organization?.logo || '/images/placeholders/organization.png',
                             alt: dataset.organization?.name || 'Organização sem logo',

@@ -199,14 +199,14 @@ export default function OrganizationsClient({
 
         {/* Main Content */}
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
-          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
             {/* Sidebar */}
-            <div className="xl:col-span-4 xl:block p-32 pl-0">
+            <div className="xl:col-span-6 xl:block p-32 pl-0">
               <OrganizationsFilters siteMetrics={siteMetrics} orgBadges={orgBadges} orgBadgeCounts={orgBadgeCounts} initialFilters={initialFilters} />
             </div>
 
             {/* Results Area */}
-            <div className="xl:col-span-8 mt-[36px]">
+            <div className="xl:col-span-6 mt-[36px]">
               <div>
                 <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
                   <span className="text-neutral-900 font-medium text-base xl:col-span-6 mt-[32px]">
