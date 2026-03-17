@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import { CardGeneral } from "@ama-pt/agora-design-system";
 
 interface HeaderCardProps {
@@ -21,23 +21,17 @@ export const HeaderCard = ({
   onLinkClick,
 }: HeaderCardProps) => {
   const hasNavigation = href !== "#";
-  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const el = wrapperRef.current;
-    if (!el) return;
-
-    // Make internal anchors non-focusable (single tab per card)
-    el.querySelectorAll("a").forEach((link) => link.setAttribute("tabindex", "-1"));
+  const wrapperCallback = React.useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
+    // Make internal anchors non-focusable
+    node.querySelectorAll("a").forEach((link) => link.setAttribute("tabindex", "-1"));
   }, []);
-
-  // Use the same icon for all 3 states so there's never a wrong icon
-  const icon = iconHover || iconDefault;
 
   return (
     <div
-      ref={wrapperRef}
-      className="cursor-pointer"
+      ref={wrapperCallback}
+      className="header-card-wrapper cursor-pointer"
       onClick={(e) => {
         if (hasNavigation) {
           e.preventDefault();
@@ -50,8 +44,8 @@ export const HeaderCard = ({
         isCardHorizontal={true}
         isBlockedLink={true}
         variant="neutral-100"
-        iconDefault={icon}
-        iconHover={icon}
+        iconDefault={iconDefault}
+        iconHover={iconHover}
         titleText={title}
         descriptionText={description}
         anchor={{
