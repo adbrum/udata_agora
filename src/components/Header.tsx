@@ -523,7 +523,7 @@ export const Header = () => {
 
                         leadingIconHover="agora-solid-arrow-left-anchor"
 
-                        className="!text-neutral-900"
+                        className="!text-neutral-900 voltar-btn"
                       >
 
                         Voltar
