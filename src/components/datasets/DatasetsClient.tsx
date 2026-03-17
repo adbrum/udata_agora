@@ -156,7 +156,7 @@ export default function DatasetsClient({
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
             {/* Sidebar */}
-            <div className="xl:col-span-4 xl:block bg-primary-100 p-32 pl-0">
+            <div className="xl:col-span-4 xl:block p-32 pl-0">
               <DatasetsFilters siteMetrics={siteMetrics} searchQuery={currentQuery} />
             </div>
 
@@ -259,7 +259,7 @@ export default function DatasetsClient({
                       </div>
                     ))
                   ) : (
-                    <div>
+                    <div className="col-span-2">
                       <CardNoResults
                         icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500 icon-xl" />}
                         title="Não encontrou o que procurava?"
@@ -284,7 +284,7 @@ export default function DatasetsClient({
                   )}
                 </div>
 
-                <div className="pt-64 flex justify-center pb-64 pagination-filters">
+                <div className="pb-64 mt-8 flex justify-center">
                   <Pagination
                     currentPage={currentPage}
                     totalItems={total}

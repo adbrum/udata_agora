@@ -339,7 +339,7 @@ export default function ReusesClient({
 
             <div className="divider-neutral-200 mt-[14px] mb-24" />
 
-            <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-32">
+            <div className="grid grid-cols-1 agora-card-links-datasets-px0 gap-32">
               {reuses.length > 0 ? (
                 reuses.map((reuse) => (
                   <div key={reuse.id} className="h-full">
@@ -472,7 +472,7 @@ export default function ReusesClient({
             </div>
 
             {/* Pagination */}
-            <div className="mt-64 flex justify-center pb-12">
+            <div className="pb-64 mt-8 flex justify-center">
               <Pagination
                 currentPage={currentPage}
                 totalItems={total}
