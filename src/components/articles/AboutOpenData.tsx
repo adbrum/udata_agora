@@ -49,10 +49,10 @@ const AboutOpenData = () => {
 
           {/* Hero Section */}
           <div className="mb-64">
-            <span className="text-primary-dark text-l-regular block mb-16">
+            <span className="text-primary-900 text-l-regular block mb-[8px]">
               Publicado em 18.12.2025
             </span>
-            <h1 className="text-[32px] font-medium text-[#021C51] mb-16 leading-tight max-w-[800px]">
+            <h1 className="text-2xl-medium text-[#021C51] mb-16 leading-tight max-w-[800px]">
               Sobre dados abertos
             </h1>
 
@@ -283,16 +283,16 @@ const AboutOpenData = () => {
           <div className="w-[37%]">
             <div className="pt-[96px] flex flex-col gap-[32px]">
               <p className="text-[20px] leading-[32px] text-[#021c51] font-light">
-                Outros <span className="font-bold">artigos</span> relacionados
+                Outros <span className="text-[20px] font-bold">artigos</span> relacionados
               </p>
 
               <div className="flex flex-col gap-[16px]">
                 {relatedArticles.map((article, index) => (
                   <div key={index} className="flex flex-col gap-[32px]">
                     <div className="flex flex-col gap-[16px]">
-                      <p className="text-[14px] leading-[24px] text-[#2b363c]">
+                      {/* <p className="text-[14px] leading-[24px] text-[#2b363c]">
                         Category
-                      </p>
+                      </p> */}
                       <div className="flex gap-[16px] items-start">
                         <div className="flex-1 flex flex-col gap-[8px] text-[16px] leading-[28px] text-[#2b363c]">
                           <p>{article.date}</p>
