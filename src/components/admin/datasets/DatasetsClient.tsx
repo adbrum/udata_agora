@@ -23,7 +23,7 @@ import {
 import { fetchMyDatasets } from "@/services/api";
 import { Dataset } from "@/types/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import PageLoader from "@/components/common/PageLoader";
+
 
 type SortOrder = "none" | "ascending" | "descending";
 type SortField = "title" | "created_at" | "last_modified" | "resources";
@@ -244,9 +244,7 @@ export default function DatasetsClient() {
         </InputSelect>
       </div>
 
-      {isLoading ? (
-        <PageLoader />
-      ) : datasets.length > 0 ? (
+      {!isLoading && datasets.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Itens por página",

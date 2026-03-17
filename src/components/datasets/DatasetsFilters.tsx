@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { Sidebar, SidebarItem, Checkbox, InputSearch, Icon } from '@ama-pt/agora-design-system';
+import React from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { Sidebar, SidebarItem, Checkbox, InputSearch, Icon } from "@ama-pt/agora-design-system";
 import {
   fetchOrganizations,
   fetchLicenses,
@@ -12,10 +12,9 @@ import {
   suggestFormats,
   suggestTags,
   suggestSpatialZones,
-} from '@/services/api';
-import PageLoader from "@/components/common/PageLoader";
-import { Organization, License, Frequency, Granularity, SiteMetrics } from '@/types/api';
-import { CategoryToggles } from '@/components/CategoryToggles';
+} from "@/services/api";
+import { Organization, License, Frequency, Granularity, SiteMetrics } from "@/types/api";
+import { CategoryToggles } from "@/components/CategoryToggles";
 
 interface FilterOption {
   id: string;
@@ -57,12 +56,10 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
         setOrganizations(orgsRes.data);
         setLicenses(licensesRes);
         setFrequencies(frequenciesRes);
-        setBadges(
-          Object.entries(badgesRes).map(([key, label]) => ({ id: key, name: label }))
-        );
+        setBadges(Object.entries(badgesRes).map(([key, label]) => ({ id: key, name: label })));
         setGranularities(granularitiesRes);
       } catch (error) {
-        console.error('Failed to load filter data', error);
+        console.error("Failed to load filter data", error);
       } finally {
         setIsLoading(false);
       }
@@ -115,32 +112,30 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
 
     if (currentValues.includes(value)) {
       current.delete(paramName);
-      currentValues
-        .filter((v) => v !== value)
-        .forEach((v) => current.append(paramName, v));
+      currentValues.filter((v) => v !== value).forEach((v) => current.append(paramName, v));
     } else {
       current.append(paramName, value);
     }
 
-    current.set('page', '1');
+    current.set("page", "1");
     const search = current.toString();
-    router.replace(`${pathname}${search ? `?${search}` : ''}`, { scroll: false });
+    router.replace(`${pathname}${search ? `?${search}` : ""}`, { scroll: false });
   };
 
   const handleClearFilter = (paramName: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     current.delete(paramName);
-    current.set('page', '1');
+    current.set("page", "1");
     const search = current.toString();
-    router.replace(`${pathname}${search ? `?${search}` : ''}`, { scroll: false });
+    router.replace(`${pathname}${search ? `?${search}` : ""}`, { scroll: false });
   };
 
   const handleSearchChange = (groupName: string, value: string) => {
     setSearchQueries((prev) => ({ ...prev, [groupName]: value }));
 
-    if (groupName === 'Etiquetas') handleTagSearch(value);
-    if (groupName === 'Formatos') handleFormatSearch(value);
-    if (groupName === 'Cobertura Espacial') handleZoneSearch(value);
+    if (groupName === "Etiquetas") handleTagSearch(value);
+    if (groupName === "Formatos") handleFormatSearch(value);
+    if (groupName === "Cobertura Espacial") handleZoneSearch(value);
   };
 
   const getActiveValues = (paramName: string) => searchParams.getAll(paramName);
@@ -153,52 +148,52 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
     suggest?: boolean;
   }[] = [
     {
-      name: 'Organização',
-      param: 'organization',
+      name: "Organização",
+      param: "organization",
       data: organizations.map((o) => ({ id: o.id, name: o.name })),
       searchable: true,
     },
     {
-      name: 'Etiquetas',
-      param: 'tag',
+      name: "Etiquetas",
+      param: "tag",
       data: tagOptions,
       searchable: true,
       suggest: true,
     },
     {
-      name: 'Formatos',
-      param: 'format',
+      name: "Formatos",
+      param: "format",
       data: formatOptions,
       searchable: true,
       suggest: true,
     },
     {
-      name: 'Licenças',
-      param: 'license',
+      name: "Licenças",
+      param: "license",
       data: licenses.map((l) => ({ id: l.id, name: l.title })),
       searchable: true,
     },
     {
-      name: 'Frequência',
-      param: 'frequency',
+      name: "Frequência",
+      param: "frequency",
       data: frequencies.map((f) => ({ id: f.id, name: f.label })),
       searchable: true,
     },
     {
-      name: 'Badges',
-      param: 'badge',
+      name: "Badges",
+      param: "badge",
       data: badges,
       searchable: true,
     },
     {
-      name: 'Granularidade Espacial',
-      param: 'granularity',
+      name: "Granularidade Espacial",
+      param: "granularity",
       data: granularities.map((g) => ({ id: g.id, name: g.name })),
       searchable: true,
     },
     {
-      name: 'Cobertura Espacial',
-      param: 'geozone',
+      name: "Cobertura Espacial",
+      param: "geozone",
       data: zoneOptions,
       searchable: true,
       suggest: true,
@@ -217,7 +212,7 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
 
       <Sidebar variant="filter" className="pl-[64px] font-bold">
         {filterGroups.map((group, index) => {
-          const searchQuery = searchQueries[group.name] || '';
+          const searchQuery = searchQueries[group.name] || "";
           const activeValues = getActiveValues(group.param);
           const activeCount = activeValues.length;
 
@@ -232,9 +227,7 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
 
           const filteredData = group.suggest
             ? allData
-            : allData.filter((item) =>
-                item.name.toLowerCase().includes(searchQuery.toLowerCase())
-              );
+            : allData.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
           const showSearch = group.searchable;
           const showScroll = filteredData.length > 5;
@@ -246,10 +239,10 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
               item={{
                 children: <span className="font-bold">{group.name}</span>,
                 hasIcon: true,
-                collapsedIconTrailing: 'agora-line-minus-circle',
-                collapsedIconHoverTrailing: 'agora-solid-minus-circle',
-                expandedIconTrailing: 'agora-line-plus-circle',
-                expandedIconHoverTrailing: 'agora-solid-plus-circle',
+                collapsedIconTrailing: "agora-line-minus-circle",
+                collapsedIconHoverTrailing: "agora-solid-minus-circle",
+                expandedIconTrailing: "agora-line-plus-circle",
+                expandedIconHoverTrailing: "agora-solid-plus-circle",
               }}
               hasPill={activeCount > 0}
               pillValue={activeCount}
@@ -268,7 +261,7 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
                     <InputSearch
                       label="Pesquisar"
                       hideLabel
-                      placeholder={group.suggest ? 'Escreva para pesquisar...' : 'Pesquisar'}
+                      placeholder={group.suggest ? "Escreva para pesquisar..." : "Pesquisar"}
                       value={searchQuery}
                       onChange={(e) => handleSearchChange(group.name, e.target.value)}
                     />
@@ -280,11 +273,9 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
                   </div>
                 )}
                 <div
-                  className={`flex flex-col gap-2 ${showScroll ? 'max-h-[225px] overflow-y-auto' : ''}`}
+                  className={`flex flex-col gap-2 ${showScroll ? "max-h-[225px] overflow-y-auto" : ""}`}
                 >
-                  {isLoading && !group.suggest ? (
-                    <PageLoader />
-                  ) : filteredData.length > 0 ? (
+                  {isLoading && !group.suggest ? null : filteredData.length > 0 ? (
                     filteredData.map((item) => (
                       <Checkbox
                         key={item.id}
@@ -298,9 +289,7 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
                     ))
                   ) : group.suggest && searchQuery.length < 2 ? (
                     activeCount > 0 ? null : (
-                      <p className="text-sm text-neutral-500">
-                        Escreva pelo menos 2 caracteres...
-                      </p>
+                      <p className="text-sm text-neutral-500">Escreva pelo menos 2 caracteres...</p>
                     )
                   ) : (
                     <p className="text-sm text-neutral-500">Sem resultados</p>
