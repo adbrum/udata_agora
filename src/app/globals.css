@@ -107,101 +107,97 @@ body {
 }
 
 /* 3.2 Header Cards & Icons */
-.header-card-custom {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 32px;
-  border-radius: 8px;
-  outline: none;
-}
-
-.header-card-custom:hover {
-  background-color: var(--color-neutral-200);
-}
-
-.header-card-custom:focus-visible {
-  outline: none;
-}
-
-.header-card-custom__icon {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  border-radius: 8px;
+.agora-header .card-general-neutral-100 .icon-set {
+  border-width: 2px;
+  border-color: var(--color-primary-600);
   background-color: var(--color-primary-600);
+  padding: 8px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.header-card-custom__icon svg,
-.header-card-custom__icon svg[width] {
-  width: 14px !important;
-  height: 14px !important;
-  max-width: 14px !important;
-  max-height: 14px !important;
-}
-
-.header-card-custom__icon img {
-  width: 16px;
-  height: 16px;
+.agora-header .card-general-neutral-100 .icon-set img {
+  width: 16px !important;
+  min-width: 16px;
+  height: 16px !important;
+  min-height: 16px;
   object-fit: contain;
   filter: brightness(0) invert(1);
 }
 
-.header-card-custom__icon-hover {
-  display: none;
+.agora-header .card-general-neutral-100 .icon-set svg.icon {
+  height: 16px;
+  min-height: 16px;
+  width: 16px;
+  min-width: 16px;
 }
 
-.header-card-custom:hover .header-card-custom__icon-default {
-  display: none;
-}
-
-.header-card-custom:hover .header-card-custom__icon-hover {
-  display: block;
-}
-
-.header-card-custom__content {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.header-card-custom__title {
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 28px;
-  color: var(--color-neutral-900);
-}
-
-.header-card-custom__description {
-  font-size: 14px;
-  line-height: 24px;
-  color: var(--color-neutral-700);
-}
-
-.header-card-custom__arrow {
-  display: flex;
-  align-items: center;
-}
-
-.header-card-custom__arrow svg {
+/* Arrow icon in card anchor stays blue */
+.agora-header .card-general-neutral-100 .anchor-container .trailing-icon svg.icon {
   fill: var(--color-primary-600);
 }
 
-.navigation-links-layout .agora-link-wrapper:has(.header-card-custom) {
-  display: block;
+.agora-header .card-general-neutral-100 .icon-container,
+.agora-header .card-general-neutral-100 .content {
+  background: transparent;
+}
+
+.agora-header .card-general.card-general-blockedLink:active {
+  transform: unset;
+}
+
+.agora-header .card-general {
   width: 100%;
-  background: transparent !important;
+  padding: 12px 32px;
 }
 
-.navigation-links-layout .agora-link-wrapper:has(.header-card-custom):hover {
-  background: transparent !important;
+.agora-header .card-general .title-text {
+  margin-bottom: 4px;
+  font-size: 16px;
+  line-height: 28px;
 }
 
-.navigation-links-layout .link-wrapper:has(.header-card-custom) {
+.agora-header .card-general .description {
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.agora-header .navigation-links-layout .card-general .p-16 {
+  padding-top: 0;
+  flex: 1;
+}
+
+.agora-header .card-general .anchor {
+  margin-right: unset;
+}
+
+.agora-header .card-general .content {
+  flex: 1 1 0%;
+}
+
+.agora-header .card-general .anchor.anchor-blockedLink {
+  margin-right: 0;
+}
+
+/* Hide card-level hover visuals */
+.agora-header .card-general-neutral-100.card-general-hover:hover:not(:active),
+.agora-header .card-general-neutral-100:hover .content-hover {
+  border-color: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.navigation-links-layout .agora-link-wrapper:has(.card-general) {
   display: block;
+}
+
+.navigation-links-layout .agora-link-wrapper .card-general *:focus,
+.navigation-links-layout .agora-link-wrapper .card-general *:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* 3.3 Header Navigation Panels */

@@ -80,12 +80,19 @@ export const Header = () => {
       }
 
       // 2. Fallback: Try to trigger click on the close button in the modal/menu
-      // The design system uses specific classes for the close button
       const closeButton = document.querySelector(
         '.agora-header-navigation-modal [aria-label="Fechar"], .agora-header-navigation-modal button.agora-modal-close'
       ) as HTMLButtonElement;
       if (closeButton) {
         closeButton.click();
+      }
+
+      // 3. Fallback: Close expanded panel by clicking its toggle button
+      const expandedBtn = document.querySelector(
+        '.agora-header button.panel-menu-button[aria-expanded="true"]'
+      ) as HTMLButtonElement;
+      if (expandedBtn) {
+        expandedBtn.click();
       }
     };
 
