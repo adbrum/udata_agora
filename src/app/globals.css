@@ -190,6 +190,12 @@ body {
   display: block;
 }
 
+.navigation-links-layout .agora-link-wrapper .card-general *:focus,
+.navigation-links-layout .agora-link-wrapper .card-general *:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 /* 3.3 Header Navigation Panels */
 .agora-header .navigation-links-layout > .title {
   display: none;
@@ -216,9 +222,11 @@ body {
   z-index: 1;
 }
 
-.navigation-links-layout[data-submenu] > .links > .link-wrapper:first-child .agora-btn {
+.navigation-links-layout[data-submenu] > .links > .link-wrapper:first-child .agora-btn,
+.navigation-links-layout[data-submenu] > .links > .link-wrapper:first-child .agora-btn .agora-icon {
   padding: 8px 0;
   font-weight: 600;
+  color: var(--color-neutral-900) !important;
 }
 
 /* 3.4 Publish Dropdown */
