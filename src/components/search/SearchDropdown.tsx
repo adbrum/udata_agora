@@ -142,11 +142,12 @@ export default function SearchDropdown({
 
       {isOpen && query.trim() && (
         <div
-          className="absolute w-full bg-white"
+          className="absolute w-full bg-white overflow-hidden"
           style={{
             zIndex: 9999,
             border: "1px solid #0C1932",
             borderTop: "1px solid #DCE1E8",
+            borderRadius: "0 0 8px 8px",
           }}
         >
           <ul className="list-none m-0 p-0" role="listbox">
