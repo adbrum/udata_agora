@@ -1,5 +1,5 @@
 import ApiTutorialClient from "@/components/documentation/ApiTutorialClient";
 
-export default function ApiDocumentationPage() {
+export default function ApiTutorialPage() {
   return <ApiTutorialClient />;
 }

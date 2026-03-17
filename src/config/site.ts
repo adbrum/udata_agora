@@ -139,6 +139,23 @@ export const authConfig = {
   },
 } as const;
 
+/**
+ * Static pages from GitHub repo.
+ * Mirrors the old settings.py config:
+ *   PAGES_GH_REPO_NAME = 'amagovpt/docs.dados.gov.pt'
+ *   PAGES_REPO_BRANCH = 'master'
+ */
+export const githubPagesConfig = {
+  repoName: "amagovpt/docs.dados.gov.pt",
+  branch: "master",
+  get rawBaseUrl() {
+    return `https://raw.githubusercontent.com/${this.repoName}/${this.branch}`;
+  },
+  get repoBaseUrl() {
+    return `https://github.com/${this.repoName}/blob/${this.branch}`;
+  },
+} as const;
+
 export const harvesterConfig = {
   harvesterPreviewMaxItems: 20,
   harvestEnableManualRun: false,
