@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CardGeneral } from "@ama-pt/agora-design-system";
+import { Icon } from "@ama-pt/agora-design-system";
 
 interface HeaderCardProps {
   iconDefault: string;
@@ -21,12 +21,13 @@ export const HeaderCard = ({
   onLinkClick,
 }: HeaderCardProps) => {
   const hasNavigation = href !== "#";
+  const isCustomIcon = iconDefault.startsWith("/");
 
   return (
     <div
       role="link"
       tabIndex={0}
-      className="cursor-pointer"
+      className="header-card-custom cursor-pointer"
       onClick={(e) => {
         if (hasNavigation) {
           e.preventDefault();
@@ -41,28 +42,27 @@ export const HeaderCard = ({
         }
       }}
     >
-      <CardGeneral
-        isCardHorizontal={true}
-        isBlockedLink={true}
-        variant="neutral-100"
-        iconDefault={iconDefault}
-        iconHover={iconHover}
-        titleText={title}
-        descriptionText={description}
-        anchor={{
-          href,
-          children: "",
-          hasIcon: true,
-          trailingIcon: "agora-line-arrow-right-circle",
-          trailingIconHover: "agora-solid-arrow-right-circle",
-          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
-            e.preventDefault();
-            if (hasNavigation) {
-              onLinkClick(e, href);
-            }
-          },
-        }}
-      />
+      <div className="header-card-custom__icon">
+        {isCustomIcon ? (
+          <img src={iconDefault} alt="" className="w-[16px] h-[16px]" />
+        ) : (
+          <>
+            <span className="header-card-custom__icon-default">
+              <Icon name={iconDefault} dimensions="xs" className="fill-white" />
+            </span>
+            <span className="header-card-custom__icon-hover">
+              <Icon name={iconHover || iconDefault} dimensions="xs" className="fill-white" />
+            </span>
+          </>
+        )}
+      </div>
+      <div className="header-card-custom__content">
+        <span className="header-card-custom__title">{title}</span>
+        <span className="header-card-custom__description">{description}</span>
+      </div>
+      <div className="header-card-custom__arrow">
+        <Icon name="agora-line-arrow-right-circle" className="w-[24px] h-[24px] fill-primary-600" />
+      </div>
     </div>
   );
 };
