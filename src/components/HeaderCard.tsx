@@ -30,8 +30,6 @@ export const HeaderCard = ({
       className="header-card-custom cursor-pointer"
       onClick={(e) => {
         if (hasNavigation) {
-          e.preventDefault();
-          e.stopPropagation();
           onLinkClick(e as unknown as React.MouseEvent<HTMLAnchorElement>, href);
         }
       }}
