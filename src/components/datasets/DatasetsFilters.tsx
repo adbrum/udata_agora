@@ -208,7 +208,7 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
         </div>
       )}
 
-      <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[64px] pl-[64px]">Filtros</h2>
+      <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[64px] pl-[64px]">Filtros avançados</h2>
 
       <Sidebar variant="filter" className="pl-[64px] font-bold">
         {filterGroups.map((group, index) => {
