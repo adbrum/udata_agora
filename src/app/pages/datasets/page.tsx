@@ -1,4 +1,4 @@
-import { fetchDatasets } from '@/services/api';
+import { fetchDatasets, fetchSiteInfo } from '@/services/api';
 import { DatasetFilters } from '@/types/api';
 import DatasetsClient from '@/components/datasets/DatasetsClient';
 
@@ -23,7 +23,16 @@ export default async function Page({
   if (resolved?.sort) filters.sort = String(resolved.sort);
   if (resolved?.featured) filters.featured = resolved.featured === 'true';
 
-  const initialData = await fetchDatasets(page, 20, filters);
+  const [initialData, siteInfo] = await Promise.all([
+    fetchDatasets(page, 20, filters),
+    fetchSiteInfo(),
+  ]);
 
-  return <DatasetsClient initialData={initialData} currentPage={page} />;
+  return (
+    <DatasetsClient
+      initialData={initialData}
+      currentPage={page}
+      siteMetrics={siteInfo.metrics}
+    />
+  );
 }

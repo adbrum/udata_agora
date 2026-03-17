@@ -1,9 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Toggle, Pill } from '@ama-pt/agora-design-system';
 import { SiteMetrics } from '@/types/api';
+import {
+  searchDatasets,
+  searchOrganizations,
+  searchReuses,
+  searchDataservices,
+} from '@/services/api';
 
 interface CategoryToggleItem {
   id: string;
@@ -17,6 +23,7 @@ interface CategoryToggleItem {
 
 interface CategoryTogglesProps {
   siteMetrics: SiteMetrics;
+  searchQuery?: string;
 }
 
 const buildItems = (siteMetrics: SiteMetrics): CategoryToggleItem[] => [
@@ -67,12 +74,90 @@ const HREF_TO_ID: Record<string, string> = {
   '/pages/organizations': 'organizacoes',
 };
 
-export const CategoryToggles = ({ siteMetrics }: CategoryTogglesProps) => {
+const ID_TO_SEARCH_KEY: Record<string, string> = {
+  datasets: 'datasets',
+  apis: 'dataservices',
+  reutilizacoes: 'reuses',
+  organizacoes: 'organizations',
+};
+
+interface SearchTotals {
+  datasets: number;
+  dataservices: number;
+  reuses: number;
+  organizations: number;
+}
+
+export const CategoryToggles = ({ siteMetrics, searchQuery }: CategoryTogglesProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const items = buildItems(siteMetrics);
-
   const activeId = HREF_TO_ID[pathname] || '';
+
+  const [searchTotals, setSearchTotals] = useState<SearchTotals | null>(null);
+  const [isLoadingTotals, setIsLoadingTotals] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const hasQuery = !!(searchQuery && searchQuery.trim());
+
+  useEffect(() => {
+    if (!hasQuery) {
+      setSearchTotals(null);
+      setIsLoadingTotals(false);
+      return;
+    }
+
+    setIsLoadingTotals(true);
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const q = searchQuery!.trim();
+        const [dsRes, dsvcRes, reuseRes, orgRes] = await Promise.all([
+          searchDatasets(q, 1, 1),
+          searchDataservices(q, 1, 1),
+          searchReuses(q, 1, 1),
+          searchOrganizations(q, 1, 1),
+        ]);
+        setSearchTotals({
+          datasets: dsRes.total,
+          dataservices: dsvcRes.total,
+          reuses: reuseRes.total,
+          organizations: orgRes.total,
+        });
+      } catch (error) {
+        console.error('Error fetching search totals:', error);
+        setSearchTotals(null);
+      } finally {
+        setIsLoadingTotals(false);
+      }
+    }, 300);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [searchQuery, hasQuery]);
+
+  const getCount = (item: CategoryToggleItem): number | null => {
+    if (!hasQuery) return item.count;
+    if (!searchTotals) return null;
+    const key = ID_TO_SEARCH_KEY[item.id];
+    return key ? searchTotals[key as keyof SearchTotals] : item.count;
+  };
+
+  const handleNavigation = (href: string) => {
+    if (hasQuery) {
+      const separator = href.includes('?') ? '&' : '?';
+      router.push(`${href}${separator}q=${encodeURIComponent(searchQuery!.trim())}`);
+    } else {
+      router.push(href);
+    }
+  };
 
   return (
     <div className="mb-64 pr-32 max-w-[592px] flex flex-col gap-16 mt-[32px]">
@@ -83,6 +168,7 @@ export const CategoryToggles = ({ siteMetrics }: CategoryTogglesProps) => {
           typeof item.leadingIcon === 'function'
             ? item.leadingIcon(isActive)
             : item.leadingIcon;
+        const count = getCount(item);
 
         return (
           <Toggle
@@ -96,9 +182,7 @@ export const CategoryToggles = ({ siteMetrics }: CategoryTogglesProps) => {
             leadingIcon={icon}
             leadingIconHover={item.leadingIconHover}
             checked={isActive}
-            onChange={() => {
-              router.push(item.href);
-            }}
+            onChange={() => handleNavigation(item.href)}
             iconOnly={false}
             fullWidth={true}
             className={item.className}
@@ -119,7 +203,11 @@ export const CategoryToggles = ({ siteMetrics }: CategoryTogglesProps) => {
                 circular={false}
                 className="text-xs font-medium text-neutral-500 ml-16"
               >
-                {item.count.toLocaleString('pt-PT')}
+                {isLoadingTotals && hasQuery
+                  ? '...'
+                  : count !== null
+                    ? count.toLocaleString('pt-PT')
+                    : '...'}
               </Pill>
             </div>
           </Toggle>

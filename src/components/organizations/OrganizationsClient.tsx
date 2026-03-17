@@ -105,6 +105,7 @@ export default function OrganizationsClient({
   const currentQuery = initialFilters.q || '';
   const currentSort = initialFilters.sort || '';
   const [searchQuery, setSearchQuery] = React.useState(currentQuery);
+  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentSortKey = Object.entries(SORT_OPTIONS).find(
     ([, v]) => v === currentSort
@@ -130,7 +131,22 @@ export default function OrganizationsClient({
     [initialFilters]
   );
 
+  React.useEffect(() => {
+    if (searchQuery === currentQuery) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      router.replace(
+        buildUrl({ q: searchQuery.trim() || null }),
+        { scroll: false }
+      );
+    }, 200);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchQuery, currentQuery, router, buildUrl]);
+
   const handleSearch = React.useCallback(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     router.replace(
       buildUrl({ q: searchQuery.trim() || null }),
       { scroll: false }

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button, InputSearchBar, Icon, CardGeneral, CardLinks, InputSelect, DropdownSection, DropdownOption, Pill, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { DatasetsFilters } from '@/components/datasets/DatasetsFilters';
-import { APIResponse, Dataset } from '@/types/api';
+import { APIResponse, Dataset, SiteMetrics } from '@/types/api';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -16,11 +16,13 @@ import PageBanner from '@/components/PageBanner';
 interface DatasetsClientProps {
   initialData: APIResponse<Dataset>;
   currentPage: number;
+  siteMetrics?: SiteMetrics;
 }
 
 export default function DatasetsClient({
   initialData,
   currentPage,
+  siteMetrics,
 }: DatasetsClientProps) {
   const publishDropdownRef = React.useRef<HTMLDivElement>(null);
   const [showPublishDropdown, setShowPublishDropdown] = React.useState(false);
@@ -43,18 +45,35 @@ export default function DatasetsClient({
 
   const currentQuery = searchParams.get('q') || '';
   const [searchQuery, setSearchQuery] = React.useState(currentQuery);
+  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleSearch = React.useCallback(() => {
+  const applySearch = React.useCallback((q: string) => {
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-    if (searchQuery.trim()) {
-      params.set('q', searchQuery.trim());
+    if (q.trim()) {
+      params.set('q', q.trim());
     } else {
       params.delete('q');
     }
     params.set('page', '1');
     const search = params.toString();
     router.replace(`/pages/datasets${search ? `?${search}` : ''}`, { scroll: false });
-  }, [searchQuery, router]);
+  }, [router]);
+
+  React.useEffect(() => {
+    if (searchQuery === currentQuery) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      applySearch(searchQuery);
+    }, 200);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchQuery, currentQuery, applySearch]);
+
+  const handleSearch = React.useCallback(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    applySearch(searchQuery);
+  }, [searchQuery, applySearch]);
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters dataset">
@@ -138,7 +157,7 @@ export default function DatasetsClient({
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
             {/* Sidebar */}
             <div className="xl:col-span-4 xl:block bg-primary-100 p-32 pl-0">
-              <DatasetsFilters />
+              <DatasetsFilters siteMetrics={siteMetrics} searchQuery={currentQuery} />
             </div>
 
             {/* Results Area */}

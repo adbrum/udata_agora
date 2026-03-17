@@ -1,4 +1,4 @@
-import { fetchReuses, fetchReuseTypes } from '@/services/api';
+import { fetchReuses, fetchReuseTypes, fetchSiteInfo } from '@/services/api';
 import ReusesClient from '@/components/reuses/ReusesClient';
 import { Metadata } from 'next';
 
@@ -29,8 +29,11 @@ export default async function ReusesPage({
         ...(resolvedSearchParams?.sort && { sort: resolvedSearchParams.sort }),
     };
     const hasFilters = Object.keys(filters).length > 0;
-    const initialData = await fetchReuses(page, 12, hasFilters ? filters : undefined);
-    const reuseTypes = await fetchReuseTypes();
+    const [initialData, reuseTypes, siteInfo] = await Promise.all([
+        fetchReuses(page, 12, hasFilters ? filters : undefined),
+        fetchReuseTypes(),
+        fetchSiteInfo(),
+    ]);
 
     return (
         <ReusesClient
@@ -38,6 +41,7 @@ export default async function ReusesPage({
             currentPage={page}
             initialFilters={filters}
             reuseTypes={reuseTypes}
+            siteMetrics={siteInfo.metrics}
         />
     );
 }

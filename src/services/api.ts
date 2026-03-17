@@ -619,15 +619,22 @@ export async function fetchMyDataservices(
 }
 
 /**
- * Fetch all dataservices (paginated)
+ * Fetch all dataservices (paginated, with optional filters)
  */
 export async function fetchDataservices(
   page: number = 1,
-  pageSize: number = 20
+  pageSize: number = 20,
+  filters?: { q?: string; sort?: string }
 ): Promise<APIResponse<Dataservice>> {
   try {
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("page_size", String(pageSize));
+    if (filters?.q) params.set("q", filters.q);
+    if (filters?.sort) params.set("sort", filters.sort);
+
     const res = await fetch(
-      `${API_BASE_URL}/dataservices/?page=${page}&page_size=${pageSize}`,
+      `${API_BASE_URL}/dataservices/?${params.toString()}`,
       { cache: "no-store" }
     );
 
