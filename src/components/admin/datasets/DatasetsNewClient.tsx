@@ -148,6 +148,7 @@ export default function DatasetsNewClient() {
               button={{
                 children: "Comece a publicar",
                 variant: "primary",
+                appearance: "outline",
                 onClick: () => router.push("/pages/admin/me/datasets/new?step=2"),
               }}
             />
@@ -159,7 +160,8 @@ export default function DatasetsNewClient() {
               icon={{ name: "agora-line-edit" }}
               button={{
                 children: "Publicar com um diagrama",
-                variant: "neutral",
+                variant: "primary",
+                appearance: "outline",
               }}
             />
           </div>
