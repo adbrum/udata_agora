@@ -35,7 +35,7 @@ const navGroups: NavGroup[] = [
       {
         label: "API",
         href: "/pages/admin/me/dataservices",
-        customIcon: "/Icons/reduce.svg",
+        customIcon: "/Icons/reduce_white.svg",
       },
       {
         label: "Reutilizações",
@@ -72,7 +72,7 @@ const navGroups: NavGroup[] = [
       {
         label: "API",
         href: "/pages/admin/org/dataservices",
-        customIcon: "/Icons/reduce.svg",
+        customIcon: "/Icons/reduce_white.svg",
       },
       {
         label: "Reutilizações",
@@ -124,7 +124,7 @@ const navGroups: NavGroup[] = [
       {
         label: "API",
         href: "/pages/admin/system/dataservices",
-        customIcon: "/Icons/reduce.svg",
+        customIcon: "/Icons/reduce_white.svg",
       },
       {
         label: "Reutilizações",

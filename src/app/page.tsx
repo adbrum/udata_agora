@@ -18,7 +18,7 @@ import { Dataset, Post, Reuse, SiteInfo } from "@/types/api";
 import { formatDistanceToNow, format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { useAuth } from "@/context/AuthContext";
-import PageLoader from "@/components/common/PageLoader";
+
 
 function formatStatNumber(value: number): { number: string; suffix: string } {
   if (value >= 1_000_000) {
@@ -372,11 +372,7 @@ export default function Home() {
             <h2 className="text-xl-bold mb-32 text-primary-900 ">Conjunto de dados</h2>
 
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
-              {isLoading ? (
-                <div className="xl:col-span-3">
-                  <PageLoader />
-                </div>
-              ) : latestDatasets.length > 0 ? (
+              {isLoading ? null : latestDatasets.length > 0 ? (
                 latestDatasets.map((dataset) => (
                   <Link
                     key={dataset.id}
@@ -475,11 +471,7 @@ export default function Home() {
               Precisa de uma descrição uma vez que é um titulo estrangeiro e novidade no dados.gov
             </p>
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32 storytellings">
-              {isLoading ? (
-                <div className="xl:col-span-3">
-                  <PageLoader />
-                </div>
-              ) : latestReuses.length > 0 ? (
+              {isLoading ? null : latestReuses.length > 0 ? (
                 latestReuses.map((reuse) => (
                   <CardArticle
                     key={reuse.id}
@@ -529,11 +521,7 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <h2 className="text-xl-bold mb-32 text-primary-900">Últimas novidades</h2>
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
-              {isLoading ? (
-                <div className="xl:col-span-3">
-                  <PageLoader />
-                </div>
-              ) : posts.length > 0 ? (
+              {isLoading ? null : posts.length > 0 ? (
                 posts.map((post) => (
                   <div key={post.id} className="latest-news-card-wrapper h-full">
                     <CardArticle

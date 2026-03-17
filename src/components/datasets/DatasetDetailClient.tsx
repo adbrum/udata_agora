@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button, Icon, Breadcrumb, Pill, ProgressBar } from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
 import { fetchDataset, followEntity, unfollowEntity } from '@/services/api';
-import PageLoader from "@/components/common/PageLoader";
+
 import { DatasetTabs } from '@/components/datasets/DatasetTabs';
 
 interface DatasetDetailClientProps {
@@ -86,7 +86,7 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
   };
 
   if (isLoading) {
-    return <PageLoader />;
+    return null;
   }
 
   if (!dataset) {
