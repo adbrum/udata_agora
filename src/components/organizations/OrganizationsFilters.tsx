@@ -206,7 +206,7 @@ export const OrganizationsFilters = ({
             router.replace("/pages/organizations", { scroll: false });
           }}
         >
-          Redefinir filtros
+          Limpar filtros
         </Button>
       </div>
     </div>

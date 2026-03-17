@@ -1,11 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
 import {
   Breadcrumb,
-  Button,
   CardNoResults,
-  Dropdown,
   Icon,
   InputSelect,
   InputSearchBar,
@@ -13,11 +10,10 @@ import {
   DropdownOption,
 } from "@ama-pt/agora-design-system";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import PublishDropdown from "@/components/admin/PublishDropdown";
 
 export default function CommunityResourcesClient() {
   const { displayName } = useCurrentUser();
-  const [showPublishDropdown, setShowPublishDropdown] = useState(false);
-  const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="datasets-admin-page">
@@ -33,47 +29,7 @@ export default function CommunityResourcesClient() {
 
       <div className="datasets-admin-page__header">
         <h1 className="datasets-admin-page__title">Recursos comunitários</h1>
-        <div
-          className="relative inline-block publish-dropdown-wrapper"
-          ref={publishDropdownWrapperRef}
-        >
-          <Button
-            variant="primary"
-            hasIcon={true}
-            trailingIcon={
-              showPublishDropdown ? "agora-line-chevron-up" : "agora-line-chevron-down"
-            }
-            trailingIconHover={
-              showPublishDropdown ? "agora-solid-chevron-up" : "agora-solid-chevron-down"
-            }
-            className="px-24 py-16 rounded-8 h-auto relative z-10"
-            onClick={() => setShowPublishDropdown((v) => !v)}
-          >
-            <span className="text-lg font-medium">
-              Publicar <span className="font-bold">dados.gov</span>
-            </span>
-          </Button>
-          <Dropdown
-            type="text"
-            showDropdown={showPublishDropdown}
-            onHide={() => setShowPublishDropdown(false)}
-            hideSectionNames={true}
-            optionsVisible={6}
-            style={{
-              width: "max-content",
-              minWidth: "100%",
-            }}
-          >
-            <DropdownSection name="publish" label="">
-              <DropdownOption value="dataset">Um conjunto de dados</DropdownOption>
-              <DropdownOption value="reuse">Uma reutilização</DropdownOption>
-              <DropdownOption value="harvester">Um harvester</DropdownOption>
-              <DropdownOption value="api">Uma API</DropdownOption>
-              <DropdownOption value="article">Um artigo</DropdownOption>
-              <DropdownOption value="organization">Uma organização</DropdownOption>
-            </DropdownSection>
-          </Dropdown>
-        </div>
+        <PublishDropdown />
       </div>
 
       <div className="datasets-page__body">

@@ -129,7 +129,7 @@ export default function Home() {
                     <SearchDropdown
                       id="portal-search"
                       darkMode={true}
-                      hasVoiceActionButton={true}
+                      hasVoiceActionButton={false}
                       label="O que procura no Portal?"
                       placeholder="Pesquisar datasets, organizações, temas..."
                     />
@@ -160,46 +160,32 @@ export default function Home() {
                           Publicar <span className="font-bold">dados.gov</span>
                         </span>
                       </Button>
-                      <Dropdown
-                        type="text"
-                        showDropdown={showPublishDropdown}
-                        onHide={() => setShowPublishDropdown(false)}
-                        hideSectionNames={true}
-                        optionsVisible={6}
-                        onChange={(options) => {
-                          const routes: Record<string, string> = {
-                            dataset: "/pages/admin/me/datasets/new",
-                            reuse: "/pages/admin/me/reuses/new",
-                            harvester: "/pages/admin/harvesters/new",
-                            api: "/pages/admin/dataservices/new",
-    article: "/pages/admin/system/posts/new",
-                            organization: "/pages/admin/organizations/new",
-                          };
-                          if (options.length > 0) {
-                            const route = routes[options[0].value as string];
-                            if (route) router.push(route);
-                          }
-                        }}
-                        style={{
-                          width: "max-content",
-                          minWidth: "100%",
-                        }}
-                      >
-                        <DropdownSection name="publish" label="">
-                          <DropdownOption value="dataset">
-                            Um conjunto de dados
-                          </DropdownOption>
-                          <DropdownOption value="reuse">
-                            Uma reutilização
-                          </DropdownOption>
-                          <DropdownOption value="harvester">
-                            Um harvester
-                          </DropdownOption>
-                          <DropdownOption value="organization">
-                            Uma organização
-                          </DropdownOption>
-                        </DropdownSection>
-                      </Dropdown>
+                      {showPublishDropdown && (
+                        <div className="publish-custom-dropdown">
+                          {[
+                            { icon: "agora-line-layers-menu", label: "Um conjunto de dados", href: "/pages/admin/me/datasets/new" },
+                            { icon: null, customIcon: "/Icons/bar_chart.svg", label: "Uma reutilização", href: "/pages/admin/me/reuses/new" },
+                            { icon: "agora-line-award", label: "Um harvester", href: "/pages/admin/harvesters/new" },
+                            { icon: "agora-line-buildings", label: "Uma organização", href: "/pages/admin/organizations/new" },
+                          ].map((item, index) => (
+                            <button
+                              key={index}
+                              className="publish-custom-dropdown__item"
+                              onClick={() => {
+                                setShowPublishDropdown(false);
+                                router.push(item.href);
+                              }}
+                            >
+                              {item.icon ? (
+                                <Icon name={item.icon} className="w-[24px] h-[24px] text-primary-600" />
+                              ) : (
+                                <img src={item.customIcon} alt="" className="w-[24px] h-[24px]" aria-hidden="true" />
+                              )}
+                              <span>{item.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -304,7 +290,7 @@ export default function Home() {
                     <div className="flex items-center gap-24">
                       <div className="stats-icon-wrapper text-[#CBFF3F] border-[#CBFF3F]">
                         <Icon
-                          name="agora-line-document"
+                          name="agora-line-buildings"
                           aria-hidden="true"
                           className="w-[24px] h-[24px]"
                         />

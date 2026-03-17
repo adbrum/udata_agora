@@ -179,7 +179,7 @@ export default function OrganizationsClient({
             label="O que procura nas organizações?"
             placeholder="Pesquisar organizações..."
             id="organizations-search"
-            hasVoiceActionButton={true}
+            hasVoiceActionButton={false}
             voiceActionAltText="Pesquisar por voz"
             searchActionAltText="Pesquisar"
             darkMode={true}
@@ -330,7 +330,7 @@ export default function OrganizationsClient({
                               trailingIcon="agora-line-arrow-right-circle"
                               trailingIconHover="agora-solid-arrow-right-circle"
                             >
-                              Redefinir filtros
+                              Limpar filtros
                             </Button>
                           </div>
                         }

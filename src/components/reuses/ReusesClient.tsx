@@ -425,7 +425,7 @@ export default function ReusesClient({
             label="O que procura nas reutilizações?"
             placeholder="Pesquisar reutilizações..."
             id="reuses-search"
-            hasVoiceActionButton={true}
+            hasVoiceActionButton={false}
             voiceActionAltText="Pesquisar por voz"
             searchActionAltText="Pesquisar"
             darkMode={true}
@@ -620,7 +620,7 @@ export default function ReusesClient({
                     router.push("/pages/reuses");
                   }}
                 >
-                  Redefinir filtros
+                  Limpar filtros
                 </Button>
               </div>
             </div>
@@ -788,7 +788,7 @@ export default function ReusesClient({
                           trailingIcon="agora-line-arrow-right-circle"
                           trailingIconHover="agora-solid-arrow-right-circle"
                         >
-                          Redefinir filtros
+                          Limpar filtros
                         </Button>
                       </div>
                     }

@@ -1,12 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   Breadcrumb,
-  Button,
   CardNoResults,
-  Dropdown,
   Icon,
   InputSelect,
   InputSearchBar,
@@ -22,6 +19,7 @@ import {
 } from "@ama-pt/agora-design-system";
 import { fetchDataservices } from "@/services/api";
 import { Dataservice } from "@/types/api";
+import PublishDropdown from "@/components/admin/PublishDropdown";
 
 
 const formatDate = (dateStr: string) => {
@@ -30,9 +28,6 @@ const formatDate = (dateStr: string) => {
 };
 
 export default function SystemDataservicesClient() {
-  const router = useRouter();
-  const [showPublishDropdown, setShowPublishDropdown] = useState(false);
-  const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
 
   const [apis, setApis] = useState<Dataservice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,15 +57,6 @@ export default function SystemDataservicesClient() {
     return "success" as const;
   };
 
-  const publishRoutes: Record<string, string> = {
-    dataset: "/pages/admin/me/datasets/new",
-    reuse: "/pages/admin/me/reuses/new",
-    harvester: "/pages/admin/harvesters/new",
-    api: "/pages/admin/dataservices/new",
-    article: "/pages/admin/system/posts/new",
-    organization: "/pages/admin/organizations/new",
-  };
-
   return (
     <div className="datasets-admin-page">
       <div className="datasets-admin-page__breadcrumb">
@@ -85,53 +71,7 @@ export default function SystemDataservicesClient() {
 
       <div className="datasets-admin-page__header">
         <h1 className="datasets-admin-page__title">API</h1>
-        <div
-          className="relative inline-block publish-dropdown-wrapper"
-          ref={publishDropdownWrapperRef}
-        >
-          <Button
-            variant="primary"
-            hasIcon={true}
-            trailingIcon={
-              showPublishDropdown ? "agora-line-chevron-up" : "agora-line-chevron-down"
-            }
-            trailingIconHover={
-              showPublishDropdown ? "agora-solid-chevron-up" : "agora-solid-chevron-down"
-            }
-            className="px-24 py-16 rounded-8 h-auto relative z-10"
-            onClick={() => setShowPublishDropdown((v) => !v)}
-          >
-            <span className="text-lg font-medium">
-              Publicar <span className="font-bold">dados.gov</span>
-            </span>
-          </Button>
-          <Dropdown
-            type="text"
-            showDropdown={showPublishDropdown}
-            onHide={() => setShowPublishDropdown(false)}
-            hideSectionNames={true}
-            optionsVisible={6}
-            onChange={(options) => {
-              if (options.length > 0) {
-                const route = publishRoutes[options[0].value as string];
-                if (route) router.push(route);
-              }
-            }}
-            style={{
-              width: "max-content",
-              minWidth: "100%",
-            }}
-          >
-            <DropdownSection name="publish" label="">
-              <DropdownOption value="dataset">Um conjunto de dados</DropdownOption>
-              <DropdownOption value="reuse">Uma reutilização</DropdownOption>
-              <DropdownOption value="harvester">Um harvester</DropdownOption>
-              <DropdownOption value="api">Uma API</DropdownOption>
-              <DropdownOption value="article">Um artigo</DropdownOption>
-              <DropdownOption value="organization">Uma organização</DropdownOption>
-            </DropdownSection>
-          </Dropdown>
-        </div>
+        <PublishDropdown />
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">

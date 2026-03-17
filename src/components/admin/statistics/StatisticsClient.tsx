@@ -1,15 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
-  Button,
   CardFrame,
   CardNoResults,
-  Dropdown,
-  DropdownSection,
-  DropdownOption,
   Icon,
   InputSearchBar,
   Tabs,
@@ -24,12 +18,10 @@ import {
   TableCell,
 } from "@ama-pt/agora-design-system";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import PublishDropdown from "@/components/admin/PublishDropdown";
 
 export default function StatisticsClient() {
-  const router = useRouter();
   const { displayName } = useCurrentUser();
-  const [showPublishDropdown, setShowPublishDropdown] = useState(false);
-  const publishDropdownWrapperRef = useRef<HTMLDivElement>(null);
   return (
     <div className="datasets-admin-page">
       <div className="datasets-admin-page__breadcrumb">
@@ -145,61 +137,7 @@ export default function StatisticsClient() {
             <div className="mt-[24px]">
               <div className="datasets-admin-page__header">
                 <h2 className="datasets-admin-page__title">API</h2>
-                <div
-                  className="relative inline-block publish-dropdown-wrapper"
-                  ref={publishDropdownWrapperRef}
-                >
-                  <Button
-                    variant="primary"
-                    hasIcon={true}
-                    trailingIcon={
-                      showPublishDropdown ? "agora-line-chevron-up" : "agora-line-chevron-down"
-                    }
-                    trailingIconHover={
-                      showPublishDropdown ? "agora-solid-chevron-up" : "agora-solid-chevron-down"
-                    }
-                    className="px-24 py-16 rounded-8 h-auto relative z-10"
-                    onClick={() => setShowPublishDropdown((v) => !v)}
-                  >
-                    <span className="text-lg font-medium">
-                      Publicar <span className="font-bold">dados.gov</span>
-                    </span>
-                  </Button>
-                  <Dropdown
-                    type="text"
-                    showDropdown={showPublishDropdown}
-                    onHide={() => setShowPublishDropdown(false)}
-                    hideSectionNames={true}
-                    optionsVisible={6}
-                    onChange={(options) => {
-                      const routes: Record<string, string> = {
-                        dataset: "/pages/admin/me/datasets/new",
-                        reuse: "/pages/admin/me/reuses/new",
-                        harvester: "/pages/admin/harvesters/new",
-                        api: "/pages/admin/dataservices/new",
-    article: "/pages/admin/system/posts/new",
-                        organization: "/pages/admin/organizations/new",
-                      };
-                      if (options.length > 0) {
-                        const route = routes[options[0].value as string];
-                        if (route) router.push(route);
-                      }
-                    }}
-                    style={{
-                      width: "max-content",
-                      minWidth: "100%",
-                    }}
-                  >
-                    <DropdownSection name="publish" label="">
-                      <DropdownOption value="dataset">Um conjunto de dados</DropdownOption>
-                      <DropdownOption value="reuse">Uma reutilização</DropdownOption>
-                      <DropdownOption value="harvester">Um harvester</DropdownOption>
-              <DropdownOption value="api">Uma API</DropdownOption>
-                      <DropdownOption value="article">Um artigo</DropdownOption>
-              <DropdownOption value="organization">Uma organização</DropdownOption>
-                    </DropdownSection>
-                  </Dropdown>
-                </div>
+                <PublishDropdown />
               </div>
 
               <div className="datasets-page__body mt-[24px]">
@@ -238,21 +176,7 @@ export default function StatisticsClient() {
             <div className="mt-[24px]">
               <div className="datasets-admin-page__header">
                 <h2 className="datasets-admin-page__title">Reutilizações</h2>
-                <div
-                  className="relative inline-block publish-dropdown-wrapper"
-                >
-                  <Button
-                    variant="primary"
-                    hasIcon={true}
-                    trailingIcon="agora-line-chevron-down"
-                    trailingIconHover="agora-solid-chevron-down"
-                    className="px-24 py-16 rounded-8 h-auto relative z-10"
-                  >
-                    <span className="text-lg font-medium">
-                      Publicar <span className="font-bold">dados.gov</span>
-                    </span>
-                  </Button>
-                </div>
+                <PublishDropdown />
               </div>
 
               <div className="datasets-page__body mt-[24px]">
