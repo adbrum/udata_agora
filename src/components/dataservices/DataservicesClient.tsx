@@ -312,7 +312,7 @@ export default function DataservicesClient({
             label="O que procura nas APIs?"
             placeholder="Pesquisar APIs..."
             id="dataservices-search"
-            hasVoiceActionButton={true}
+            hasVoiceActionButton={false}
             voiceActionAltText="Pesquisar por voz"
             searchActionAltText="Pesquisar"
             darkMode={true}
@@ -588,7 +588,7 @@ export default function DataservicesClient({
                               trailingIcon="agora-line-arrow-right-circle"
                               trailingIconHover="agora-solid-arrow-right-circle"
                             >
-                              Redefinir filtros
+                              Limpar filtros
                             </Button>
                           </div>
                         }

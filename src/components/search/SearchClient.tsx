@@ -407,7 +407,7 @@ export default function SearchClient() {
             label="Pesquisa avançada"
             placeholder="Pesquisar datasets, organizações, reutilizações..."
             id="search-page-input"
-            hasVoiceActionButton={true}
+            hasVoiceActionButton={false}
             voiceActionAltText="Pesquisar por voz"
             searchActionAltText="Pesquisar"
             darkMode={true}

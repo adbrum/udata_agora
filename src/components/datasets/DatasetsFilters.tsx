@@ -440,7 +440,7 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
             router.replace("/pages/datasets", { scroll: false });
           }}
         >
-          Redefinir filtros
+          Limpar filtros
         </Button>
       </div>
     </div>

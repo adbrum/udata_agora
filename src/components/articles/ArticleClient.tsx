@@ -68,7 +68,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
             label="O que procura nas novidades?"
             placeholder="Pesquisar artigos, notícias, webinars..."
             id="articles-search"
-            hasVoiceActionButton={true}
+            hasVoiceActionButton={false}
             voiceActionAltText="Pesquisar por voz"
             searchActionAltText="Pesquisar"
             darkMode={true}

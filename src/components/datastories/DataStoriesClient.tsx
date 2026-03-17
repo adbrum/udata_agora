@@ -80,7 +80,7 @@ export default function DataStoriesClient({ currentPage }: DataStoriesClientProp
             label="O que procura nas data stories?"
             placeholder="Pesquisar data stories, temas..."
             id="datastories-search"
-            hasVoiceActionButton={true}
+            hasVoiceActionButton={false}
             voiceActionAltText="Pesquisar por voz"
             searchActionAltText="Pesquisar"
             darkMode={true}
