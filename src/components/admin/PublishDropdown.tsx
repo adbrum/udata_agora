@@ -5,10 +5,23 @@ import { useRouter } from "next/navigation";
 import { Button, Icon } from "@ama-pt/agora-design-system";
 
 const PUBLISH_ITEMS = [
-  { icon: "agora-line-layers-menu", label: "Um conjunto de dados", href: "/pages/admin/me/datasets/new" },
-  { icon: null, customIcon: "/Icons/bar_chart.svg", label: "Uma reutilização", href: "/pages/admin/me/reuses/new" },
+  {
+    icon: "agora-line-layers-menu",
+    label: "Um conjunto de dados",
+    href: "/pages/admin/me/datasets/new",
+  },
+  {
+    icon: null,
+    customIcon: "/Icons/bar_chart.svg",
+    label: "Uma reutilização",
+    href: "/pages/admin/me/reuses/new",
+  },
   { icon: "agora-line-award", label: "Um harvester", href: "/pages/admin/harvesters/new" },
-  { icon: "agora-line-buildings", label: "Uma organização", href: "/pages/admin/organizations/new" },
+  {
+    icon: "agora-line-buildings",
+    label: "Uma organização",
+    href: "/pages/admin/organizations/new",
+  },
 ];
 
 interface PublishDropdownProps {
@@ -61,7 +74,12 @@ export default function PublishDropdown({ darkMode = false }: PublishDropdownPro
               {item.icon ? (
                 <Icon name={item.icon} className="w-[24px] h-[24px] text-primary-600" />
               ) : (
-                <img src={item.customIcon!} alt="" className="w-[24px] h-[24px]" aria-hidden="true" />
+                <img
+                  src={item.customIcon!}
+                  alt=""
+                  className="w-[24px] h-[24px]"
+                  aria-hidden="true"
+                />
               )}
               <span>{item.label}</span>
             </button>
