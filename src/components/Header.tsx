@@ -464,7 +464,7 @@ export const Header = () => {
                 iconHover: "agora-solid-health",
                 title: "HVDs",
                 description: "High Value Datasets",
-                href: "/pages/datasets/enti-catalogo-nacional-de-modelos-de-dados-registo-de-alteracoes",
+                href: "/pages/datasets?tag=hvd",
               },
               {
                 iconDefault: "/Icons/bar_char_white.svg",
