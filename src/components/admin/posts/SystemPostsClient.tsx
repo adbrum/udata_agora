@@ -131,13 +131,13 @@ export default function SystemPostsClient() {
               hasIcon={true}
               trailingIcon={
                 showPublishDropdown
-                  ? "agora-line-arrow-up"
-                  : "agora-line-arrow-down"
+                  ? "agora-line-chevron-up"
+                  : "agora-line-chevron-down"
               }
               trailingIconHover={
                 showPublishDropdown
-                  ? "agora-solid-arrow-up"
-                  : "agora-solid-arrow-down"
+                  ? "agora-solid-chevron-up"
+                  : "agora-solid-chevron-down"
               }
               className="px-24 py-16 rounded-8 h-auto relative z-10"
               onClick={() => setShowPublishDropdown((v) => !v)}
