@@ -115,8 +115,8 @@ export default function DatasetsClient({
               variant="primary"
               darkMode={true}
               hasIcon={true}
-              trailingIcon="agora-line-arrow-down"
-              trailingIconHover="agora-solid-arrow-down"
+              trailingIcon="agora-line-chevron-down"
+              trailingIconHover="agora-solid-chevron-down"
               className="px-24 py-16 rounded-8 h-auto"
               onClick={() => setShowPublishDropdown((v) => !v)}
             >

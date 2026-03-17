@@ -96,8 +96,8 @@ export default function ProfileClient() {
             <Button
               variant="primary"
               hasIcon
-              trailingIcon="agora-line-arrow-down-anchor"
-              trailingIconHover="agora-solid-arrow-down-anchor"
+              trailingIcon="agora-line-chevron-down"
+              trailingIconHover="agora-solid-chevron-down"
               onClick={() => setShowEditDropdown((v) => !v)}
             >
               Editar
@@ -231,7 +231,7 @@ export default function ProfileClient() {
                 </div>
 
                 <StatusCard
-                  type="warning"
+                  type="info"
                   description={
                     <>
                       <strong>Autenticação de dois fatores</strong>

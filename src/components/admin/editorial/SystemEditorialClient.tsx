@@ -67,7 +67,7 @@ function FeaturedList<T extends { id: string; title: string }>({
               className="p-[4px] rounded hover:bg-neutral-200 disabled:opacity-30 disabled:cursor-not-allowed"
               title="Mover para cima"
             >
-              <Icon name="agora-line-arrow-up" className="w-[16px] h-[16px]" />
+              <Icon name="agora-line-chevron-up" className="w-[16px] h-[16px]" />
             </button>
             <button
               type="button"
@@ -76,7 +76,7 @@ function FeaturedList<T extends { id: string; title: string }>({
               className="p-[4px] rounded hover:bg-neutral-200 disabled:opacity-30 disabled:cursor-not-allowed"
               title="Mover para baixo"
             >
-              <Icon name="agora-line-arrow-down" className="w-[16px] h-[16px]" />
+              <Icon name="agora-line-chevron-down" className="w-[16px] h-[16px]" />
             </button>
             <button
               type="button"

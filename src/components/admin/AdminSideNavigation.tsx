@@ -229,10 +229,10 @@ export function AdminSideNavigation() {
                   </span>
                 ),
                 hasIcon: true,
-                collapsedIconTrailing: "agora-line-arrow-up",
-                collapsedIconHoverTrailing: "agora-solid-arrow-up",
-                expandedIconTrailing: "agora-line-arrow-down",
-                expandedIconHoverTrailing: "agora-solid-arrow-down",
+                collapsedIconTrailing: "agora-line-chevron-up",
+                collapsedIconHoverTrailing: "agora-solid-chevron-up",
+                expandedIconTrailing: "agora-line-chevron-down",
+                expandedIconHoverTrailing: "agora-solid-chevron-down",
               }}
             >
               <ul className="admin-sidebar-nav__children">

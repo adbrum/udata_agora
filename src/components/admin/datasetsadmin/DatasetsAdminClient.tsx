@@ -429,7 +429,7 @@ export default function DatasetsAdminClient({
                     }}
                     hasError={!!formErrors.datasetDescription}
                     hasFeedback={true}
-                    feedbackState={formErrors.datasetDescription ? "danger" : "warning"}
+                    feedbackState={formErrors.datasetDescription ? "danger" : "info"}
                     errorFeedbackText="Campo obrigatório"
                     feedbackText="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
                   />
@@ -443,7 +443,7 @@ export default function DatasetsAdminClient({
                       setDatasetShortDescription(e.target.value);
                     }}
                     hasFeedback={true}
-                    feedbackState="warning"
+                    feedbackState="info"
                     feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 200 caracteres da sua descrição."
                   />
                   <div className="w-1/2">

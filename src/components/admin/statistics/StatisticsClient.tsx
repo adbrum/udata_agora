@@ -153,10 +153,10 @@ export default function StatisticsClient() {
                     variant="primary"
                     hasIcon={true}
                     trailingIcon={
-                      showPublishDropdown ? "agora-line-arrow-up" : "agora-line-arrow-down"
+                      showPublishDropdown ? "agora-line-chevron-up" : "agora-line-chevron-down"
                     }
                     trailingIconHover={
-                      showPublishDropdown ? "agora-solid-arrow-up" : "agora-solid-arrow-down"
+                      showPublishDropdown ? "agora-solid-chevron-up" : "agora-solid-chevron-down"
                     }
                     className="px-24 py-16 rounded-8 h-auto relative z-10"
                     onClick={() => setShowPublishDropdown((v) => !v)}
@@ -244,8 +244,8 @@ export default function StatisticsClient() {
                   <Button
                     variant="primary"
                     hasIcon={true}
-                    trailingIcon="agora-line-arrow-down"
-                    trailingIconHover="agora-solid-arrow-down"
+                    trailingIcon="agora-line-chevron-down"
+                    trailingIconHover="agora-solid-chevron-down"
                     className="px-24 py-16 rounded-8 h-auto relative z-10"
                   >
                     <span className="text-lg font-medium">
