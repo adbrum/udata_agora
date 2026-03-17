@@ -90,50 +90,40 @@ export default function ProfileClient() {
           </div>
 
           <div
-            className="relative inline-block publish-dropdown-wrapper"
+            className="absolute top-[32px] right-[32px] publish-dropdown-wrapper"
             ref={editDropdownWrapperRef}
           >
             <Button
               variant="primary"
               hasIcon
-              leadingIcon="agora-line-edit"
-              leadingIconHover="agora-solid-edit"
+              trailingIcon="agora-line-arrow-down-anchor"
+              trailingIconHover="agora-solid-arrow-down-anchor"
               onClick={() => setShowEditDropdown((v) => !v)}
             >
               Editar
             </Button>
             <Dropdown
-              type="text"
+              type="icon"
               showDropdown={showEditDropdown}
               onHide={() => setShowEditDropdown(false)}
               hideSectionNames={true}
-              optionsVisible={6}
+              className="profile-edit-dropdown"
               onChange={(options) => {
                 const routes: Record<string, string> = {
-                  dataset: "/pages/admin/me/datasets/new",
-                  reuse: "/pages/admin/me/reuses/new",
-                  harvester: "/pages/admin/harvesters/new",
-                  api: "/pages/admin/dataservices/new",
-    article: "/pages/admin/system/posts/new",
-                  organization: "/pages/admin/organizations/new",
+                  edit_profile: "/pages/admin/profile",
+                  change_password: "/pages/admin/profile/password",
+                  delete_profile: "/pages/admin/profile/delete",
                 };
                 if (options.length > 0) {
                   const route = routes[options[0].value as string];
                   if (route) router.push(route);
                 }
               }}
-              style={{
-                width: "max-content",
-                minWidth: "100%",
-              }}
             >
               <DropdownSection name="edit" label="">
-                <DropdownOption value="dataset">Um conjunto de dados</DropdownOption>
-                <DropdownOption value="reuse">Uma reutilização</DropdownOption>
-                <DropdownOption value="harvester">Um harvester</DropdownOption>
-              <DropdownOption value="api">Uma API</DropdownOption>
-                <DropdownOption value="article">Um artigo</DropdownOption>
-              <DropdownOption value="organization">Uma organização</DropdownOption>
+                <DropdownOption value="edit_profile" hasIcon icon="agora-line-edit">Editar perfil</DropdownOption>
+                <DropdownOption value="change_password" hasIcon icon="agora-line-unlock">Alterar palavra-passe</DropdownOption>
+                <DropdownOption value="delete_profile" hasIcon icon="agora-line-trash">Eliminar perfil</DropdownOption>
               </DropdownSection>
             </Dropdown>
           </div>

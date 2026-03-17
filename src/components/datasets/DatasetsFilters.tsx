@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Sidebar, SidebarItem, Checkbox, InputSearch, Icon } from "@ama-pt/agora-design-system";
+import { Sidebar, SidebarItem, Checkbox, InputSearch, Icon, Toggle, Pill, Button } from "@ama-pt/agora-design-system";
 import {
   fetchOrganizations,
   fetchLicenses,
@@ -21,6 +21,61 @@ interface FilterOption {
   name: string;
 }
 
+const DATASET_TOGGLE_FILTERS = {
+  formato: {
+    title: "Formato dos dados",
+    options: [
+      { id: "all", label: "Todos", count: "45 mil" },
+      { id: "tabular", label: "Tabular", description: "csv, xls, xlsx, ods, parquet...", count: "14 mil" },
+      { id: "structured", label: "Estruturado", description: "JSON, RDF, XML, SQL...", count: "9,3 mil" },
+      { id: "geographic", label: "Geográfico", description: "geojson, shp, kml...", count: "4,6 mil" },
+      { id: "documents", label: "Documentos", description: "pdf, doc, docx, md, txt, ...", count: "2,8 mil" },
+      { id: "other", label: "Outro", count: "29 mil" },
+    ],
+  },
+  metodo: {
+    title: "Métodos de acesso",
+    options: [
+      { id: "all", label: "Todos", count: "352" },
+      { id: "free_download", label: "Download gratuito", count: "230" },
+      { id: "open_conditions", label: "Aberto sob certas condições.", count: "16" },
+      { id: "auth_access", label: "Acesso mediante autorização.", count: "106" },
+    ],
+  },
+  atualizacao: {
+    title: "Data da atualização",
+    options: [
+      { id: "all", label: "Todos", count: "352" },
+      { id: "30_days", label: "Os últimos 30 dias", count: "96" },
+      { id: "12_months", label: "Os últimos 12 meses", count: "279" },
+      { id: "3_years", label: "Os últimos 3 anos", count: "352" },
+    ],
+  },
+  organizacao: {
+    title: "Tipo de organização",
+    options: [
+      { id: "all", label: "Todos", count: "352" },
+      { id: "public_service", label: "Serviço público", count: "259" },
+      { id: "local_authority", label: "Autoridade local", count: "54" },
+      { id: "business", label: "Negócios", count: "8" },
+      { id: "association", label: "Associação", count: "6" },
+      { id: "user", label: "Usuário", count: "7" },
+    ],
+  },
+  rotulo: {
+    title: "Rótulo de dados",
+    options: [
+      { id: "all", label: "Todos", count: "45 mil" },
+      { id: "high_value", label: "Conjuntos de dados de alto valor", count: "591" },
+      { id: "inspire", label: "Inspirar", count: "16 mil" },
+      { id: "public_reference", label: "Serviço público de dados de referência", count: "9" },
+      { id: "statistics", label: "Séries estatísticas de interesse geral", count: "11" },
+    ],
+  },
+};
+
+type ToggleFilterKey = keyof typeof DATASET_TOGGLE_FILTERS;
+
 interface DatasetsFiltersProps {
   siteMetrics?: SiteMetrics;
   searchQuery?: string;
@@ -30,6 +85,18 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const [selectedToggleFilters, setSelectedToggleFilters] = React.useState<Record<ToggleFilterKey, string>>({
+    formato: "all",
+    metodo: "all",
+    atualizacao: "all",
+    organizacao: "all",
+    rotulo: "all",
+  });
+
+  const handleToggleFilterChange = (filterKey: ToggleFilterKey, optionId: string) => {
+    setSelectedToggleFilters((prev) => ({ ...prev, [filterKey]: optionId }));
+  };
 
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
   const [licenses, setLicenses] = React.useState<License[]>([]);
@@ -208,7 +275,64 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
         </div>
       )}
 
-      <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[64px] pl-[64px]">Filtros avançados</h2>
+      <div className="flex flex-col gap-32 pl-[64px] mt-[36px] mb-[36px]">
+        <h2 className="font-bold text-xl text-neutral-900">Filtros</h2>
+        {(Object.keys(DATASET_TOGGLE_FILTERS) as ToggleFilterKey[]).map((filterKey) => {
+          const section = DATASET_TOGGLE_FILTERS[filterKey];
+          return (
+            <div key={filterKey} className="pr-32 max-w-[592px] flex flex-col gap-8">
+              <h3 className="font-bold text-base text-neutral-900 mb-8">
+                {section.title}
+              </h3>
+              {section.options.map((option) => {
+                const isSelected = selectedToggleFilters[filterKey] === option.id;
+                return (
+                  <Toggle
+                    key={option.id}
+                    id={`ds-filter-${filterKey}-${option.id}`}
+                    name={`ds-filter-${filterKey}`}
+                    value={option.id}
+                    appearance="icon"
+                    variant="primary"
+                    checked={isSelected}
+                    onChange={() => handleToggleFilterChange(filterKey, option.id)}
+                    iconOnly={false}
+                    fullWidth={true}
+                    className="w-full"
+                  >
+                    <div className="flex items-center gap-12 font-bold text-sm">
+                      <span
+                        className={
+                          isSelected
+                            ? "text-primary-600 font-bold"
+                            : "text-neutral-900 font-bold"
+                        }
+                      >
+                        {option.label}
+                      </span>
+                      {"description" in option && option.description && (
+                        <span className="text-neutral-900 text-xs font-normal ml-8">
+                          {option.description}
+                        </span>
+                      )}
+                      <Pill
+                        variant="neutral"
+                        appearance="outline"
+                        circular={false}
+                        className="text-xs font-medium text-neutral-500 ml-16"
+                      >
+                        {option.count}
+                      </Pill>
+                    </div>
+                  </Toggle>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+
+      <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[32px] pl-[64px]">Filtros avançados</h2>
 
       <Sidebar variant="filter" className="pl-[64px] font-bold">
         {filterGroups.map((group, index) => {
@@ -289,7 +413,7 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
                     ))
                   ) : group.suggest && searchQuery.length < 2 ? (
                     activeCount > 0 ? null : (
-                      <p className="text-sm text-neutral-500">Escreva pelo menos 2 caracteres...</p>
+                      <p className="text-sm text-neutral-900">Escreva pelo menos 2 caracteres...</p>
                     )
                   ) : (
                     <p className="text-sm text-neutral-500">Sem resultados</p>
@@ -300,6 +424,25 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
           );
         })}
       </Sidebar>
+
+      <div className="mt-32 pl-[64px]">
+        <Button
+          variant="primary"
+          appearance="outline"
+          onClick={() => {
+            setSelectedToggleFilters({
+              formato: "all",
+              metodo: "all",
+              atualizacao: "all",
+              organizacao: "all",
+              rotulo: "all",
+            });
+            router.replace("/pages/datasets", { scroll: false });
+          }}
+        >
+          Redefinir filtros
+        </Button>
+      </div>
     </div>
   );
 };
