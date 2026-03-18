@@ -760,13 +760,18 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   width: auto !important;
 }
 
+span.inline-flex.items-center.justify-center.agora-pill-large.agora-pill.agora-pill-solid-primary.mb-8 {
+  height: 32px;
+}
+
 .dataset-card-home-small-pill .card-general .agora-pill {
   padding: 2px 8px !important;
 }
 
 .dataset-card-home-small-pill .card-general .agora-pill .children-wrapper {
-  font-size: 0.625rem !important;
-  line-height: 1rem !important;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
 }
 
 .dataset-card-home .card-general .title-text {
