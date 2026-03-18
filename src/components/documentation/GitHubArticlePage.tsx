@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Breadcrumb, Icon } from "@ama-pt/agora-design-system";
+import { Breadcrumb } from "@ama-pt/agora-design-system";
 import { githubPagesConfig } from "@/config/site";
 
 interface BreadcrumbItem {
@@ -16,16 +15,8 @@ interface GitHubArticlePageProps {
   slug: string;
   title?: string;
   breadcrumbItems: BreadcrumbItem[];
-  publishedDate?: string;
+  initialContent?: string;
 }
-
-const socialLinks = [
-  { name: "Facebook", icon: "agora-line-facebook", href: "#" },
-  { name: "Twitter", icon: "agora-line-twitter", href: "#" },
-  { name: "LinkedIn", icon: "agora-line-linkedin", href: "#" },
-  { name: "WhatsApp", customIcon: "/Icons/whatsapp.svg", href: "#" },
-  { name: "e-mail", icon: "agora-line-mail", href: "#" },
-];
 
 const markdownComponents = {
   h1: ({ children }: any) => (
@@ -92,27 +83,8 @@ const markdownComponents = {
 export function GitHubArticlePage({
   slug,
   breadcrumbItems,
+  initialContent = "",
 }: GitHubArticlePageProps) {
-  const [content, setContent] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchContent() {
-      try {
-        const url = `${githubPagesConfig.rawBaseUrl}/${slug}.md`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = await res.text();
-        setContent(text);
-      } catch (error) {
-        console.error("Failed to fetch markdown content:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchContent();
-  }, [slug]);
-
   const editUrl = `${githubPagesConfig.repoBaseUrl}/${slug}.md`;
 
   return (
@@ -131,17 +103,13 @@ export function GitHubArticlePage({
             {/* Main Content */}
             <div>
               <div className="text-[#2b363c] flex flex-col gap-[32px]">
-                {isLoading ? (
-                  <p className="text-[16px] leading-[28px] text-[#2b363c]">
-                    A carregar conteúdo...
-                  </p>
-                ) : content ? (
+                {initialContent ? (
                   <div className="max-w-[592px]">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={markdownComponents}
                     >
-                      {content}
+                      {initialContent}
                     </ReactMarkdown>
                   </div>
                 ) : (

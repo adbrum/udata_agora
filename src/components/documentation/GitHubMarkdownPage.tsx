@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -17,29 +16,15 @@ interface GitHubMarkdownPageProps {
   slug: string;
   title: string;
   breadcrumbItems: BreadcrumbItem[];
+  initialContent?: string;
 }
 
-export function GitHubMarkdownPage({ slug, title, breadcrumbItems }: GitHubMarkdownPageProps) {
-  const [content, setContent] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchContent() {
-      try {
-        const url = `${githubPagesConfig.rawBaseUrl}/${slug}.md`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = await res.text();
-        setContent(text);
-      } catch (error) {
-        console.error("Failed to fetch markdown content:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchContent();
-  }, [slug]);
-
+export function GitHubMarkdownPage({
+  slug,
+  title,
+  breadcrumbItems,
+  initialContent = "",
+}: GitHubMarkdownPageProps) {
   const editUrl = `${githubPagesConfig.repoBaseUrl}/${slug}.md`;
 
   return (
@@ -54,11 +39,7 @@ export function GitHubMarkdownPage({ slug, title, breadcrumbItems }: GitHubMarkd
         <div className="bg-[#F7F8FA] pt-[64px] pb-[38px] pl-[112px] pr-[112px]">
           <div className="container mx-auto px-4">
             <div className="max-w-[592px]">
-              {isLoading ? (
-                <p className="text-[16px] leading-[28px] text-[#2b363c]">
-                  A carregar conteúdo...
-                </p>
-              ) : content ? (
+              {initialContent ? (
                 <div className="text-[#2b363c] flex flex-col gap-[16px]">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
@@ -132,7 +113,7 @@ export function GitHubMarkdownPage({ slug, title, breadcrumbItems }: GitHubMarkd
                       em: ({ children }) => <em>{children}</em>,
                     }}
                   >
-                    {content}
+                    {initialContent}
                   </ReactMarkdown>
 
                   <div className="pt-[32px]">
