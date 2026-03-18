@@ -4,7 +4,14 @@ import React, { useState, useEffect } from "react";
 import {
   Accordion,
   AccordionGroup,
+  Button,
   Icon,
+  Table,
+  TableHeader,
+  TableHeaderCell,
+  TableBody,
+  TableRow,
+  TableCell,
   Tabs,
   Tab,
   TabHeader,
@@ -257,7 +264,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
     async function fetchData() {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/proxy-csv?url=${encodeURIComponent(resource.url)}`);
+        const res = await fetch(`/internal-api/proxy-csv?url=${encodeURIComponent(resource.url)}`);
         if (!res.ok) throw new Error("Erro ao carregar o ficheiro");
         const text = await res.text();
         const parsed = parseCsv(text);
@@ -278,15 +285,12 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
       <div className="w-[2px] bg-primary-600 shrink-0" />
       <div className="flex-1 min-w-0">
         <Tabs>
+          {isTabular && (
           <Tab>
             <TabHeader>Pré-visualização</TabHeader>
             <TabBody>
               <div className="py-16">
-                {!isTabular ? (
-                  <p className="text-neutral-900 text-sm">
-                    Pré-visualização não disponível para este formato.
-                  </p>
-                ) : isLoading ? (
+                {isLoading ? (
                   <p className="text-neutral-900 text-sm">A carregar pré-visualização...</p>
                 ) : error || !tabularData ? (
                   <p className="text-neutral-900 text-sm">
@@ -294,7 +298,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                   </p>
                 ) : (
                   <div className="space-y-16">
-                    <div className="bg-primary-100 rounded-8 p-24 flex items-center gap-16">
+                    <div className="bg-primary-100 rounded-8 p-24 flex items-center gap-16" style={{ marginBottom: "24px" }}>
                       <div className="flex-1">
                         <p className="font-bold text-neutral-900 text-sm">
                           Explore os dados em detalhes.
@@ -304,47 +308,43 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                           mais sobre as diferentes colunas ou realizar filtros e classificações.
                         </p>
                       </div>
-                      <a
-                        href={resource.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-8 bg-brand-blue-dark text-white px-16 py-8 rounded text-sm font-medium hover:opacity-90 whitespace-nowrap"
+                      <Button
+                        variant="primary"
+                        appearance="outline"
+                        hasIcon={true}
+                        trailingIcon="agora-line-external-link"
+                        trailingIconHover="agora-solid-external-link"
+                        onClick={() => window.open(resource.url, '_blank')}
                       >
                         Explore os dados
-                        <Icon name="agora-line-external-link" className="w-4 h-4" />
-                      </a>
+                      </Button>
                     </div>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm border-collapse">
-                        <thead>
-                          <tr className="bg-primary-100">
-                            {tabularData.headers.map((header, i) => (
-                              <th
-                                key={i}
-                                className="text-left text-neutral-900 font-medium px-16 py-12 border-b border-neutral-200 whitespace-nowrap"
-                              >
-                                {header} <span className="text-neutral-400">&#8595;</span>
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {tabularData.rows.map((row, i) => (
-                            <tr key={i} className="border-b border-neutral-200">
-                              {row.map((cell, j) => (
-                                <td
-                                  key={j}
-                                  className="px-16 py-12 text-neutral-900 whitespace-nowrap"
-                                >
-                                  {cell}
-                                </td>
-                              ))}
-                            </tr>
+                    <Table desktopLayout="general">
+                      <TableHeader>
+                        <TableRow>
+                          {tabularData.headers.map((header, i) => (
+                            <TableHeaderCell key={i} sortType="string">
+                              {header}
+                            </TableHeaderCell>
                           ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    <p className="text-neutral-900 text-sm">
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {tabularData.rows.map((row, i) => (
+                          <TableRow key={i}>
+                            {row.map((cell, j) => (
+                              <TableCell
+                                key={j}
+                                headerLabel={tabularData.headers[j] || ""}
+                              >
+                                {cell}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <p className="text-neutral-900 text-sm" style={{ marginTop: "24px" }}>
                       Última atualização da pré-visualização:{" "}
                       {tabularData.lastModified
                         ? new Date(tabularData.lastModified).toLocaleDateString("pt-PT", {
@@ -360,15 +360,13 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
               </div>
             </TabBody>
           </Tab>
+          )}
+          {isTabular && (
           <Tab>
             <TabHeader>Estrutura de dados</TabHeader>
             <TabBody>
               <div className="py-16">
-                {!isTabular ? (
-                  <p className="text-neutral-900 text-sm">
-                    Estrutura de dados não disponível para este formato.
-                  </p>
-                ) : isLoading ? (
+                {isLoading ? (
                   <p className="text-neutral-900 text-sm">A carregar estrutura...</p>
                 ) : error || !tabularData ? (
                   <p className="text-neutral-900 text-sm">
@@ -389,6 +387,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
               </div>
             </TabBody>
           </Tab>
+          )}
           <Tab>
             <TabHeader>Metadados</TabHeader>
             <TabBody>
@@ -525,7 +524,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
             </TabBody>
           </Tab>
           <Tab>
-            <TabHeader>API</TabHeader>
+            <TabHeader>Swagger</TabHeader>
             <TabBody>
               <div style={{ padding: "16px 0", display: "flex", flexDirection: "column", gap: "24px" }}>
                 <div>
