@@ -113,7 +113,7 @@ const CopyField: React.FC<{ label: string; value: string; mono?: boolean }> = ({
         {copied && <span className="text-xs text-green-600">Copiado!</span>}
       </div>
       <code
-        className={`block bg-neutral-100 px-12 py-8 rounded text-sm text-neutral-700 break-all ${mono ? "font-mono" : ""}`}
+        className={`block bg-neutral-100 px-12 py-8 rounded text-sm text-neutral-900 break-all ${mono ? "font-mono" : ""}`}
       >
         {value}
       </code>
@@ -273,13 +273,13 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
             <TabBody>
               <div className="py-16">
                 {!isTabular ? (
-                  <p className="text-neutral-500 text-sm">
+                  <p className="text-neutral-900 text-sm">
                     Pré-visualização não disponível para este formato.
                   </p>
                 ) : isLoading ? (
-                  <p className="text-neutral-500 text-sm">A carregar pré-visualização...</p>
+                  <p className="text-neutral-900 text-sm">A carregar pré-visualização...</p>
                 ) : error || !tabularData ? (
-                  <p className="text-neutral-500 text-sm">
+                  <p className="text-neutral-900 text-sm">
                     {error || "Pré-visualização não disponível para este recurso."}
                   </p>
                 ) : (
@@ -289,7 +289,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                         <p className="font-bold text-neutral-900 text-sm">
                           Explore os dados em detalhes.
                         </p>
-                        <p className="text-neutral-700 text-xs mt-4">
+                        <p className="text-neutral-900 text-xs mt-4">
                           Utilize esta ferramenta para obter uma visão geral dos dados, aprender
                           mais sobre as diferentes colunas ou realizar filtros e classificações.
                         </p>
@@ -324,7 +324,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                               {row.map((cell, j) => (
                                 <td
                                   key={j}
-                                  className="px-16 py-12 text-neutral-700 whitespace-nowrap"
+                                  className="px-16 py-12 text-neutral-900 whitespace-nowrap"
                                 >
                                   {cell}
                                 </td>
@@ -334,7 +334,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                         </tbody>
                       </table>
                     </div>
-                    <p className="text-neutral-500 text-sm">
+                    <p className="text-neutral-900 text-sm">
                       Última atualização da pré-visualização:{" "}
                       {tabularData.lastModified
                         ? new Date(tabularData.lastModified).toLocaleDateString("pt-PT", {
@@ -355,13 +355,13 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
             <TabBody>
               <div className="py-16">
                 {!isTabular ? (
-                  <p className="text-neutral-500 text-sm">
+                  <p className="text-neutral-900 text-sm">
                     Estrutura de dados não disponível para este formato.
                   </p>
                 ) : isLoading ? (
-                  <p className="text-neutral-500 text-sm">A carregar estrutura...</p>
+                  <p className="text-neutral-900 text-sm">A carregar estrutura...</p>
                 ) : error || !tabularData ? (
-                  <p className="text-neutral-500 text-sm">
+                  <p className="text-neutral-900 text-sm">
                     {error || "Estrutura de dados não disponível para este recurso."}
                   </p>
                 ) : (
@@ -369,7 +369,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                     {tabularData.columns.map((col, i) => (
                       <div key={i}>
                         <p className="text-sm font-bold text-neutral-900 mb-4">{col.name}</p>
-                        <span className="inline-block bg-neutral-100 text-neutral-600 text-xs px-8 py-4 rounded">
+                        <span className="inline-block bg-neutral-100 text-neutral-900 text-xs px-8 py-4 rounded">
                           {col.type}
                         </span>
                       </div>
@@ -398,14 +398,14 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px 64px", paddingTop: "32px" }}>
                   <div>
                     <h5 className="font-bold text-sm text-neutral-900 mb-4">Criado em</h5>
-                    <p className="text-neutral-700 text-sm">
+                    <p className="text-neutral-900 text-sm">
                       {formatDate(resource.created_at)}
                     </p>
                   </div>
                   {resource.filesize !== undefined && resource.filesize > 0 && (
                     <div>
                       <h5 className="font-bold text-sm text-neutral-900 mb-4">Tamanho</h5>
-                      <p className="text-neutral-700 text-sm">
+                      <p className="text-neutral-900 text-sm">
                         {formatBytes(resource.filesize)}
                       </p>
                     </div>
@@ -413,7 +413,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                   {resource.last_modified && (
                     <div>
                       <h5 className="font-bold text-sm text-neutral-900 mb-4">Modificado em</h5>
-                      <p className="text-neutral-700 text-sm">
+                      <p className="text-neutral-900 text-sm">
                         {formatDate(resource.last_modified)}
                       </p>
                     </div>
@@ -421,7 +421,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                   {resource.type && (
                     <div>
                       <h5 className="font-bold text-sm text-neutral-900 mb-4">Tipo</h5>
-                      <p className="text-neutral-700 text-sm">
+                      <p className="text-neutral-900 text-sm">
                         {RESOURCE_TYPE_LABELS[resource.type] || resource.type}
                       </p>
                     </div>
@@ -429,7 +429,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                   {resource.mime && (
                     <div>
                       <h5 className="font-bold text-sm text-neutral-900 mb-4">Tipo MIME</h5>
-                      <code className="bg-neutral-100 px-8 py-4 rounded text-sm text-neutral-700">
+                      <code className="bg-neutral-100 px-8 py-4 rounded text-sm text-neutral-900">
                         {resource.mime}
                       </code>
                     </div>
@@ -453,7 +453,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                               <h6 className="font-bold text-sm text-neutral-900 mb-8">
                                 {translateExtrasKey(key)}
                               </h6>
-                              <p className="text-neutral-700 text-sm break-all">
+                              <p className="text-neutral-900 text-sm break-all">
                                 {translateExtrasValue(value)}
                               </p>
                             </div>
@@ -469,51 +469,262 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
           <Tab>
             <TabHeader>Downloads</TabHeader>
             <TabBody>
-              <div className="py-16 space-y-12">
-                {resource.url && (
-                  <div>
-                    <h5 className="font-bold text-sm text-neutral-900 mb-4">URL do recurso</h5>
+              <div style={{ padding: "16px 0", display: "flex", flexDirection: "column", gap: "24px" }}>
+                <div>
+                  <p className="text-sm text-neutral-900 font-bold" style={{ marginBottom: "12px" }}>
+                    Formato original
+                  </p>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                     <a
                       href={resource.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary-600 text-sm hover:underline break-all"
+                      className="text-primary-600 text-sm hover:underline flex items-center"
+                      style={{ gap: "8px" }}
                     >
-                      {resource.url}
+                      <Icon name="agora-line-download" aria-hidden="true" />
+                      Formato {(resource.format || "").toUpperCase()}
+                      {resource.filesize !== undefined && resource.filesize > 0
+                        ? ` - ${formatBytes(resource.filesize)}`
+                        : ""}
                     </a>
-                  </div>
-                )}
-                {resource.latest && (
-                  <div>
-                    <h5 className="font-bold text-sm text-neutral-900 mb-4">
-                      Versão mais recente
-                    </h5>
-                    <a
-                      href={resource.latest}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary-600 text-sm hover:underline break-all"
+                    <button
+                      type="button"
+                      className="text-primary-600 hover:text-primary-800 cursor-pointer shrink-0"
+                      title="Copiar URL"
+                      onClick={() => navigator.clipboard.writeText(resource.url)}
                     >
-                      {resource.latest}
-                    </a>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ width: "16px", height: "16px", minWidth: "16px" }}
+                        aria-hidden="true"
+                      >
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                    </button>
                   </div>
-                )}
-                {resource.filesize !== undefined && resource.filesize > 0 && (
-                  <div>
-                    <h5 className="font-bold text-sm text-neutral-900 mb-4">Tamanho</h5>
-                    <p className="text-neutral-700 text-sm">{formatBytes(resource.filesize)}</p>
-                  </div>
-                )}
+                </div>
               </div>
             </TabBody>
           </Tab>
           <Tab>
-            <TabHeader>Arrogância</TabHeader>
+            <TabHeader>API</TabHeader>
             <TabBody>
-              <div className="py-16">
-                <p className="text-neutral-500 text-sm">
-                  Sem informação disponível.
-                </p>
+              <div style={{ padding: "16px 0", display: "flex", flexDirection: "column", gap: "24px" }}>
+                <div>
+                  <p className="text-sm text-neutral-900" style={{ marginBottom: "8px" }}>
+                    Esta API é gerada automaticamente por dados.gov.pt a partir do ficheiro.
+                  </p>
+                  <p className="text-sm text-neutral-900" style={{ marginBottom: "4px" }}>
+                    - Se o ficheiro for modificado, a API será atualizada e a sua estrutura poderá mudar.
+                  </p>
+                  <p className="text-sm text-neutral-900" style={{ marginBottom: "16px" }}>
+                    - Se o ficheiro for suprimido, a API será igualmente suprimida.
+                  </p>
+                  <p className="text-sm text-neutral-900">
+                    Para usos permanentes, tenha em conta que esta API depende diretamente do ficheiro fonte.
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex items-center" style={{ gap: "12px", marginBottom: "8px" }}>
+                    <h3 className="text-2xl font-bold text-neutral-900">API de dados</h3>
+                    <span
+                      style={{
+                        background: "#6b7280",
+                        color: "white",
+                        borderRadius: "999px",
+                        padding: "2px 10px",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      1.0.0
+                    </span>
+                    <span
+                      style={{
+                        background: "#65a30d",
+                        color: "white",
+                        borderRadius: "999px",
+                        padding: "2px 10px",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      OAS 3.0
+                    </span>
+                  </div>
+                  <a
+                    href={`https://dados.gov.pt/api/1/datasets/r/${resource.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-600 text-sm hover:underline flex items-center"
+                    style={{ gap: "4px", marginBottom: "8px" }}
+                  >
+                    {`https://dados.gov.pt/api/1/datasets/r/${resource.id}`}
+                    <Icon name="agora-line-external-link" aria-hidden="true" />
+                  </a>
+                  <p className="text-sm text-neutral-900">
+                    Obtém dados de um recurso especificado com filtragem e ordenação opcionais.
+                  </p>
+                </div>
+
+                <div>
+                  <AccordionGroup>
+                    <Accordion
+                      headingTitle={
+                        <span className="flex items-center" style={{ gap: "8px" }}>
+                          <span className="font-bold text-neutral-900">Obtenção de dados</span>
+                          <span className="text-sm text-neutral-900 font-normal">
+                            Obtém dados de um recurso especificado
+                          </span>
+                        </span>
+                      }
+                      headingLevel="h4"
+                    >
+                      <div />
+                    </Accordion>
+                    <Accordion
+                      headingTitle={
+                        <span className="font-bold text-neutral-900">Padrão</span>
+                      }
+                      headingLevel="h5"
+                    >
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px", padding: "8px 0" }}>
+                        {[
+                          {
+                            path: `/api/resources/${resource.id}/data/`,
+                            desc: "Obter dados do recurso pelo ID",
+                          },
+                          {
+                            path: `/api/resources/${resource.id}/data/csv/`,
+                            desc: "Obter dados do recurso pelo ID em formato CSV",
+                          },
+                          {
+                            path: `/api/resources/${resource.id}/data/json/`,
+                            desc: "Obter dados do recurso pelo ID em formato JSON",
+                          },
+                        ].map((endpoint, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "12px",
+                              background: "#f3f4f6",
+                              padding: "12px 16px",
+                              borderRadius: "4px",
+                            }}
+                          >
+                            <span
+                              style={{
+                                background: "#1f2937",
+                                color: "white",
+                                borderRadius: "4px",
+                                padding: "4px 12px",
+                                fontSize: "12px",
+                                fontWeight: 700,
+                                fontFamily: "monospace",
+                                flexShrink: 0,
+                              }}
+                            >
+                              GET
+                            </span>
+                            <code className="text-sm text-neutral-900" style={{ fontFamily: "monospace" }}>
+                              {endpoint.path}
+                            </code>
+                            <span className="text-sm text-neutral-900" style={{ marginLeft: "auto", flexShrink: 0 }}>
+                              {endpoint.desc}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </Accordion>
+                    <Accordion
+                      headingTitle={
+                        <span className="font-bold text-neutral-900">Temas</span>
+                      }
+                      headingLevel="h4"
+                    >
+                      <div className="nested-accordions" style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "16px 0" }}>
+                        <AccordionGroup>
+                          <Accordion
+                            headingTitle={
+                              <span className="font-bold text-neutral-900">Recurso</span>
+                            }
+                            headingLevel="h5"
+                          >
+                            <div
+                              style={{
+                                background: "#f3f4f6",
+                                padding: "16px",
+                                borderRadius: "4px",
+                                fontFamily: "monospace",
+                                fontSize: "13px",
+                              }}
+                            >
+                              <p className="text-neutral-900">{"{"}</p>
+                              <div style={{ paddingLeft: "16px" }}>
+                                {[
+                                  { key: "detalhes de contato", type: "[...]" },
+                                  { key: "Número SIRET do comprador", type: "[...]" },
+                                  { key: "urlDCAT", type: "[...]" },
+                                  { key: "URL do perfil do comprador", type: "[...]" },
+                                ].map((field, i) => (
+                                  <p key={i} className="text-neutral-900">
+                                    <span className="text-neutral-900">{field.key}</span>
+                                    {" > "}
+                                    <span className="text-red-600">{field.type}</span>
+                                  </p>
+                                ))}
+                              </div>
+                              <p className="text-primary-600">{"}"}</p>
+                            </div>
+                          </Accordion>
+                          <Accordion
+                            headingTitle={
+                              <span className="font-bold text-neutral-900">Dados de recursos</span>
+                            }
+                            headingLevel="h5"
+                          >
+                            <div
+                              style={{
+                                background: "#f3f4f6",
+                                padding: "16px",
+                                borderRadius: "4px",
+                                fontFamily: "monospace",
+                                fontSize: "13px",
+                              }}
+                            >
+                              <p className="text-neutral-900">{"{"}</p>
+                              <div style={{ paddingLeft: "16px" }}>
+                                {[
+                                  { key: "dados", type: "[...]" },
+                                  { key: "link", type: "{ ... }" },
+                                  { key: "meta", type: "{ ... }" },
+                                ].map((field, i) => (
+                                  <p key={i} className="text-neutral-900">
+                                    <span className="text-neutral-900">{field.key}</span>
+                                    {" > "}
+                                    <span className="text-red-600">{field.type}</span>
+                                  </p>
+                                ))}
+                              </div>
+                              <p className="text-primary-600">{"}"}</p>
+                            </div>
+                          </Accordion>
+                        </AccordionGroup>
+                      </div>
+                    </Accordion>
+                  </AccordionGroup>
+                </div>
               </div>
             </TabBody>
           </Tab>
