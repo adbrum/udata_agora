@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Tabs, Tab, TabHeader, TabBody } from '@ama-pt/agora-design-system';
+import { Tabs, Tab, TabHeader, TabBody, CardNoResults, Icon, StatusCard, Button, InputSearchBar } from '@ama-pt/agora-design-system';
 import { Dataset, Discussion, Reuse } from '@/types/api';
 import { fetchDiscussions, fetchReuses } from '@/services/api';
 import { DatasetResourcesTable } from './DatasetResourcesTable';
@@ -62,66 +62,139 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                 <Tab>
                     <TabHeader>Reutilizações e APIs ({reuseCount})</TabHeader>
                     {renderTabBody(
-                        reuseCount === 0 ? (
-                            <p className="text-neutral-500">Nenhuma reutilização associada a este conjunto de dados.</p>
-                        ) : (
-                            <div className="space-y-16">
-                                {reuses.map((reuse) => (
-                                    <div key={reuse.id} className="bg-white rounded-4 p-24 border border-neutral-200">
-                                        <Link
-                                            href={`/pages/reuses/${reuse.slug}`}
-                                            className="text-primary-600 hover:underline text-m-semibold"
-                                        >
-                                            {reuse.title}
-                                        </Link>
-                                        {reuse.description && (
-                                            <p className="text-neutral-700 text-sm mt-8 line-clamp-2">
-                                                {reuse.description}
-                                            </p>
-                                        )}
-                                        {reuse.organization && (
-                                            <p className="text-neutral-500 text-xs mt-8">
-                                                {reuse.organization.name}
-                                            </p>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )
+                        <div>
+                            <h3 className="font-medium text-neutral-900 text-base mb-16">
+                                {reuseCount} {reuseCount === 1 ? "REUTILIZAÇÃO" : "REUTILIZAÇÕES"}
+                            </h3>
+                            {reuseCount === 0 ? (
+                                <CardNoResults
+                                    position="center"
+                                    icon={
+                                        <img src="/Icons/bar_chart.svg" alt="" className="w-[40px] h-[40px]" />
+                                    }
+                                    title="Sem reutilizações"
+                                    description="Ainda não existem reutilizações associadas a este conjunto de dados."
+                                    hasAnchor={false}
+                                />
+                            ) : (
+                                <div className="space-y-24">
+                                    {reuses.map((reuse) => (
+                                        <div key={reuse.id} className="bg-white rounded-8 p-32">
+                                            <div className="flex gap-16 items-start">
+                                                {reuse.image_thumbnail && (
+                                                    <img
+                                                        src={reuse.image_thumbnail}
+                                                        alt=""
+                                                        className="w-[64px] h-[64px] rounded-4 object-cover shrink-0"
+                                                    />
+                                                )}
+                                                <div className="flex-1 min-w-0">
+                                                    <Link
+                                                        href={`/pages/reuses/${reuse.slug}`}
+                                                        className="text-neutral-900 hover:underline font-bold text-base"
+                                                    >
+                                                        {reuse.title}
+                                                    </Link>
+                                                    <div className="flex items-center gap-8 mt-4 text-sm text-neutral-900">
+                                                        {reuse.organization && (
+                                                            <span>{reuse.organization.name}</span>
+                                                        )}
+                                                    </div>
+                                                    {reuse.description && (
+                                                        <p className="text-neutral-900 text-sm mt-8 line-clamp-2">
+                                                            {reuse.description}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     )}
                 </Tab>
                 <Tab>
                     <TabHeader>Discussões ({discussionCount})</TabHeader>
                     {renderTabBody(
-                        discussionCount === 0 ? (
-                            <p className="text-neutral-500">Nenhuma discussão sobre este conjunto de dados.</p>
-                        ) : (
-                            <div className="space-y-16">
-                                {discussions.map((disc) => (
-                                    <div key={disc.id} className="bg-white rounded-4 p-24 border border-neutral-200">
-                                        <div className="flex justify-between items-start">
-                                            <h4 className="text-m-semibold text-neutral-900">{disc.title}</h4>
-                                            {disc.closed && (
-                                                <span className="text-xs bg-neutral-200 text-neutral-600 px-8 py-2 rounded">
-                                                    Fechada
-                                                </span>
-                                            )}
-                                        </div>
-                                        <p className="text-neutral-500 text-xs mt-4">
-                                            {disc.user.first_name} {disc.user.last_name} — {new Date(disc.created).toLocaleDateString('pt-PT')}
-                                        </p>
-                                        {disc.discussion.length > 0 && (
-                                            <p className="text-neutral-700 text-sm mt-8 line-clamp-2">
-                                                {disc.discussion[0].content}
-                                            </p>
-                                        )}
-                                        <p className="text-neutral-500 text-xs mt-8">
-                                            {disc.discussion.length} {disc.discussion.length === 1 ? 'mensagem' : 'mensagens'}
-                                        </p>
-                                    </div>
-                                ))}
+                        <div>
+                            <div className="mb-24">
+                                <StatusCard
+                                    type="info"
+                                    description={
+                                        <>
+                                            A sua questão é sobre outro tema que não este conjunto de dados?{" "}
+                                            <a
+                                                href="https://dados.gov.pt"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-primary-600 underline font-semibold"
+                                            >
+                                                Visite o nosso fórum <Icon name="agora-line-external-link" className="w-4 h-4 inline" />
+                                            </a>
+                                        </>
+                                    }
+                                />
                             </div>
-                        )
+                            <div className="flex items-center justify-between mb-24">
+                                <h3 className="font-medium text-neutral-900 text-base">
+                                    {discussionCount} {discussionCount === 1 ? "DISCUSSÃO" : "DISCUSSÕES"}
+                                </h3>
+                                <div className="flex items-center gap-24">
+                                    <InputSearchBar
+                                        hasVoiceActionButton={false}
+                                        placeholder="Pesquisar"
+                                        aria-label="Pesquisar discussões"
+                                    />
+                                    <Button
+                                        variant="primary"
+                                        appearance="outline"
+                                        hasIcon={true}
+                                        leadingIcon="agora-line-plus-circle"
+                                        leadingIconHover="agora-solid-plus-circle"
+                                    >
+                                        Iniciar nova discussão
+                                    </Button>
+                                </div>
+                            </div>
+                            {discussionCount === 0 ? (
+                                <CardNoResults
+                                    position="center"
+                                    icon={
+                                        <Icon name="agora-line-chat" className="w-[40px] h-[40px] text-primary-500 icon-xl" />
+                                    }
+                                    title="Sem discussões"
+                                    description="Ainda não existem discussões sobre este conjunto de dados."
+                                    hasAnchor={false}
+                                />
+                            ) : (
+                                <div className="space-y-16">
+                                    {discussions.map((disc) => (
+                                        <div key={disc.id} className="bg-white rounded-8 p-32">
+                                            <div className="flex justify-between items-start">
+                                                <h4 className="font-bold text-neutral-900">{disc.title}</h4>
+                                                {disc.closed && (
+                                                    <span className="text-xs bg-neutral-200 text-neutral-900 px-8 py-4 rounded">
+                                                        Fechada
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-neutral-900 text-sm mt-4">
+                                                {disc.user.first_name} {disc.user.last_name} — {new Date(disc.created).toLocaleDateString('pt-PT')}
+                                            </p>
+                                            {disc.discussion.length > 0 && (
+                                                <p className="text-neutral-900 text-sm mt-8 line-clamp-2">
+                                                    {disc.discussion[0].content}
+                                                </p>
+                                            )}
+                                            <p className="text-neutral-900 text-sm mt-8">
+                                                {disc.discussion.length} {disc.discussion.length === 1 ? 'mensagem' : 'mensagens'}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     )}
                 </Tab>
                 <Tab>
@@ -130,7 +203,15 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                     </TabHeader>
                     {renderTabBody(
                         !dataset.community_resources || dataset.community_resources.length === 0 ? (
-                            <p className="text-neutral-500">Nenhum recurso comunitário disponível.</p>
+                            <CardNoResults
+                                position="center"
+                                icon={
+                                    <Icon name="agora-line-user-group" className="w-[40px] h-[40px] text-primary-500 icon-xl" />
+                                }
+                                title="Sem recursos comunitários"
+                                description="Ainda não existem recursos comunitários disponíveis."
+                                hasAnchor={false}
+                            />
                         ) : (
                             <DatasetResourcesTable resources={dataset.community_resources} />
                         )
