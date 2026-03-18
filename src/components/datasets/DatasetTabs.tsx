@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Tabs, Tab, TabHeader, TabBody, CardNoResults, Icon, StatusCard, Button, InputSearchBar } from '@ama-pt/agora-design-system';
+import { Tabs, Tab, TabHeader, TabBody, CardNoResults, CardLinks, Icon, StatusCard, Button, InputSearchBar } from '@ama-pt/agora-design-system';
 import { Dataset, Discussion, Reuse } from '@/types/api';
 import { fetchDiscussions, fetchReuses } from '@/services/api';
+import { format } from 'date-fns';
+import { pt } from 'date-fns/locale';
 import { DatasetResourcesTable } from './DatasetResourcesTable';
 import { DatasetInfo } from './DatasetInfo';
 
@@ -17,6 +19,9 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
     const [discussionCount, setDiscussionCount] = useState(dataset.metrics.discussions || 0);
     const [reuses, setReuses] = useState<Reuse[]>([]);
     const [reuseCount, setReuseCount] = useState(dataset.metrics.reuses || 0);
+    const [showNewDiscussion, setShowNewDiscussion] = useState(false);
+    const [newDiscTitle, setNewDiscTitle] = useState('');
+    const [newDiscMessage, setNewDiscMessage] = useState('');
 
     useEffect(() => {
         async function loadTabData() {
@@ -70,43 +75,91 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                 <CardNoResults
                                     position="center"
                                     icon={
-                                        <img src="/Icons/bar_chart.svg" alt="" className="w-[40px] h-[40px]" />
+                                        <Icon name="agora-line-file" className="w-[40px] h-[40px] text-primary-500 icon-xl" />
                                     }
                                     title="Sem reutilizações"
                                     description="Ainda não existem reutilizações associadas a este conjunto de dados."
                                     hasAnchor={false}
                                 />
                             ) : (
-                                <div className="space-y-24">
+                                <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-32">
                                     {reuses.map((reuse) => (
-                                        <div key={reuse.id} className="bg-white rounded-8 p-32">
-                                            <div className="flex gap-16 items-start">
-                                                {reuse.image_thumbnail && (
-                                                    <img
-                                                        src={reuse.image_thumbnail}
-                                                        alt=""
-                                                        className="w-[64px] h-[64px] rounded-4 object-cover shrink-0"
-                                                    />
-                                                )}
-                                                <div className="flex-1 min-w-0">
-                                                    <Link
-                                                        href={`/pages/reuses/${reuse.slug}`}
-                                                        className="text-neutral-900 hover:underline font-bold text-base"
-                                                    >
-                                                        {reuse.title}
-                                                    </Link>
-                                                    <div className="flex items-center gap-8 mt-4 text-sm text-neutral-900">
-                                                        {reuse.organization && (
-                                                            <span>{reuse.organization.name}</span>
-                                                        )}
-                                                    </div>
-                                                    {reuse.description && (
-                                                        <p className="text-neutral-900 text-sm mt-8 line-clamp-2">
+                                        <div key={reuse.id} className="h-full">
+                                            <CardLinks
+                                                onClick={() => window.location.href = `/pages/reuses/${reuse.slug}`}
+                                                className="cursor-pointer text-neutral-900"
+                                                variant="transparent"
+                                                image={{
+                                                    src: reuse.image_thumbnail || reuse.image || '/laptop.png',
+                                                    alt: reuse.title,
+                                                }}
+                                                category={reuse.organization?.name || 'Reutilização'}
+                                                title={<div className="underline text-xl-bold">{reuse.title}</div>}
+                                                description={
+                                                    reuse.description ? (
+                                                        <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
                                                             {reuse.description}
                                                         </p>
-                                                    )}
-                                                </div>
-                                            </div>
+                                                    ) : undefined
+                                                }
+                                                date={
+                                                    <span className="font-[300]">
+                                                        Atualizado{' '}
+                                                        {format(
+                                                            new Date(reuse.last_modified || reuse.created_at),
+                                                            'dd MM yyyy',
+                                                            { locale: pt }
+                                                        )}
+                                                    </span>
+                                                }
+                                                links={[
+                                                    {
+                                                        href: '#',
+                                                        hasIcon: true,
+                                                        leadingIcon: 'agora-line-eye',
+                                                        leadingIconHover: 'agora-solid-eye',
+                                                        trailingIcon: '',
+                                                        trailingIconHover: '',
+                                                        trailingIconActive: '',
+                                                        children: reuse.metrics?.views?.toLocaleString('pt-PT') || '0',
+                                                        title: 'Visualizações',
+                                                        onClick: (e: React.MouseEvent) => e.preventDefault(),
+                                                        className: 'text-[#034AD8]',
+                                                    },
+                                                    {
+                                                        href: '#',
+                                                        hasIcon: true,
+                                                        leadingIcon: 'agora-line-calendar',
+                                                        leadingIconHover: 'agora-solid-calendar',
+                                                        trailingIcon: '',
+                                                        trailingIconHover: '',
+                                                        trailingIconActive: '',
+                                                        children: `${reuse.datasets?.length || 0} datasets`,
+                                                        title: 'Datasets',
+                                                        onClick: (e: React.MouseEvent) => e.preventDefault(),
+                                                        className: 'text-[#034AD8]',
+                                                    },
+                                                    {
+                                                        href: '#',
+                                                        hasIcon: true,
+                                                        leadingIcon: 'agora-line-star',
+                                                        leadingIconHover: 'agora-solid-star',
+                                                        trailingIcon: '',
+                                                        trailingIconHover: '',
+                                                        trailingIconActive: '',
+                                                        children: reuse.metrics?.followers || 0,
+                                                        title: 'Favoritos',
+                                                        onClick: (e: React.MouseEvent) => e.preventDefault(),
+                                                        className: 'text-[#034AD8]',
+                                                    },
+                                                ]}
+                                                mainLink={
+                                                    <Link href={`/pages/reuses/${reuse.slug}`}>
+                                                        <span className="underline">{reuse.title}</span>
+                                                    </Link>
+                                                }
+                                                blockedLink={true}
+                                            />
                                         </div>
                                     ))}
                                 </div>
@@ -152,11 +205,63 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                         hasIcon={true}
                                         leadingIcon="agora-line-plus-circle"
                                         leadingIconHover="agora-solid-plus-circle"
+                                        onClick={() => setShowNewDiscussion(!showNewDiscussion)}
                                     >
                                         Iniciar nova discussão
                                     </Button>
                                 </div>
                             </div>
+                            {/* New discussion form */}
+                            {showNewDiscussion && (
+                                <div className="bg-white rounded-8 p-32 mb-24">
+                                    <div className="flex justify-between items-center mb-16">
+                                        <h3 className="font-bold text-neutral-900 text-base uppercase">
+                                            Nova discussão
+                                        </h3>
+                                        <Button
+                                            variant="primary"
+                                            appearance="link"
+                                            onClick={() => setShowNewDiscussion(false)}
+                                        >
+                                            Fechar
+                                        </Button>
+                                    </div>
+                                    <p className="text-sm text-neutral-900 mb-16">
+                                        Os campos marcados com um asterisco (<span className="text-red-500">*</span>) são obrigatórios.
+                                    </p>
+                                    <div className="mb-24">
+                                        <label className="block text-sm font-bold text-neutral-900 mb-8">
+                                            Título <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={newDiscTitle}
+                                            onChange={(e) => setNewDiscTitle(e.target.value)}
+                                            className="w-full border border-neutral-300 rounded-4 px-16 py-8 text-sm text-neutral-900 focus:outline-none focus:border-primary-600"
+                                        />
+                                    </div>
+                                    <div className="mb-24">
+                                        <label className="block text-sm font-bold text-neutral-900 mb-8">
+                                            A sua mensagem <span className="text-red-500">*</span>
+                                        </label>
+                                        <textarea
+                                            value={newDiscMessage}
+                                            onChange={(e) => setNewDiscMessage(e.target.value)}
+                                            rows={4}
+                                            placeholder="Por favor, mantenha a cordialidade e uma postura construtiva. Evite partilhar informações pessoais."
+                                            className="w-full border border-neutral-300 rounded-4 px-16 py-8 text-sm text-neutral-900 focus:outline-none focus:border-primary-600 resize-y"
+                                        />
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <Button
+                                            variant="primary"
+                                            appearance="solid"
+                                        >
+                                            Enviar
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                             {discussionCount === 0 ? (
                                 <CardNoResults
                                     position="center"
@@ -171,25 +276,52 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                 <div className="space-y-16">
                                     {discussions.map((disc) => (
                                         <div key={disc.id} className="bg-white rounded-8 p-32">
+                                            {/* First message / topic */}
                                             <div className="flex justify-between items-start">
-                                                <h4 className="font-bold text-neutral-900">{disc.title}</h4>
-                                                {disc.closed && (
-                                                    <span className="text-xs bg-neutral-200 text-neutral-900 px-8 py-4 rounded">
-                                                        Fechada
-                                                    </span>
-                                                )}
+                                                <div className="flex-1">
+                                                    <h4 className="font-bold text-neutral-900 text-base">{disc.title}</h4>
+                                                    <p className="text-sm text-neutral-900 mt-4">
+                                                        <span className="text-primary-600 font-medium">
+                                                            {disc.user.first_name} {disc.user.last_name}
+                                                        </span>
+                                                        {' — Publicado em '}
+                                                        {format(new Date(disc.created), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <p className="text-neutral-900 text-sm mt-4">
-                                                {disc.user.first_name} {disc.user.last_name} — {new Date(disc.created).toLocaleDateString('pt-PT')}
-                                            </p>
                                             {disc.discussion.length > 0 && (
-                                                <p className="text-neutral-900 text-sm mt-8 line-clamp-2">
+                                                <p className="text-neutral-900 text-sm mt-16">
                                                     {disc.discussion[0].content}
                                                 </p>
                                             )}
-                                            <p className="text-neutral-900 text-sm mt-8">
-                                                {disc.discussion.length} {disc.discussion.length === 1 ? 'mensagem' : 'mensagens'}
-                                            </p>
+                                            {/* Replies */}
+                                            {disc.discussion.length > 1 && (
+                                                <div className="mt-16 space-y-16 border-t border-neutral-200 pt-16">
+                                                    {disc.discussion.slice(1).map((msg, idx) => (
+                                                        <div key={idx} className="border-l-2 border-primary-600" style={{ paddingLeft: "24px" }}>
+                                                            <p className="text-sm text-neutral-900">
+                                                                <span className="text-primary-600 font-medium">
+                                                                    {msg.posted_by.first_name} {msg.posted_by.last_name}
+                                                                </span>
+                                                                {' — '}
+                                                                {format(new Date(msg.posted_on), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                                                            </p>
+                                                            <p className="text-neutral-900 text-sm mt-4">
+                                                                {msg.content}
+                                                            </p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {/* Responder button */}
+                                            <div className="flex justify-end" style={{ marginTop: "32px" }}>
+                                                <Button
+                                                    variant="primary"
+                                                    appearance="outline"
+                                                >
+                                                    Responder
+                                                </Button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
