@@ -201,7 +201,7 @@ export default function DatasetsClient({
                               </div>
                             </div>
                           }
-                          date={<span className="font-[300]">{`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })}`}</span>}
+                          date={<span className="font-[300]">{`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt }).replace("aproximadamente ", "").replace("quase ", "").replace("menos de ", "").replace("cerca de ", "")}`}</span>}
                           mainLink={
                             <Link href={`/pages/datasets/${dataset.slug}`}>
                               <span className="underline">{dataset.title}</span>
