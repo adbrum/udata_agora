@@ -85,15 +85,6 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                 {isLoading ? "A carregar..." : `${total} Resultados`}
               </span>
               <div className="w-full md:w-auto xl:col-span-5 flex items-end gap-16 justify-end">
-                <Button
-                  variant="primary"
-                  appearance="link"
-                  hasIcon={true}
-                  trailingIcon="agora-line-settings"
-                  trailingIconHover="agora-solid-settings"
-                >
-                  Filtrar
-                </Button>
                 <div className="grow max-w-[240px]">
                   <InputSelect
                     label="Ordenar por :"
@@ -118,15 +109,15 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                 <span className="text-neutral-600">Nenhum artigo encontrado.</span>
               </div>
             ) : (
-              <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-32">
+              <div className="grid grid-cols-2 istretchtems- agora-card-links-datasets-px0 gap-32 cardsnews">
                 {posts.map((post) => (
                   <div
                     key={post.id}
-                    className="h-full cursor-pointer group"
+                    className="cursor-pointer group"
                     onClick={() => router.push(`/pages/article/${post.slug}`)}
                   >
                     <CardLinks
-                      className="text-neutral-900 transition-all group-hover:shadow-md"
+                      className="!w-full h-full text-neutral-900 transition-all group-hover:shadow-md"
                       variant="transparent"
                       image={{
                         src: post.image_thumbnail || post.image || "/laptop.png",
