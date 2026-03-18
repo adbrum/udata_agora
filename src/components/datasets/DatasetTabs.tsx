@@ -203,22 +203,20 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                     </TabHeader>
                     {renderTabBody(
                         !dataset.community_resources || dataset.community_resources.length === 0 ? (
-                            <div className="flex flex-col items-center">
-                                <CardNoResults
-                                    position="center"
-                                    icon={
-                                        <Icon name="agora-line-community" className="w-[40px] h-[40px] text-primary-500 icon-xl" />
-                                    }
-                                    title="Sem recursos comunitários"
-                                    description="Atualmente, não existem recursos comunitários disponíveis para este conjunto de dados."
-                                    hasAnchor={false}
-                                />
-                                <div className="flex items-center gap-16 mt-24">
+                            <div className="bg-white rounded-8 py-64 px-32 flex flex-col items-center text-center">
+                                <Icon name="agora-line-user-group" className="w-[40px] h-[40px] text-primary-500 icon-xl mb-16" />
+                                <h3 className="text-primary-600 text-[2rem] leading-[3rem] mb-16" style={{ fontWeight: 300 }}>
+                                    Sem recursos comunitários
+                                </h3>
+                                <p className="text-neutral-900 text-base font-normal mb-8">
+                                    Atualmente, não existem recursos comunitários disponíveis para este conjunto de dados.
+                                </p>
+                                <div className="flex flex-row items-center gap-16 mt-32">
                                     <Button
                                         variant="primary"
-                                        appearance="filled"
+                                        appearance="solid"
                                     >
-                                        Compartilhe seus recursos
+                                        Compartilhe os seus recursos
                                     </Button>
                                     <Button
                                         variant="primary"
