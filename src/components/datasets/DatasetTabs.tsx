@@ -234,7 +234,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                 <Tab>
                     <TabHeader>Informação</TabHeader>
                     {renderTabBody(
-                        <DatasetInfo description={dataset.description} id={dataset.id} />
+                        <DatasetInfo dataset={dataset} />
                     )}
                 </Tab>
             </Tabs>
