@@ -2701,6 +2701,24 @@ export async function fetchMyOrgCommunityResources(
   }
 }
 
+export async function fetchCommunityResourcesByDataset(
+  datasetId: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<{ data: Resource[]; total: number }> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/datasets/community_resources/?dataset=${datasetId}&page=${page}&page_size=${pageSize}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) return { data: [], total: 0 };
+    const json = await res.json();
+    return { data: json.data || [], total: json.total || 0 };
+  } catch {
+    return { data: [], total: 0 };
+  }
+}
+
 export async function createCommunityResource(
   payload: CommunityResourceCreatePayload
 ): Promise<CommunityResource> {
