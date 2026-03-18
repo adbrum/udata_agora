@@ -200,7 +200,7 @@ const REUSE_TOGGLE_FILTERS = {
       { id: "local_authority", label: "Autoridade local", count: "54" },
       { id: "business", label: "Negócios", count: "8" },
       { id: "association", label: "Associação", count: "6" },
-      { id: "user", label: "Usuário", count: "7" },
+      { id: "user", label: "Utilizador", count: "7" },
     ],
   },
 };
@@ -318,7 +318,7 @@ export default function ReusesClient({
         { id: "local_authority", name: "Autoridade local" },
         { id: "business", name: "Negócios" },
         { id: "association", name: "Associação" },
-        { id: "user", name: "Usuário" },
+        { id: "user", name: "Utilizador" },
       ],
       searchable: false,
     },
@@ -445,14 +445,14 @@ export default function ReusesClient({
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
             {/* Sidebar */}
-            <div className="xl:col-span-6 xl:block p-32 pl-0">
+            <div className="xl:col-span-5 xl:block p-32 pl-0">
               {siteMetrics && (
-                <div className="pl-[64px]">
+                <div>
                   <CategoryToggles siteMetrics={siteMetrics} searchQuery={initialFilters?.q} />
                 </div>
               )}
 
-              <div className="flex flex-col gap-32 pl-[64px] mt-[36px] mb-[36px]">
+              <div className="flex flex-col gap-32 mt-[36px] mb-[36px]">
                 <h2 className="font-bold text-xl text-neutral-900">Filtros</h2>
                 {(Object.keys(REUSE_TOGGLE_FILTERS) as ReuseFilterKey[]).map((filterKey) => {
                   const section = REUSE_TOGGLE_FILTERS[filterKey];
@@ -504,9 +504,9 @@ export default function ReusesClient({
                 })}
               </div>
 
-              <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[32px] pl-[64px]">Filtros avançados</h2>
+              <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[32px]">Filtros avançados</h2>
 
-              <Sidebar variant="filter" className="pl-[64px] font-bold">
+              <Sidebar variant="filter" className="font-bold">
                 {advancedFilterGroups.map((group, index) => {
                   const sq = filterSearchQueries[group.name] || "";
                   const activeValues = getActiveValues(group.param);
@@ -607,7 +607,7 @@ export default function ReusesClient({
                 })}
               </Sidebar>
 
-              <div className="mt-32 pl-[64px]">
+              <div className="mt-32">
                 <Button
                   variant="primary"
                   appearance="outline"
@@ -626,7 +626,7 @@ export default function ReusesClient({
             </div>
 
             {/* Results Area */}
-            <div className="xl:col-span-6 mt-[36px]">
+            <div className="xl:col-span-7 mt-[36px]">
               <div>
             <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
               <span className="text-neutral-900 font-medium text-base xl:col-span-7 mt-[32px]">
@@ -770,7 +770,7 @@ export default function ReusesClient({
                     title="Não encontrou nenhuma reutilização?"
                     subtitle={
                       <span className="font-bold">
-                        Tente redefinir os filtros para ampliar sua busca.
+                        Tente redefinir os filtros para ampliar a sua pesquisa.
                       </span>
                     }
                     description={

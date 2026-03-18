@@ -190,7 +190,7 @@ export default function DatasetsAdminClient({
           </p>
           <p>
             Deve também corresponder ao vocabulário utilizado pelos utilizadores que, na maioria
-            das vezes, procuram dados através de um motor de busca.
+            das vezes, procuram dados através de um motor de pesquisa.
           </p>
         </>
       ),
@@ -198,7 +198,7 @@ export default function DatasetsAdminClient({
     {
       title: "Adicione uma sigla ao conjunto de dados.",
       content:
-        "Você tem a opção de adicionar uma sigla ao seu conjunto de dados. As letras que compõem essa sigla não precisam ser separadas por pontos.",
+        "Tem a opção de adicionar uma sigla ao seu conjunto de dados. As letras que compõem essa sigla não precisam ser separadas por pontos.",
     },
     {
       title: "Escreva uma boa descrição",
@@ -206,7 +206,7 @@ export default function DatasetsAdminClient({
         <>
           <p>
             A descrição do seu conjunto de dados permite que os utilizadores obtenham informações sobre
-            o conteúdo e a estrutura dos recursos publicados; você pode, em particular, fornecer
+            o conteúdo e a estrutura dos recursos publicados; pode, em particular, fornecer
             informações como:
           </p>
           <ul className="list-disc pl-5 mt-2 flex flex-col gap-2">
@@ -233,17 +233,17 @@ export default function DatasetsAdminClient({
           <p>
             A descrição resumida apresenta seu conjunto de dados em uma ou duas frases. Isso ajuda
             os utilizadores a entenderem rapidamente o conteúdo e melhora sua visibilidade nos
-            resultados de busca.
+            resultados de pesquisa.
           </p>
           <p className="font-bold mt-3">Sugestões automáticas</p>
           <p className="mt-2">
-            Uma primeira versão pode ser gerada automaticamente se você já tiver preenchido o título
+            Uma primeira versão pode ser gerada automaticamente se já tiver preenchido o título
             e uma descrição de pelo menos 200 caracteres, sendo então adaptada de acordo com as suas
             necessidades.
           </p>
           <p className="mt-3">
             <a href="#" className="text-primary-600 underline">
-              A IA baseia-se exclusivamente nas informações que você forneceu e, por vezes, pode
+              A IA baseia-se exclusivamente nas informações que forneceu e, por vezes, pode
               cometer erros: releia sempre a proposta antes de validar.
             </a>
           </p>
@@ -256,17 +256,17 @@ export default function DatasetsAdminClient({
         <>
           <p>
             As palavras-chave descrevem seu conjunto de dados e facilitam sua descoberta. Elas
-            melhoram seu posicionamento nos mecanismos de busca e ajudam os utilizadores a encontrar
+            melhoram seu posicionamento nos mecanismos de pesquisa e ajudam os utilizadores a encontrar
             com mais facilidade os dados que procuram.
           </p>
           <p className="font-bold mt-3">Sugestões automáticas</p>
           <p className="mt-2">
             Com base no conteúdo do seu conjunto de dados, podem ser sugeridas palavras-chave
-            automaticamente. Você pode aceitá-las, modificá-las ou excluí-las.
+            automaticamente. Pode aceitá-las, modificá-las ou excluí-las.
           </p>
           <p className="mt-3">
             <a href="#" className="text-primary-600 underline">
-              A IA baseia-se exclusivamente nas informações que você forneceu e, por vezes, pode
+              A IA baseia-se exclusivamente nas informações que forneceu e, por vezes, pode
               cometer erros: releia sempre a proposta antes de validar.
             </a>
           </p>
@@ -276,12 +276,12 @@ export default function DatasetsAdminClient({
     {
       title: "Selecione uma licença",
       content:
-        "As licenças definem as regras para a reutilização. Ao escolher uma licença de reutilização, você garante que o conjunto de dados publicado será reutilizado de acordo com os termos de uso que você definiu.",
+        "As licenças definem as regras para a reutilização. Ao escolher uma licença de reutilização, garante que o conjunto de dados publicado será reutilizado de acordo com os termos de uso que definiu.",
     },
     {
       title: "Escolha a frequência de atualização.",
       content:
-        "A frequência de atualização refere-se à frequência com que você planeja atualizar os dados publicados. Essa frequência de atualização é apenas indicativa.",
+        "A frequência de atualização refere-se à frequência com que planeja atualizar os dados publicados. Essa frequência de atualização é apenas indicativa.",
     },
     {
       title: "Forneça a cobertura de tempo.",
@@ -348,7 +348,7 @@ export default function DatasetsAdminClient({
             <li>Uma descrição das principais mudanças.</li>
           </ul>
           <p className="text-red-500 mt-3 font-medium">
-            Você não adicionou nenhum ficheiro de documentação nem descreveu seus ficheiros.
+            Não adicionou nenhum ficheiro de documentação nem descreveu seus ficheiros.
           </p>
         </>
       ),
@@ -676,7 +676,7 @@ export default function DatasetsAdminClient({
                   <>
                     <strong>Seu conjunto de dados foi criado!</strong>
                     <br />
-                    Agora você pode publicar ou salvar como rascunho.
+                    Agora pode publicar ou guardar como rascunho.
                   </>
                 }
               />

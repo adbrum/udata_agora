@@ -42,7 +42,7 @@ export function AdminHeader() {
           <Search label="Pesquisar">
             <DefaultSearch>
               <SearchInputContainer>
-                <InputSearchBar label="Diga-nos o que procura que nos ajudamos" placeholder="Pesquisar" aria-label="Pesquisar" />
+                <InputSearchBar hasVoiceActionButton={false} label="Diga-nos o que procura que nos ajudamos" placeholder="Pesquisar" aria-label="Pesquisar" />
               </SearchInputContainer>
             </DefaultSearch>
           </Search>

@@ -8,6 +8,7 @@ import {
   InputSearchBar,
   DropdownSection,
   DropdownOption,
+  Button,
 } from "@ama-pt/agora-design-system";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import PublishDropdown from "@/components/admin/PublishDropdown";
@@ -37,7 +38,7 @@ export default function CommunityResourcesClient() {
           <p className="datasets-page__count">
             <strong>0 RECURSOS COMUNITÁRIOS</strong>
           </p>
-          <InputSearchBar
+          <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquisar"
             aria-label="Pesquisar recursos comunitários"
@@ -61,9 +62,11 @@ export default function CommunityResourcesClient() {
             className="datasets-page__empty"
             position="center"
             icon={
-              <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+              <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
             }
-            description="Você ainda não publicou um recurso comunitário."
+            title="Sem publicações"
+            description="Ainda não publicou um recurso comunitário."
+            hasAnchor={false}
           />
         </div>
       </div>

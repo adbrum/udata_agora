@@ -82,7 +82,7 @@ export default function HarvestersNewClient() {
     {
       title: "Escolha um nome",
       content:
-        "Dê um nome ao seu harvester. Essa é uma referência interna que ajudará você a identificá-lo caso crie vários harvesters. O nome do seu harvester não será público.",
+        "Dê um nome ao seu harvester. Esta é uma referência interna que o ajudará a identificá-lo caso crie vários harvesters. O nome do seu harvester não será público.",
     },
     {
       title: "Descreva o seu harvester",
@@ -186,7 +186,7 @@ export default function HarvestersNewClient() {
                   >
                     <DropdownSection name="organizations">
                       <DropdownOption value="org1">
-                        Minha Organização
+                        Organização
                       </DropdownOption>
                     </DropdownSection>
                   </InputSelect>

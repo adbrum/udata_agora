@@ -91,7 +91,7 @@ export default function MembersClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Minha organização", url: "#" },
+            { label: "Organização", url: "#" },
             { label: "Membros", url: "/pages/admin/org/members" },
           ]}
         />

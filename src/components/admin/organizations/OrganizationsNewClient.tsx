@@ -80,7 +80,7 @@ export default function OrganizationsNewClient() {
             Observe que todas as agências governamentais possuem um número SIRET.
           </p>
           <p className="mt-2">
-            Você pode encontrar o seu número SIRET no{" "}
+            Pode encontrar o seu número SIRET no{" "}
             <a href="#" className="text-primary-600 underline">
               Diretório Comercial.
             </a>
@@ -91,7 +91,7 @@ export default function OrganizationsNewClient() {
     {
       title: "Escreva uma boa descrição",
       content:
-        "Por favor, descreva aqui o que sua organização faz e qual é a sua missão. Inclua todas as informações que permitam aos usuários entrar em contato com você: endereço de e-mail, endereço postal, conta do Twitter, etc.",
+        "Por favor, descreva aqui o que sua organização faz e qual é a sua missão. Inclua todas as informações que permitam aos utilizadores entrar em contacto consigo: endereço de e-mail, endereço postal, conta do Twitter, etc.",
     },
     {
       title: "Digite um site",
@@ -101,7 +101,7 @@ export default function OrganizationsNewClient() {
     {
       title: "Escolher o logotipo certo",
       content:
-        'Se a sua organização tiver um logotipo ou foto de perfil, faça o upload aqui. Para fazer o upload de um logotipo, clique no botão "Escolher um arquivo do seu computador". Os seguintes formatos de imagem são aceitos: PNG, JPG/JPEG.',
+        'Se a sua organização tiver um logotipo ou foto de perfil, faça o upload aqui. Para fazer o upload de um logotipo, clique no botão "Escolher um ficheiro do seu computador". Os seguintes formatos de imagem são aceitos: PNG, JPG/JPEG.',
     },
   ];
 
@@ -168,9 +168,9 @@ export default function OrganizationsNewClient() {
                   <>
                     <strong>Ingressar em uma organização</strong>
                     <br />
-                    Uma organização é uma entidade na qual os usuários podem
+                    Uma organização é uma entidade na qual os utilizadores podem
                     colaborar. Conjuntos de dados publicados dentro de uma
-                    organização podem ser editados por seus membros.
+                    organização podem ser editados pelos seus membros.
                   </>
                 }
               />
@@ -217,9 +217,9 @@ export default function OrganizationsNewClient() {
                   <>
                     <strong>O que é uma organização?</strong>
                     <br />
-                    Uma organização é uma entidade na qual muitos usuários podem
+                    Uma organização é uma entidade na qual muitos utilizadores podem
                     colaborar. Conjuntos de dados publicados sob a égide da
-                    organização podem ser editados por seus membros.
+                    organização podem ser editados pelos seus membros.
                   </>
                 }
               />
@@ -280,7 +280,7 @@ export default function OrganizationsNewClient() {
 
                 <div className="datasets-admin-page__fields-group">
                   <DragAndDropUploader
-                    dragAndDropLabel="Arraste e solte os arquivos"
+                    dragAndDropLabel="Selecione ou arraste os ficheiros"
                     separatorLabel="ou"
                     inputLabel="Selecione o ficheiro"
                     removeFileButtonLabel="Remover ficheiro"

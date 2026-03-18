@@ -109,7 +109,7 @@ export default function SystemOrganizationsClient() {
 
       <div className="flex items-center gap-[16px] mb-[24px]">
         <div className="flex-1">
-          <InputSearchBar
+          <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome da organização"
             aria-label="Pesquisar organizações"

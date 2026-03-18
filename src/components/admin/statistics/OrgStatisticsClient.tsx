@@ -58,7 +58,7 @@ export default function OrgStatisticsClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Minha organização", url: "#" },
+            { label: "Organização", url: "#" },
             { label: "Estatísticas", url: "/pages/admin/org/statistics" },
           ]}
         />

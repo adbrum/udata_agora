@@ -191,9 +191,6 @@ export default function OrganizationsClient({
           <div className="mt-8 text-s-regular text-neutral-200">
             Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
           </div>
-          <div className="mt-[32px] text-white">
-            <span>Conteúdo atualizados a 23.2.2026</span>
-          </div>
           <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
         </PageBanner>
 
@@ -201,12 +198,12 @@ export default function OrganizationsClient({
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
             {/* Sidebar */}
-            <div className="xl:col-span-6 xl:block p-32 pl-0">
+            <div className="xl:col-span-5 xl:block p-32 pl-0">
               <OrganizationsFilters siteMetrics={siteMetrics} orgBadges={orgBadges} orgBadgeCounts={orgBadgeCounts} initialFilters={initialFilters} />
             </div>
 
             {/* Results Area */}
-            <div className="xl:col-span-6 mt-[36px]">
+            <div className="xl:col-span-7 mt-[36px]">
               <div>
                 <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
                   <span className="text-neutral-900 font-medium text-base xl:col-span-6 mt-[32px]">
@@ -318,7 +315,7 @@ export default function OrganizationsClient({
                       <CardNoResults
                         icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />}
                         title="Não encontrou nenhuma organização?"
-                        subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
+                        subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar a sua pesquisa.</span>}
                         description={<div className="max-w-[592px] mx-auto">Explore a nossa lista completa de publicadores de dados abertos.</div>}
                         position="center"
                         hasAnchor={false}

@@ -101,7 +101,7 @@ export default function OrgProfileClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Minha organização", url: "#" },
+            { label: "Organização", url: "#" },
             { label: "Perfil", url: "/pages/admin/org/profile" },
           ]}
         />
@@ -186,7 +186,7 @@ export default function OrgProfileClient() {
             </span>
             <div className="mt-2">
               <DragAndDropUploader
-                dragAndDropLabel="Arraste e solte os ficheiros"
+                dragAndDropLabel="Selecione ou arraste os ficheiros"
                 separatorLabel="ou"
                 inputLabel="Selecionar ficheiro"
                 removeFileButtonLabel="Remover ficheiro"
