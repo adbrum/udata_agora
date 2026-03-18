@@ -91,8 +91,8 @@ const DATASET_FILTERS = {
     options: [
       { id: "all", label: "Todos", count: "45 mil" },
       { id: "free_download", label: "Download gratuito", count: "42 mil" },
-      { id: "open_conditions", label: "Aberto sob certas condições.", count: "0" },
-      { id: "auth_access", label: "Acesso mediante autorização.", count: "11" },
+      { id: "open_conditions", label: "Aberto sob certas condições", count: "0" },
+      { id: "auth_access", label: "Acesso mediante autorização", count: "11" },
     ],
   },
   atualizacao: {
@@ -112,7 +112,7 @@ const DATASET_FILTERS = {
       { id: "local_authority", label: "Autoridade local", count: "11 mil" },
       { id: "business", label: "Negócios", count: "1,6 mil" },
       { id: "association", label: "Associação", count: "434" },
-      { id: "user", label: "Usuário", count: "737" },
+      { id: "user", label: "Utilizador", count: "737" },
     ],
   },
   rotulo: {

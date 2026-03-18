@@ -16,6 +16,7 @@ import {
   TableRow,
   TableCell,
   Pill,
+  Button,
 } from "@ama-pt/agora-design-system";
 import { fetchOrgDataservices } from "@/services/api";
 import { Dataservice } from "@/types/api";
@@ -60,9 +61,11 @@ export default function OrgDataservicesClient() {
           className="datasets-page__empty"
           position="center"
           icon={
-            <Icon name="agora-line-buildings" className="datasets-page__empty-icon" />
+            <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
           }
+          title="Sem publicações"
           description="Não pertence a nenhuma organização."
+          hasAnchor={false}
         />
       </div>
     );
@@ -74,7 +77,7 @@ export default function OrgDataservicesClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Minha organização", url: "#" },
+            { label: "Organização", url: "#" },
             { label: "API", url: "/pages/admin/org/dataservices" },
           ]}
         />
@@ -91,7 +94,7 @@ export default function OrgDataservicesClient() {
 
       <div className="flex items-center gap-[16px] mb-[24px]">
         <div className="flex-1">
-          <InputSearchBar
+          <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome da API"
             aria-label="Pesquisar APIs"
@@ -194,13 +197,22 @@ export default function OrgDataservicesClient() {
               className="datasets-page__empty"
               position="center"
               icon={
-                <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+                <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
               }
+              title="Sem publicações"
               description="A organização ainda não publicou uma API."
-              hasAnchor
-              valueAnchor="Publicar em dados.gov"
-              anchorHref="/pages/admin/dataservices/new"
-              anchorTarget="_self"
+              hasAnchor={false}
+              extraDescription={
+                <div className="mt-24">
+                  <Button
+                    variant="primary"
+                    appearance="outline"
+                    onClick={() => window.location.href = '/pages/admin/dataservices/new'}
+                  >
+                    Publique no portal
+                  </Button>
+                </div>
+              }
             />
           </div>
         </div>

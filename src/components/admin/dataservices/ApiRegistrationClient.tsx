@@ -154,7 +154,7 @@ export default function ApiRegistrationClient({
     {
       title: "Adicione uma abreviação ou sigla à API.",
       content:
-        "Você tem a opção de adicionar uma sigla à sua API. As letras que compõem essa sigla não precisam ser separadas por pontos.",
+        "Tem a opção de adicionar uma sigla à sua API. As letras que compõem essa sigla não precisam ser separadas por pontos.",
     },
     {
       title: "Escreva uma boa descrição",
@@ -169,7 +169,7 @@ export default function ApiRegistrationClient({
     {
       title: "Adicione um link para a documentação da máquina.",
       content:
-        "Idealmente, forneça um link OpenAPI (Swagger) que permita aos desenvolvedores explorar os endpoints, visualizar os métodos disponíveis e testar consultas diretamente da documentação. Para serviços geográficos, você pode fornecer um link para o serviço com uma consulta GetCapabilities para recuperar os metadados do serviço.",
+        "Idealmente, forneça um link OpenAPI (Swagger) que permita aos desenvolvedores explorar os endpoints, visualizar os métodos disponíveis e testar consultas diretamente da documentação. Para serviços geográficos, pode fornecer um link para o serviço com uma consulta GetCapabilities para recuperar os metadados do serviço.",
     },
     {
       title: "Adicione um link para a documentação técnica.",
@@ -194,7 +194,7 @@ export default function ApiRegistrationClient({
     {
       title: "Adicione um link à solicitação de autorização.",
       content:
-        "Se a sua API tiver acesso restrito, adicione o link ao formulário de solicitação de acesso. Você é administrador? A solução Datapass permite criar e gerenciar formulários de solicitação de acesso a dados com facilidade.",
+        "Se a sua API tiver acesso restrito, adicione o link ao formulário de solicitação de acesso. É administrador? A solução Datapass permite criar e gerenciar formulários de solicitação de acesso a dados com facilidade.",
     },
     {
       title: "Adicione um link para a documentação da empresa.",
@@ -243,14 +243,14 @@ export default function ApiRegistrationClient({
                 >
                   <DropdownSection name="organizations">
                     <DropdownOption value="org1">
-                      Minha Organização
+                      Organização
                     </DropdownOption>
                   </DropdownSection>
                 </InputSelect>
 
                 <div className="datasets-admin-page__org-card">
                   <p className="datasets-admin-page__org-card-title">
-                    Você não pertence a nenhuma organização.
+                    Não pertence a nenhuma organização.
                   </p>
                   <p className="datasets-admin-page__org-card-description">
                     Recomendamos que publique em nome de uma organização se se
@@ -523,7 +523,7 @@ export default function ApiRegistrationClient({
                   <>
                     <strong>A sua API foi criada!</strong>
                     <br />
-                    Agora você pode publicar ou salvar como rascunho.
+                    Agora pode publicar ou guardar como rascunho.
                   </>
                 }
               />

@@ -322,7 +322,7 @@ export default function MigrateAccountClient() {
                 <Icon name="agora-line-user" className="w-24 h-24 text-brand-blue-primary" />
               </div>
               <h2 className="text-xl-bold text-brand-blue-dark">
-                Esta conta e sua?
+                Esta conta é sua?
               </h2>
               <p className="text-neutral-900">
                 Encontramos uma conta existente no portal com os seguintes dados.
@@ -408,7 +408,7 @@ export default function MigrateAccountClient() {
                       Enviar codigo para o meu email
                     </p>
                     <p className="text-sm text-neutral-700">
-                      Enviaremos um codigo de 6 digitos para {maskedEmail || "o seu email"}
+                      Enviaremos um código de 6 dígitos para {maskedEmail || "o seu email"}
                     </p>
                   </div>
                 </button>

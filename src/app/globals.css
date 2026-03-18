@@ -7,22 +7,27 @@
 
 /* Full icon state control for header cards */
 @layer utilities {
+
   .header-card-wrapper svg.leading-icon-active,
   .header-card-wrapper svg.trailing-icon-active {
     display: none !important;
   }
+
   .header-card-wrapper svg.leading-icon-default,
   .header-card-wrapper svg.trailing-icon-default {
     display: block !important;
   }
+
   .header-card-wrapper svg.leading-icon-hover,
   .header-card-wrapper svg.trailing-icon-hover {
     display: none !important;
   }
+
   .header-card-wrapper:hover svg.leading-icon-default,
   .header-card-wrapper:hover svg.trailing-icon-default {
     display: none !important;
   }
+
   .header-card-wrapper:hover svg.leading-icon-hover,
   .header-card-wrapper:hover svg.trailing-icon-hover {
     display: block !important;
@@ -1444,4 +1449,10 @@ p.max-w-ch,
 li.max-w-ch,
 .max-w-ch li {
   max-width: 65ch;
+}
+
+@media (min-width: 768px) {
+  .agora-card-no-results .main-content {
+    margin: 90px;
+  }
 }

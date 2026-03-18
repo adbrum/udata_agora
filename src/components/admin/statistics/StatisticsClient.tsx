@@ -16,6 +16,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Button,
 } from "@ama-pt/agora-design-system";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import PublishDropdown from "@/components/admin/PublishDropdown";
@@ -70,7 +71,7 @@ export default function StatisticsClient() {
           <TabBody>
             <div className="mt-[24px]">
               <div className="flex justify-end mb-[16px]">
-                <InputSearchBar
+                <InputSearchBar hasVoiceActionButton={false}
                   label="Pesquisar"
                   placeholder="Pesquisar"
                   aria-label="Pesquisar conjuntos de dados"
@@ -145,7 +146,7 @@ export default function StatisticsClient() {
                   <p className="datasets-page__count">
                     <strong>0 API</strong>
                   </p>
-                  <InputSearchBar
+                  <InputSearchBar hasVoiceActionButton={false}
                     label="Pesquisar"
                     placeholder="Pesquisar"
                     aria-label="Pesquisar APIs"
@@ -157,13 +158,22 @@ export default function StatisticsClient() {
                     className="datasets-page__empty"
                     position="center"
                     icon={
-                      <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+                      <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
                     }
-                    description="Você ainda não publicou uma API."
-                    hasAnchor
-                    valueAnchor="Publicar em dados.gov"
-                    anchorHref="/pages/admin/dataservices/new"
-                    anchorTarget="_self"
+                    title="Sem publicações"
+                    description="Ainda não publicou uma API."
+                    hasAnchor={false}
+                    extraDescription={
+                      <div className="mt-24">
+                        <Button
+                          variant="primary"
+                          appearance="outline"
+                          onClick={() => window.location.href = '/pages/admin/dataservices/new'}
+                        >
+                          Publique no portal
+                        </Button>
+                      </div>
+                    }
                   />
                 </div>
               </div>
@@ -184,7 +194,7 @@ export default function StatisticsClient() {
                   <p className="datasets-page__count">
                     <strong>0 REUTILIZAÇÕES</strong>
                   </p>
-                  <InputSearchBar
+                  <InputSearchBar hasVoiceActionButton={false}
                     label="Pesquisar"
                     placeholder="Pesquisar"
                     aria-label="Pesquisar reutilizações"
@@ -196,13 +206,22 @@ export default function StatisticsClient() {
                     className="datasets-page__empty"
                     position="center"
                     icon={
-                      <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+                      <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
                     }
-                    description="Você ainda não publicou uma reutilização."
-                    hasAnchor
-                    valueAnchor="Publicar em dados.gov"
-                    anchorHref="/pages/admin/me/reuses/new"
-                    anchorTarget="_self"
+                    title="Sem publicações"
+                    description="Ainda não publicou uma reutilização."
+                    hasAnchor={false}
+                    extraDescription={
+                      <div className="mt-24">
+                        <Button
+                          variant="primary"
+                          appearance="outline"
+                          onClick={() => window.location.href = '/pages/admin/me/reuses/new'}
+                        >
+                          Publique no portal
+                        </Button>
+                      </div>
+                    }
                   />
                 </div>
               </div>

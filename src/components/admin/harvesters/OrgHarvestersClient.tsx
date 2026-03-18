@@ -91,7 +91,7 @@ export default function OrgHarvestersClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Minha organização", url: "#" },
+            { label: "Organização", url: "#" },
             { label: "Harvesters", url: "/pages/admin/org/harvesters" },
           ]}
         />
@@ -108,7 +108,7 @@ export default function OrgHarvestersClient() {
 
       <div className="flex items-center gap-[16px] mb-[24px]">
         <div className="flex-1">
-          <InputSearchBar
+          <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome do harvester"
             aria-label="Pesquisar harvesters"

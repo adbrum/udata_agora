@@ -176,7 +176,7 @@ export default function ProfileClient() {
                     </span>
                     <div className="mt-2">
                       <DragAndDropUploader
-                        dragAndDropLabel="Arraste e solte os ficheiros"
+                        dragAndDropLabel="Selecione ou arraste os ficheiros"
                         separatorLabel="ou"
                         inputLabel="Selecionar ficheiro"
                         removeFileButtonLabel="Remover ficheiro"
