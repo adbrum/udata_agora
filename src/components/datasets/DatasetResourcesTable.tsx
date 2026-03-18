@@ -12,6 +12,16 @@ import {
 } from "@ama-pt/agora-design-system";
 import { Resource } from "@/types/api";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
+
+/**
+ * Build the backend redirect URL for a resource download.
+ * This routes through /api/1/datasets/r/{id}/ so the download is tracked.
+ */
+function downloadUrl(resource: Resource): string {
+  return `${API_BASE_URL}/datasets/r/${resource.id}/`;
+}
+
 interface DatasetResourcesTableProps {
   resources: Resource[];
 }
@@ -476,7 +486,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                   </p>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                     <a
-                      href={resource.url}
+                      href={downloadUrl(resource)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary-600 text-sm hover:underline flex items-center"
@@ -773,7 +783,7 @@ const ResourceCard: React.FC<{
         </p>
         <div className="flex items-center">
           <a
-            href={resource.url}
+            href={downloadUrl(resource)}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-8 text-primary-600 hover:underline"
@@ -785,7 +795,7 @@ const ResourceCard: React.FC<{
             </span>
           </a>
           <a
-            href={resource.url}
+            href={downloadUrl(resource)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Descarregar ${resource.title}`}
