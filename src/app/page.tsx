@@ -363,7 +363,7 @@ export default function Home() {
                   <Link
                     key={dataset.id}
                     href={`/pages/datasets/${dataset.slug}`}
-                    className="dataset-card-home border-[#1A65FA] rounded-[4px] overflow-hidden h-full flex flex-col"
+                    className="dataset-card-home border border-solid border-primary-600 rounded-[4px] overflow-hidden h-full flex flex-col dataset-card-home-small-pill"
                   >
                     <CardGeneral
                       variant="white"
@@ -371,8 +371,7 @@ export default function Home() {
                         dataset.last_modified
                           ? formatDistanceToNow(new Date(dataset.last_modified), {
                             locale: pt,
-                            addSuffix: true,
-                          })
+                          }).replace("aproximadamente ", "").replace("quase ", "").replace("menos de ", "").replace("cerca de ", "") + " atrás"
                           : "Desconhecido"
                       }
                       subtitleText={dataset.organization?.name || "Sem Organização"}

@@ -751,6 +751,24 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   -webkit-box-orient: vertical;
 }
 
+.dataset-card-home .card-general {
+  border-width: 1px !important;
+}
+
+.dataset-card-home-small-pill .card-general .pill-size {
+  height: auto !important;
+  width: auto !important;
+}
+
+.dataset-card-home-small-pill .card-general .agora-pill {
+  padding: 2px 8px !important;
+}
+
+.dataset-card-home-small-pill .card-general .agora-pill .children-wrapper {
+  font-size: 0.625rem !important;
+  line-height: 1rem !important;
+}
+
 .dataset-card-home .card-general .title-text {
   min-height: 64px;
 }
@@ -775,6 +793,30 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.dataset-card-home .card-general {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.dataset-card-home .content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dataset-card-home .content>div:first-child {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dataset-card-home .description {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .homepage .agora-card-article.indented .container-body {
@@ -1479,13 +1521,4 @@ li.max-w-ch,
   .agora-card-no-results .main-content {
     margin: 90px;
   }
-}
-
-/* Remove border-bottom from nested accordions inside schemas/temas and add left margin */
-.nested-accordions .agora-accordion {
-  border-bottom: none !important;
-  margin-left: 24px !important;
-}
-.nested-accordions .agora-accordion:not(.dark-mode,.active-state,.mobile):has(.accordion-header:hover) {
-  border-bottom-color: transparent !important;
 }
