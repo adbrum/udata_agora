@@ -84,7 +84,7 @@ const CopyField: React.FC<{ label: string; value: string; mono?: boolean }> = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8 pb-16">
       <div className="flex items-center gap-8">
         <h5 className="font-bold text-sm text-neutral-900">{label}</h5>
         <button
@@ -382,7 +382,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
           <Tab>
             <TabHeader>Metadados</TabHeader>
             <TabBody>
-              <div className="py-16 space-y-24">
+              <div className="py-16 space-y-32">
                 <CopyField label="URL" value={resource.url} />
                 {resource.latest && (
                   <CopyField label="URL estável" value={resource.latest} />
@@ -395,7 +395,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                   />
                 )}
 
-                <div className="grid grid-cols-2 gap-y-24 gap-x-32 pt-16">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px 64px", paddingTop: "32px" }}>
                   <div>
                     <h5 className="font-bold text-sm text-neutral-900 mb-4">Criado em</h5>
                     <p className="text-neutral-700 text-sm">
@@ -441,16 +441,16 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                     <AccordionGroup>
                       <Accordion
                         headingTitle={
-                          <span className="font-bold text-sm text-neutral-900 uppercase tracking-wider">
+                          <span className="font-bold text-sm text-neutral-900">
                             Recursos extras
                           </span>
                         }
                         headingLevel="h5"
                       >
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-24 gap-x-32 py-16 px-16">
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px 64px", padding: "16px" }}>
                           {Object.entries(resource.extras).map(([key, value]) => (
                             <div key={key}>
-                              <h6 className="font-bold text-sm text-neutral-900 mb-4">
+                              <h6 className="font-bold text-sm text-neutral-900 mb-8">
                                 {translateExtrasKey(key)}
                               </h6>
                               <p className="text-neutral-700 text-sm break-all">
