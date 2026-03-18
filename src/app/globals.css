@@ -582,6 +582,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   padding: 12px 0px;
 }
 
+
 .agora-card-links-datasets .agora-card-links .title h2 {
   text-decoration: underline;
 }
@@ -592,6 +593,10 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 
 .divider-neutral-200 {
   border-bottom: 2px solid var(--color-neutral-200);
+}
+
+.cardsnews {
+  align-items: self-end !important;
 }
 
 /* Override icon fill and link color for reuses, article and organization pages */
@@ -692,7 +697,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 }
 
 /* Force buttons row inside CardNoResults extra-description */
-.agora-card-no-results .extra-description > div {
+.agora-card-no-results .extra-description>div {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
