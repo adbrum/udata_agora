@@ -110,6 +110,8 @@ const CopyButton = ({ text }: { text: string }) => {
 };
 
 export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
+  if (!dataset) return null;
+
   const hasInfo =
     dataset.tags?.length > 0 || dataset.id || dataset.license;
   const hasTemporal =
