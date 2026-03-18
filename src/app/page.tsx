@@ -363,7 +363,7 @@ export default function Home() {
                   <Link
                     key={dataset.id}
                     href={`/pages/datasets/${dataset.slug}`}
-                    className="dataset-card-home border-[#1A65FA] rounded-[4px] overflow-hidden h-full flex flex-col"
+                    className="dataset-card-home border border-solid border-primary-600 rounded-[4px] overflow-hidden h-full flex flex-col"
                   >
                     <CardGeneral
                       variant="white"
