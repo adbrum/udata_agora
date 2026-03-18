@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Tabs, Tab, TabHeader, TabBody, CardNoResults, CardLinks, Icon, StatusCard, Button, InputSearchBar } from '@ama-pt/agora-design-system';
-import { Dataset, Discussion, Reuse } from '@/types/api';
-import { fetchDiscussions, fetchReuses } from '@/services/api';
+import { Tabs, Tab, TabHeader, TabBody, CardNoResults, CardLinks, Icon, StatusCard, Button, InputSearchBar, InputText, InputTextArea } from '@ama-pt/agora-design-system';
+import { Dataset, Discussion, Reuse, Resource } from '@/types/api';
+import { fetchDiscussions, fetchReuses, fetchCommunityResourcesByDataset } from '@/services/api';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { DatasetResourcesTable } from './DatasetResourcesTable';
@@ -22,18 +22,23 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
     const [showNewDiscussion, setShowNewDiscussion] = useState(false);
     const [newDiscTitle, setNewDiscTitle] = useState('');
     const [newDiscMessage, setNewDiscMessage] = useState('');
+    const [communityResources, setCommunityResources] = useState<Resource[]>([]);
+    const [communityCount, setCommunityCount] = useState(0);
 
     useEffect(() => {
         async function loadTabData() {
             try {
-                const [discResponse, reuseResponse] = await Promise.all([
+                const [discResponse, reuseResponse, communityResponse] = await Promise.all([
                     fetchDiscussions(dataset.id),
                     fetchReuses(1, 20, { dataset: dataset.id }),
+                    fetchCommunityResourcesByDataset(dataset.id),
                 ]);
                 setDiscussions(discResponse.data);
                 setDiscussionCount(discResponse.total);
                 setReuses(reuseResponse.data);
                 setReuseCount(reuseResponse.total);
+                setCommunityResources(communityResponse.data);
+                setCommunityCount(communityResponse.total);
             } catch (error) {
                 console.error("Error loading tab data:", error);
             }
@@ -215,7 +220,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                             {showNewDiscussion && (
                                 <div className="bg-white rounded-8 p-32 mb-24">
                                     <div className="flex justify-between items-center mb-16">
-                                        <h3 className="font-bold text-neutral-900 text-base uppercase">
+                                        <h3 className="font-bold text-neutral-900 text-base">
                                             Nova discussão
                                         </h3>
                                         <Button
@@ -230,26 +235,21 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                         Os campos marcados com um asterisco (<span className="text-red-500">*</span>) são obrigatórios.
                                     </p>
                                     <div className="mb-24">
-                                        <label className="block text-sm font-bold text-neutral-900 mb-8">
-                                            Título <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
+                                        <InputText
+                                            label="Título *"
                                             value={newDiscTitle}
                                             onChange={(e) => setNewDiscTitle(e.target.value)}
-                                            className="w-full border border-neutral-300 rounded-4 px-16 py-8 text-sm text-neutral-900 focus:outline-none focus:border-primary-600"
+                                            required
                                         />
                                     </div>
                                     <div className="mb-24">
-                                        <label className="block text-sm font-bold text-neutral-900 mb-8">
-                                            A sua mensagem <span className="text-red-500">*</span>
-                                        </label>
-                                        <textarea
+                                        <InputTextArea
+                                            label="A sua mensagem *"
                                             value={newDiscMessage}
                                             onChange={(e) => setNewDiscMessage(e.target.value)}
                                             rows={4}
                                             placeholder="Por favor, mantenha a cordialidade e uma postura construtiva. Evite partilhar informações pessoais."
-                                            className="w-full border border-neutral-300 rounded-4 px-16 py-8 text-sm text-neutral-900 focus:outline-none focus:border-primary-600 resize-y"
+                                            required
                                         />
                                     </div>
                                     <div className="flex justify-end">
@@ -331,10 +331,10 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                 </Tab>
                 <Tab>
                     <TabHeader>
-                        Recursos comunitários ({dataset.community_resources?.length || 0})
+                        Recursos comunitários ({communityCount})
                     </TabHeader>
                     {renderTabBody(
-                        !dataset.community_resources || dataset.community_resources.length === 0 ? (
+                        communityCount === 0 ? (
                             <div className="bg-white rounded-8 py-64 px-32 flex flex-col items-center text-center">
                                 <Icon name="agora-line-user-group" className="w-[40px] h-[40px] text-primary-500 icon-xl mb-16" />
                                 <h3 className="text-primary-600 text-[2rem] leading-[3rem] mb-16" style={{ fontWeight: 300 }}>
@@ -359,7 +359,29 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                 </div>
                             </div>
                         ) : (
-                            <DatasetResourcesTable resources={dataset.community_resources} />
+                            <div>
+                                <div className="mb-24">
+                                    <StatusCard
+                                        type="warning"
+                                        description="Estes recursos são publicados pela comunidade e não são da responsabilidade do produtor dos dados."
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between mb-16">
+                                    <h3 className="font-medium text-neutral-900 text-base">
+                                        {communityCount} {communityCount === 1 ? "RECURSO COMUNITÁRIO" : "RECURSOS COMUNITÁRIOS"}
+                                    </h3>
+                                    <Button
+                                        variant="primary"
+                                        appearance="outline"
+                                        hasIcon={true}
+                                        leadingIcon="agora-line-plus-circle"
+                                        leadingIconHover="agora-solid-plus-circle"
+                                    >
+                                        Compartilhe os seus recursos
+                                    </Button>
+                                </div>
+                                <DatasetResourcesTable resources={communityResources} />
+                            </div>
                         )
                     )}
                 </Tab>
