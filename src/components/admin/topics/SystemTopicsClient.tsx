@@ -106,11 +106,10 @@ export default function SystemTopicsClient() {
         {topics.length} resultados
       </p>
 
-      <span className="text-s-bold text-neutral-900 block mb-[8px]">Pesquisar</span>
-      <div className="flex items-center gap-[16px] mb-[24px]">
-        <div className="flex-1">
+      <div className="flex items-end gap-[16px] mb-[24px]">
+        <div className="w-[60%]">
           <InputSearchBar hasVoiceActionButton={false}
-            label=""
+            label="Pesquisar"
             placeholder="Pesquise o nome do tema"
             aria-label="Pesquisar temas"
           />
