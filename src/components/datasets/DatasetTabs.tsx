@@ -203,15 +203,31 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                     </TabHeader>
                     {renderTabBody(
                         !dataset.community_resources || dataset.community_resources.length === 0 ? (
-                            <CardNoResults
-                                position="center"
-                                icon={
-                                    <Icon name="agora-line-user-group" className="w-[40px] h-[40px] text-primary-500 icon-xl" />
-                                }
-                                title="Sem recursos comunitários"
-                                description="Ainda não existem recursos comunitários disponíveis."
-                                hasAnchor={false}
-                            />
+                            <div className="flex flex-col items-center">
+                                <CardNoResults
+                                    position="center"
+                                    icon={
+                                        <Icon name="agora-line-community" className="w-[40px] h-[40px] text-primary-500 icon-xl" />
+                                    }
+                                    title="Sem recursos comunitários"
+                                    description="Atualmente, não existem recursos comunitários disponíveis para este conjunto de dados."
+                                    hasAnchor={false}
+                                />
+                                <div className="flex items-center gap-16 mt-24">
+                                    <Button
+                                        variant="primary"
+                                        appearance="filled"
+                                    >
+                                        Compartilhe seus recursos
+                                    </Button>
+                                    <Button
+                                        variant="primary"
+                                        appearance="outline"
+                                    >
+                                        Saiba mais sobre a comunidade
+                                    </Button>
+                                </div>
+                            </div>
                         ) : (
                             <DatasetResourcesTable resources={dataset.community_resources} />
                         )
