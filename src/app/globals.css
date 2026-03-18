@@ -832,9 +832,8 @@ span.inline-flex.items-center.justify-center.agora-pill-large.agora-pill.agora-p
 }
 
 .dataset-card-home-small-pill .card-general .agora-pill .children-wrapper {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.2;
+  font-size: 0.625rem !important;
+  line-height: 1rem !important;
 }
 
 .dataset-card-home .card-general .title-text {
