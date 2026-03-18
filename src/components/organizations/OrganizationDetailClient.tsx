@@ -14,6 +14,7 @@ import {
   CardArticle,
 } from "@ama-pt/agora-design-system";
 import { Organization } from "@/types/api";
+import { usePageTracking } from "@/hooks/usePageTracking";
 import { OrganizationTabs } from "./OrganizationTabs";
 
 interface OrganizationDetailClientProps {
@@ -21,6 +22,7 @@ interface OrganizationDetailClientProps {
 }
 
 export default function OrganizationDetailClient({ organization }: OrganizationDetailClientProps) {
+  usePageTracking("organization", organization?.id);
   const [isFavorite, setIsFavorite] = useState(false);
 
   return (

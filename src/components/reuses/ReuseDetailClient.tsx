@@ -18,6 +18,7 @@ import {
 } from '@ama-pt/agora-design-system';
 import { Reuse, Dataset } from '@/types/api';
 import { fetchDataset } from '@/services/api';
+import { usePageTracking } from '@/hooks/usePageTracking';
 
 import { format, formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -27,6 +28,7 @@ interface ReuseDetailClientProps {
 }
 
 export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
+  usePageTracking("reuse", reuse?.id);
   const router = useRouter();
   const [fullDatasets, setFullDatasets] = useState<Dataset[]>([]);
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(true);
@@ -390,10 +392,10 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                               >
                                 <Icon name="agora-line-download" aria-hidden="true" />
                                 <span>
-                                  {dataset.metrics?.downloads
-                                    ? dataset.metrics.downloads >= 1000
-                                      ? `${(dataset.metrics.downloads / 1000).toFixed(0)} mil`
-                                      : dataset.metrics.downloads
+                                  {dataset.metrics?.resources_downloads
+                                    ? dataset.metrics.resources_downloads >= 1000
+                                      ? `${(dataset.metrics.resources_downloads / 1000).toFixed(0)} mil`
+                                      : dataset.metrics.resources_downloads
                                     : '0'}
                                 </span>
                               </div>

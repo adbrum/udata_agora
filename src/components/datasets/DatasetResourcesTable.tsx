@@ -1,9 +1,11 @@
 import React from 'react';
 import { Icon } from '@ama-pt/agora-design-system';
 import { Resource } from '@/types/api';
+import { trackDownload } from '@/services/tracking';
 
 interface DatasetResourcesTableProps {
     resources: Resource[];
+    datasetId?: string;
 }
 
 const formatBytes = (bytes?: number) => {
@@ -15,11 +17,15 @@ const formatBytes = (bytes?: number) => {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2)).toLocaleString('pt-PT')} ${sizes[i]}`;
 };
 
-export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({ resources }) => {
+export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({ resources, datasetId }) => {
     // Filter resources by type
     // If type is missing, treat as principal file
     const principalFiles = resources.filter(r => !r.type || r.type === 'main' || r.type === 'file');
     const documentationFiles = resources.filter(r => r.type === 'documentation');
+
+    const handleDownloadClick = (resource: Resource) => {
+        trackDownload(resource.id, datasetId);
+    };
 
     const renderResourceCard = (resource: Resource) => (
         <div
@@ -41,6 +47,7 @@ export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({ re
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-8 text-primary-700 font-bold hover:underline"
+                        onClick={() => handleDownloadClick(resource)}
                     >
                         <Icon name="agora-line-file" className="w-5 h-5" />
                         <span>Formato {resource.format || 'Ficheiro'} {resource.filesize ? `(${formatBytes(resource.filesize)})` : ''}</span>
@@ -51,6 +58,7 @@ export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({ re
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label={`Descarregar ${resource.title}`}
+                            onClick={() => handleDownloadClick(resource)}
                         >
                             <Icon name="agora-line-arrow-down-circle" className="w-6 h-6 text-primary-700" />
                         </a>

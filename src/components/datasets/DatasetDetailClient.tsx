@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button, Icon, Breadcrumb, Pill, ProgressBar } from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
 import { fetchDataset, followEntity, unfollowEntity } from '@/services/api';
+import { usePageTracking } from '@/hooks/usePageTracking';
 
 import { DatasetTabs } from '@/components/datasets/DatasetTabs';
 
@@ -52,6 +53,8 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
   const [isLoading, setIsLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
+
+  usePageTracking("dataset", dataset?.id);
 
   useEffect(() => {
     async function loadDataset() {
@@ -211,7 +214,7 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                 <div className="bg-[#F2F6FF] rounded-4 p-32">
                   <div className="text-sm mb-[8px]">Downloads</div>
                   <div className="text-l-semibold font-bold text-neutral-900 mb-[8px]">
-                    {formatMetricValue(dataset.metrics?.downloads)}
+                    {formatMetricValue(dataset.metrics?.resources_downloads)}
                   </div>
                 </div>
               </div>

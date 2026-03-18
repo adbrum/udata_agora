@@ -8,6 +8,7 @@ import { Button, InputSearchBar, Icon, CardGeneral, CardLinks, InputSelect, Drop
 import { Pagination } from '@/components/Pagination';
 import { DatasetsFilters } from '@/components/datasets/DatasetsFilters';
 import { APIResponse, Dataset, SiteMetrics } from '@/types/api';
+import { trackSearch } from '@/services/tracking';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -59,6 +60,9 @@ export default function DatasetsClient({
 
   const handleSearch = React.useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (searchQuery.trim()) {
+      trackSearch(searchQuery.trim());
+    }
     applySearch(searchQuery);
   }, [searchQuery, applySearch]);
 
@@ -177,10 +181,10 @@ export default function DatasetsClient({
                                 <div className="flex items-center gap-8" title="Downloads">
                                   <Icon name="agora-line-download" className="" aria-hidden="true" />
                                   <span>
-                                    {dataset.metrics?.downloads
-                                      ? dataset.metrics.downloads >= 1000
-                                        ? (dataset.metrics.downloads / 1000).toFixed(0) + ' mil'
-                                        : dataset.metrics.downloads
+                                    {dataset.metrics?.resources_downloads
+                                      ? dataset.metrics.resources_downloads >= 1000
+                                        ? (dataset.metrics.resources_downloads / 1000).toFixed(0) + ' mil'
+                                        : dataset.metrics.resources_downloads
                                       : '0'}
                                   </span>
                                 </div>

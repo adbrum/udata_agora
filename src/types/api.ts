@@ -147,7 +147,7 @@ export interface Metric {
   views?: number;
   followers?: number;
   reuses?: number;
-  downloads?: number;
+  resources_downloads?: number;
   discussions?: number;
 }
 

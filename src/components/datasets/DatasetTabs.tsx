@@ -57,7 +57,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
             <Tabs>
                 <Tab>
                     <TabHeader>Ficheiros ({dataset.resources.length})</TabHeader>
-                    {renderTabBody(<DatasetResourcesTable resources={dataset.resources} />)}
+                    {renderTabBody(<DatasetResourcesTable resources={dataset.resources} datasetId={dataset.id} />)}
                 </Tab>
                 <Tab>
                     <TabHeader>Reutilizações e APIs ({reuseCount})</TabHeader>
@@ -132,7 +132,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                         !dataset.community_resources || dataset.community_resources.length === 0 ? (
                             <p className="text-neutral-500">Nenhum recurso comunitário disponível.</p>
                         ) : (
-                            <DatasetResourcesTable resources={dataset.community_resources} />
+                            <DatasetResourcesTable resources={dataset.community_resources} datasetId={dataset.id} />
                         )
                     )}
                 </Tab>
