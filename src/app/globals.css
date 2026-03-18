@@ -684,6 +684,15 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   padding: 48px 32px;
 }
 
+/* Force buttons row inside CardNoResults extra-description */
+.agora-card-no-results .extra-description > div {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+}
+
 /* 5.9 Pagination */
 .grid-filters {
   gap: 104px;
