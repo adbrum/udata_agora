@@ -495,6 +495,24 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   z-index: 1;
 }
 
+/* Disable tab background for nested tabs (e.g. inside accordions) */
+.tab-panel-content .tab-panel-content::before {
+  display: none;
+}
+
+.tab-panel-content .tab-panel-content>* {
+  z-index: auto;
+}
+
+.tab-panel-content .agora-tabs.desktop .tab-panel.current-neutral,
+.tab-panel-content .agora-tabs.desktop .tab-list.desktop .tab-list-item.active.current-neutral {
+  background-color: transparent;
+}
+
+.tab-panel-content .tab-panel-content {
+  padding: 0;
+}
+
 /* 5.4 Cards (General) */
 .card-general {
   height: 100%;
