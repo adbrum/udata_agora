@@ -770,6 +770,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 
 span.inline-flex.items-center.justify-center.agora-pill-large.agora-pill.agora-pill-solid-primary.mb-8 {
   height: 32px;
+  width: 40%;
 }
 
 .dataset-card-home-small-pill .card-general .agora-pill {
