@@ -81,7 +81,7 @@ export default function DatasetsNewClient() {
             description="Se desejar realizar testes, utilize demo.dados.gov"
           />
 
-          <div className="datasets-new-page__cards mb-[32px]">
+          <div className="datasets-new-page__cards mb-[32px]" style={{ maxWidth: "50%" }}>
             <CardAction
               variant="neutral-100"
               titleText="Publicar um conjunto de dados"
@@ -92,18 +92,6 @@ export default function DatasetsNewClient() {
                 variant: "primary",
                 appearance: "outline",
                 onClick: () => router.push("/pages/admin/me/datasets/new?step=2"),
-              }}
-            />
-
-            <CardAction
-              variant="neutral-100"
-              titleText="Publicar com um diagrama"
-              descriptionText="Os seus dados seguem um esquema de referência? Selecione um esquema e crie os seus dados estruturados!"
-              icon={{ name: "agora-line-edit" }}
-              button={{
-                children: "Publicar com um diagrama",
-                variant: "primary",
-                appearance: "outline",
               }}
             />
           </div>

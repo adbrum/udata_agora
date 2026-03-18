@@ -229,7 +229,9 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                     Qualidade dos metadados
                   </h3>
                 </div>
-                <ProgressBar value={qualityScore} max={100} hidePercentageValue={true} />
+                <div className={qualityScore <= 45 ? "quality-progress-warning" : ""}>
+                  <ProgressBar value={qualityScore} max={100} hidePercentageValue={true} />
+                </div>
                 <div className="text-xs text-neutral-700 mt-8">
                   {qualityScore}%
                   {qualityDetails.length > 0 && ` (${qualityDetails.join(', ')})`}
