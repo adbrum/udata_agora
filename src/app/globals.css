@@ -496,8 +496,9 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 }
 
 /* Disable tab background for nested tabs (e.g. inside accordions) */
-.tab-panel-content .tab-panel-content::before {
-  display: none;
+.tab-panel-content .tab-panel-content::before,
+.tab-panel-content .tab-panel-content::after {
+  display: none !important;
 }
 
 .tab-panel-content .tab-panel-content>* {
@@ -506,11 +507,16 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 
 .tab-panel-content .agora-tabs.desktop .tab-panel.current-neutral,
 .tab-panel-content .agora-tabs.desktop .tab-list.desktop .tab-list-item.active.current-neutral {
-  background-color: transparent;
+  background-color: transparent !important;
 }
 
 .tab-panel-content .tab-panel-content {
   padding: 0;
+  position: static;
+}
+
+.tab-panel-content .agora-tabs .tab-panel {
+  background-color: transparent !important;
 }
 
 /* 5.4 Cards (General) */
