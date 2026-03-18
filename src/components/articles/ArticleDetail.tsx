@@ -99,17 +99,6 @@ export default function ArticleDetail({ rid }: ArticleDetailProps) {
         <div className="container mx-auto px-4">
           <div className="text-[#2b363c] flex flex-col gap-[32px]">
             <div className="max-w-[592px]">
-              {/* Article Image */}
-                {post.image && (
-                  <div className="mb-[32px] rounded overflow-hidden bg-neutral-100">
-                    <img
-                      src={post.image}
-                      alt={post.name}
-                      className="w-full object-cover aspect-[16/9]"
-                    />
-                  </div>
-                )}
-
                 {/* Content */}
                 <div className="text-[16px] leading-[28px]">
                   {post.body_type === "html" ? (
@@ -118,6 +107,17 @@ export default function ArticleDetail({ rid }: ArticleDetailProps) {
                     <div className="whitespace-pre-wrap">{post.content}</div>
                   )}
                 </div>
+
+                {/* Article Image */}
+                {post.image && (
+                  <div className="mt-[32px] rounded overflow-hidden bg-neutral-100">
+                    <img
+                      src={post.image}
+                      alt={post.name}
+                      className="w-full object-cover aspect-[16/9]"
+                    />
+                  </div>
+                )}
 
                 {/* Credits */}
                 {post.credit_to && (
