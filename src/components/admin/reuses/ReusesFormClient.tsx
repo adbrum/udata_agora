@@ -454,9 +454,12 @@ export default function ReusesFormClient({
                         accept=".jpg,.jpeg,.png"
                         maxSize={4194304}
                         maxCount={1}
-                        onChange={(files: File[]) => {
-                          setReuseCoverImageFile(files.length > 0 ? files[0] : null);
-                          clearError("reuseCoverImage");
+                        onChange={(e) => {
+                          const files = e.target?.files;
+                          if (files) {
+                            setReuseCoverImageFile(files.length > 0 ? files[0] : null);
+                            clearError("reuseCoverImage");
+                          }
                         }}
                       />
                     </div>

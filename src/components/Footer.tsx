@@ -48,7 +48,7 @@ const FooterNavigation = () => {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetchLatestDatasets(1, 1);
+        const res = await fetchLatestDatasets(1);
         if (res.data && res.data.length > 0) {
           setFirstDatasetSlug(res.data[0].slug);
         }
@@ -91,78 +91,6 @@ const FooterNavigation = () => {
             </ul>
           </div>
         ))}
-      </div>
-    </div>
-  );
-};
-
-// Element 2: Institutional & Social
-const FooterInstitutional = () => {
-  return (
-    <div className="border-t border-primary-700">
-      {/* Top Row: Brand & Partners */}
-      <div className="container mx-auto px-4 py-32">
-        <div className="flex md:flex-row justify-between items-center gap-6">
-          <p className="text-white text-sm">
-            Plataforma aberta de dados públicos portugueses
-          </p>
-          <div className="flex items-center gap-32">
-            <img src="/Logos/NextGenerationEU.svg" alt="NextGenerationEU" />
-            <img src="/Logos/republica-portuguesa.svg" alt="República Portuguesa" />
-            <a href="https://www.arte.gov.pt/" target="_blank" rel="noopener noreferrer">
-              <img src="/Logos/ARTE.svg" alt="ARTE" />
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Separator */}
-      <div className="border-t border-primary-700"></div>
-
-      {/* Bottom Row: Social, Links, Copyright */}
-      <div className="container mx-auto px-4 py-32">
-        <div className="flex md:flex-row min-h-[120px]">
-          {/* Left Column - Social Links */}
-          <div className="flex items-center justify-center gap-16 py-8 md:w-1/3">
-            {socialLinks.map((social, idx) => (
-              <a
-                key={idx}
-                href={social.href}
-                aria-label={social.label}
-                className="text-white hover:opacity-80 transition-opacity"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Icon name={social.icon} className="w-6 h-6 fill-white" />
-              </a>
-            ))}
-          </div>
-
-          {/* Vertical Divider */}
-          <div className="hidden md:block w-px bg-primary-700 self-stretch"></div>
-
-          {/* Right Column - Useful Links & Copyright */}
-          <div className="flex-1 flex flex-col justify-center py-8 md:pl-12">
-            {/* Useful Links */}
-            <div className="flex flex-wrap items-center justify-end gap-48 text-sm mb-4">
-              {usefulLinks.map((link, idx) => (
-                <a
-                  key={idx}
-                  href={link.href}
-                  className="text-white hover:underline transition-colors"
-                  {...(link.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-
-            {/* Copyright */}
-            <div className="flex justify-end text-neutral-500 text-sm">
-              © 2022 República Portuguesa. Todos os direitos reservados.
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

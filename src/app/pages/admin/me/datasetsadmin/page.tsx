@@ -1,11 +1,16 @@
-import type { Metadata } from "next";
+'use client';
+
+import React from 'react';
 import DatasetsAdminClient from "@/components/admin/datasetsadmin/DatasetsAdminClient";
 
-export const metadata: Metadata = {
-  title: "Formulário de inscrição - Admin - dados.gov",
-  description: "Formulário de inscrição para novos conjuntos de dados no portal dados.gov.",
-};
-
 export default function DatasetsAdminPage() {
-  return <DatasetsAdminClient />;
+  const [currentStep, setCurrentStep] = React.useState(0);
+
+  return (
+    <DatasetsAdminClient
+      currentStep={currentStep}
+      onNextStep={() => setCurrentStep((s) => s + 1)}
+      onPreviousStep={() => setCurrentStep((s) => Math.max(0, s - 1))}
+    />
+  );
 }

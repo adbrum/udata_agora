@@ -115,7 +115,7 @@ export default function MembersClient() {
             show(<AddMemberPopupContent />, {
               title: "Adicionar um membro à organização",
               closeAriaLabel: "Fechar",
-              dimensions: "M",
+              dimensions: "m",
             })
           }
         >

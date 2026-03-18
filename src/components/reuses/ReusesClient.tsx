@@ -154,16 +154,17 @@ function TypeSelect({
 
   return (
     <InputSelect label="Tipo:" id="filter-type" ref={selectRef}>
-      <DropdownSection name="types">
-        <DropdownOption value="" selected={!currentType}>
+      {/* @ts-ignore - DropdownSection children type is too strict for dynamic arrays */}
+      <DropdownSection name="types" children={[
+        <DropdownOption key="__all" value="" selected={!currentType}>
           Todos os tipos
-        </DropdownOption>
-        {reuseTypes.map((rt) => (
+        </DropdownOption>,
+        ...reuseTypes.map((rt) => (
           <DropdownOption key={rt.id} value={rt.id} selected={currentType === rt.id}>
             {rt.label}
           </DropdownOption>
-        ))}
-      </DropdownSection>
+        )),
+      ] as any} />
     </InputSelect>
   );
 }

@@ -315,7 +315,7 @@ export default function LoginClient() {
                           Migrar com CMD
                         </Button>
                         <Button
-                          variant="secondary"
+                          variant="neutral"
                           className="px-48 h-56 text-lg font-bold shadow-md hover:shadow-lg transition-all"
                           onClick={handleEidasLogin}
                         >

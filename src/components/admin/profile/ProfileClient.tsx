@@ -103,7 +103,7 @@ export default function ProfileClient() {
               Editar
             </Button>
             <Dropdown
-              type="icon"
+              type="text"
               showDropdown={showEditDropdown}
               onHide={() => setShowEditDropdown(false)}
               hideSectionNames={true}

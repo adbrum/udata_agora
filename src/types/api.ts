@@ -668,22 +668,7 @@ export interface DatasetFilters {
   sort?: string;
 }
 
-export interface DiscussionMessage {
-  content: string;
-  posted_by: UserRef;
-  posted_on: string;
-}
-
-export interface Discussion {
-  id: string;
-  title: string;
-  user: UserRef;
-  created: string;
-  closed: string | null;
-  closed_by: UserRef | null;
-  discussion: DiscussionMessage[];
-  url: string;
-}
+// Discussion types (DiscussionMessage, Discussion) defined above (~line 542)
 
 export interface TopicElementsLink {
   rel: string;

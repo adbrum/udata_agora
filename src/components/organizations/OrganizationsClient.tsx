@@ -306,7 +306,6 @@ export default function OrganizationsClient({
                               <span className="underline">{org.name}</span>
                             </Link>
                           }
-                          blockedLink={true}
                         />
                       </div>
                     ))

@@ -207,8 +207,6 @@ export default function DatasetsClient({
                               <span className="underline">{dataset.title}</span>
                             </Link>
                           }
-                          blockedLink={true}
-
                         />
                       </div>
                     ))

@@ -2059,15 +2059,7 @@ export async function deleteDiscussion(
     return true;
   } catch (error) {
     console.error("Error deleting discussion:", error);
-    console.error("Error fetching topic elements:", error);
-    return {
-      data: [],
-      page: 1,
-      page_size: pageSize,
-      total: 0,
-      next_page: null,
-      previous_page: null,
-    };
+    return false;
   }
 }
 

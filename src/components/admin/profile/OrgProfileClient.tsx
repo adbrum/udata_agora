@@ -195,7 +195,10 @@ export default function OrgProfileClient() {
                 accept=".jpg,.jpeg,.png"
                 maxSize={4194304}
                 maxCount={1}
-                onChange={handleLogoUpload}
+                onChange={(e) => {
+                  const files = e.target?.files;
+                  if (files) handleLogoUpload(Array.from(files));
+                }}
               />
             </div>
           </div>

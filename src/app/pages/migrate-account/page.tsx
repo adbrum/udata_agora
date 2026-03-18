@@ -1,5 +1,12 @@
+"use client";
+
+import { Suspense } from "react";
 import MigrateAccountClient from "@/components/login/MigrateAccountClient";
 
 export default function MigrateAccountPage() {
-  return <MigrateAccountClient />;
+  return (
+    <Suspense fallback={<div>A carregar...</div>}>
+      <MigrateAccountClient />
+    </Suspense>
+  );
 }
