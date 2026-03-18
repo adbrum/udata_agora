@@ -745,6 +745,10 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   -webkit-box-orient: vertical;
 }
 
+.dataset-card-home .card-general {
+  border-width: 1px !important;
+}
+
 .dataset-card-home .card-general .title-text {
   min-height: 64px;
 }
