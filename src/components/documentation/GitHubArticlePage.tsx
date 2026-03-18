@@ -169,16 +169,6 @@ export function GitHubArticlePage({
           </div>
         </div>
 
-        <div className="container mx-auto px-4">
-          {/* Newsletter Section */}
-          <div className="mt-[64px] relative overflow-hidden w-full">
-            <img
-              src="/Articles/last-new1.svg"
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-            />
-          </div>
-        </div>
       </main>
     </div>
   );
