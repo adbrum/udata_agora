@@ -215,13 +215,25 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
     suggest?: boolean;
   }[] = [
     {
-      name: "Organização",
+      name: "Organizações",
       param: "organization",
       data: organizations.map((o) => ({ id: o.id, name: o.name })),
       searchable: true,
     },
     {
-      name: "Etiquetas",
+      name: "Tipo de Organização",
+      param: "organization_type",
+      data: [
+        { id: "public_service", name: "Serviço público" },
+        { id: "local_authority", name: "Autoridade local" },
+        { id: "business", name: "Negócios" },
+        { id: "association", name: "Associação" },
+        { id: "user", name: "Utilizador" },
+      ],
+      searchable: false,
+    },
+    {
+      name: "Palavras-chave",
       param: "tag",
       data: tagOptions,
       searchable: true,
@@ -247,15 +259,9 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
       searchable: true,
     },
     {
-      name: "Badges",
+      name: "Plano",
       param: "badge",
       data: badges,
-      searchable: true,
-    },
-    {
-      name: "Granularidade Espacial",
-      param: "granularity",
-      data: granularities.map((g) => ({ id: g.id, name: g.name })),
       searchable: true,
     },
     {
@@ -264,6 +270,12 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
       data: zoneOptions,
       searchable: true,
       suggest: true,
+    },
+    {
+      name: "Granularidade Espacial",
+      param: "granularity",
+      data: granularities.map((g) => ({ id: g.id, name: g.name })),
+      searchable: true,
     },
   ];
 
