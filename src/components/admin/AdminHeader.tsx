@@ -66,7 +66,7 @@ export function AdminHeader() {
                 leadingIcon="agora-line-user"
                 leadingIconHover="agora-solid-user"
               >
-                <a href="/pages/admin/perfil">O meu perfil</a>
+                <a href={`/pages/users/${user?.slug || ''}`}>O meu perfil</a>
               </AuthenticatedBodyLink>
               <AuthenticatedBodyLink
                 hasIcon

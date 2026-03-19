@@ -2484,7 +2484,7 @@ export async function fetchUserActivity(
       page_size: String(pageSize),
       sort: "-created_at",
     });
-    if (userId) params.set("owner", userId);
+    if (userId) params.set("user", userId);
     const res = await fetch(`${API_BASE_URL}/activity/?${params.toString()}`, {
       cache: "no-store",
       credentials: "include",
