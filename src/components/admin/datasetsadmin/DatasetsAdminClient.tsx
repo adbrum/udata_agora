@@ -451,6 +451,14 @@ export default function DatasetsAdminClient({
                       Sugira uma breve descrição.
                     </Button>
                   </div>
+                  <a
+                    href="https://dados.gov.pt"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-neutral-700 text-sm underline inline-flex items-center gap-4 hover:text-primary-600"
+                  >
+                    O que achou desta sugestão? <Icon name="agora-line-external-link" className="w-4 h-4" />
+                  </a>
 
                   <InputSelect
                     label="Palavras-chave"
