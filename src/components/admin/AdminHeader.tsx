@@ -68,20 +68,7 @@ export function AdminHeader() {
               >
                 <a href={`/pages/users/${user?.slug || ''}`}>O meu perfil</a>
               </AuthenticatedBodyLink>
-              <AuthenticatedBodyLink
-                hasIcon
-                leadingIcon="agora-line-settings"
-                leadingIconHover="agora-solid-settings"
-              >
-                <a href="/pages/admin/definicoes">As minhas definições</a>
-              </AuthenticatedBodyLink>
-              <AuthenticatedBodyLink
-                hasIcon
-                leadingIcon="agora-line-mega-phone"
-                leadingIconHover="agora-solid-mega-phone"
-              >
-                <a href="/pages/admin/notificacoes">Notificações</a>
-              </AuthenticatedBodyLink>
+{/* As minhas definições e Notificações ocultos temporariamente */}
             </AuthenticatedBody>
             <AuthenticatedFooter>
               <AuthenticatedFooterAction
