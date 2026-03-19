@@ -11,7 +11,7 @@ export default function DiscussionsClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Minha organização", url: "#" },
+            { label: "Organização", url: "#" },
             { label: "Discussões", url: "/pages/admin/org/discussions" },
           ]}
         />

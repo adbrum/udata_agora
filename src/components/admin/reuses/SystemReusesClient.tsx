@@ -16,6 +16,7 @@ import {
   TableRow,
   TableCell,
   Pill,
+  Button,
 } from "@ama-pt/agora-design-system";
 import { fetchReuses } from "@/services/api";
 import { Reuse } from "@/types/api";
@@ -68,9 +69,9 @@ export default function SystemReusesClient() {
         {reuses.length} resultados
       </p>
 
-      <div className="flex items-center gap-[16px] mb-[24px]">
-        <div className="flex-1">
-          <InputSearchBar
+      <div className="flex items-end gap-[16px] mb-[24px]">
+        <div className="w-[60%]">
+          <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome da reutilização"
             aria-label="Pesquisar reutilizações"
@@ -169,13 +170,22 @@ export default function SystemReusesClient() {
               className="datasets-page__empty"
               position="center"
               icon={
-                <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+                <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
               }
-              description="Você ainda não publicou uma reutilização."
-              hasAnchor
-              valueAnchor="Publicar em dados.gov"
-              anchorHref="/pages/admin/me/reuses/new"
-              anchorTarget="_self"
+              title="Sem publicações"
+              description="Ainda não publicou uma reutilização."
+              hasAnchor={false}
+              extraDescription={
+                <div className="mt-24">
+                  <Button
+                    variant="primary"
+                    appearance="outline"
+                    onClick={() => window.location.href = '/pages/admin/me/reuses/new'}
+                  >
+                    Publique no portal
+                  </Button>
+                </div>
+              }
             />
           </div>
         </div>

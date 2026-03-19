@@ -1,5 +1,5 @@
-import DocApiClient from "@/components/docapi/DocApiClient";
+import { redirect } from "next/navigation";
 
 export default function DocApiPage() {
-  return <DocApiClient />;
+  redirect("/pages/faqs/api-documentation");
 }

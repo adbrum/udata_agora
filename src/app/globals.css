@@ -7,22 +7,27 @@
 
 /* Full icon state control for header cards */
 @layer utilities {
+
   .header-card-wrapper svg.leading-icon-active,
   .header-card-wrapper svg.trailing-icon-active {
     display: none !important;
   }
+
   .header-card-wrapper svg.leading-icon-default,
   .header-card-wrapper svg.trailing-icon-default {
     display: block !important;
   }
+
   .header-card-wrapper svg.leading-icon-hover,
   .header-card-wrapper svg.trailing-icon-hover {
     display: none !important;
   }
+
   .header-card-wrapper:hover svg.leading-icon-default,
   .header-card-wrapper:hover svg.trailing-icon-default {
     display: none !important;
   }
+
   .header-card-wrapper:hover svg.leading-icon-hover,
   .header-card-wrapper:hover svg.trailing-icon-hover {
     display: block !important;
@@ -490,6 +495,30 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   z-index: 1;
 }
 
+/* Disable tab background for nested tabs (e.g. inside accordions) */
+.tab-panel-content .tab-panel-content::before,
+.tab-panel-content .tab-panel-content::after {
+  display: none !important;
+}
+
+.tab-panel-content .tab-panel-content>* {
+  z-index: auto;
+}
+
+.tab-panel-content .agora-tabs.desktop .tab-panel.current-neutral,
+.tab-panel-content .agora-tabs.desktop .tab-list.desktop .tab-list-item.active.current-neutral {
+  background-color: transparent !important;
+}
+
+.tab-panel-content .tab-panel-content {
+  padding: 0;
+  position: static;
+}
+
+.tab-panel-content .agora-tabs .tab-panel {
+  background-color: transparent !important;
+}
+
 /* 5.4 Cards (General) */
 .card-general {
   height: 100%;
@@ -553,6 +582,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   padding: 12px 0px;
 }
 
+
 .agora-card-links-datasets .agora-card-links .title h2 {
   text-decoration: underline;
 }
@@ -563,6 +593,10 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 
 .divider-neutral-200 {
   border-bottom: 2px solid var(--color-neutral-200);
+}
+
+.cardsnews {
+  align-items: self-end !important;
 }
 
 /* Override icon fill and link color for reuses, article and organization pages */
@@ -647,6 +681,47 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   max-width: 65ch;
 }
 
+/* CardNoResults inside tab panels should have white background */
+.tab-panel .agora-card-no-results,
+.tab-panel-content .agora-card-no-results {
+  background-color: white !important;
+  border-radius: 8px;
+  padding: 48px 32px;
+}
+
+/* CardLinks inside tab panels should have white background */
+.tab-panel-content .agora-card-links,
+.tab-panel .agora-card-links {
+  background-color: white !important;
+  padding: 16px 32px !important;
+}
+
+/* Quality progress bar warning color when score <= 45% */
+.quality-progress-warning {
+  --color-primary-600: #D4A017 !important;
+}
+.quality-progress-warning progress-bar .progress-bar::-webkit-progress-value {
+  background-color: #D4A017 !important;
+}
+.quality-progress-warning progress-bar .progress-bar::-moz-progress-bar {
+  background-color: #D4A017 !important;
+}
+.quality-progress-warning .progress-progress .progress-bar::-webkit-progress-value {
+  background-color: #D4A017 !important;
+}
+.quality-progress-warning .progress-progress .progress-bar::-moz-progress-bar {
+  background-color: #D4A017 !important;
+}
+
+/* Force buttons row inside CardNoResults extra-description */
+.agora-card-no-results .extra-description>div {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+}
+
 /* 5.9 Pagination */
 .grid-filters {
   gap: 104px;
@@ -722,6 +797,30 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   -webkit-box-orient: vertical;
 }
 
+.dataset-card-home .card-general {
+  border-width: 1px !important;
+}
+
+.dataset-card-home-small-pill .card-general .pill-size {
+  height: auto !important;
+  width: auto !important;
+}
+
+span.inline-flex.items-center.justify-center.agora-pill-large.agora-pill.agora-pill-solid-primary.mb-8 {
+  height: 32px;
+  width: 40%;
+}
+
+.dataset-card-home-small-pill .card-general .agora-pill {
+  padding: 2px 8px !important;
+}
+
+.dataset-card-home-small-pill .card-general .agora-pill .children-wrapper {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
 .dataset-card-home .card-general .title-text {
   min-height: 64px;
 }
@@ -746,6 +845,30 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.dataset-card-home .card-general {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.dataset-card-home .content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dataset-card-home .content>div:first-child {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dataset-card-home .description {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .homepage .agora-card-article.indented .container-body {
@@ -1444,4 +1567,10 @@ p.max-w-ch,
 li.max-w-ch,
 .max-w-ch li {
   max-width: 65ch;
+}
+
+@media (min-width: 768px) {
+  .agora-card-no-results .main-content {
+    margin: 90px;
+  }
 }

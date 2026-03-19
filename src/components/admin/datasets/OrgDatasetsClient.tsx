@@ -16,6 +16,7 @@ import {
   TableRow,
   TableCell,
   Pill,
+  Button,
 } from "@ama-pt/agora-design-system";
 import { fetchOrgDatasets } from "@/services/api";
 import { Dataset } from "@/types/api";
@@ -60,9 +61,11 @@ export default function OrgDatasetsClient() {
           className="datasets-page__empty"
           position="center"
           icon={
-            <Icon name="agora-line-buildings" className="datasets-page__empty-icon" />
+            <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
           }
+          title="Sem publicações"
           description="Não pertence a nenhuma organização."
+          hasAnchor={false}
         />
       </div>
     );
@@ -74,7 +77,7 @@ export default function OrgDatasetsClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Minha organização", url: "#" },
+            { label: "Organização", url: "#" },
             { label: "Conjuntos de dados", url: "/pages/admin/org/datasets" },
           ]}
         />
@@ -89,9 +92,9 @@ export default function OrgDatasetsClient() {
         {datasets.length} resultados
       </p>
 
-      <div className="flex items-center gap-[16px] mb-[24px]">
-        <div className="flex-1">
-          <InputSearchBar
+      <div className="flex items-end gap-[16px] mb-[24px]">
+        <div className="w-[60%]">
+          <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome, código ou sigla da entidade"
             aria-label="Pesquisar conjuntos de dados"
@@ -192,13 +195,22 @@ export default function OrgDatasetsClient() {
               className="datasets-page__empty"
               position="center"
               icon={
-                <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+                <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
               }
+              title="Sem publicações"
               description="A organização ainda não publicou conjuntos de dados."
-              hasAnchor
-              valueAnchor="Publicar em dados.gov"
-              anchorHref="/pages/admin/me/datasets/new"
-              anchorTarget="_self"
+              hasAnchor={false}
+              extraDescription={
+                <div className="mt-24">
+                  <Button
+                    variant="primary"
+                    appearance="outline"
+                    onClick={() => window.location.href = '/pages/admin/me/datasets/new'}
+                  >
+                    Publique no portal
+                  </Button>
+                </div>
+              }
             />
           </div>
         </div>

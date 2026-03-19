@@ -2,12 +2,11 @@
 
 import { GitHubArticlePage } from "@/components/documentation/GitHubArticlePage";
 
-const AboutOpenData = () => {
+const AboutOpenData = ({ initialContent }: { initialContent?: string }) => {
   return (
     <GitHubArticlePage
       slug="pages/faqs/about_opendata"
-      title="Sobre dados abertos"
-      publishedDate="18.12.2025"
+      initialContent={initialContent}
       breadcrumbItems={[
         { label: "Início", url: "/" },
         { label: "Conhecimento", url: "#" },

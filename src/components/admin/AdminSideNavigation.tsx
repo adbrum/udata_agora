@@ -61,7 +61,7 @@ const navGroups: NavGroup[] = [
   },
   {
     key: "organization",
-    label: "Minha organização",
+    label: "Organização",
     icon: "agora-line-user-group",
     children: [
       {
@@ -200,7 +200,7 @@ export function AdminSideNavigation() {
                     name="agora-line-home"
                     className="admin-sidebar-nav__group-icon"
                   />
-                  Ir dados.gov
+                  Início
                 </Link>
               ),
             }}

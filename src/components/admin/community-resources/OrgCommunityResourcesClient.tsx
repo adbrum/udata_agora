@@ -74,7 +74,7 @@ export default function OrgCommunityResourcesClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Minha organização", url: "#" },
+            { label: "Organização", url: "#" },
             {
               label: "Recursos comunitários",
               url: "/pages/admin/org/community-resources",
@@ -92,9 +92,9 @@ export default function OrgCommunityResourcesClient() {
         {resources.length} resultados
       </p>
 
-      <div className="flex items-center gap-[16px] mb-[24px]">
-        <div className="flex-1">
-          <InputSearchBar
+      <div className="flex items-end gap-[16px] mb-[24px]">
+        <div className="w-[60%]">
+          <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquisar recursos comunitários"
             aria-label="Pesquisar recursos comunitários"

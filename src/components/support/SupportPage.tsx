@@ -10,13 +10,13 @@ const FAQ_DATA = [
     items: [
       {
         question:
-          "Seus dados estão visíveis no banco de dados Sirene e você deseja torná-los privados?",
-        answer: "Informações sobre como tornar seus dados privados no banco de dados Sirene.",
+          "Os seus dados estão visíveis na base de dados Sirene e deseja torná-los privados?",
+        answer: "Informações sobre como tornar os seus dados privados na base de dados Sirene.",
       },
       {
-        question: "Você está procurando seu número SIRET, SIREN ou RNA?",
+        question: "Está à procura do seu número SIRET, SIREN ou RNA?",
         answer:
-          "Se você está procurando o seu número SIRET ou SIREN, pode visitar o site do Diretório Comercial. Se você representa uma associação e está procurando seu número de registro (RNA), pode consultar o mecanismo de busca de associações do Diário Oficial (pelo qual não nos responsabilizamos). Para mais informações, visite o site Serviço-Público.pt.",
+          "Se está à procura do seu número SIRET ou SIREN, pode visitar o site do Diretório Comercial. Se representa uma associação e está à procura do seu número de registro (RNA), pode consultar o mecanismo de busca de associações do Diário Oficial (pelo qual não nos responsabilizamos). Para mais informações, visite o site Serviço-Público.pt.",
         defaultExpanded: true,
       },
       {
@@ -31,11 +31,11 @@ const FAQ_DATA = [
     items: [
       {
         question:
-          "Você tem alguma dúvida sobre o aplicativo DVF (solicitações de valor de terreno)?",
-        answer: "Informações sobre o aplicativo DVF.",
+          "Tem alguma dúvida sobre o aplicação DVF (solicitações de valor de terreno)?",
+        answer: "Informações sobre o aplicação DVF.",
       },
       {
-        question: "Você tem alguma pergunta sobre o registro de imóveis?",
+        question: "Tem alguma pergunta sobre o registro de imóveis?",
         answer: "Informações sobre o registro de imóveis.",
       },
       {
@@ -48,8 +48,8 @@ const FAQ_DATA = [
       },
       {
         question:
-          "Tem alguma dúvida sobre o banco de dados nacional de endereços? Algum endereço está incorreto?",
-        answer: "Informações sobre o banco de dados nacional de endereços.",
+          "Tem alguma dúvida sobre o base de dados nacional de endereços? Algum endereço está incorreto?",
+        answer: "Informações sobre o base de dados nacional de endereços.",
       },
     ],
   },
@@ -58,21 +58,21 @@ const FAQ_DATA = [
     items: [
       {
         question:
-          "Você tem alguma dúvida sobre os limites de chamadas da API de particionamento administrativo (API Geográfica)?",
+          "Tem alguma dúvida sobre os limites de chamadas da API de particionamento administrativo (API Geográfica)?",
         answer: "Informações sobre limites de chamadas da API Geográfica.",
       },
       {
         question:
-          "Você está procurando uma API ou um banco de dados de placas de veículos, carteiras de habilitação ou documentos de registro de veículos?",
+          "Está à procura de uma API ou um base de dados de placas de veículos, cartas de condução ou documentos de registro de veículos?",
         answer: "Informações sobre dados de veículos e habilitação.",
       },
       {
         question:
-          'Você está procurando a API de Serviços de Terceiros para se beneficiar do regime de pagamento antecipado imediato do crédito fiscal para "serviços pessoais"?',
+          'Está à procura de a API de Serviços de Terceiros para se beneficiar do regime de pagamento antecipado imediato do crédito fiscal para "serviços pessoais"?',
         answer: "Informações sobre a API de Serviços de Terceiros.",
       },
       {
-        question: "Você está enfrentando algum problema com o DataPass?",
+        question: "Está a enfrentar algum problema com o DataPass?",
         answer: "Suporte para problemas com o DataPass.",
       },
     ],
@@ -82,11 +82,11 @@ const FAQ_DATA = [
     items: [
       {
         question:
-          "Você tem alguma dúvida sobre o diretório nacional de infraestrutura de recarga para veículos elétricos (EVCI)?",
+          "Tem alguma dúvida sobre o diretório nacional de infraestrutura de recarga para veículos elétricos (EVCI)?",
         answer: "Informações sobre o infraestrutura de recarga EVCI.",
       },
       {
-        question: "Você tem alguma pergunta sobre dados relacionados à COVID-19?",
+        question: "Tem alguma pergunta sobre dados relacionados à COVID-19?",
         answer: "Informações sobre dados da COVID-19.",
       },
     ],
@@ -95,19 +95,19 @@ const FAQ_DATA = [
     category: "Outras perguntas frequentes",
     items: [
       {
-        question: "Tem alguma dúvida sobre seus dados pessoais?",
+        question: "Tem alguma dúvida sobre os seus dados pessoais?",
         answer: "Informações sobre tratamento de dados pessoais.",
       },
       {
-        question: "Você tem alguma dúvida sobre autorização de residência?",
+        question: "Tem alguma dúvida sobre autorização de residência?",
         answer: "Informações sobre autorização de residência.",
       },
       {
-        question: "Você tem alguma dúvida ou já foi vítima de fraude ou golpe?",
+        question: "Tem alguma dúvida ou já foi vítima de fraude ou burla?",
         answer: "Informações e suporte para casos de fraude.",
       },
       {
-        question: "Você tem alguma dúvida sobre a conta de formação profissional (CPF)?",
+        question: "Tem alguma dúvida sobre a conta de formação profissional (CPF)?",
         answer: "Informações sobre a conta de formação profissional.",
       },
     ],

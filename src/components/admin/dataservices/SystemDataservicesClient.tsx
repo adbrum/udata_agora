@@ -16,6 +16,7 @@ import {
   TableRow,
   TableCell,
   Pill,
+  Button,
 } from "@ama-pt/agora-design-system";
 import { fetchDataservices } from "@/services/api";
 import { Dataservice } from "@/types/api";
@@ -78,9 +79,9 @@ export default function SystemDataservicesClient() {
         {apis.length} resultados
       </p>
 
-      <div className="flex items-center gap-[16px] mb-[24px]">
-        <div className="flex-1">
-          <InputSearchBar
+      <div className="flex items-end gap-[16px] mb-[24px]">
+        <div className="w-[60%]">
+          <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome da API"
             aria-label="Pesquisar APIs"
@@ -181,13 +182,22 @@ export default function SystemDataservicesClient() {
               className="datasets-page__empty"
               position="center"
               icon={
-                <Icon name="agora-line-file" className="datasets-page__empty-icon" />
+                <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
               }
-              description="Você ainda não publicou uma API."
-              hasAnchor
-              valueAnchor="Publicar em dados.gov"
-              anchorHref="/pages/admin/dataservices/new"
-              anchorTarget="_self"
+              title="Sem publicações"
+              description="Ainda não publicou uma API."
+              hasAnchor={false}
+              extraDescription={
+                <div className="mt-24">
+                  <Button
+                    variant="primary"
+                    appearance="outline"
+                    onClick={() => window.location.href = '/pages/admin/dataservices/new'}
+                  >
+                    Publique no portal
+                  </Button>
+                </div>
+              }
             />
           </div>
         </div>

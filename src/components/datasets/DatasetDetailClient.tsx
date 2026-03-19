@@ -47,6 +47,11 @@ function getQualityDetails(quality?: Dataset['quality']): string[] {
   return QUALITY_CRITERIA.filter(([key]) => quality[key] === true).map(([, label]) => label);
 }
 
+function getQualityMissing(quality?: Dataset['quality']): string[] {
+  if (!quality) return QUALITY_CRITERIA.map(([, label]) => label);
+  return QUALITY_CRITERIA.filter(([key]) => quality[key] !== true).map(([, label]) => label);
+}
+
 export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) {
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -99,6 +104,7 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
 
   const qualityScore = calculateQualityScore(dataset.quality);
   const qualityDetails = getQualityDetails(dataset.quality);
+  const qualityMissing = getQualityMissing(dataset.quality);
 
   return (
     <div className="flex flex-col font-sans text-neutral-900 bg-white min-h-screen overflow-x-hidden">
@@ -223,11 +229,23 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                     Qualidade dos metadados
                   </h3>
                 </div>
-                <ProgressBar value={qualityScore} hidePercentageValue={true} />
-                <div className="text-xs text-neutral-500 mt-8">
+                <div className={qualityScore <= 45 ? "quality-progress-warning" : ""}>
+                  <ProgressBar value={qualityScore} max={100} hidePercentageValue={true} />
+                </div>
+                <div className="text-xs text-neutral-700 mt-8">
                   {qualityScore}%
                   {qualityDetails.length > 0 && ` (${qualityDetails.join(', ')})`}
                 </div>
+                {qualityMissing.length > 0 && (
+                  <div className="flex flex-col gap-8 mt-16">
+                    {qualityMissing.map((label) => (
+                      <div key={label} className="flex items-center gap-8">
+                        <Icon name="agora-line-alert-triangle" className="w-[20px] h-[20px] fill-[#B06112]" />
+                        <span className="text-neutral-900 text-base">{label} dos dados não preenchidos</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

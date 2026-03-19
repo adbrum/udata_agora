@@ -133,9 +133,9 @@ export default function SystemHarvestersClient() {
         {harvesters.length} resultados
       </p>
 
-      <div className="flex items-center gap-[16px] mb-[24px]">
-        <div className="flex-1">
-          <InputSearchBar
+      <div className="flex items-end gap-[16px] mb-[24px]">
+        <div className="w-[60%]">
+          <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome do harvester"
             aria-label="Pesquisar harvesters"

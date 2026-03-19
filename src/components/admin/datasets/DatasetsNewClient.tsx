@@ -81,7 +81,7 @@ export default function DatasetsNewClient() {
             description="Se desejar realizar testes, utilize demo.dados.gov"
           />
 
-          <div className="datasets-new-page__cards mb-[32px]">
+          <div className="datasets-new-page__cards mb-[32px]" style={{ maxWidth: "50%" }}>
             <CardAction
               variant="neutral-100"
               titleText="Publicar um conjunto de dados"
@@ -94,28 +94,16 @@ export default function DatasetsNewClient() {
                 onClick: () => router.push("/pages/admin/me/datasets/new?step=2"),
               }}
             />
-
-            <CardAction
-              variant="neutral-100"
-              titleText="Publicar com um diagrama"
-              descriptionText="Seus dados seguem um esquema de referência? Selecione um esquema e crie seus dados estruturados!"
-              icon={{ name: "agora-line-edit" }}
-              button={{
-                children: "Publicar com um diagrama",
-                variant: "primary",
-                appearance: "outline",
-              }}
-            />
           </div>
 
           {/* Admin sections */}
           <div className="datasets-new-page__admin-sections">
             <div className="datasets-new-page__admin-section">
               <p className="text-primary-900 text-base font-bold leading-7">
-                Você é um administrador e deseja automatizar a publicação de seus dados?
+                É administrador e deseja automatizar a publicação dos seus dados?
               </p>
               <p className="text-neutral-700 text-sm leading-relaxed">
-                Você pode publicar automaticamente via API ou vinculando seu portal de dados
+                Pode publicar automaticamente via API ou vinculando seu portal de dados
                 abertos ao dados.gov com um coletor de dados.
               </p>
               <div className="flex gap-4 flex-wrap">
@@ -135,7 +123,7 @@ export default function DatasetsNewClient() {
                   trailingIcon="agora-line-external-link"
                   trailingIconHover="agora-solid-external-link"
                 >
-                  Saiba mais sobre a colheita.
+                  Saiba mais sobre o harvester.
                 </Button>
                 <Button
                   appearance="link"
@@ -144,18 +132,18 @@ export default function DatasetsNewClient() {
                   trailingIcon="agora-line-external-link"
                   trailingIconHover="agora-solid-external-link"
                 >
-                  Escreva-nos
+                  Contacte-nos
                 </Button>
               </div>
             </div>
 
             <div className="datasets-new-page__admin-section">
               <p className="text-primary-900 text-base font-bold leading-7">
-                Você é um administrador e deseja catalogar seus dados?
+                É administrador e deseja catalogar os seus dados?
               </p>
               <p className="text-neutral-700 text-sm leading-relaxed">
-                Você pode usar o serviço para que os departamentos do governo central gerenciem
-                e disponibilizem seu catálogo de dados.
+                Pode usar o serviço para que os departamentos do governo central giram
+                e disponibilizem o seu catálogo de dados.
               </p>
               <div className="flex gap-4 flex-wrap">
                 <Button
@@ -165,7 +153,7 @@ export default function DatasetsNewClient() {
                   trailingIcon="agora-line-external-link"
                   trailingIconHover="agora-solid-external-link"
                 >
-                  Acesse a área de catalogação.
+                  Aceda à área de catálogo.
                 </Button>
               </div>
             </div>

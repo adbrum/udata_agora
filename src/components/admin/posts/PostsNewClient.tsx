@@ -192,7 +192,7 @@ export default function PostsNewClient() {
                   </span>
                   <div className="mt-2">
                     <DragAndDropUploader
-                      dragAndDropLabel="Arraste e solte os arquivos"
+                      dragAndDropLabel="Selecione ou arraste os ficheiros"
                       separatorLabel="ou"
                       inputLabel="Selecionar ficheiro"
                       removeFileButtonLabel="Remover ficheiro"

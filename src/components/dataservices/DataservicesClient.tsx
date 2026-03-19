@@ -102,8 +102,8 @@ const API_TOGGLE_FILTERS = {
     options: [
       { id: "all", label: "Todos", count: "352" },
       { id: "free_download", label: "Download gratuito", count: "230" },
-      { id: "open_conditions", label: "Aberto sob certas condições.", count: "16" },
-      { id: "auth_access", label: "Acesso mediante autorização.", count: "106" },
+      { id: "open_conditions", label: "Aberto sob certas condições", count: "16" },
+      { id: "auth_access", label: "Acesso mediante autorização", count: "106" },
     ],
   },
   atualizacao: {
@@ -123,7 +123,7 @@ const API_TOGGLE_FILTERS = {
       { id: "local_authority", label: "Autoridade local", count: "54" },
       { id: "business", label: "Negócios", count: "8" },
       { id: "association", label: "Associação", count: "6" },
-      { id: "user", label: "Usuário", count: "7" },
+      { id: "user", label: "Utilizador", count: "7" },
     ],
   },
 };
@@ -332,14 +332,14 @@ export default function DataservicesClient({
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters">
             {/* Sidebar */}
-            <div className="xl:col-span-4 xl:block p-32 pl-0">
+            <div className="xl:col-span-5 xl:block p-32 pl-0">
               {siteMetrics && (
-                <div className="pl-[64px]">
+                <div>
                   <CategoryToggles siteMetrics={siteMetrics} searchQuery={initialFilters?.q} />
                 </div>
               )}
 
-              <div className="flex flex-col gap-32 pl-[64px] mt-[36px]">
+              <div className="flex flex-col gap-32 mt-[36px]">
                 <h2 className="font-bold text-xl text-neutral-900">Filtros</h2>
                 {(Object.keys(API_TOGGLE_FILTERS) as ApiFilterKey[]).map((filterKey) => {
                   const section = API_TOGGLE_FILTERS[filterKey];
@@ -391,9 +391,9 @@ export default function DataservicesClient({
                 })}
               </div>
 
-              <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[32px] pl-[64px]">Filtros avançados</h2>
+              <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[32px]">Filtros avançados</h2>
 
-              <Sidebar variant="filter" className="pl-[64px] font-bold">
+              <Sidebar variant="filter" className="font-bold">
                 {advancedFilterGroups.map((group, index) => {
                   const searchQuery = filterSearchQueries[group.name] || "";
                   const activeValues = getActiveValues(group.param);
@@ -493,10 +493,20 @@ export default function DataservicesClient({
                   );
                 })}
               </Sidebar>
+
+              <div className="mt-32">
+                <Button
+                  variant="primary"
+                  appearance="outline"
+                  onClick={handleClearFilters}
+                >
+                  Limpar filtros
+                </Button>
+              </div>
             </div>
 
             {/* Results Area */}
-            <div className="xl:col-span-8 mt-[36px]">
+            <div className="xl:col-span-7 mt-[36px]">
               <div>
                 <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
                   <span className="text-neutral-900 font-medium text-base xl:col-span-6 mt-[32px]">
@@ -576,22 +586,10 @@ export default function DataservicesClient({
                       <CardNoResults
                         icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500 icon-xl" />}
                         title="Não encontrou o que procurava?"
-                        subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
+                        subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar a sua pesquisa.</span>}
                         description={<div className="max-w-[592px] mx-auto">Explore a nossa lista completa de APIs de dados abertos.</div>}
                         position="center"
                         hasAnchor={false}
-                        extraDescription={
-                          <div className="mt-24">
-                            <Button
-                              variant="primary"
-                              onClick={handleClearFilters}
-                              trailingIcon="agora-line-arrow-right-circle"
-                              trailingIconHover="agora-solid-arrow-right-circle"
-                            >
-                              Limpar filtros
-                            </Button>
-                          </div>
-                        }
                       />
                     </div>
                   )}

@@ -110,12 +110,12 @@ export default function DatasetsClient({
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
             {/* Sidebar */}
-            <div className="xl:col-span-6 xl:block p-32 pl-0">
+            <div className="xl:col-span-5 xl:block p-32 pl-0">
               <DatasetsFilters siteMetrics={siteMetrics} searchQuery={currentQuery} />
             </div>
 
             {/* Results Area */}
-            <div className="xl:col-span-6 mt-[36px]">
+            <div className="xl:col-span-7 mt-[36px]">
               <div>
                 <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
                   <span className="text-neutral-900 font-medium text-base xl:col-span-6 mt-[32px]">
@@ -201,7 +201,7 @@ export default function DatasetsClient({
                               </div>
                             </div>
                           }
-                          date={<span className="font-[300]">{`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })}`}</span>}
+                          date={<span className="font-[300]">{`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt }).replace("aproximadamente ", "").replace("quase ", "").replace("menos de ", "").replace("cerca de ", "")}`}</span>}
                           mainLink={
                             <Link href={`/pages/datasets/${dataset.slug}`}>
                               <span className="underline">{dataset.title}</span>
@@ -217,8 +217,8 @@ export default function DatasetsClient({
                       <CardNoResults
                         icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500 icon-xl" />}
                         title="Não encontrou o que procurava?"
-                        subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
-                        description={<div className="max-w-[592px] mx-auto">Você também pode visualizar as solicitações atuais e enviar as suas próprias em nosso fórum dedicado à pesquisa de dados e ao acesso aberto.</div>}
+                        subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar a sua pesquisa.</span>}
+                        description={<div className="max-w-[592px] mx-auto">Também pode visualizar os pedidos atuais e enviar os seus próprios no nosso fórum dedicado à pesquisa de dados e ao acesso aberto.</div>}
                         position="center"
                         hasAnchor={false}
                         extraDescription={

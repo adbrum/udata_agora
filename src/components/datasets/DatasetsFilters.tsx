@@ -38,8 +38,8 @@ const DATASET_TOGGLE_FILTERS = {
     options: [
       { id: "all", label: "Todos", count: "352" },
       { id: "free_download", label: "Download gratuito", count: "230" },
-      { id: "open_conditions", label: "Aberto sob certas condições.", count: "16" },
-      { id: "auth_access", label: "Acesso mediante autorização.", count: "106" },
+      { id: "open_conditions", label: "Aberto sob certas condições", count: "16" },
+      { id: "auth_access", label: "Acesso mediante autorização", count: "106" },
     ],
   },
   atualizacao: {
@@ -59,7 +59,7 @@ const DATASET_TOGGLE_FILTERS = {
       { id: "local_authority", label: "Autoridade local", count: "54" },
       { id: "business", label: "Negócios", count: "8" },
       { id: "association", label: "Associação", count: "6" },
-      { id: "user", label: "Usuário", count: "7" },
+      { id: "user", label: "Utilizador", count: "7" },
     ],
   },
   rotulo: {
@@ -215,13 +215,25 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
     suggest?: boolean;
   }[] = [
     {
-      name: "Organização",
+      name: "Organizações",
       param: "organization",
       data: organizations.map((o) => ({ id: o.id, name: o.name })),
       searchable: true,
     },
     {
-      name: "Etiquetas",
+      name: "Tipo de Organização",
+      param: "organization_type",
+      data: [
+        { id: "public_service", name: "Serviço público" },
+        { id: "local_authority", name: "Autoridade local" },
+        { id: "business", name: "Negócios" },
+        { id: "association", name: "Associação" },
+        { id: "user", name: "Utilizador" },
+      ],
+      searchable: false,
+    },
+    {
+      name: "Palavras-chave",
       param: "tag",
       data: tagOptions,
       searchable: true,
@@ -247,15 +259,9 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
       searchable: true,
     },
     {
-      name: "Badges",
+      name: "Plano",
       param: "badge",
       data: badges,
-      searchable: true,
-    },
-    {
-      name: "Granularidade Espacial",
-      param: "granularity",
-      data: granularities.map((g) => ({ id: g.id, name: g.name })),
       searchable: true,
     },
     {
@@ -265,17 +271,23 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
       searchable: true,
       suggest: true,
     },
+    {
+      name: "Granularidade Espacial",
+      param: "granularity",
+      data: granularities.map((g) => ({ id: g.id, name: g.name })),
+      searchable: true,
+    },
   ];
 
   return (
     <div className="h-full">
       {siteMetrics && (
-        <div className="pl-[64px]">
+        <div>
           <CategoryToggles siteMetrics={siteMetrics} searchQuery={searchQuery} />
         </div>
       )}
 
-      <div className="flex flex-col gap-32 pl-[64px] mt-[36px] mb-[36px]">
+      <div className="flex flex-col gap-32 mt-[36px] mb-[36px]">
         <h2 className="font-bold text-xl text-neutral-900">Filtros</h2>
         {(Object.keys(DATASET_TOGGLE_FILTERS) as ToggleFilterKey[]).map((filterKey) => {
           const section = DATASET_TOGGLE_FILTERS[filterKey];
@@ -332,9 +344,9 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
         })}
       </div>
 
-      <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[32px] pl-[64px]">Filtros avançados</h2>
+      <h2 className="font-bold text-xl text-neutral-900 mt-[36px] mb-[32px]">Filtros avançados</h2>
 
-      <Sidebar variant="filter" className="pl-[64px] font-bold">
+      <Sidebar variant="filter" className="font-bold">
         {filterGroups.map((group, index) => {
           const searchQuery = searchQueries[group.name] || "";
           const activeValues = getActiveValues(group.param);
@@ -425,7 +437,7 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
         })}
       </Sidebar>
 
-      <div className="mt-32 pl-[64px]">
+      <div className="mt-32">
         <Button
           variant="primary"
           appearance="outline"

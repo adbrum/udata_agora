@@ -215,7 +215,7 @@ export default function ReusesFormClient({
     {
       title: "Descreva a sua reutilização.",
       content:
-        "Você pode fornecer detalhes como a forma como a reutilização foi criada, o que ela permite fazer ou demonstrar, e até mesmo falar mais sobre você e o contexto dessa reutilização. É melhor manter um tom neutro: se a reutilização soar muito como uma mensagem promocional, podemos removê-la.",
+        "Pode fornecer detalhes como a forma como a reutilização foi criada, o que permite fazer ou demonstrar, e até mesmo falar mais sobre si e o contexto desta reutilização. É melhor manter um tom neutro: se a reutilização soar muito como uma mensagem promocional, podemos removê-la.",
     },
     {
       title: "Adicionar palavras-chave",
@@ -223,17 +223,17 @@ export default function ReusesFormClient({
         <>
           <p>
             As palavras-chave aparecem na página de destino e melhoram o posicionamento nos
-            mecanismos de busca. Para cada palavra-chave, você pode obter uma lista de
+            mecanismos de pesquisa. Para cada palavra-chave, pode obter uma lista de
             reutilizações para as quais essa palavra-chave também foi atribuída.
           </p>
           <p className="font-bold mt-3">Sugestões automáticas</p>
           <p className="mt-2">
-            Com base no conteúdo que você reutiliza, podem ser sugeridas palavras-chave
-            automaticamente. Você pode aceitá-las, modificá-las ou excluí-las.
+            Com base no conteúdo que reutiliza, podem ser sugeridas palavras-chave
+            automaticamente. Pode aceitá-las, modificá-las ou excluí-las.
           </p>
           <p className="mt-3">
             <a href="#" className="text-primary-600 underline">
-              A IA baseia-se exclusivamente nas informações que você forneceu e, por vezes, pode
+              A IA baseia-se exclusivamente nas informações que forneceu e, por vezes, pode
               cometer erros: releia sempre a proposta antes de validar.
             </a>
           </p>
@@ -243,7 +243,7 @@ export default function ReusesFormClient({
     {
       title: "Escolha uma imagem",
       content:
-        'Se a sua reutilização assumir a forma de uma representação gráfica, você pode fornecer uma pré-visualização para outros utilizadores usando uma imagem ou captura de tela. Essa imagem aparecerá na seção "Reutilizações" da página do conjunto de dados associado. Quando relevante, as capturas de tela ilustram melhor a reutilização e, portanto, são preferíveis a logotipos ou ilustrações, por exemplo.',
+        'Se a sua reutilização assumir a forma de uma representação gráfica, pode fornecer uma pré-visualização para outros utilizadores usando uma imagem ou captura de ecrã. Esta imagem aparecerá na secção "Reutilizações" da página do conjunto de dados associado. Quando relevante, as capturas de ecrã ilustram melhor a reutilização e, portanto, são preferíveis a logotipos ou ilustrações, por exemplo.',
     },
   ];
 
@@ -288,14 +288,14 @@ export default function ReusesFormClient({
                 >
                   <DropdownSection name="organizations">
                     <DropdownOption value="org1">
-                      Minha Organização
+                      Organização
                     </DropdownOption>
                   </DropdownSection>
                 </InputSelect>
 
                 <div className="datasets-admin-page__org-card">
                   <p className="datasets-admin-page__org-card-title">
-                    Você não pertence a nenhuma organização.
+                    Não pertence a nenhuma organização.
                   </p>
                   <p className="datasets-admin-page__org-card-description">
                     Recomendamos que publique em nome de uma organização se se
@@ -436,7 +436,7 @@ export default function ReusesFormClient({
                     trailingIcon="agora-line-external-link"
                     trailingIconHover="agora-solid-external-link"
                   >
-                    O que você achou dessa sugestão?
+                    O que achou desta sugestão?
                   </Button>
 
                   <div>
@@ -445,7 +445,7 @@ export default function ReusesFormClient({
                     </span>
                     <div className="mt-2">
                       <DragAndDropUploader
-                        dragAndDropLabel="Arraste e solte os ficheiros"
+                        dragAndDropLabel="Selecione ou arraste os ficheiros"
                         separatorLabel="ou"
                         inputLabel="Selecionar ficheiros"
                         removeFileButtonLabel="Remover ficheiro"
@@ -668,7 +668,7 @@ export default function ReusesFormClient({
                   <>
                     <strong>A sua reutilização foi criada!</strong>
                     <br />
-                    Agora você pode publicar ou salvar como rascunho.
+                    Agora pode publicar ou guardar como rascunho.
                   </>
                 }
               />
