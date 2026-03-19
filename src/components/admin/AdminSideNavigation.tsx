@@ -201,7 +201,7 @@ export function AdminSideNavigation() {
                     name="agora-line-home"
                     className="admin-sidebar-nav__group-icon"
                   />
-                  Início
+                  Ir para dados.gov
                 </Link>
               ),
             }}

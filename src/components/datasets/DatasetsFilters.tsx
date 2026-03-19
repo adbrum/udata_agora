@@ -384,14 +384,7 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
               pillValue={activeCount}
             >
               <div>
-                {activeCount > 0 && (
-                  <button
-                    onClick={() => handleClearFilter(group.param)}
-                    className="text-xs text-primary-500 hover:text-primary-700 underline mb-4 mt-4 cursor-pointer"
-                  >
-                    Limpar {group.name.toLowerCase()}
-                  </button>
-                )}
+{/* Limpar individual removido — usar "Limpar filtros" global */}
                 {showSearch && (
                   <div className="mb-4 mt-8 relative">
                     <InputSearch
