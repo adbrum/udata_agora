@@ -247,7 +247,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
 
       {/* Tabs Section */}
       <section className="bg-white sticky top-0 z-20">
-        <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64 mb-24">
+        <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
           <Tabs>
             <Tab>
               <TabHeader>Descrição</TabHeader>
@@ -337,105 +337,122 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
 
       {/* Associated Datasets */}
       {datasetRefs.length > 0 && (
-        <section className="bg-neutral-50 py-64">
-          <div className="container mx-auto px-4 sm:px-16 md:px-32 lg:px-64">
-            <div className="mb-80">
-              <h2 className="text-xl font-bold text-[#000032] mb-32">
-                {datasetRefs.length} conjunto{datasetRefs.length !== 1 ? 's' : ''} de dados
-                associado{datasetRefs.length !== 1 ? 's' : ''}
-              </h2>
+        <section className="bg-white py-64">
+          <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
+            <h2 className="text-xl font-bold text-[#000032] mb-32">
+              {datasetRefs.length} conjunto{datasetRefs.length !== 1 ? 's' : ''} de dados
+              associado{datasetRefs.length !== 1 ? 's' : ''}
+            </h2>
+            <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-x-[32px]">
+              <div className="xl:col-span-5 xl:block p-32 pl-0"></div>
+              <div className="xl:col-span-7">
               {!isLoadingDatasets && fullDatasets.length > 0 ? (
                 <>
-                <div className="text-sm text-neutral-500 mb-16">
-                  {fullDatasets.length} conjuntos de dados
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-16">
-                  {paginatedDatasets.map((dataset) => (
-                    <div key={dataset.id} className="h-full">
-                      <CardLinks
-                        onClick={() => router.push(`/pages/datasets/${dataset.slug}`)}
-                        className="cursor-pointer text-neutral-900"
-                        variant="white"
-                        image={{
-                          src:
-                            dataset.organization?.logo ||
-                            '/images/placeholders/organization.png',
-                          alt:
-                            dataset.organization?.name || 'Organização sem logo',
-                        }}
-                        category={dataset.organization?.name}
-                        title={dataset.title}
-                        description={
-                          <div className="flex flex-col gap-12">
+                  <div className="grid grid-cols-1 agora-card-links-datasets-px0 gap-32">
+                    {paginatedDatasets.map((dataset) => (
+                      <div key={dataset.id} className="h-full">
+                        <CardLinks
+                          onClick={() => router.push(`/pages/datasets/${dataset.slug}`)}
+                          className="cursor-pointer text-neutral-900"
+                          variant="transparent"
+                          category={dataset.organization?.name || ''}
+                          title={
+                            <div className="underline text-xl-bold">{dataset.title}</div>
+                          }
+                          description={
                             <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
                               {dataset.description}
                             </p>
-                            <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[16px] text-[#034AD8]">
-                              <div
-                                className="flex items-center gap-8"
-                                title="Visualizações"
-                              >
-                                <Icon name="agora-line-eye" aria-hidden="true" />
-                                <span>
-                                  {dataset.metrics?.views
-                                    ? dataset.metrics.views >= 1000
-                                      ? `${(dataset.metrics.views / 1000).toFixed(0)} mil`
-                                      : dataset.metrics.views
-                                    : '0'}
+                          }
+                          date={
+                            <span className="font-[300]">
+                              {`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })}`}
+                            </span>
+                          }
+                          links={[
+                            {
+                              href: '#',
+                              hasIcon: true,
+                              leadingIcon: 'agora-line-eye',
+                              leadingIconHover: 'agora-solid-eye',
+                              trailingIcon: '',
+                              trailingIconHover: '',
+                              trailingIconActive: '',
+                              children: dataset.metrics?.views
+                                ? dataset.metrics.views >= 1000000
+                                  ? `${(dataset.metrics.views / 1000000).toFixed(1)} M`
+                                  : dataset.metrics.views >= 1000
+                                    ? `${(dataset.metrics.views / 1000).toFixed(0)} mil`
+                                    : dataset.metrics.views
+                                : '0',
+                              title: 'Visualizações',
+                              onClick: (e: React.MouseEvent) => e.preventDefault(),
+                              className: 'text-[#034AD8]',
+                            },
+                            {
+                              href: '#',
+                              hasIcon: true,
+                              leadingIcon: 'agora-line-download',
+                              leadingIconHover: 'agora-solid-download',
+                              trailingIcon: '',
+                              trailingIconHover: '',
+                              trailingIconActive: '',
+                              children: dataset.metrics?.downloads
+                                ? dataset.metrics.downloads >= 1000000
+                                  ? `${(dataset.metrics.downloads / 1000000).toFixed(1)} M`
+                                  : dataset.metrics.downloads >= 1000
+                                    ? `${(dataset.metrics.downloads / 1000).toFixed(0)} mil`
+                                    : dataset.metrics.downloads
+                                : '0',
+                              title: 'Downloads',
+                              onClick: (e: React.MouseEvent) => e.preventDefault(),
+                              className: 'text-[#034AD8]',
+                            },
+                            {
+                              href: '#',
+                              hasIcon: false,
+                              children: (
+                                <span className="flex items-center gap-8">
+                                  <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" className="w-[24px] h-[24px]" />
+                                  <span>{dataset.metrics?.reuses || 0}</span>
                                 </span>
-                              </div>
-                              <div
-                                className="flex items-center gap-8"
-                                title="Downloads"
-                              >
-                                <Icon name="agora-line-download" aria-hidden="true" />
-                                <span>
-                                  {dataset.metrics?.downloads
-                                    ? dataset.metrics.downloads >= 1000
-                                      ? `${(dataset.metrics.downloads / 1000).toFixed(0)} mil`
-                                      : dataset.metrics.downloads
-                                    : '0'}
-                                </span>
-                              </div>
-                              <div
-                                className="flex items-center gap-8"
-                                title="Reutilizações"
-                              >
-                                <Icon name="agora-line-refresh" aria-hidden="true" />
-                                <span>{dataset.metrics?.reuses || 0}</span>
-                              </div>
-                              <div
-                                className="flex items-center gap-8"
-                                title="Favoritos"
-                              >
-                                <Icon name="agora-line-star" aria-hidden="true" />
-                                <span>{dataset.metrics?.followers || 0}</span>
-                              </div>
-                            </div>
-                          </div>
-                        }
-                        date={
-                          <span className="font-[300]">
-                            {`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })}`}
-                          </span>
-                        }
-                        mainLink={
-                          <Link href={`/pages/datasets/${dataset.slug}`}>
-                            <span className="underline">{dataset.title}</span>
-                          </Link>
-                        }
-                        blockedLink={true}
-                      />
-                    </div>
-                  ))}
-                </div>
-                {renderDatasetsPagination()}
+                              ),
+                              title: 'Reutilizações',
+                              onClick: (e: React.MouseEvent) => e.preventDefault(),
+                              className: 'text-[#034AD8]',
+                            },
+                            {
+                              href: '#',
+                              hasIcon: true,
+                              leadingIcon: 'agora-line-star',
+                              leadingIconHover: 'agora-solid-star',
+                              trailingIcon: '',
+                              trailingIconHover: '',
+                              trailingIconActive: '',
+                              children: dataset.metrics?.followers || 0,
+                              title: 'Favoritos',
+                              onClick: (e: React.MouseEvent) => e.preventDefault(),
+                              className: 'text-[#034AD8]',
+                            },
+                          ]}
+                          mainLink={
+                            <Link href={`/pages/datasets/${dataset.slug}`}>
+                              <span className="underline">{dataset.title}</span>
+                            </Link>
+                          }
+                          blockedLink={true}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  {renderDatasetsPagination()}
                 </>
               ) : (
-                <div className="text-neutral-500">
+                <div className="text-neutral-900">
                   Não foi possível carregar os conjuntos de dados associados.
                 </div>
               )}
+              </div>
             </div>
           </div>
         </section>
