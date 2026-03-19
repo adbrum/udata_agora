@@ -17,6 +17,9 @@ import {
   TableRow,
   TableCell,
   Button,
+  InputSelect,
+  DropdownSection,
+  DropdownOption,
 } from "@ama-pt/agora-design-system";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import PublishDropdown from "@/components/admin/PublishDropdown";
@@ -70,12 +73,14 @@ export default function StatisticsClient() {
           <TabHeader>Conjuntos de dados</TabHeader>
           <TabBody>
             <div className="mt-[24px]">
-              <div className="flex justify-end mb-[16px]">
-                <InputSearchBar hasVoiceActionButton={false}
-                  label="Pesquisar"
-                  placeholder="Pesquisar"
-                  aria-label="Pesquisar conjuntos de dados"
-                />
+              <div className="flex items-end gap-[16px] mb-[24px]">
+                <div className="w-[60%]">
+                  <InputSearchBar hasVoiceActionButton={false}
+                    label="Pesquisar"
+                    placeholder="Pesquise o nome do conjunto de dados"
+                    aria-label="Pesquisar conjuntos de dados"
+                  />
+                </div>
               </div>
               <Table
                 paginationProps={{
@@ -103,14 +108,12 @@ export default function StatisticsClient() {
                       <Icon name="agora-line-download" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
                     <TableHeaderCell sortType="numeric" sortOrder="none">
-                      <Icon name="agora-line-trending-up" className="w-[16px] h-[16px]" />
+                      <img src="/Icons/bar_chart.svg" alt="Reutilizações" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
                     <TableHeaderCell sortType="numeric" sortOrder="none">
                       <Icon name="agora-line-star" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
-                    <TableHeaderCell>
-                      <Icon name="agora-line-download" className="w-[16px] h-[16px]" />
-                    </TableHeaderCell>
+                    <TableHeaderCell>{""}</TableHeaderCell>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -136,47 +139,53 @@ export default function StatisticsClient() {
           <TabHeader>API</TabHeader>
           <TabBody>
             <div className="mt-[24px]">
-              <div className="datasets-admin-page__header">
-                <h2 className="datasets-admin-page__title">API</h2>
-                <PublishDropdown />
-              </div>
+              <p className="text-neutral-700 text-sm mb-[16px]">
+                0 resultados
+              </p>
 
-              <div className="datasets-page__body mt-[24px]">
-                <div className="datasets-page__sidebar">
-                  <p className="datasets-page__count">
-                    <strong>0 API</strong>
-                  </p>
+              <div className="flex items-end gap-[16px] mb-[24px]">
+                <div className="w-[60%]">
                   <InputSearchBar hasVoiceActionButton={false}
                     label="Pesquisar"
-                    placeholder="Pesquisar"
+                    placeholder="Pesquise o nome da API"
                     aria-label="Pesquisar APIs"
                   />
                 </div>
-
-                <div className="datasets-page__content">
-                  <CardNoResults
-                    className="datasets-page__empty"
-                    position="center"
-                    icon={
-                      <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
-                    }
-                    title="Sem publicações"
-                    description="Ainda não publicou uma API."
-                    hasAnchor={false}
-                    extraDescription={
-                      <div className="mt-24">
-                        <Button
-                          variant="primary"
-                          appearance="outline"
-                          onClick={() => window.location.href = '/pages/admin/dataservices/new'}
-                        >
-                          Publique no portal
-                        </Button>
-                      </div>
-                    }
-                  />
-                </div>
+                <InputSelect
+                  label=""
+                  hideLabel
+                  placeholder="Filtrar por estado"
+                  id="filter-api-status"
+                >
+                  <DropdownSection name="status">
+                    <DropdownOption value="public">Público</DropdownOption>
+                    <DropdownOption value="archived">Arquivo</DropdownOption>
+                    <DropdownOption value="draft">Rascunho</DropdownOption>
+                    <DropdownOption value="deleted">Excluído</DropdownOption>
+                  </DropdownSection>
+                </InputSelect>
               </div>
+
+              <CardNoResults
+                position="center"
+                icon={
+                  <img src="/Icons/reduce.svg" alt="" className="w-[40px] h-[40px]" />
+                }
+                title="Sem publicações"
+                description="Ainda não publicou uma API."
+                hasAnchor={false}
+                extraDescription={
+                  <div className="mt-24">
+                    <Button
+                      variant="primary"
+                      appearance="outline"
+                      onClick={() => window.location.href = '/pages/admin/dataservices/new'}
+                    >
+                      Publique no portal
+                    </Button>
+                  </div>
+                }
+              />
             </div>
           </TabBody>
         </Tab>
@@ -184,47 +193,53 @@ export default function StatisticsClient() {
           <TabHeader>Reutilizar</TabHeader>
           <TabBody>
             <div className="mt-[24px]">
-              <div className="datasets-admin-page__header">
-                <h2 className="datasets-admin-page__title">Reutilizações</h2>
-                <PublishDropdown />
-              </div>
+              <p className="text-neutral-700 text-sm mb-[16px]">
+                0 resultados
+              </p>
 
-              <div className="datasets-page__body mt-[24px]">
-                <div className="datasets-page__sidebar">
-                  <p className="datasets-page__count">
-                    <strong>0 REUTILIZAÇÕES</strong>
-                  </p>
+              <div className="flex items-end gap-[16px] mb-[24px]">
+                <div className="w-[60%]">
                   <InputSearchBar hasVoiceActionButton={false}
                     label="Pesquisar"
-                    placeholder="Pesquisar"
+                    placeholder="Pesquise o nome da reutilização"
                     aria-label="Pesquisar reutilizações"
                   />
                 </div>
-
-                <div className="datasets-page__content">
-                  <CardNoResults
-                    className="datasets-page__empty"
-                    position="center"
-                    icon={
-                      <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
-                    }
-                    title="Sem publicações"
-                    description="Ainda não publicou uma reutilização."
-                    hasAnchor={false}
-                    extraDescription={
-                      <div className="mt-24">
-                        <Button
-                          variant="primary"
-                          appearance="outline"
-                          onClick={() => window.location.href = '/pages/admin/me/reuses/new'}
-                        >
-                          Publique no portal
-                        </Button>
-                      </div>
-                    }
-                  />
-                </div>
+                <InputSelect
+                  label=""
+                  hideLabel
+                  placeholder="Filtrar por estado"
+                  id="filter-reuse-status"
+                >
+                  <DropdownSection name="status">
+                    <DropdownOption value="public">Público</DropdownOption>
+                    <DropdownOption value="archived">Arquivo</DropdownOption>
+                    <DropdownOption value="draft">Rascunho</DropdownOption>
+                    <DropdownOption value="deleted">Excluído</DropdownOption>
+                  </DropdownSection>
+                </InputSelect>
               </div>
+
+              <CardNoResults
+                position="center"
+                icon={
+                  <img src="/Icons/bar_chart.svg" alt="" className="w-[40px] h-[40px]" />
+                }
+                title="Sem publicações"
+                description="Ainda não publicou uma reutilização."
+                hasAnchor={false}
+                extraDescription={
+                  <div className="mt-24">
+                    <Button
+                      variant="primary"
+                      appearance="outline"
+                      onClick={() => window.location.href = '/pages/admin/me/reuses/new'}
+                    >
+                      Publique no portal
+                    </Button>
+                  </div>
+                }
+              />
             </div>
           </TabBody>
         </Tab>
