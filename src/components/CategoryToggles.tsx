@@ -144,10 +144,10 @@ export const CategoryToggles = ({ siteMetrics, searchQuery }: CategoryTogglesPro
   }, [searchQuery, hasQuery]);
 
   const getCount = (item: CategoryToggleItem): number | null => {
-    if (!hasQuery) return item.count;
+    if (!hasQuery) return item.count ?? null;
     if (!searchTotals) return null;
     const key = ID_TO_SEARCH_KEY[item.id];
-    return key ? searchTotals[key as keyof SearchTotals] : item.count;
+    return key ? (searchTotals[key as keyof SearchTotals] ?? null) : (item.count ?? null);
   };
 
   const handleNavigation = (href: string) => {
