@@ -9,6 +9,9 @@ import {
   searchOrganizations,
   searchReuses,
   searchDataservices,
+  fetchDatasets,
+  fetchReuses,
+  fetchOrganizations,
 } from '@/services/api';
 
 interface CategoryToggleItem {
@@ -36,16 +39,17 @@ const buildItems = (siteMetrics: SiteMetrics): CategoryToggleItem[] => [
     leadingIconHover: 'agora-solid-layers-menu',
     className: 'w-full',
   },
-  {
-    id: 'apis',
-    label: 'APIs',
-    href: '/pages/dataservices',
-    count: siteMetrics.dataservices ?? 0,
-    leadingIcon: (active: boolean) =>
-      active ? '/Icons/reduce_white.svg' : '/Icons/reduce.svg',
-    leadingIconHover: '/Icons/reduce_white.svg',
-    className: 'w-full agora-toggle agora-toggle-icon agora-toggle-icon-primary full-width has-icon',
-  },
+  // APIs ocultas temporariamente
+  // {
+  //   id: 'apis',
+  //   label: 'APIs',
+  //   href: '/pages/dataservices',
+  //   count: siteMetrics.dataservices ?? 0,
+  //   leadingIcon: (active: boolean) =>
+  //     active ? '/Icons/reduce_white.svg' : '/Icons/reduce.svg',
+  //   leadingIconHover: '/Icons/reduce_white.svg',
+  //   className: 'w-full agora-toggle agora-toggle-icon agora-toggle-icon-primary full-width has-icon',
+  // },
   {
     id: 'reutilizacoes',
     label: 'Reutilizações',
@@ -94,11 +98,34 @@ export const CategoryToggles = ({ siteMetrics, searchQuery }: CategoryTogglesPro
   const items = buildItems(siteMetrics);
   const activeId = HREF_TO_ID[pathname] || '';
 
+  const [realTotals, setRealTotals] = useState<SearchTotals | null>(null);
   const [searchTotals, setSearchTotals] = useState<SearchTotals | null>(null);
   const [isLoadingTotals, setIsLoadingTotals] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hasQuery = !!(searchQuery && searchQuery.trim());
+
+  // Fetch real totals from paginated endpoints on mount
+  useEffect(() => {
+    async function loadRealTotals() {
+      try {
+        const [dsRes, reuseRes, orgRes] = await Promise.all([
+          fetchDatasets(1, 1),
+          fetchReuses(1, 1),
+          fetchOrganizations(1, 1),
+        ]);
+        setRealTotals({
+          datasets: dsRes.total,
+          dataservices: siteMetrics.dataservices ?? 0,
+          reuses: reuseRes.total,
+          organizations: orgRes.total,
+        });
+      } catch {
+        // Keep siteMetrics as fallback
+      }
+    }
+    loadRealTotals();
+  }, [siteMetrics]);
 
   useEffect(() => {
     if (!hasQuery) {
@@ -144,7 +171,14 @@ export const CategoryToggles = ({ siteMetrics, searchQuery }: CategoryTogglesPro
   }, [searchQuery, hasQuery]);
 
   const getCount = (item: CategoryToggleItem): number | null => {
-    if (!hasQuery) return item.count ?? null;
+    if (!hasQuery) {
+      // Use real totals from paginated API if available, fallback to siteMetrics
+      if (realTotals) {
+        const key = ID_TO_SEARCH_KEY[item.id];
+        if (key) return realTotals[key as keyof SearchTotals] ?? item.count ?? null;
+      }
+      return item.count ?? null;
+    }
     if (!searchTotals) return null;
     const key = ID_TO_SEARCH_KEY[item.id];
     return key ? (searchTotals[key as keyof SearchTotals] ?? null) : (item.count ?? null);

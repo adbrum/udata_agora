@@ -78,6 +78,16 @@ import {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
 const API_V2_BASE_URL = process.env.NEXT_PUBLIC_API_V2_BASE || "https://dados.gov.pt/api/2";
+// Relative API URL for authenticated requests (passes through Next.js proxy which forwards cookies)
+const API_AUTH_URL = "/api/1";
+
+// Helper: use relative URL for authenticated fetches, public URL for public fetches
+function authFetch(path: string, init?: RequestInit): Promise<Response> {
+  return fetch(`${API_AUTH_URL}${path}`, {
+    ...init,
+    credentials: "include",
+  });
+}
 
 /**
  * Fetch CSRF token from backend
@@ -135,10 +145,7 @@ export async function fetchMyDatasets(
   pageSize: number = 20
 ): Promise<APIResponse<Dataset>> {
   try {
-    const res = await fetch(
-      `${API_BASE_URL}/me/datasets/`,
-      { cache: "no-store", credentials: "include" }
-    );
+    const res = await authFetch("/me/datasets/", { cache: "no-store" });
 
     if (!res.ok) {
       throw new Error(`Failed to fetch my datasets: ${res.statusText}`);
@@ -181,7 +188,7 @@ export async function fetchMyReuses(
 ): Promise<APIResponse<Reuse>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/me/reuses/?page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/me/reuses/?page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
 
@@ -213,7 +220,7 @@ export async function fetchMyOrgDatasets(
 ): Promise<APIResponse<Dataset>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/me/org_datasets/`,
+      `${API_AUTH_URL}/me/org_datasets/`,
       { cache: "no-store", credentials: "include" }
     );
 
@@ -329,7 +336,7 @@ export async function fetchDatasets(
 
 export async function fetchDataset(slug: string): Promise<Dataset> {
   try {
-    const res = await fetch(`${API_BASE_URL}/datasets/${slug}/`, {
+    const res = await fetch(`${API_AUTH_URL}/datasets/${slug}/`, {
       cache: "no-store",
       credentials: "include",
     });
@@ -437,7 +444,7 @@ export async function fetchOrganization(slugOrId: string): Promise<Organization 
 export async function createOrganization(
   payload: OrganizationCreatePayload
 ): Promise<Organization> {
-  const res = await fetch(`${API_BASE_URL}/organizations/`, {
+  const res = await fetch(`${API_AUTH_URL}/organizations/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -454,7 +461,7 @@ export async function updateOrganization(
   org: string,
   payload: OrganizationUpdatePayload
 ): Promise<Organization> {
-  const res = await fetch(`${API_BASE_URL}/organizations/${org}/`, {
+  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -468,7 +475,7 @@ export async function updateOrganization(
 }
 
 export async function deleteOrganization(org: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/organizations/${org}/`, {
+  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -478,7 +485,7 @@ export async function deleteOrganization(org: string): Promise<void> {
 export async function uploadOrgLogo(org: string, file: File): Promise<Organization> {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetch(`${API_BASE_URL}/organizations/${org}/logo`, {
+  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/logo`, {
     method: "POST",
     credentials: "include",
     body: formData,
@@ -595,7 +602,7 @@ export async function fetchMyDataservices(
 ): Promise<APIResponse<Dataservice>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/me/dataservices/?page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/me/dataservices/?page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
 
@@ -711,7 +718,7 @@ export async function fetchDataservice(id: string): Promise<Dataservice> {
 export async function createDataservice(
   payload: DataserviceCreatePayload
 ): Promise<Dataservice> {
-  const res = await fetch(`${API_BASE_URL}/dataservices/`, {
+  const res = await fetch(`${API_AUTH_URL}/dataservices/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -731,7 +738,7 @@ export async function updateDataservice(
   id: string,
   payload: DataserviceUpdatePayload
 ): Promise<Dataservice> {
-  const res = await fetch(`${API_BASE_URL}/dataservices/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/dataservices/${id}/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -748,7 +755,7 @@ export async function updateDataservice(
  * Delete a dataservice
  */
 export async function deleteDataservice(id: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/dataservices/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/dataservices/${id}/`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -836,7 +843,7 @@ export async function fetchReuseTopics(): Promise<ReuseTopic[]> {
 }
 
 export async function createReuse(payload: ReuseCreatePayload): Promise<Reuse> {
-  const res = await fetch(`${API_BASE_URL}/reuses/`, {
+  const res = await fetch(`${API_AUTH_URL}/reuses/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -853,7 +860,7 @@ export async function updateReuse(
   id: string,
   payload: ReuseUpdatePayload
 ): Promise<Reuse> {
-  const res = await fetch(`${API_BASE_URL}/reuses/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/reuses/${id}/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -867,7 +874,7 @@ export async function updateReuse(
 }
 
 export async function deleteReuse(id: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/reuses/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/reuses/${id}/`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -877,7 +884,7 @@ export async function deleteReuse(id: string): Promise<void> {
 export async function uploadReuseImage(id: string, file: File): Promise<Reuse> {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetch(`${API_BASE_URL}/reuses/${id}/image`, {
+  const res = await fetch(`${API_AUTH_URL}/reuses/${id}/image`, {
     method: "POST",
     credentials: "include",
     body: formData,
@@ -893,7 +900,7 @@ export async function linkDatasetToReuse(
   reuseId: string,
   datasetId: string
 ): Promise<Reuse> {
-  const res = await fetch(`${API_BASE_URL}/reuses/${reuseId}/datasets/`, {
+  const res = await fetch(`${API_AUTH_URL}/reuses/${reuseId}/datasets/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -910,7 +917,7 @@ export async function linkDataserviceToReuse(
   reuseId: string,
   dataserviceId: string
 ): Promise<Reuse> {
-  const res = await fetch(`${API_BASE_URL}/reuses/${reuseId}/dataservices/`, {
+  const res = await fetch(`${API_AUTH_URL}/reuses/${reuseId}/dataservices/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -941,7 +948,7 @@ export async function suggestReuses(
 }
 
 export async function followReuse(id: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/reuses/${id}/followers/`, {
+  const res = await fetch(`${API_AUTH_URL}/reuses/${id}/followers/`, {
     method: "POST",
     credentials: "include",
   });
@@ -949,7 +956,7 @@ export async function followReuse(id: string): Promise<void> {
 }
 
 export async function unfollowReuse(id: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/reuses/${id}/followers/`, {
+  const res = await fetch(`${API_AUTH_URL}/reuses/${id}/followers/`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -978,7 +985,7 @@ export async function fetchSiteInfo(): Promise<SiteInfo> {
 }
 
 export async function updateSiteConfig(payload: SiteConfigUpdatePayload): Promise<SiteInfo> {
-  const res = await fetch(`${API_BASE_URL}/site/`, {
+  const res = await fetch(`${API_AUTH_URL}/site/`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -1141,7 +1148,7 @@ export async function createPost(
   payload: PostCreatePayload
 ): Promise<Post | null> {
   try {
-    const res = await fetch(`${API_BASE_URL}/posts/`, {
+    const res = await fetch(`${API_AUTH_URL}/posts/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -1168,7 +1175,7 @@ export async function updatePost(
   payload: PostUpdatePayload
 ): Promise<Post | null> {
   try {
-    const res = await fetch(`${API_BASE_URL}/posts/${id}/`, {
+    const res = await fetch(`${API_AUTH_URL}/posts/${id}/`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -1192,7 +1199,7 @@ export async function updatePost(
 
 export async function deletePost(id: string): Promise<boolean> {
   try {
-    const res = await fetch(`${API_BASE_URL}/posts/${id}/`, {
+    const res = await fetch(`${API_AUTH_URL}/posts/${id}/`, {
       method: "DELETE",
       credentials: "include",
     });
@@ -1220,7 +1227,7 @@ export async function uploadPostImage(
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch(`${API_BASE_URL}/posts/${id}/image/`, {
+    const res = await fetch(`${API_AUTH_URL}/posts/${id}/image/`, {
       method: "POST",
       credentials: "include",
       body: formData,
@@ -1407,7 +1414,7 @@ export async function fetchResourceTypes(): Promise<ResourceType[]> {
 // --- Dataset CRUD ---
 
 export async function createDataset(payload: DatasetCreatePayload): Promise<Dataset> {
-  const res = await fetch(`${API_BASE_URL}/datasets/`, {
+  const res = await fetch(`${API_AUTH_URL}/datasets/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -1421,7 +1428,7 @@ export async function createDataset(payload: DatasetCreatePayload): Promise<Data
 }
 
 export async function updateDataset(id: string, payload: DatasetUpdatePayload): Promise<Dataset> {
-  const res = await fetch(`${API_BASE_URL}/datasets/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/datasets/${id}/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -1435,7 +1442,7 @@ export async function updateDataset(id: string, payload: DatasetUpdatePayload): 
 }
 
 export async function deleteDataset(id: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/datasets/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/datasets/${id}/`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -1448,7 +1455,7 @@ export async function createResource(
   datasetId: string,
   payload: ResourceCreatePayload
 ): Promise<Resource> {
-  const res = await fetch(`${API_BASE_URL}/datasets/${datasetId}/resources/`, {
+  const res = await fetch(`${API_AUTH_URL}/datasets/${datasetId}/resources/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -1464,7 +1471,7 @@ export async function createResource(
 export async function uploadResource(datasetId: string, file: File): Promise<Resource> {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetch(`${API_BASE_URL}/datasets/${datasetId}/upload/`, {
+  const res = await fetch(`${API_AUTH_URL}/datasets/${datasetId}/upload/`, {
     method: "POST",
     credentials: "include",
     body: formData,
@@ -1482,7 +1489,7 @@ export async function updateResource(
   payload: ResourceUpdatePayload
 ): Promise<Resource> {
   const res = await fetch(
-    `${API_BASE_URL}/datasets/${datasetId}/resources/${resourceId}/`,
+    `${API_AUTH_URL}/datasets/${datasetId}/resources/${resourceId}/`,
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -1499,7 +1506,7 @@ export async function updateResource(
 
 export async function deleteResource(datasetId: string, resourceId: string): Promise<void> {
   const res = await fetch(
-    `${API_BASE_URL}/datasets/${datasetId}/resources/${resourceId}/`,
+    `${API_AUTH_URL}/datasets/${datasetId}/resources/${resourceId}/`,
     {
       method: "DELETE",
       credentials: "include",
@@ -1509,7 +1516,7 @@ export async function deleteResource(datasetId: string, resourceId: string): Pro
 }
 
 export async function reorderResources(datasetId: string, resourceIds: string[]): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/datasets/${datasetId}/resources/`, {
+  const res = await fetch(`${API_AUTH_URL}/datasets/${datasetId}/resources/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -1521,7 +1528,7 @@ export async function reorderResources(datasetId: string, resourceIds: string[])
 // --- Dataset Featured Toggle ---
 
 export async function toggleDatasetFeatured(id: string, featured: boolean): Promise<Dataset> {
-  const res = await fetch(`${API_BASE_URL}/datasets/${id}/featured/`, {
+  const res = await fetch(`${API_AUTH_URL}/datasets/${id}/featured/`, {
     method: featured ? "POST" : "DELETE",
     credentials: "include",
   });
@@ -1538,7 +1545,7 @@ export async function fetchActivity(
 ): Promise<APIResponse<Activity>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/activity/?related_to=${relatedTo}&sort=-created_at&page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/activity/?related_to=${relatedTo}&sort=-created_at&page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok) throw new Error(`Failed to fetch activity: ${res.statusText}`);
@@ -1695,7 +1702,7 @@ export async function fetchNotifications(
   pageSize: number = 20
 ): Promise<APIResponse<Notification>> {
   const res = await fetch(
-    `${API_BASE_URL}/notifications/?page=${page}&page_size=${pageSize}`,
+    `${API_AUTH_URL}/notifications/?page=${page}&page_size=${pageSize}`,
     { cache: "no-store", credentials: "include" }
   );
 
@@ -1744,7 +1751,7 @@ export async function createDiscussion(
   payload: DiscussionCreatePayload
 ): Promise<Discussion | null> {
   try {
-    const res = await fetch(`${API_BASE_URL}/discussions/`, {
+    const res = await fetch(`${API_AUTH_URL}/discussions/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -1793,7 +1800,7 @@ export async function replyToDiscussion(
 ): Promise<Discussion | null> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/discussions/${discussionId}/`,
+      `${API_AUTH_URL}/discussions/${discussionId}/`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2012,7 +2019,7 @@ export async function closeDiscussion(
     if (comment) body.comment = comment;
 
     const res = await fetch(
-      `${API_BASE_URL}/discussions/${discussionId}/`,
+      `${API_AUTH_URL}/discussions/${discussionId}/`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2041,7 +2048,7 @@ export async function deleteDiscussion(
 ): Promise<boolean> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/discussions/${discussionId}/`,
+      `${API_AUTH_URL}/discussions/${discussionId}/`,
       {
         method: "DELETE",
         credentials: "include",
@@ -2140,7 +2147,7 @@ export async function fetchReportReasons(): Promise<ReportReason[]> {
 }
 
 export async function createReport(payload: ReportCreatePayload): Promise<Report> {
-  const res = await fetch(`${API_BASE_URL}/reports/`, {
+  const res = await fetch(`${API_AUTH_URL}/reports/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -2169,7 +2176,7 @@ export async function fetchReports(
     if (status) params.set("status", status);
     if (sort) params.set("sort", sort);
 
-    const res = await fetch(`${API_BASE_URL}/reports/?${params.toString()}`, {
+    const res = await fetch(`${API_AUTH_URL}/reports/?${params.toString()}`, {
       cache: "no-store",
       credentials: "include",
     });
@@ -2182,7 +2189,7 @@ export async function fetchReports(
 }
 
 export async function dismissReport(id: string): Promise<Report> {
-  const res = await fetch(`${API_BASE_URL}/reports/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/reports/${id}/`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -2200,7 +2207,7 @@ export async function dismissReport(id: string): Promise<Report> {
 // --- Organization Membership ---
 
 export async function requestMembership(org: string, comment?: string): Promise<MembershipRequest> {
-  const res = await fetch(`${API_BASE_URL}/organizations/${org}/membership/`, {
+  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/membership/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -2211,7 +2218,7 @@ export async function requestMembership(org: string, comment?: string): Promise<
 }
 
 export async function fetchMembershipRequests(org: string): Promise<MembershipRequest[]> {
-  const res = await fetch(`${API_BASE_URL}/organizations/${org}/membership/`, {
+  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/membership/`, {
     cache: "no-store",
     credentials: "include",
   });
@@ -2221,7 +2228,7 @@ export async function fetchMembershipRequests(org: string): Promise<MembershipRe
 
 export async function acceptMembership(org: string, requestId: string): Promise<MembershipRequest> {
   const res = await fetch(
-    `${API_BASE_URL}/organizations/${org}/membership/${requestId}/accept/`,
+    `${API_AUTH_URL}/organizations/${org}/membership/${requestId}/accept/`,
     { method: "POST", credentials: "include" }
   );
   if (!res.ok) throw new Error(`Failed to accept membership: ${res.statusText}`);
@@ -2234,7 +2241,7 @@ export async function refuseMembership(
   comment?: string
 ): Promise<MembershipRequest> {
   const res = await fetch(
-    `${API_BASE_URL}/organizations/${org}/membership/${requestId}/refuse/`,
+    `${API_AUTH_URL}/organizations/${org}/membership/${requestId}/refuse/`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -2251,7 +2258,7 @@ export async function addMember(
   userId: string,
   role: string
 ): Promise<OrganizationMember> {
-  const res = await fetch(`${API_BASE_URL}/organizations/${org}/member/${userId}/`, {
+  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/member/${userId}/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -2266,7 +2273,7 @@ export async function updateMemberRole(
   userId: string,
   role: string
 ): Promise<OrganizationMember> {
-  const res = await fetch(`${API_BASE_URL}/organizations/${org}/member/${userId}/`, {
+  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/member/${userId}/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -2277,7 +2284,7 @@ export async function updateMemberRole(
 }
 
 export async function removeMember(org: string, userId: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/organizations/${org}/member/${userId}/`, {
+  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/member/${userId}/`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -2347,7 +2354,7 @@ export async function followEntity(
   entityType: FollowableEntityType,
   id: string
 ): Promise<FollowResponse> {
-  const res = await fetch(`${API_BASE_URL}/${entityType}/${id}/followers/`, {
+  const res = await fetch(`${API_AUTH_URL}/${entityType}/${id}/followers/`, {
     method: "POST",
     credentials: "include",
   });
@@ -2367,7 +2374,7 @@ export async function unfollowEntity(
   entityType: FollowableEntityType,
   id: string
 ): Promise<FollowResponse> {
-  const res = await fetch(`${API_BASE_URL}/${entityType}/${id}/followers/`, {
+  const res = await fetch(`${API_AUTH_URL}/${entityType}/${id}/followers/`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -2390,7 +2397,7 @@ export async function isFollowing(
 ): Promise<boolean> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/${entityType}/${id}/followers/?user=${userId}&page_size=1`,
+      `${API_AUTH_URL}/${entityType}/${id}/followers/?user=${userId}&page_size=1`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok) return false;
@@ -2404,7 +2411,7 @@ export async function isFollowing(
 // ── User Profile & Metrics (TICKET-30) ──────────────────────────────
 
 export async function updateProfile(payload: UserUpdatePayload): Promise<UserPublic> {
-  const res = await fetch(`${API_BASE_URL}/me/`, {
+  const res = await fetch(`${API_AUTH_URL}/me/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -2420,7 +2427,7 @@ export async function updateProfile(payload: UserUpdatePayload): Promise<UserPub
 export async function uploadAvatar(file: File): Promise<UserPublic> {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetch(`${API_BASE_URL}/me/avatar`, {
+  const res = await fetch(`${API_AUTH_URL}/me/avatar`, {
     method: "POST",
     credentials: "include",
     body: formData,
@@ -2433,7 +2440,7 @@ export async function uploadAvatar(file: File): Promise<UserPublic> {
 }
 
 export async function deleteAccount(): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/me/`, {
+  const res = await fetch(`${API_AUTH_URL}/me/`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -2446,7 +2453,7 @@ export async function fetchOrgInvitations(
 ): Promise<APIResponse<OrgInvitation>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/me/org_invitations/?page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/me/org_invitations/?page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok) throw new Error(`Failed to fetch org invitations: ${res.statusText}`);
@@ -2465,7 +2472,7 @@ export async function fetchOrgInvitations(
 }
 
 export async function fetchMyMetrics(): Promise<UserMetrics> {
-  const res = await fetch(`${API_BASE_URL}/me/metrics/`, {
+  const res = await fetch(`${API_AUTH_URL}/me/metrics/`, {
     cache: "no-store",
     credentials: "include",
   });
@@ -2485,7 +2492,7 @@ export async function fetchUserActivity(
       sort: "-created_at",
     });
     if (userId) params.set("user", userId);
-    const res = await fetch(`${API_BASE_URL}/activity/?${params.toString()}`, {
+    const res = await fetch(`${API_AUTH_URL}/activity/?${params.toString()}`, {
       cache: "no-store",
       credentials: "include",
     });
@@ -2519,7 +2526,7 @@ export async function fetchUsers(
     if (q) params.set("q", q);
     if (sort) params.set("sort", sort);
 
-    const res = await fetch(`${API_BASE_URL}/users/?${params.toString()}`, {
+    const res = await fetch(`${API_AUTH_URL}/users/?${params.toString()}`, {
       cache: "no-store",
       credentials: "include",
     });
@@ -2544,7 +2551,7 @@ export async function fetchUsers(
 
 export async function fetchUser(id: string): Promise<UserAdmin | null> {
   try {
-    const res = await fetch(`${API_BASE_URL}/users/${id}/`, {
+    const res = await fetch(`${API_AUTH_URL}/users/${id}/`, {
       cache: "no-store",
       credentials: "include",
     });
@@ -2569,7 +2576,7 @@ export async function updateUser(
   payload: UserAdminUpdatePayload
 ): Promise<UserAdmin | null> {
   try {
-    const res = await fetch(`${API_BASE_URL}/users/${id}/`, {
+    const res = await fetch(`${API_AUTH_URL}/users/${id}/`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -2593,7 +2600,7 @@ export async function updateUser(
 
 export async function deleteUser(id: string): Promise<boolean> {
   try {
-    const res = await fetch(`${API_BASE_URL}/users/${id}/`, {
+    const res = await fetch(`${API_AUTH_URL}/users/${id}/`, {
       method: "DELETE",
       credentials: "include",
     });
@@ -2615,7 +2622,7 @@ export async function deleteUser(id: string): Promise<boolean> {
 
 export async function fetchUserRoles(): Promise<UserRole[]> {
   try {
-    const res = await fetch(`${API_BASE_URL}/users/roles/`, {
+    const res = await fetch(`${API_AUTH_URL}/users/roles/`, {
       cache: "no-store",
       credentials: "include",
     });
@@ -2634,7 +2641,7 @@ export async function fetchUserRoles(): Promise<UserRole[]> {
 export async function suggestUsers(query: string): Promise<UserSuggestion[]> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/users/suggest/?q=${encodeURIComponent(query)}`,
+      `${API_AUTH_URL}/users/suggest/?q=${encodeURIComponent(query)}`,
       { cache: "no-store", credentials: "include" }
     );
 
@@ -2657,7 +2664,7 @@ export async function fetchMyCommunityResources(
 ): Promise<APIResponse<CommunityResource>> {
   try {
     // First get the current user ID
-    const meRes = await fetch(`${API_BASE_URL}/me/`, {
+    const meRes = await fetch(`${API_AUTH_URL}/me/`, {
       cache: "no-store",
       credentials: "include",
     });
@@ -2669,7 +2676,7 @@ export async function fetchMyCommunityResources(
 
     // Fetch community resources filtered by owner
     const res = await fetch(
-      `${API_BASE_URL}/datasets/community_resources/?owner=${userId}&page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/datasets/community_resources/?owner=${userId}&page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok)
@@ -2694,7 +2701,7 @@ export async function fetchMyOrgCommunityResources(
 ): Promise<APIResponse<CommunityResource>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/me/org_community_resources/?page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/me/org_community_resources/?page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok)
@@ -2734,7 +2741,7 @@ export async function fetchCommunityResourcesByDataset(
 export async function createCommunityResource(
   payload: CommunityResourceCreatePayload
 ): Promise<CommunityResource> {
-  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/`, {
+  const res = await fetch(`${API_AUTH_URL}/datasets/community_resources/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -2751,7 +2758,7 @@ export async function updateCommunityResource(
   id: string,
   payload: CommunityResourceUpdatePayload
 ): Promise<CommunityResource> {
-  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/datasets/community_resources/${id}/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -2765,7 +2772,7 @@ export async function updateCommunityResource(
 }
 
 export async function deleteCommunityResource(id: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/datasets/community_resources/${id}/`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -2778,7 +2785,7 @@ export async function uploadCommunityResourceFile(
 ): Promise<CommunityResource> {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/${id}/upload/`, {
+  const res = await fetch(`${API_AUTH_URL}/datasets/community_resources/${id}/upload/`, {
     method: "POST",
     credentials: "include",
     body: formData,
@@ -2798,7 +2805,7 @@ export async function fetchHarvesters(
 ): Promise<APIResponse<HarvestSource>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/harvest/sources/?page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/harvest/sources/?page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok) throw new Error(`Failed to fetch harvesters: ${res.statusText}`);
@@ -2818,7 +2825,7 @@ export async function fetchHarvesters(
 
 export async function fetchHarvester(id: string): Promise<HarvestSource | null> {
   try {
-    const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/`, {
+    const res = await fetch(`${API_AUTH_URL}/harvest/sources/${id}/`, {
       cache: "no-store",
       credentials: "include",
     });
@@ -2834,7 +2841,7 @@ export async function fetchHarvester(id: string): Promise<HarvestSource | null> 
 export async function createHarvester(
   payload: HarvestSourceCreatePayload
 ): Promise<HarvestSource> {
-  const res = await fetch(`${API_BASE_URL}/harvest/sources/`, {
+  const res = await fetch(`${API_AUTH_URL}/harvest/sources/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -2851,7 +2858,7 @@ export async function updateHarvester(
   id: string,
   payload: HarvestSourceUpdatePayload
 ): Promise<HarvestSource> {
-  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/harvest/sources/${id}/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -2865,7 +2872,7 @@ export async function updateHarvester(
 }
 
 export async function deleteHarvester(id: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/harvest/sources/${id}/`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -2873,7 +2880,7 @@ export async function deleteHarvester(id: string): Promise<void> {
 }
 
 export async function triggerHarvest(id: string): Promise<HarvestJob> {
-  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/jobs/`, {
+  const res = await fetch(`${API_AUTH_URL}/harvest/sources/${id}/jobs/`, {
     method: "POST",
     credentials: "include",
   });
@@ -2891,7 +2898,7 @@ export async function fetchHarvestJobs(
 ): Promise<APIResponse<HarvestJob>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/harvest/sources/${sourceId}/jobs/?page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/harvest/sources/${sourceId}/jobs/?page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok) throw new Error(`Failed to fetch harvest jobs: ${res.statusText}`);
@@ -2912,7 +2919,7 @@ export async function fetchHarvestJobs(
 export async function validateHarvestSource(
   id: string
 ): Promise<Record<string, unknown>> {
-  const res = await fetch(`${API_BASE_URL}/harvest/sources/${id}/validation/`, {
+  const res = await fetch(`${API_AUTH_URL}/harvest/sources/${id}/validation/`, {
     cache: "no-store",
     credentials: "include",
   });
@@ -2927,7 +2934,7 @@ export async function fetchOrgHarvesters(
 ): Promise<APIResponse<HarvestSource>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/harvest/sources/?organization=${org}&page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/harvest/sources/?organization=${org}&page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok)
@@ -2953,7 +2960,7 @@ export async function fetchOrgCommunityResources(
 ): Promise<APIResponse<CommunityResource>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/datasets/community_resources/?organization=${org}&page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/datasets/community_resources/?organization=${org}&page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok)
@@ -3000,7 +3007,7 @@ export async function fetchOrgMetrics(
 
 export async function fetchHomeFeaturedDatasets(): Promise<Dataset[]> {
   try {
-    const res = await fetch(`${API_BASE_URL}/site/home/datasets/`, {
+    const res = await fetch(`${API_AUTH_URL}/site/home/datasets/`, {
       cache: "no-store",
       credentials: "include",
     });
@@ -3016,7 +3023,7 @@ export async function fetchHomeFeaturedDatasets(): Promise<Dataset[]> {
 export async function updateHomeFeaturedDatasets(
   datasetIds: string[]
 ): Promise<Dataset[]> {
-  const res = await fetch(`${API_BASE_URL}/site/home/datasets/`, {
+  const res = await fetch(`${API_AUTH_URL}/site/home/datasets/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -3029,7 +3036,7 @@ export async function updateHomeFeaturedDatasets(
 
 export async function fetchHomeFeaturedReuses(): Promise<Reuse[]> {
   try {
-    const res = await fetch(`${API_BASE_URL}/site/home/reuses/`, {
+    const res = await fetch(`${API_AUTH_URL}/site/home/reuses/`, {
       cache: "no-store",
       credentials: "include",
     });
@@ -3045,7 +3052,7 @@ export async function fetchHomeFeaturedReuses(): Promise<Reuse[]> {
 export async function updateHomeFeaturedReuses(
   reuseIds: string[]
 ): Promise<Reuse[]> {
-  const res = await fetch(`${API_BASE_URL}/site/home/reuses/`, {
+  const res = await fetch(`${API_AUTH_URL}/site/home/reuses/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
