@@ -217,7 +217,7 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                 <div className="bg-[#F2F6FF] rounded-4 p-32">
                   <div className="text-sm mb-[8px]">Downloads</div>
                   <div className="text-l-semibold font-bold text-neutral-900 mb-[8px]">
-                    {formatMetricValue(dataset.metrics?.downloads)}
+                    {formatMetricValue(dataset.metrics?.resources_downloads)}
                   </div>
                 </div>
               </div>

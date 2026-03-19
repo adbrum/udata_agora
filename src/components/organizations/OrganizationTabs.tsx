@@ -226,10 +226,10 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                                     aria-hidden="true"
                                   />
                                   <span>
-                                    {dataset.metrics?.downloads
-                                      ? dataset.metrics.downloads >= 1000
-                                        ? `${(dataset.metrics.downloads / 1000).toFixed(0)} mil`
-                                        : dataset.metrics.downloads
+                                    {dataset.metrics?.resources_downloads
+                                      ? dataset.metrics.resources_downloads >= 1000
+                                        ? `${(dataset.metrics.resources_downloads / 1000).toFixed(0)} mil`
+                                        : dataset.metrics.resources_downloads
                                       : "0"}
                                   </span>
                                 </div>

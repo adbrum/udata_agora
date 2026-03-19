@@ -397,12 +397,12 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
                               trailingIcon: '',
                               trailingIconHover: '',
                               trailingIconActive: '',
-                              children: dataset.metrics?.downloads
-                                ? dataset.metrics.downloads >= 1000000
-                                  ? `${(dataset.metrics.downloads / 1000000).toFixed(1)} M`
-                                  : dataset.metrics.downloads >= 1000
-                                    ? `${(dataset.metrics.downloads / 1000).toFixed(0)} mil`
-                                    : dataset.metrics.downloads
+                              children: dataset.metrics?.resources_downloads
+                                ? dataset.metrics.resources_downloads >= 1000000
+                                  ? `${(dataset.metrics.resources_downloads / 1000000).toFixed(1)} M`
+                                  : dataset.metrics.resources_downloads >= 1000
+                                    ? `${(dataset.metrics.resources_downloads / 1000).toFixed(0)} mil`
+                                    : dataset.metrics.resources_downloads
                                 : '0',
                               title: 'Downloads',
                               onClick: (e: React.MouseEvent) => e.preventDefault(),
