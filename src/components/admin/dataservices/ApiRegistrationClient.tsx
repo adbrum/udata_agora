@@ -273,7 +273,7 @@ export default function ApiRegistrationClient({
                 <div className="datasets-admin-page__fields-group">
                   <InputText
                     label="Nome da API *"
-                    placeholder="Placeholder"
+                    placeholder="Insira o nome aqui"
                     id="api-name"
                     value={apiName}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -286,8 +286,8 @@ export default function ApiRegistrationClient({
                     errorFeedbackText="Campo obrigatório"
                   />
                   <InputText
-                    label="Acrônimo"
-                    placeholder="Placeholder"
+                    label="Sigla"
+                    placeholder="Insira a sigla aqui"
                     id="api-acronym"
                     value={apiAcronym}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -296,7 +296,7 @@ export default function ApiRegistrationClient({
                   />
                   <InputTextArea
                     label="Descrição *"
-                    placeholder="Placeholder"
+                    placeholder="Insira a descrição aqui"
                     id="api-description"
                     rows={4}
                     maxLength={246}
@@ -312,7 +312,7 @@ export default function ApiRegistrationClient({
                   />
                   <InputText
                     label="Link raiz da API"
-                    placeholder="https://..."
+                    placeholder="Insira o URL aqui"
                     id="api-root-link"
                     value={baseApiUrl}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -321,7 +321,7 @@ export default function ApiRegistrationClient({
                   />
                   <InputText
                     label="Link para a documentação da API (ficheiro OpenAPI ou Swagger)"
-                    placeholder="https://..."
+                    placeholder="Insira o URL aqui"
                     id="api-doc-openapi"
                     value={machineDocUrl}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -330,7 +330,7 @@ export default function ApiRegistrationClient({
                   />
                   <InputText
                     label="Link para a documentação técnica da API"
-                    placeholder="https://..."
+                    placeholder="Insira o URL aqui"
                     id="api-doc-technical"
                     value={technicalDocUrl}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -339,7 +339,7 @@ export default function ApiRegistrationClient({
                   />
                   <InputText
                     label="Limite de chamadas"
-                    placeholder="Placeholder"
+                    placeholder="Insira aqui"
                     id="api-rate-limit"
                     value={rateLimiting}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -390,7 +390,7 @@ export default function ApiRegistrationClient({
                   </div>
                   <InputText
                     label="Link para a ferramenta de autorização de acesso"
-                    placeholder="https://..."
+                    placeholder="Insira o URL aqui"
                     id="api-auth-tool"
                     value={authRequestUrl}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -399,7 +399,7 @@ export default function ApiRegistrationClient({
                   />
                   <InputText
                     label="Link para a documentação comercial da API"
-                    placeholder="https://..."
+                    placeholder="Insira o URL aqui"
                     id="api-doc-commercial"
                     value={businessDocUrl}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -450,7 +450,7 @@ export default function ApiRegistrationClient({
                     <div>
                       <InputText
                         label="Link para o conjunto de dados"
-                        placeholder="https://..."
+                        placeholder="Insira o URL aqui"
                         id={`dataset-url-${index}`}
                         value={link.url}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>

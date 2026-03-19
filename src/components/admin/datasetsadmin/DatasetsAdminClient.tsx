@@ -395,7 +395,7 @@ export default function DatasetsAdminClient({
                 <div className="datasets-admin-page__fields-group">
                   <InputText
                     label="Título*"
-                    placeholder="Placeholder"
+                    placeholder="Insira o título aqui"
                     id="api-name"
                     value={datasetTitle}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -408,8 +408,8 @@ export default function DatasetsAdminClient({
                     errorFeedbackText="Campo obrigatório"
                   />
                   <InputText
-                    label="Acrônimo"
-                    placeholder="Placeholder"
+                    label="Sigla"
+                    placeholder="Insira a sigla aqui"
                     id="api-acronym"
                     value={datasetAcronym}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -418,7 +418,7 @@ export default function DatasetsAdminClient({
                   />
                   <InputTextArea
                     label="Descrição*"
-                    placeholder="Placeholder"
+                    placeholder="Insira a descrição aqui"
                     id="dataset-description"
                     rows={4}
                     maxLength={246}
@@ -435,7 +435,7 @@ export default function DatasetsAdminClient({
                   />
                   <InputTextArea
                     label="Descrição resumida"
-                    placeholder="Placeholder"
+                    placeholder="Insira a descrição aqui"
                     id="dataset-short-description"
                     rows={3}
                     value={datasetShortDescription}
@@ -621,8 +621,8 @@ export default function DatasetsAdminClient({
 
                 <div className="datasets-admin-page__org-card flex flex-col items-center gap-[16px]">
                   <ButtonUploader
-                    label="Adicionar ficheiros"
-                    inputLabel="Adicionar ficheiros"
+                    label="Ficheiros"
+                    inputLabel="Selecione ou arraste o ficheiro"
                     selectedFilesLabel="ficheiros selecionados"
                     removeFileButtonLabel="Remover ficheiro"
                     replaceFileButtonLabel="Substituir ficheiro"

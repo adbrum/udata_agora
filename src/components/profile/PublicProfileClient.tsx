@@ -12,6 +12,12 @@ import {
   CardNoResults,
   Icon,
   Pill,
+  Table,
+  TableHeader,
+  TableHeaderCell,
+  TableBody,
+  TableRow,
+  TableCell,
 } from "@ama-pt/agora-design-system";
 import { Dataset, Reuse } from "@/types/api";
 import { fetchMyDatasets, fetchMyReuses } from "@/services/api";
@@ -49,6 +55,14 @@ export default function PublicProfileClient() {
   const formatDate = (dateStr: string) => {
     try {
       return format(new Date(dateStr), "d 'de' MMMM 'de' yyyy", { locale: pt });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const formatShortDate = (dateStr: string) => {
+    try {
+      return format(new Date(dateStr), "dd/MM/yyyy");
     } catch {
       return dateStr;
     }
@@ -158,81 +172,74 @@ export default function PublicProfileClient() {
             hasAnchor={false}
           />
         ) : (
-          <div className="grid grid-cols-1 agora-card-links-datasets-px0 gap-24">
-            {datasets.map((dataset) => (
-              <div key={dataset.id}>
-                <CardLinks
-                  className="cursor-pointer text-neutral-900"
-                  variant="transparent"
-                  category={dataset.organization?.name || userName}
-                  title={
-                    <Link href={`/pages/datasets/${dataset.slug}`}>
-                      <span className="underline text-xl-bold">{dataset.title}</span>
+          <Table
+            paginationProps={{
+              itemsPerPageLabel: "Linhas por página",
+              itemsPerPage: 10,
+              totalItems: datasets.length,
+              availablePageSizes: [5, 10, 20],
+              currentPage: 1,
+              buttonDropdownAriaLabel: "Selecionar linhas por página",
+              dropdownListAriaLabel: "Opções de linhas por página",
+              prevButtonAriaLabel: "Página anterior",
+              nextButtonAriaLabel: "Próxima página",
+            }}
+          >
+            <TableHeader>
+              <TableRow>
+                <TableHeaderCell sortType="string">
+                  Título do conjunto de dados
+                </TableHeaderCell>
+                <TableHeaderCell>Arquivos</TableHeaderCell>
+                <TableHeaderCell sortType="string">
+                  Sigla da Entidade
+                </TableHeaderCell>
+                <TableHeaderCell>Estado</TableHeaderCell>
+                <TableHeaderCell sortType="date">
+                  Data de criação
+                </TableHeaderCell>
+                <TableHeaderCell sortType="date">
+                  Data de alteração
+                </TableHeaderCell>
+                <TableHeaderCell>{""}</TableHeaderCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {datasets.map((dataset) => (
+                <TableRow key={dataset.id}>
+                  <TableCell headerLabel="Título">
+                    {dataset.title}
+                  </TableCell>
+                  <TableCell headerLabel="Arquivos">
+                    {dataset.resources?.length || 0}
+                  </TableCell>
+                  <TableCell headerLabel="Sigla da Entidade">
+                    {dataset.organization?.acronym || dataset.organization?.name || "—"}
+                  </TableCell>
+                  <TableCell headerLabel="Estado">
+                    <div className="flex items-center gap-8">
+                      <span className="text-success-600">●</span>
+                      <span>Público</span>
+                    </div>
+                  </TableCell>
+                  <TableCell headerLabel="Data de criação">
+                    {formatShortDate(dataset.created_at)}
+                  </TableCell>
+                  <TableCell headerLabel="Data de alteração">
+                    {formatShortDate(dataset.last_modified || dataset.created_at)}
+                  </TableCell>
+                  <TableCell headerLabel="">
+                    <Link
+                      href={`/pages/datasets/${dataset.slug}`}
+                      className="text-primary-600 underline"
+                    >
+                      Consultar
                     </Link>
-                  }
-                  description={
-                    dataset.description ? (
-                      <p className="text-sm line-clamp-2 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
-                        {dataset.description}
-                      </p>
-                    ) : undefined
-                  }
-                  date={
-                    <span className="font-[300]">
-                      Atualizado {formatDate(dataset.last_modified || dataset.created_at)}
-                    </span>
-                  }
-                  links={[
-                    {
-                      href: "#",
-                      hasIcon: true,
-                      leadingIcon: "agora-line-eye",
-                      leadingIconHover: "agora-solid-eye",
-                      trailingIcon: "",
-                      trailingIconHover: "",
-                      trailingIconActive: "",
-                      children: dataset.metrics?.views?.toLocaleString("pt-PT") || "0",
-                      title: "Visualizações",
-                      onClick: (e: React.MouseEvent) => e.preventDefault(),
-                      className: "text-[#034AD8]",
-                    },
-                    {
-                      href: "#",
-                      hasIcon: true,
-                      leadingIcon: "agora-line-download",
-                      leadingIconHover: "agora-solid-download",
-                      trailingIcon: "",
-                      trailingIconHover: "",
-                      trailingIconActive: "",
-                      children: dataset.metrics?.downloads?.toLocaleString("pt-PT") || "0",
-                      title: "Downloads",
-                      onClick: (e: React.MouseEvent) => e.preventDefault(),
-                      className: "text-[#034AD8]",
-                    },
-                    {
-                      href: "#",
-                      hasIcon: true,
-                      leadingIcon: "agora-line-star",
-                      leadingIconHover: "agora-solid-star",
-                      trailingIcon: "",
-                      trailingIconHover: "",
-                      trailingIconActive: "",
-                      children: dataset.metrics?.followers || 0,
-                      title: "Favoritos",
-                      onClick: (e: React.MouseEvent) => e.preventDefault(),
-                      className: "text-[#034AD8]",
-                    },
-                  ]}
-                  mainLink={
-                    <Link href={`/pages/datasets/${dataset.slug}`}>
-                      <span className="underline">{dataset.title}</span>
-                    </Link>
-                  }
-                  blockedLink={true}
-                />
-              </div>
-            ))}
-          </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </div>
 
@@ -247,7 +254,7 @@ export default function PublicProfileClient() {
         ) : reuses.length === 0 ? (
           <CardNoResults
             position="center"
-            icon={<Icon name="agora-line-file" className="w-[40px] h-[40px] text-primary-500 icon-xl" />}
+            icon={<img src="/Icons/bar_chart.svg" alt="" className="w-[40px] h-[40px]" />}
             title="Sem reutilizações"
             description="Este utilizador ainda não publicou reutilizações."
             hasAnchor={false}
