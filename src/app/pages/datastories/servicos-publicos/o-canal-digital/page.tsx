@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function DataStoryDetailPage() {
     return (
-        <Section className='bg-brand-blue-dark'>
+        <Section className='bg-primary-900'>
             <InfoBlock.Root>
                 <InfoBlock.Header>
                     <InfoBlock.Title titleLevel="h2" title="Serviços Públicos: o canal digital" />

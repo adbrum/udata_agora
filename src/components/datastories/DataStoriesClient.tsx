@@ -22,10 +22,10 @@ const dummyDataStories = [
   },
   {
     id: '2',
-    slug: 'datastory-2',
-    title: 'Consectetur adipiscing elit',
+    slug: 'territorios-inteligentes/pressao-turistica-em-portugal',
+    title: 'Territórios Inteligentes: Pressão turística em Portugal',
     description: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    organization: { name: 'Ministério da Educação' },
+    organization: { name: 'Territórios Inteligentes' },
     image: '/laptop.png',
     created_at: '2024-03-10T12:00:00Z',
     metrics: { views: 890, reuses: 23, followers: 8 },
@@ -87,7 +87,7 @@ export default function DataStoriesClient({ currentPage }: DataStoriesClientProp
                 </Button>
                 <div className="flex-grow max-w-[240px]">
                   <InputSelect
-                    label="Ordenar por :"
+                    label="Ordenar por:"
                     id="sort-datastories"
                     defaultValue="recentes"
                     className="selectReuse"
