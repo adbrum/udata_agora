@@ -56,11 +56,13 @@ export default function StatisticsClient() {
                   <p className="text-neutral-700 text-base">Conjuntos de dados</p>
                 </CardFrame>
               </div>
+              {/* Card API ocultado temporariamente
               <div className="flex-1">
                 <CardFrame label="0">
                   <p className="text-neutral-700 text-base">API</p>
                 </CardFrame>
               </div>
+              */}
               <div className="flex-1">
                 <CardFrame label="0">
                   <p className="text-neutral-700 text-base">Reutilizar</p>
@@ -135,6 +137,7 @@ export default function StatisticsClient() {
             </div>
           </TabBody>
         </Tab>
+        {/* Tab API ocultada temporariamente
         <Tab>
           <TabHeader>API</TabHeader>
           <TabBody>
@@ -189,6 +192,7 @@ export default function StatisticsClient() {
             </div>
           </TabBody>
         </Tab>
+        */}
         <Tab>
           <TabHeader>Reutilizar</TabHeader>
           <TabBody>

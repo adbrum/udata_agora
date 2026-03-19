@@ -1590,12 +1590,3 @@ li.max-w-ch,
     margin: 80px;
   }
 }
-
-/* Remove border-bottom from nested accordions inside schemas/temas and add left margin */
-.nested-accordions .agora-accordion {
-  border-bottom: none !important;
-  margin-left: 24px !important;
-}
-.nested-accordions .agora-accordion:not(.dark-mode,.active-state,.mobile):has(.accordion-header:hover) {
-  border-bottom-color: transparent !important;
-}

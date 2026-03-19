@@ -446,10 +446,18 @@ export default function DatasetsAdminClient({
                     feedbackState="info"
                     feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 200 caracteres da sua descrição."
                   />
-                  <div className="w-1/2">
-                    <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit" fullWidth>
+                  <div className="flex items-center gap-[16px]">
+                    <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
                       Sugira uma breve descrição.
                     </Button>
+                    <a
+                      href="https://dados.gov.pt"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary-600 text-sm underline inline-flex items-center gap-[8px] hover:text-primary-800"
+                    >
+                      O que achou desta sugestão? <Icon name="agora-line-external-link" className="w-4 h-4" />
+                    </a>
                   </div>
 
                   <InputSelect
