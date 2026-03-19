@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { CardLinks, InputSearchBar, Button, InputSelect, DropdownSection, DropdownOption, Icon, CardNoResults } from '@ama-pt/agora-design-system';
+import { CardLinks, InputSearchBar, Button, InputSelect, DropdownSection, DropdownOption, } from '@ama-pt/agora-design-system';
 import PageBanner from '@/components/PageBanner';
 import { Pagination } from '@/components/Pagination';
 
@@ -11,10 +11,10 @@ import { Pagination } from '@/components/Pagination';
 const dummyDataStories = [
   {
     id: '1',
-    slug: 'datastory-1',
-    title: 'Lorem ipsum dolor sit amet',
+    slug: 'servicos-publicos/o-canal-presencial',
+    title: 'Serviços Públicos: o canal presencial',
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    organization: { name: 'Organização Exemplo' },
+    organization: { name: 'Serviços Públicos' },
     image: '/laptop.png',
     created_at: '2024-03-11T12:00:00Z',
     metrics: { views: 1250, reuses: 45, followers: 12 },
@@ -30,28 +30,6 @@ const dummyDataStories = [
     created_at: '2024-03-10T12:00:00Z',
     metrics: { views: 890, reuses: 23, followers: 8 },
     datasets: [1, 2]
-  },
-  {
-    id: '3',
-    slug: 'datastory-3',
-    title: 'Sed do eiusmod tempor incididunt',
-    description: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-    organization: { name: 'Saúde Pública' },
-    image: '/laptop.png',
-    created_at: '2024-03-09T12:00:00Z',
-    metrics: { views: 2341, reuses: 67, followers: 34 },
-    datasets: [1, 2, 3, 4]
-  },
-  {
-    id: '4',
-    slug: 'datastory-4',
-    title: 'Ut labore et dolore magna aliqua',
-    description: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    organization: { name: 'Ambiente e Energia' },
-    image: '/laptop.png',
-    created_at: '2024-03-08T12:00:00Z',
-    metrics: { views: 560, reuses: 12, followers: 5 },
-    datasets: [1]
   }
 ];
 
@@ -65,7 +43,7 @@ export default function DataStoriesClient({ currentPage }: DataStoriesClientProp
   const pageSize = 12;
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 datastories">
+    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 datastories ">
       <main className="flex-grow bg-white">
         <PageBanner
           title="Data Stories"
