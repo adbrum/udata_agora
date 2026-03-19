@@ -9,7 +9,7 @@ import {
   Icon,
   InputText,
   InputTextArea,
-  DragAndDropUploader,
+  ButtonUploader,
 } from "@ama-pt/agora-design-system";
 import { fetchOrganization, updateOrganization, uploadOrgLogo } from "@/services/api";
 import { Organization } from "@/types/api";
@@ -149,7 +149,7 @@ export default function OrgProfileClient() {
         <div className="datasets-admin-page__fields-group">
           <InputText
             label="Nome *"
-            placeholder="Nome da organização"
+            placeholder="Insira o nome aqui"
             id="org-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -157,7 +157,7 @@ export default function OrgProfileClient() {
 
           <InputText
             label="Sigla"
-            placeholder="Sigla da organização"
+            placeholder="Insira a sigla aqui"
             id="org-acronym"
             value={acronym}
             onChange={(e) => setAcronym(e.target.value)}
@@ -165,7 +165,7 @@ export default function OrgProfileClient() {
 
           <InputTextArea
             label="Descrição"
-            placeholder="Descrição da organização"
+            placeholder="Insira a descrição aqui"
             id="org-description"
             rows={4}
             value={description}
@@ -174,7 +174,7 @@ export default function OrgProfileClient() {
 
           <InputText
             label="Website"
-            placeholder="https://..."
+            placeholder="Insira o URL aqui"
             id="org-url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
@@ -185,10 +185,9 @@ export default function OrgProfileClient() {
               Logotipo
             </span>
             <div className="mt-2">
-              <DragAndDropUploader
-                dragAndDropLabel="Selecione ou arraste os ficheiros"
-                separatorLabel="ou"
-                inputLabel="Selecionar ficheiro"
+              <ButtonUploader
+                label="Ficheiros"
+                inputLabel="Selecione ou arraste o ficheiro"
                 removeFileButtonLabel="Remover ficheiro"
                 replaceFileButtonLabel="Substituir ficheiro"
                 extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."

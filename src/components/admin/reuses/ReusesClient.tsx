@@ -172,7 +172,7 @@ export default function ReusesClient() {
               className="datasets-page__empty"
               position="center"
               icon={
-                <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
+                <img src="/Icons/bar_chart.svg" alt="" className="w-[40px] h-[40px]" />
               }
               title="Sem publicações"
               description="Ainda não publicou uma reutilização."

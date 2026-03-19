@@ -39,13 +39,14 @@ export function AdminHeader() {
             <Language label="Espanhol" abbr="ES" value="es" checked={currentLang === "es"} />
             <Language label="Francês" abbr="FR" value="fr" checked={currentLang === "fr"} />
           </Languages>
-          <Search label="Pesquisar">
+          {/* Pesquisar oculto temporariamente */}
+          {/* <Search label="Pesquisar">
             <DefaultSearch>
               <SearchInputContainer>
                 <InputSearchBar hasVoiceActionButton={false} label="Diga-nos o que procura que nos ajudamos" placeholder="Pesquisar" aria-label="Pesquisar" />
               </SearchInputContainer>
             </DefaultSearch>
-          </Search>
+          </Search> */}
           <Authenticated
             avatarType={user?.avatar_thumbnail ? "image" : "initials"}
             srcPath={

@@ -86,7 +86,7 @@ export default function DatasetsNewClient() {
               variant="neutral-100"
               titleText="Publicar um conjunto de dados"
               descriptionText="Seja uma administração pública ou uma empresa pública, todos podem publicar em dados.gov!"
-              icon={{ name: "agora-line-file" }}
+              icon={{ name: "agora-line-edit" }}
               button={{
                 children: "Comece a publicar",
                 variant: "primary",

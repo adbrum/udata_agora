@@ -32,11 +32,12 @@ const navGroups: NavGroup[] = [
         href: "/pages/admin/me/datasets",
         icon: "agora-line-layers-menu",
       },
-      {
-        label: "API",
-        href: "/pages/admin/me/dataservices",
-        customIcon: "/Icons/reduce_white.svg",
-      },
+      // API oculta temporariamente
+      // {
+      //   label: "API",
+      //   href: "/pages/admin/me/dataservices",
+      //   customIcon: "/Icons/reduce_white.svg",
+      // },
       {
         label: "Reutilizações",
         href: "/pages/admin/me/reuses",
