@@ -267,16 +267,17 @@ export const Header = () => {
             href: "#",
             isSubmenuTrigger: true,
           },
-          {
-            type: "card",
-            key: "publicacoes",
-            iconDefault: "agora-line-book-open",
-            iconHover: "agora-solid-book-open",
-            title: "Publicações",
-            description: "Relatórios e estudos",
-            href: "#",
-            isSubmenuTrigger: true,
-          },
+          // Publicações ocultas temporariamente
+          // {
+          //   type: "card",
+          //   key: "publicacoes",
+          //   iconDefault: "agora-line-book-open",
+          //   iconHover: "agora-solid-book-open",
+          //   title: "Publicações",
+          //   description: "Relatórios e estudos",
+          //   href: "#",
+          //   isSubmenuTrigger: true,
+          // },
           {
             type: "card",
             key: "noticias",
@@ -286,15 +287,16 @@ export const Header = () => {
             description: "Últimas novidades",
             href: "/pages/article",
           },
-          {
-            type: "card",
-            key: "minicursos",
-            iconDefault: "agora-line-folder",
-            iconHover: "agora-solid-folder",
-            title: "Minicursos",
-            description: "Formação online",
-            href: "/pages/mini-courses",
-          },
+          // Minicursos ocultos temporariamente
+          // {
+          //   type: "card",
+          //   key: "minicursos",
+          //   iconDefault: "agora-line-folder",
+          //   iconHover: "agora-solid-folder",
+          //   title: "Minicursos",
+          //   description: "Formação online",
+          //   href: "/pages/mini-courses",
+          // },
         ];
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -487,13 +489,14 @@ export const Header = () => {
                 description: "Entidades públicas",
                 href: "/pages/organizations",
               },
-              {
-                iconDefault: "agora-line-bell",
-                iconHover: "agora-solid-bell",
-                title: "Data Stories",
-                description: "Histórias com dados",
-                href: "/pages/datastories",
-              },
+              // Data Stories oculto temporariamente
+              // {
+              //   iconDefault: "agora-line-bell",
+              //   iconHover: "agora-solid-bell",
+              //   title: "Data Stories",
+              //   description: "Histórias com dados",
+              //   href: "/pages/datastories",
+              // },
             ].map((card) => (
               <NavigationLink key={card.title} appearance="link">
                 <HeaderCard {...card} onLinkClick={handleLinkClick} />
