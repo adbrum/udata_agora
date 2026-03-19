@@ -109,11 +109,11 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                 <span className="text-neutral-600">Nenhum artigo encontrado.</span>
               </div>
             ) : (
-              <div className="grid grid-cols-2 istretchtems- agora-card-links-datasets-px0 gap-32 cardsnews">
+              <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-32 cardsnews">
                 {posts.map((post) => (
                   <div
                     key={post.id}
-                    className="cursor-pointer group"
+                    className="cursor-pointer group flex flex-col h-full"
                     onClick={() => router.push(`/pages/article/${post.slug}`)}
                   >
                     <CardLinks
