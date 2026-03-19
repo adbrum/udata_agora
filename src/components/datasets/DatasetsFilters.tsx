@@ -404,7 +404,7 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
                 <div
                   className={`flex flex-col gap-2 ${showScroll ? "max-h-[225px] overflow-y-auto" : ""}`}
                 >
-                  {isLoading && !group.suggest ? null : filteredData.length > 0 ? (
+                  {isLoading && !group.suggest && filteredData.length === 0 ? null : filteredData.length > 0 ? (
                     filteredData.map((item) => (
                       <Checkbox
                         key={item.id}
@@ -421,7 +421,7 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
                       <p className="text-sm text-neutral-900">Escreva pelo menos 2 caracteres...</p>
                     )
                   ) : (
-                    <p className="text-sm text-neutral-500">Sem resultados</p>
+                    <p className="text-sm text-neutral-900">Nenhum resultado encontrado.</p>
                   )}
                 </div>
               </div>

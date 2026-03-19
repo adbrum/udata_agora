@@ -10,7 +10,7 @@ import {
   InputText,
   InputTextArea,
   InputSelect,
-  DragAndDropUploader,
+  ButtonUploader,
   RadioButton,
 } from "@ama-pt/agora-design-system";
 import PublishDropdown from "@/components/admin/PublishDropdown";
@@ -122,7 +122,7 @@ export default function PostsNewClient() {
               <div className="datasets-admin-page__fields-group">
                 <InputText
                   label="Título do artigo *"
-                  placeholder=""
+                  placeholder="Insira o título aqui"
                   id="article-title"
                   value={articleTitle}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,7 +137,7 @@ export default function PostsNewClient() {
 
                 <InputTextArea
                   label="Cabeçalho *"
-                  placeholder=""
+                  placeholder="Insira aqui"
                   id="article-header"
                   rows={3}
                   value={articleHeader}
@@ -191,10 +191,9 @@ export default function PostsNewClient() {
                     Cobertor *
                   </span>
                   <div className="mt-2">
-                    <DragAndDropUploader
-                      dragAndDropLabel="Selecione ou arraste os ficheiros"
-                      separatorLabel="ou"
-                      inputLabel="Selecionar ficheiro"
+                    <ButtonUploader
+                      label="Ficheiros"
+                      inputLabel="Selecione ou arraste o ficheiro"
                       removeFileButtonLabel="Remover ficheiro"
                       replaceFileButtonLabel="Substituir ficheiro"
                       extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
@@ -226,7 +225,7 @@ export default function PostsNewClient() {
               <div className="datasets-admin-page__fields-group">
                 <InputTextArea
                   label="Contente *"
-                  placeholder=""
+                  placeholder="Insira aqui"
                   id="article-content"
                   rows={12}
                 />

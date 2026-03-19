@@ -12,7 +12,7 @@ import {
   InputSelect,
   DropdownSection,
   DropdownOption,
-  DragAndDropUploader,
+  ButtonUploader,
   CardGeneral,
 } from "@ama-pt/agora-design-system";
 import {
@@ -318,7 +318,7 @@ export default function ReusesFormClient({
                 <div className="datasets-admin-page__fields-group">
                   <InputText
                     label="Nome da reutilização *"
-                    placeholder="Placeholder"
+                    placeholder="Insira o nome aqui"
                     id="reuse-title"
                     value={reuseName}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -332,7 +332,7 @@ export default function ReusesFormClient({
                   />
                   <InputText
                     label="Reutilização *"
-                    placeholder="https://..."
+                    placeholder="Insira o URL aqui"
                     id="reuse-link"
                     value={reuseLink}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -391,7 +391,7 @@ export default function ReusesFormClient({
                   </InputSelect>
                   <InputTextArea
                     label="Descrição *"
-                    placeholder="Placeholder"
+                    placeholder="Insira a descrição aqui"
                     id="reuse-description"
                     rows={4}
                     maxLength={246}
@@ -444,10 +444,9 @@ export default function ReusesFormClient({
                       Imagem de capa *
                     </span>
                     <div className="mt-2">
-                      <DragAndDropUploader
-                        dragAndDropLabel="Selecione ou arraste os ficheiros"
-                        separatorLabel="ou"
-                        inputLabel="Selecionar ficheiros"
+                      <ButtonUploader
+                        label="Ficheiros"
+                        inputLabel="Selecione ou arraste o ficheiro"
                         removeFileButtonLabel="Remover ficheiro"
                         replaceFileButtonLabel="Substituir ficheiro"
                         extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
@@ -508,7 +507,7 @@ export default function ReusesFormClient({
                   <div key={`dataset-${index}`} className="mt-[16px]">
                     <InputText
                       label="Link para o conjunto de dados"
-                      placeholder="https://..."
+                      placeholder="Insira o URL aqui"
                       id={`reuse-dataset-url-${index}`}
                       value={link.url}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -566,7 +565,7 @@ export default function ReusesFormClient({
                   <div key={`api-${index}`} className="mt-[16px]">
                     <InputText
                       label="Link para a API"
-                      placeholder="https://..."
+                      placeholder="Insira o URL aqui"
                       id={`reuse-api-url-${index}`}
                       value={link.url}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>

@@ -18,7 +18,7 @@ import {
   Icon,
   InputText,
   InputTextArea,
-  DragAndDropUploader,
+  ButtonUploader,
   StatusCard,
   Tabs,
   Tab,
@@ -107,7 +107,8 @@ export default function ProfileClient() {
             </p>
           </div>
 
-          <div className="profile-card__links">
+          {/* Subscrições e Acompanhamentos ocultos temporariamente */}
+          {/* <div className="profile-card__links">
             <Button
               appearance="link"
               variant="primary"
@@ -126,45 +127,18 @@ export default function ProfileClient() {
             >
               0 Acompanhamentos
             </Button>
-          </div>
+          </div> */}
 
-          <div
-            className="absolute top-[32px] right-[32px] publish-dropdown-wrapper"
-            ref={editDropdownWrapperRef}
-          >
+          <div className="absolute top-[32px] right-[32px]">
             <Button
               variant="primary"
               hasIcon
-              trailingIcon="agora-line-arrow-down-anchor"
-              trailingIconHover="agora-solid-arrow-down-anchor"
-              onClick={() => setShowEditDropdown((v) => !v)}
+              leadingIcon="agora-line-eye"
+              leadingIconHover="agora-solid-eye"
+              onClick={() => router.push(`/pages/users/${user?.slug || ''}`)}
             >
-              Editar
+              Ver perfil público
             </Button>
-            <Dropdown
-              type="icon"
-              showDropdown={showEditDropdown}
-              onHide={() => setShowEditDropdown(false)}
-              hideSectionNames={true}
-              className="profile-edit-dropdown"
-              onChange={(options) => {
-                const routes: Record<string, string> = {
-                  edit_profile: "/pages/admin/profile",
-                  change_password: "/pages/admin/profile/password",
-                  delete_profile: "/pages/admin/profile/delete",
-                };
-                if (options.length > 0) {
-                  const route = routes[options[0].value as string];
-                  if (route) router.push(route);
-                }
-              }}
-            >
-              <DropdownSection name="edit" label="">
-                <DropdownOption value="edit_profile" hasIcon icon="agora-line-edit">Editar perfil</DropdownOption>
-                <DropdownOption value="change_password" hasIcon icon="agora-line-unlock">Alterar palavra-passe</DropdownOption>
-                <DropdownOption value="delete_profile" hasIcon icon="agora-line-trash">Eliminar perfil</DropdownOption>
-              </DropdownSection>
-            </Dropdown>
           </div>
         </div>
       </div>
@@ -183,14 +157,14 @@ export default function ProfileClient() {
                     <div className="flex-1">
                       <InputText
                         label="Nome *"
-                        placeholder="Placeholder"
+                        placeholder="Insira o nome aqui"
                         id="first-name"
                       />
                     </div>
                     <div className="flex-1">
                       <InputText
                         label="Último nome *"
-                        placeholder="Placeholder"
+                        placeholder="Insira o apelido aqui"
                         id="last-name"
                       />
                     </div>
@@ -198,14 +172,14 @@ export default function ProfileClient() {
 
                   <InputTextArea
                     label="Biografia"
-                    placeholder="Placeholder"
+                    placeholder="Insira a descrição aqui"
                     id="biography"
                     rows={4}
                   />
 
                   <InputText
                     label="Site da Internet"
-                    placeholder="Placeholder"
+                    placeholder="Insira o URL aqui"
                     id="website"
                   />
 
@@ -214,10 +188,9 @@ export default function ProfileClient() {
                       Foto de perfil
                     </span>
                     <div className="mt-2">
-                      <DragAndDropUploader
-                        dragAndDropLabel="Selecione ou arraste os ficheiros"
-                        separatorLabel="ou"
-                        inputLabel="Selecionar ficheiro"
+                      <ButtonUploader
+                        label="Ficheiros"
+                        inputLabel="Selecione ou arraste o ficheiro"
                         removeFileButtonLabel="Remover ficheiro"
                         replaceFileButtonLabel="Substituir ficheiro"
                         extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
@@ -232,7 +205,7 @@ export default function ProfileClient() {
                     <div className="flex-1">
                       <InputText
                         label="Chave de API"
-                        placeholder="Placeholder"
+                        placeholder="Insira a chave aqui"
                         id="api-key"
                       />
                     </div>
@@ -244,8 +217,8 @@ export default function ProfileClient() {
                   <div className="flex items-end gap-[16px]">
                     <div className="flex-1">
                       <InputText
-                        label="Endereço de email"
-                        placeholder="ines.correia@babelgroup.com"
+                        label="Endereço de e-mail"
+                        placeholder="Insira o e-mail aqui"
                         id="email"
                       />
                     </div>
@@ -258,18 +231,19 @@ export default function ProfileClient() {
                     <div className="flex-1">
                       <InputText
                         label="Senha"
-                        placeholder="**********"
+                        placeholder="Insira a palavra-passe aqui"
                         id="password"
                         type="password"
                       />
                     </div>
                     <Button appearance="outline" variant="neutral" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
-                      Alterar sua senha
+                      Alterar senha
                     </Button>
                   </div>
                 </div>
 
-                <StatusCard
+                {/* Autenticação de dois fatores oculta temporariamente */}
+                {/* <StatusCard
                   type="info"
                   description={
                     <>
@@ -284,24 +258,8 @@ export default function ProfileClient() {
                   <Button appearance="outline" variant="neutral" hasIcon leadingIcon="agora-line-settings" leadingIconHover="agora-solid-settings">
                     Configure a autenticação de dois fatores.
                   </Button>
-                </div>
+                </div> */}
 
-                <StatusCard
-                  type="danger"
-                  description={
-                    <>
-                      <strong>Excluir conta</strong>
-                      <br />
-                      Atenção, esta ação não pode ser cancelada.
-                    </>
-                  }
-                />
-
-                <div className="flex justify-end mt-[8px]">
-                  <Button appearance="outline" variant="danger" hasIcon leadingIcon="agora-line-trash" leadingIconHover="agora-solid-trash">
-                    Eliminar
-                  </Button>
-                </div>
 
                 <div className="flex justify-end mt-[16px]">
                   <Button variant="primary" hasIcon={true} leadingIcon="agora-line-check-circle" leadingIconHover="agora-solid-check-circle">

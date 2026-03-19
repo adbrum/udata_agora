@@ -301,7 +301,7 @@ export default function DatasetsEditClient() {
               <div className="datasets-admin-page__fields-group">
                 <InputText
                   label="Título*"
-                  placeholder="Título do conjunto de dados"
+                  placeholder="Insira o título aqui"
                   id="edit-title"
                   value={title}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -314,15 +314,15 @@ export default function DatasetsEditClient() {
                   errorFeedbackText="Campo obrigatório"
                 />
                 <InputText
-                  label="Acrônimo"
-                  placeholder="Acrônimo"
+                  label="Sigla"
+                  placeholder="Insira a sigla aqui"
                   id="edit-acronym"
                   value={acronym}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAcronym(e.target.value)}
                 />
                 <InputTextArea
                   label="Descrição*"
-                  placeholder="Descrição"
+                  placeholder="Insira a descrição aqui"
                   id="edit-description"
                   rows={6}
                   value={description}
@@ -337,7 +337,7 @@ export default function DatasetsEditClient() {
                 />
                 <InputTextArea
                   label="Descrição resumida"
-                  placeholder="Descrição resumida"
+                  placeholder="Insira a descrição aqui"
                   id="edit-short-description"
                   rows={3}
                   value={shortDescription}
@@ -457,8 +457,8 @@ export default function DatasetsEditClient() {
                   Ficheiros ({dataset.resources.length})
                 </h2>
                 <ButtonUploader
-                  label="Adicionar ficheiro"
-                  inputLabel="Adicionar ficheiro"
+                  label="Ficheiros"
+                  inputLabel="Selecione ou arraste o ficheiro"
                   selectedFilesLabel="ficheiros selecionados"
                   removeFileButtonLabel="Remover"
                   replaceFileButtonLabel="Substituir"

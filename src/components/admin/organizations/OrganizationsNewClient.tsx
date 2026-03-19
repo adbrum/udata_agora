@@ -10,7 +10,7 @@ import {
   InputText,
   InputTextArea,
   InputSelect,
-  DragAndDropUploader,
+  ButtonUploader,
   Icon,
   StatusCard,
   Accordion,
@@ -234,7 +234,7 @@ export default function OrganizationsNewClient() {
                 <div className="datasets-admin-page__fields-group">
                   <InputText
                     label="Nome *"
-                    placeholder=""
+                    placeholder="Insira o nome aqui"
                     id="org-name"
                     value={orgName}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -248,14 +248,14 @@ export default function OrganizationsNewClient() {
                   />
 
                   <InputText
-                    label="Acrônimo"
-                    placeholder=""
+                    label="Sigla"
+                    placeholder="Insira a sigla aqui"
                     id="org-acronym"
                   />
 
                   <InputTextArea
                     label="Descrição *"
-                    placeholder=""
+                    placeholder="Insira a descrição aqui"
                     id="org-description"
                     rows={6}
                     value={orgDescription}
@@ -271,7 +271,7 @@ export default function OrganizationsNewClient() {
 
                   <InputText
                     label="Site da Internet"
-                    placeholder=""
+                    placeholder="Insira o URL aqui"
                     id="org-website"
                   />
                 </div>
@@ -279,10 +279,9 @@ export default function OrganizationsNewClient() {
                 <h2 className="datasets-admin-page__section-title">Logotipo</h2>
 
                 <div className="datasets-admin-page__fields-group">
-                  <DragAndDropUploader
-                    dragAndDropLabel="Selecione ou arraste os ficheiros"
-                    separatorLabel="ou"
-                    inputLabel="Selecione o ficheiro"
+                  <ButtonUploader
+                    label="Ficheiros"
+                    inputLabel="Selecione ou arraste o ficheiro"
                     removeFileButtonLabel="Remover ficheiro"
                     replaceFileButtonLabel="Substituir ficheiro"
                     extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."

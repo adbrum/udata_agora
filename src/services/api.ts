@@ -2656,8 +2656,20 @@ export async function fetchMyCommunityResources(
   pageSize: number = 20
 ): Promise<APIResponse<CommunityResource>> {
   try {
+    // First get the current user ID
+    const meRes = await fetch(`${API_BASE_URL}/me/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!meRes.ok) {
+      return { data: [], page: 1, page_size: pageSize, total: 0, next_page: null, previous_page: null };
+    }
+    const me = await meRes.json();
+    const userId = me.id;
+
+    // Fetch community resources filtered by owner
     const res = await fetch(
-      `${API_BASE_URL}/datasets/community_resources/?owner=me&page=${page}&page_size=${pageSize}`,
+      `${API_BASE_URL}/datasets/community_resources/?owner=${userId}&page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok)
