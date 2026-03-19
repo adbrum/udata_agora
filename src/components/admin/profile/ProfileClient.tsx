@@ -1,9 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { fetchUserActivity } from "@/services/api";
+import { Activity } from "@/types/api";
+import { format } from "date-fns";
+import { pt } from "date-fns/locale";
 import {
   Avatar,
   Breadcrumb,
@@ -11,6 +15,7 @@ import {
   Dropdown,
   DropdownSection,
   DropdownOption,
+  Icon,
   InputText,
   InputTextArea,
   DragAndDropUploader,
@@ -27,6 +32,40 @@ export default function ProfileClient() {
   const [showEditDropdown, setShowEditDropdown] = useState(false);
   const editDropdownWrapperRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [isLoadingActivities, setIsLoadingActivities] = useState(true);
+  const [activityPage, setActivityPage] = useState(1);
+  const [activityTotal, setActivityTotal] = useState(0);
+  const activityPageSize = 20;
+
+  useEffect(() => {
+    async function loadActivities() {
+      if (!user?.id) return;
+      setIsLoadingActivities(true);
+      try {
+        const response = await fetchUserActivity(user.id, activityPage, activityPageSize);
+        setActivities(response.data || []);
+        setActivityTotal(response.total || 0);
+      } catch (error) {
+        console.error("Error loading activities:", error);
+      } finally {
+        setIsLoadingActivities(false);
+      }
+    }
+    loadActivities();
+  }, [user?.id, activityPage]);
+
+  const totalActivityPages = Math.ceil(activityTotal / activityPageSize);
+
+  const groupActivitiesByMonth = (acts: Activity[]) => {
+    const groups: Record<string, Activity[]> = {};
+    acts.forEach((act) => {
+      const key = format(new Date(act.created_at), "MMMM 'de' yyyy", { locale: pt });
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(act);
+    });
+    return groups;
+  };
 
   return (
     <div className="datasets-admin-page">
@@ -96,8 +135,8 @@ export default function ProfileClient() {
             <Button
               variant="primary"
               hasIcon
-              trailingIcon="agora-line-chevron-down"
-              trailingIconHover="agora-solid-chevron-down"
+              trailingIcon="agora-line-arrow-down-anchor"
+              trailingIconHover="agora-solid-arrow-down-anchor"
               onClick={() => setShowEditDropdown((v) => !v)}
             >
               Editar
@@ -265,7 +304,7 @@ export default function ProfileClient() {
                 </div>
 
                 <div className="flex justify-end mt-[16px]">
-                  <Button variant="primary">
+                  <Button variant="primary" hasIcon={true} leadingIcon="agora-line-check-circle" leadingIconHover="agora-solid-check-circle">
                     Guardar
                   </Button>
                 </div>
@@ -276,9 +315,81 @@ export default function ProfileClient() {
             <TabHeader>Atividades</TabHeader>
             <TabBody>
               <div className="mt-[24px]">
-                <p className="text-neutral-700 text-base">
-                  Nenhuma atividade registada.
-                </p>
+                {isLoadingActivities ? (
+                  <p className="text-neutral-900 text-base">A carregar atividades...</p>
+                ) : activities.length === 0 ? (
+                  <p className="text-neutral-900 text-base">
+                    Nenhuma atividade registada.
+                  </p>
+                ) : (
+                  <div className="space-y-32">
+                    {Object.entries(groupActivitiesByMonth(activities)).map(([month, acts]) => (
+                      <div key={month}>
+                        <h3 className="text-neutral-900 text-sm font-medium mb-16">{month}</h3>
+                        <div className="relative border-l-2 border-neutral-200 ml-4">
+                          {acts.map((act, idx) => (
+                            <div key={idx} className="flex items-start gap-16 pb-16 ml-16 relative">
+                              <div
+                                className="absolute -left-[25px] top-1 w-8 h-8 rounded-full bg-neutral-300"
+                              />
+                              <div className="flex-1 flex items-start justify-between">
+                                <div>
+                                  <span className="text-sm">
+                                    <Icon name="agora-line-user" className="w-4 h-4 inline text-primary-600 mr-4" />
+                                    <span className="text-primary-600 font-medium">
+                                      {act.actor.first_name} {act.actor.last_name}
+                                    </span>
+                                    {" ► "}
+                                    <span className="text-neutral-900">{act.label}</span>
+                                  </span>
+                                  {act.related_to_url && (
+                                    <div>
+                                      <a
+                                        href={act.related_to_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-600 text-sm underline"
+                                      >
+                                        {act.related_to}
+                                        <Icon name="agora-line-external-link" className="w-3 h-3 inline ml-4" />
+                                      </a>
+                                    </div>
+                                  )}
+                                </div>
+                                <span className="text-neutral-900 text-sm whitespace-nowrap ml-16">
+                                  {format(new Date(act.created_at), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    {totalActivityPages > 1 && (
+                      <div className="flex items-center justify-center gap-8 mt-32">
+                        <Button
+                          variant="primary"
+                          appearance="outline"
+                          onClick={() => setActivityPage((p) => Math.max(1, p - 1))}
+                          disabled={activityPage === 1}
+                        >
+                          Anterior
+                        </Button>
+                        <span className="text-neutral-900 text-sm">
+                          Página {activityPage} de {totalActivityPages}
+                        </span>
+                        <Button
+                          variant="primary"
+                          appearance="outline"
+                          onClick={() => setActivityPage((p) => Math.min(totalActivityPages, p + 1))}
+                          disabled={activityPage === totalActivityPages}
+                        >
+                          Seguinte
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </TabBody>
           </Tab>
