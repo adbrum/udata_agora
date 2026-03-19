@@ -177,8 +177,9 @@ export function AdminSideNavigation() {
   const visibleGroups = useMemo(
     () =>
       navGroups.filter((group) => {
-        if (group.key === "system") return isAdmin;
-        if (group.key === "organization") return hasOrganization;
+        // Organização e Sistema ocultos temporariamente
+        if (group.key === "system") return false;
+        if (group.key === "organization") return false;
         return true;
       }),
     [isAdmin, hasOrganization],
