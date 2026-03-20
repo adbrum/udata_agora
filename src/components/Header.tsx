@@ -489,14 +489,13 @@ export const Header = () => {
                 description: "Entidades públicas",
                 href: "/pages/organizations",
               },
-              // Data Stories oculto temporariamente
-              // {
-              //   iconDefault: "agora-line-bell",
-              //   iconHover: "agora-solid-bell",
-              //   title: "Data Stories",
-              //   description: "Histórias com dados",
-              //   href: "/pages/datastories",
-              // },
+              {
+                iconDefault: "agora-line-bell",
+                iconHover: "agora-solid-bell",
+                title: "Data Stories",
+                description: "Histórias com dados",
+                href: "/pages/datastories",
+              },
             ].map((card) => (
               <NavigationLink key={card.title} appearance="link">
                 <HeaderCard {...card} onLinkClick={handleLinkClick} />

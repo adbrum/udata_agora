@@ -325,14 +325,17 @@ export default function DatasetsEditClient() {
                   placeholder="Insira a descrição aqui"
                   id="edit-description"
                   rows={6}
+                  maxLength={246}
+                  showCharCounter={true}
                   value={description}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                     setDescription(e.target.value);
                     if (e.target.value.trim()) clearError("description");
                   }}
-                  hasError={!!formErrors.description}
-                  hasFeedback={!!formErrors.description}
+                  hasError={formErrors.description ? true : undefined}
+                  hasFeedback={formErrors.description ? true : undefined}
                   feedbackState="danger"
+                  feedbackText="Campo obrigatório"
                   errorFeedbackText="Campo obrigatório"
                 />
                 <InputTextArea

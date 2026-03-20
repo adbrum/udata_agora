@@ -17,12 +17,31 @@ import {
   TableRow,
   TableCell,
   Pill,
+  ProgressBar,
 } from "@ama-pt/agora-design-system";
 import { fetchMyDatasets } from "@/services/api";
 import { Dataset } from "@/types/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 
+const QUALITY_CRITERIA: [keyof NonNullable<Dataset["quality"]>, string][] = [
+  ["dataset_description_quality", "Descrição"],
+  ["has_resources", "Recursos"],
+  ["license", "Licença"],
+  ["has_open_format", "Formato aberto"],
+  ["all_resources_available", "Recursos disponíveis"],
+  ["resources_documentation", "Documentação"],
+  ["spatial", "Cobertura espacial"],
+  ["temporal_coverage", "Cobertura temporal"],
+  ["update_frequency", "Frequência de atualização"],
+];
+
+function calculateQualityScore(quality?: Dataset["quality"]): number {
+  if (!quality) return 0;
+  if (quality.score > 0) return Math.round(quality.score * 100);
+  const met = QUALITY_CRITERIA.filter(([key]) => quality[key] === true).length;
+  return Math.round((met / QUALITY_CRITERIA.length) * 100);
+}
 
 type SortOrder = "none" | "ascending" | "descending";
 type SortField = "title" | "created_at" | "last_modified" | "resources";
@@ -235,6 +254,7 @@ export default function DatasetsClient() {
               >
                 Ficheiros
               </TableHeaderCell>
+              <TableHeaderCell>Pontuações</TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
@@ -255,13 +275,37 @@ export default function DatasetsClient() {
                   </Pill>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
-                  {formatDate(dataset.created_at)}
+                  <span className="flex items-center gap-[6px]">
+                    <Icon name="agora-line-calendar" className="w-[16px] h-[16px]" />
+                    {formatDate(dataset.created_at)}
+                  </span>
                 </TableCell>
                 <TableCell headerLabel="Última modificação">
-                  {formatDate(dataset.last_modified)}
+                  <span className="flex items-center gap-[6px]">
+                    <Icon name="agora-line-sort-vertical" className="w-[16px] h-[16px]" />
+                    {formatDate(dataset.last_modified)}
+                  </span>
                 </TableCell>
                 <TableCell headerLabel="Ficheiros">
                   {dataset.resources?.length || 0}
+                </TableCell>
+                <TableCell headerLabel="Pontuações">
+                  <div
+                    className={
+                      calculateQualityScore(dataset.quality) <= 45
+                        ? "quality-progress-warning"
+                        : ""
+                    }
+                  >
+                    <ProgressBar
+                      value={calculateQualityScore(dataset.quality)}
+                      max={100}
+                      hidePercentageValue={true}
+                    />
+                  </div>
+                  <span className="text-xs text-neutral-700">
+                    {calculateQualityScore(dataset.quality)}%
+                  </span>
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">

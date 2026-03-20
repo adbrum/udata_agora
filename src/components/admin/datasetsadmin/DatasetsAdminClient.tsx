@@ -24,17 +24,21 @@ import {
   uploadResource,
   fetchLicenses,
   fetchFrequencies,
+  fetchDataset,
+  fetchMyDatasets,
 } from "@/services/api";
 import { License, Frequency, Dataset } from "@/types/api";
 
 interface DatasetsAdminClientProps {
   currentStep: number;
+  datasetId?: string | null;
   onNextStep: () => void;
   onPreviousStep: () => void;
 }
 
 export default function DatasetsAdminClient({
   currentStep,
+  datasetId,
   onNextStep,
   onPreviousStep,
 }: DatasetsAdminClientProps) {
@@ -63,21 +67,42 @@ export default function DatasetsAdminClient({
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
 
+  // Whether user has existing datasets
+  const [hasDatasets, setHasDatasets] = useState(true);
+
   useEffect(() => {
     async function loadDropdownData() {
       try {
-        const [licensesData, frequenciesData] = await Promise.all([
+        const [licensesData, frequenciesData, myDatasetsData] = await Promise.all([
           fetchLicenses(),
           fetchFrequencies(),
+          fetchMyDatasets(1, 1),
         ]);
         setLicenses(licensesData);
         setFrequencies(frequenciesData);
+        setHasDatasets(myDatasetsData.data.length > 0);
       } catch (error) {
         console.error("Error loading dropdown data:", error);
       }
     }
     loadDropdownData();
   }, []);
+
+  // Restore dataset from API when datasetId is in the URL
+  useEffect(() => {
+    if (datasetId && !createdDataset) {
+      async function restoreDataset() {
+        try {
+          const dataset = await fetchDataset(datasetId as string);
+          setCreatedDataset(dataset);
+        } catch (error) {
+          console.error("Error restoring dataset:", error);
+          setApiError("Não foi possível recuperar o conjunto de dados. Volte ao passo anterior.");
+        }
+      }
+      restoreDataset();
+    }
+  }, [datasetId, createdDataset]);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -123,7 +148,9 @@ export default function DatasetsAdminClient({
 
       const dataset = await createDataset(payload);
       setCreatedDataset(dataset);
-      onNextStep();
+      router.push(
+        `/pages/admin/me/datasets/new?step=${currentStep + 1}&datasetId=${dataset.id}`,
+      );
     } catch (error: unknown) {
       const err = error as { status?: number; data?: Record<string, unknown> };
       if (err.data && typeof err.data === "object") {
@@ -381,6 +408,49 @@ export default function DatasetsAdminClient({
                   </>
                 }
               />
+              {!hasDatasets && (
+                <>
+                  <h2 className="datasets-admin-page__section-title">Produtor</h2>
+
+                  <div className="datasets-admin-page__fields-group">
+                    <span className="text-primary-900 text-base font-medium leading-7">
+                      Verifique a identidade que deseja usar na publicação.
+                    </span>
+                    <InputSelect
+                      label=""
+                      hideLabel
+                      placeholder="Para pesquisar..."
+                      id="dataset-producer"
+                      searchable
+                      searchInputPlaceholder="Para pesquisar..."
+                      searchNoResultsText="Nenhum resultado encontrado"
+                    >
+                      <DropdownSection name="producer">
+                        <DropdownOption value="">—</DropdownOption>
+                      </DropdownSection>
+                    </InputSelect>
+                  </div>
+
+                  <div className="datasets-admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center">
+                    <h3 className="text-primary-900 text-lg font-bold leading-7">
+                      Você não pertence a nenhuma organização.
+                    </h3>
+                    <p className="text-neutral-700 text-base leading-7">
+                      Recomendamos que publique em nome de uma organização se se tratar de uma
+                      atividade profissional.
+                    </p>
+                    <Button
+                      variant="primary"
+                      onClick={() => router.push("/pages/admin/me/organizations")}
+                    >
+                      Crie ou participe de uma organização
+                    </Button>
+                  </div>
+                </>
+              )}
+
+
+
 
               <form
                 className="datasets-admin-page__form"
@@ -422,16 +492,17 @@ export default function DatasetsAdminClient({
                     id="dataset-description"
                     rows={4}
                     maxLength={246}
+                    showCharCounter={true}
                     value={datasetDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setDatasetDescription(e.target.value);
                       if (e.target.value.trim()) clearError("datasetDescription");
                     }}
-                    hasError={!!formErrors.datasetDescription}
-                    hasFeedback={true}
-                    feedbackState={formErrors.datasetDescription ? "danger" : "info"}
-                    errorFeedbackText="Campo obrigatório"
-                    feedbackText="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
+                    hasError="true"
+                    hasFeedback="true"
+                    feedbackState="warning"
+                    feedbackText={datasetDescription}
+                    errorFeedbackText={datasetDescription}
                   />
                   <InputTextArea
                     label="Descrição resumida"
@@ -441,10 +512,13 @@ export default function DatasetsAdminClient({
                     value={datasetShortDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setDatasetShortDescription(e.target.value);
+                      if (e.target.value.trim()) clearError("datasetShortDescription");
                     }}
-                    hasFeedback={true}
-                    feedbackState="info"
-                    feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 200 caracteres da sua descrição."
+                    hasError="true"
+                    hasFeedback="true"
+                    feedbackState="warning"
+                    feedbackText={datasetShortDescription}
+                    errorFeedbackText={datasetShortDescription}
                   />
                   <div className="flex items-center gap-[16px]">
                     <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
@@ -478,6 +552,8 @@ export default function DatasetsAdminClient({
                     </Button>
                   </div>
                 </div>
+
+
 
                 <h2 className="datasets-admin-page__section-title">Acesso</h2>
 

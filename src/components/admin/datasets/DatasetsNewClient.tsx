@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -18,6 +18,13 @@ export default function DatasetsNewClient() {
   const { displayName } = useCurrentUser();
   const totalSteps = 4;
   const currentStep = Number(searchParams.get("step")) || 1;
+  const datasetId = searchParams.get("datasetId");
+
+  const buildStepUrl = (step: number) => {
+    const params = new URLSearchParams({ step: String(step) });
+    if (datasetId) params.set("datasetId", datasetId);
+    return `/pages/admin/me/datasets/new?${params.toString()}`;
+  };
   const totalSegments = 12;
   const displayStep = currentStep;
   const filledSegments = Math.round((displayStep / totalSteps) * totalSegments);
@@ -164,8 +171,9 @@ export default function DatasetsNewClient() {
       {currentStep >= 2 && (
         <DatasetsAdminClient
           currentStep={currentStep}
-          onNextStep={() => router.push(`/pages/admin/me/datasets/new?step=${currentStep + 1}`)}
-          onPreviousStep={() => router.push(`/pages/admin/me/datasets/new?step=${currentStep - 1}`)}
+          datasetId={datasetId}
+          onNextStep={() => router.push(buildStepUrl(currentStep + 1))}
+          onPreviousStep={() => router.push(buildStepUrl(currentStep - 1))}
         />
       )}
     </div>
