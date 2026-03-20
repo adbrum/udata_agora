@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_BASE?.replace("/api/1", "") || "http://127.0.0.1:7000";
+const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:7000";
 
 const nextConfig: NextConfig = {
   // Prevent Next.js from stripping trailing slashes on proxied routes,
