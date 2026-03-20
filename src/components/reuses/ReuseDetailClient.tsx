@@ -95,7 +95,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
     <TabBody>
       <div className="relative">
         <div
-          className="absolute inset-y-0 -mx-4 sm:-mx-8 md:-mx-16 lg:-mx-32 xl:-mx-64 bg-neutral-50 z-0"
+          className="absolute inset-y-0 -mx-4 sm:-mx-8 md:-mx-16 lg:-mx-32 xl:-mx-64 bg-neutral-50 z-0 "
           aria-hidden="true"
         />
         <div className="relative z-10 ">
