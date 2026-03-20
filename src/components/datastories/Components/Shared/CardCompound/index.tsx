@@ -1,3 +1,4 @@
+import CardAnchor from "./CardAnchor";
 import CardBigNumber from "./CardBigNumber";
 import CardDescription from "./CardDescription";
 import CardIcon from "./CardIcon";
@@ -14,4 +15,5 @@ export const CardCompound = {
     Subtitle: CardSubtitle,
     Description: CardDescription,
     BigNumber: CardBigNumber,
+    Anchor: CardAnchor
 };
