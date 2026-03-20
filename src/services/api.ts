@@ -76,8 +76,15 @@ import {
   HarvestSourceUpdatePayload,
 } from "@/types/api";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
-const API_V2_BASE_URL = process.env.NEXT_PUBLIC_API_V2_BASE || "https://dados.gov.pt/api/2";
+// Server-side (Node.js) needs absolute URLs; client-side uses relative URLs via Next.js proxy
+const isServer = typeof window === "undefined";
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:7000";
+const API_BASE_URL = isServer
+  ? `${BACKEND_URL}/api/1`
+  : (process.env.NEXT_PUBLIC_API_BASE || "/api/1");
+const API_V2_BASE_URL = isServer
+  ? `${BACKEND_URL}/api/2`
+  : (process.env.NEXT_PUBLIC_API_V2_BASE || "/api/2");
 // Relative API URL for authenticated requests (passes through Next.js proxy which forwards cookies)
 const API_AUTH_URL = "/api/1";
 
