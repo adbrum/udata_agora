@@ -45,3 +45,5 @@ next-env.d.ts
 .gemini/
 google-chrome-stable_current_amd64.deb
 figma_node.json
+# testsprite (vulnerability testing - contains API keys and credentials)
+/testsprite_tests/
