@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, type ReactElement } from "react";
 import {
   Accordion,
   AccordionGroup,
@@ -280,11 +280,14 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
     fetchData();
   }, [resource.url, resource.format, isTabular]);
 
+  // Cast Tabs to accept conditional children (the library type is overly strict)
+  const FlexTabs = Tabs as React.FC<Omit<React.ComponentProps<typeof Tabs>, "children"> & { children: React.ReactNode }>;
+
   return (
     <div className="flex gap-16">
       <div className="w-[2px] bg-primary-600 shrink-0" />
       <div className="flex-1 min-w-0">
-        <Tabs>
+        <FlexTabs>
           {isTabular && (
           <Tab>
             <TabHeader>Pré-visualização</TabHeader>
@@ -319,7 +322,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                         Explore os dados
                       </Button>
                     </div>
-                    <Table desktopLayout="general">
+                    <Table desktopLayout="table">
                       <TableHeader>
                         <TableRow>
                           {tabularData.headers.map((header, i) => (
@@ -737,7 +740,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
               </div>
             </TabBody>
           </Tab>
-        </Tabs>
+        </FlexTabs>
       </div>
     </div>
   );

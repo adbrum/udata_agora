@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button, Breadcrumb, Pill } from "@ama-pt/agora-design-system";
 
-export default function ReusePreviewPage() {
+function ReusePreviewContent() {
   const searchParams = useSearchParams();
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -47,5 +47,13 @@ export default function ReusePreviewPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function ReusePreviewPage() {
+  return (
+    <Suspense>
+      <ReusePreviewContent />
+    </Suspense>
   );
 }

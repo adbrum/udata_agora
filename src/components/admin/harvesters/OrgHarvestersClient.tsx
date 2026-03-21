@@ -32,7 +32,7 @@ const getStatusLabel = (source: HarvestSource) => {
   if (!job) return "Sem execução";
   if (job.status === "done") return "Terminado";
   if (job.status === "failed") return "Falhado";
-  if (job.status === "running") return "Em execução";
+  if (job.status === "started") return "Em execução";
   return job.status;
 };
 
@@ -185,7 +185,7 @@ export default function OrgHarvestersClient() {
                 </TableCell>
                 <TableCell headerLabel="Última execução">
                   {harvester.last_job
-                    ? formatDate(harvester.last_job.created)
+                    ? formatDate(harvester.last_job.started ?? harvester.last_job.ended ?? "")
                     : "Ainda não"}
                 </TableCell>
                 <TableCell headerLabel="Ações">

@@ -68,8 +68,9 @@ export default function OrgProfileClient() {
     }
   };
 
-  const handleLogoUpload = async (files: File[]) => {
-    if (!org || files.length === 0) return;
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!org || !files || files.length === 0) return;
     try {
       await uploadOrgLogo(org.id, files[0]);
       const updated = await fetchOrganization(org.id);
