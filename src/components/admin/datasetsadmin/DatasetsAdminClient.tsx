@@ -416,46 +416,42 @@ export default function DatasetsAdminClient({
                   </>
                 }
               />
-              {!hasDatasets && (
-                <>
-                  <h2 className="datasets-admin-page__section-title">Produtor</h2>
+              <h2 className="datasets-admin-page__section-title">Produtor</h2>
 
-                  <div className="datasets-admin-page__fields-group">
-                    <span className="text-primary-900 text-base font-medium leading-7">
-                      Verifique a identidade que deseja usar na publicação.
-                    </span>
-                    <InputSelect
-                      label=""
-                      hideLabel
-                      placeholder="Para pesquisar..."
-                      id="dataset-producer"
-                      searchable
-                      searchInputPlaceholder="Para pesquisar..."
-                      searchNoResultsText="Nenhum resultado encontrado"
-                    >
-                      <DropdownSection name="producer">
-                        <DropdownOption value="">—</DropdownOption>
-                      </DropdownSection>
-                    </InputSelect>
-                  </div>
+              <div className="datasets-admin-page__fields-group">
+                <span className="text-primary-900 text-base font-medium leading-7">
+                  Verifique a identidade que deseja usar na publicação.
+                </span>
+                <InputSelect
+                  label=""
+                  hideLabel
+                  placeholder="Para pesquisar..."
+                  id="dataset-producer"
+                  searchable
+                  searchInputPlaceholder="Para pesquisar..."
+                  searchNoResultsText="Nenhum resultado encontrado"
+                >
+                  <DropdownSection name="producer">
+                    <DropdownOption value="">—</DropdownOption>
+                  </DropdownSection>
+                </InputSelect>
+              </div>
 
-                  <div className="datasets-admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center">
-                    <h3 className="text-primary-900 text-lg font-bold leading-7">
-                      Você não pertence a nenhuma organização.
-                    </h3>
-                    <p className="text-neutral-700 text-base leading-7">
-                      Recomendamos que publique em nome de uma organização se se tratar de uma
-                      atividade profissional.
-                    </p>
-                    <Button
-                      variant="primary"
-                      onClick={() => router.push("/pages/admin/me/organizations")}
-                    >
-                      Crie ou participe de uma organização
-                    </Button>
-                  </div>
-                </>
-              )}
+              <div className="datasets-admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center mt-[24px]">
+                <h3 className="text-primary-900 text-lg font-bold leading-7">
+                  Você não pertence a nenhuma organização.
+                </h3>
+                <p className="text-neutral-700 text-base leading-7">
+                  Recomendamos que publique em nome de uma organização se se tratar de uma
+                  atividade profissional.
+                </p>
+                <Button
+                  variant="primary"
+                  onClick={() => router.push("/pages/admin/me/organizations")}
+                >
+                  Crie ou participe de uma organização
+                </Button>
+              </div>
 
 
 
@@ -506,11 +502,11 @@ export default function DatasetsAdminClient({
                       setDatasetDescription(e.target.value);
                       if (e.target.value.trim()) clearError("datasetDescription");
                     }}
-                    hasError="true"
-                    hasFeedback="true"
-                    feedbackState="warning"
-                    feedbackText={datasetDescription}
-                    errorFeedbackText={datasetDescription}
+                    hasError={!!formErrors.datasetDescription}
+                    hasFeedback={!!formErrors.datasetDescription || datasetDescription.length < 200}
+                    feedbackState={formErrors.datasetDescription ? "danger" : "warning"}
+                    feedbackText="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <InputTextArea
                     label="Descrição resumida"
@@ -522,13 +518,11 @@ export default function DatasetsAdminClient({
                       setDatasetShortDescription(e.target.value);
                       if (e.target.value.trim()) clearError("datasetShortDescription");
                     }}
-                    hasError="true"
-                    hasFeedback="true"
-                    feedbackState="warning"
-                    feedbackText={datasetShortDescription}
-                    errorFeedbackText={datasetShortDescription}
+                    hasFeedback
+                    feedbackState="info"
+                    feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 200 caracteres da sua descrição."
                   />
-                  <div className="flex items-center gap-[16px]">
+                  <div className="flex items-center justify-between">
                     <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
                       Sugira uma breve descrição.
                     </Button>
@@ -542,11 +536,11 @@ export default function DatasetsAdminClient({
                     </a>
                   </div>
 
-                  <h3 className="text-primary-900 font-bold text-base">Tags</h3>
                   <InputSelect
                     label="Palavras-chave"
                     placeholder="Pesquise por uma palavra-chave..."
                     id="dataset-keywords"
+                    type="checkbox"
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
@@ -555,10 +549,18 @@ export default function DatasetsAdminClient({
                       <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
                     </DropdownSection>
                   </InputSelect>
-                  <div className="w-1/2">
-                    <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit" fullWidth>
+                  <div className="flex items-center justify-between">
+                    <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
                       Sugira palavras-chave
                     </Button>
+                    <a
+                      href="https://dados.gov.pt"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary-600 text-sm underline inline-flex items-center gap-[8px] hover:text-primary-800"
+                    >
+                      O que achou desta sugestão? <Icon name="agora-line-external-link" className="w-4 h-4" />
+                    </a>
                   </div>
                 </div>
 
@@ -571,7 +573,7 @@ export default function DatasetsAdminClient({
                     <span className="text-primary-900 text-base font-medium leading-7">
                       Tipo de acesso
                     </span>
-                    <div className="flex flex-row gap-4">
+                    <div className="flex flex-col gap-4">
                       <RadioButton
                         label="Aberto"
                         id="access-open"
@@ -666,81 +668,6 @@ export default function DatasetsAdminClient({
                   </InputSelect>
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Pontos de contato</h2>
-
-                <div className="datasets-admin-page__fields-group">
-                  {showNewContact && (
-                    <>
-                      <div className="relative">
-                        <InputSelect
-                          label="Escolha um ponto de contato"
-                          placeholder="Selecione um contato"
-                          id="dataset-contact-point"
-                          searchable
-                          searchInputPlaceholder="Escreva para pesquisar..."
-                          searchNoResultsText="Nenhum resultado encontrado"
-                        >
-                          <DropdownSection name="contact-points">
-                            <DropdownOption value="contact1">Contato 1</DropdownOption>
-                          </DropdownSection>
-                        </InputSelect>
-                        <button
-                          type="button"
-                          className="absolute right-[40px] top-[45px] mt-[9px] text-primary-700 hover:text-primary-900 z-10"
-                          onClick={() => setShowNewContact(false)}
-                        >
-                          <Icon name="agora-line-trash" className="w-5 h-5" />
-                        </button>
-                      </div>
-                      <InputText
-                        label="Nome"
-                        placeholder="por exemplo, o nome do serviço"
-                        id="contact-name"
-                        required
-                        value={contactName}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContactName(e.target.value)}
-                      />
-                      <div className="grid grid-cols-2 gap-8">
-                        <InputText
-                          label="E-mail"
-                          placeholder="contact@organisation.org"
-                          id="contact-email"
-                          value={contactEmail}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContactEmail(e.target.value)}
-                        />
-                        <InputText
-                          label="Link"
-                          placeholder="https://..."
-                          id="contact-link"
-                          value={contactLink}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContactLink(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Button
-                          variant="primary"
-                          onClick={() => setShowNewContact(false)}
-                        >
-                          Salvar
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                  <div>
-                    <Button
-                      appearance="outline"
-                      variant="primary"
-                      onClick={(e: React.MouseEvent) => {
-                        e.preventDefault();
-                        setShowNewContact(true);
-                      }}
-                      type="button"
-                    >
-                      + Novo contato
-                    </Button>
-                  </div>
-                </div>
-
                 <h2 className="datasets-admin-page__section-title">Tempo</h2>
 
                 <div className="datasets-admin-page__fields-group">
@@ -770,7 +697,7 @@ export default function DatasetsAdminClient({
                     </DropdownSection>
                   </InputSelect>
 
-                  <div className="flex gap-[18px]">
+                  <div className="grid grid-cols-2 gap-[18px]">
                     <InputDate
                       label="Cobertura temporal (Data de início)"
                       id="dataset-date-start"
@@ -845,7 +772,17 @@ export default function DatasetsAdminClient({
                   </InputSelect>
                 </div>
 
-                <div className="datasets-admin-page__actions">
+                <div className="datasets-admin-page__actions flex justify-between gap-[18px]">
+                  <Button
+                    variant="primary"
+                    appearance="outline"
+                    hasIcon
+                    leadingIcon="agora-line-arrow-left-circle"
+                    leadingIconHover="agora-solid-arrow-left-circle"
+                    onClick={onPreviousStep}
+                  >
+                    Anterior
+                  </Button>
                   <Button
                     variant="primary"
                     hasIcon

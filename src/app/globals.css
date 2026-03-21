@@ -1256,8 +1256,8 @@ body:has(.admin-wrapper)>div>header.sticky {
 }
 
 .datasets-admin-page__form-area {
-  flex: 0 0 592px;
-  max-width: 592px;
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
@@ -1364,7 +1364,8 @@ body:has(.admin-wrapper)>div>header.sticky {
 
 /* Auxiliar sidebar */
 .datasets-admin-page__auxiliar {
-  flex: 1;
+  flex: 0 0 400px;
+  max-width: 400px;
   min-width: 0;
 }
 
@@ -1556,16 +1557,14 @@ body:has(.admin-wrapper)>div>header.sticky {
   color: var(--color-neutral-600);
 }
 
-.dataset-edit-info__clock-icon {
-  width: 13px !important;
-  height: 13px !important;
-  min-width: 13px;
+.dataset-edit-info__clock-icon,
+.dataset-edit-info__clock-icon.icon {
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  max-width: 14px !important;
   margin-right: 8px;
   flex-shrink: 0;
-}
-
-.dataset-edit-info__clock-icon svg,
-.dataset-edit-info__clock-icon {
   fill: #64718B !important;
   color: #64718B !important;
 }
