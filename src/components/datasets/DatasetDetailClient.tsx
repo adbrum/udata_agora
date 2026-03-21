@@ -157,6 +157,40 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
           <div className="xl:col-span-6">
             <div className="flex flex-col h-fit">
               {/* Organization Info */}
+              {/* Produtor e Licença */}
+              <div className="bg-[#F2F6FF] rounded-4 p-32 mb-16">
+                <div className="mb-16">
+                  <h3 className="text-m-semibold text-neutral-900 mb-8">Produtor</h3>
+                  {dataset.owner ? (
+                    <Link
+                      href={`/pages/users/${dataset.owner.slug}`}
+                      className="text-primary-600 hover:underline text-sm flex items-center gap-8"
+                    >
+                      {dataset.owner.avatar_thumbnail && (
+                        <img
+                          src={dataset.owner.avatar_thumbnail}
+                          alt={`${dataset.owner.first_name} ${dataset.owner.last_name}`}
+                          className="w-[24px] h-[24px] rounded-full"
+                        />
+                      )}
+                      {dataset.owner.first_name} {dataset.owner.last_name}
+                    </Link>
+                  ) : (
+                    <span className="text-neutral-700 text-sm">Desconhecido</span>
+                  )}
+                  <p className="text-neutral-700 text-xs mt-8">
+                    Este conjunto de dados foi publicado por iniciativa e sob a responsabilidade de{' '}
+                    {dataset.owner ? `${dataset.owner.first_name} ${dataset.owner.last_name}` : 'Desconhecido'}.
+                  </p>
+                </div>
+                {dataset.license && (
+                  <div>
+                    <h3 className="text-m-semibold text-neutral-900 mb-8">Licença</h3>
+                    <span className="text-primary-600 text-sm">{dataset.license}</span>
+                  </div>
+                )}
+              </div>
+
               <div className="flex flex-col gap-16 bg-[#F2F6FF] rounded-4 p-32 mb-16">
                 {dataset.organization?.logo ? (
                   <div className="w-fit h-[48px] card-article-3_2-img py-8 rounded-8 border-2 border-primary-300 flex items-center justify-center">

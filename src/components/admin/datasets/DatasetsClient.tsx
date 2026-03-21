@@ -275,16 +275,20 @@ export default function DatasetsClient() {
                   </Pill>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
-                  <span className="flex items-center gap-[6px]">
-                    <Icon name="agora-line-calendar" className="w-[16px] h-[16px]" />
-                    {formatDate(dataset.created_at)}
-                  </span>
+                  {formatDate(dataset.created_at)}
                 </TableCell>
                 <TableCell headerLabel="Última modificação">
-                  <span className="flex items-center gap-[6px]">
-                    <Icon name="agora-line-sort-vertical" className="w-[16px] h-[16px]" />
-                    {formatDate(dataset.last_modified)}
-                  </span>
+                  <div>
+                    <div>{formatDate(dataset.last_modified)}</div>
+                    {dataset.owner && (
+                      <a
+                        href={`/pages/users/${dataset.owner.slug}`}
+                        className="text-primary-600 text-xs underline"
+                      >
+                        {dataset.owner.first_name} {dataset.owner.last_name}
+                      </a>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell headerLabel="Ficheiros">
                   {dataset.resources?.length || 0}
