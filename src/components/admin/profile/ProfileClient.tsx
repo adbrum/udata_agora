@@ -149,7 +149,7 @@ export default function ProfileClient() {
           <Tab active>
             <TabHeader>Perfil</TabHeader>
             <TabBody>
-              <div className="datasets-admin-page__form mt-[24px]">
+              <div className="datasets-admin-page__form mt-[24px]" style={{ maxWidth: "calc(100% - var(--admin-auxiliar-width) - var(--admin-auxiliar-gap))" }}>
                 <h2 className="datasets-admin-page__section-title">EDITAR PERFIL</h2>
 
                 <div className="datasets-admin-page__fields-group">

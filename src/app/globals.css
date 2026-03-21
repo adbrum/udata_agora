@@ -1250,14 +1250,20 @@ body:has(.admin-wrapper)>div>header.sticky {
   color: var(--color-neutral-700);
 }
 
+.datasets-admin-page {
+  --admin-auxiliar-width: 400px;
+  --admin-auxiliar-gap: 32px;
+}
+
 .datasets-admin-page__body {
   display: flex;
-  gap: 32px;
+  gap: var(--admin-auxiliar-gap);
 }
 
 .datasets-admin-page__form-area {
   flex: 1;
   min-width: 0;
+  max-width: calc(100% - var(--admin-auxiliar-width) - var(--admin-auxiliar-gap));
   display: flex;
   flex-direction: column;
 }
@@ -1364,8 +1370,8 @@ body:has(.admin-wrapper)>div>header.sticky {
 
 /* Auxiliar sidebar */
 .datasets-admin-page__auxiliar {
-  flex: 0 0 400px;
-  max-width: 400px;
+  flex: 0 0 var(--admin-auxiliar-width);
+  max-width: var(--admin-auxiliar-width);
   min-width: 0;
 }
 
