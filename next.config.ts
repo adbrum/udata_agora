@@ -9,6 +9,32 @@ const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
   compress: true,
   productionBrowserSourceMaps: false,
+  poweredByHeader: false,
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+          },
+          {
+            key: "Content-Security-Policy",
+            value:
+              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: http://localhost:7000 https://dados.gov.pt; font-src 'self' data:; connect-src 'self' http://localhost:7000 https://dados.gov.pt; frame-ancestors 'none';",
+          },
+        ],
+      },
+    ];
+  },
   images: {
     deviceSizes: [320, 576, 768, 992, 1248],
     remotePatterns: [
