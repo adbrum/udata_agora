@@ -83,6 +83,8 @@ export default function DatasetsNewClient() {
 
       {currentStep === 1 && (
         <>
+          <h2 className="datasets-admin-page__section-title mb-[16px]">Tipo de publicação</h2>
+
           <StatusCard
             type="info"
             description="Se desejar realizar testes, utilize demo.dados.gov"

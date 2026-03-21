@@ -22,6 +22,7 @@ import {
   Pill,
   RadioButton,
   ButtonUploader,
+  CardNoResults,
   Tabs,
   Tab,
   TabHeader,
@@ -45,7 +46,8 @@ import AuxiliarList from "@/components/admin/AuxiliarList";
 export default function DatasetsEditClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const slug = searchParams.get("slug") || "";
+  const datasetId = searchParams.get("id") || "";
+  const slug = searchParams.get("slug") || datasetId;
 
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -389,7 +391,6 @@ export default function DatasetsEditClient() {
         onTabActivation={(index: number) => {
           setApiError(null);
           setApiSuccess(null);
-          if (index === 3) loadActivities();
         }}
       >
         {/* Metadata Tab */}
@@ -491,7 +492,7 @@ export default function DatasetsEditClient() {
                         setShortDescription(e.target.value)
                       }
                     />
-                    <div className="flex items-center gap-[16px]">
+                    <div className="flex items-center justify-between">
                       <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
                         Sugira uma breve descrição.
                       </Button>
@@ -509,6 +510,7 @@ export default function DatasetsEditClient() {
                       label="Palavras-chave"
                       placeholder="Pesquise por uma palavra-chave..."
                       id="edit-keywords"
+                      type="checkbox"
                       searchable
                       searchInputPlaceholder="Escreva para pesquisar..."
                       searchNoResultsText="Nenhum resultado encontrado"
@@ -521,7 +523,7 @@ export default function DatasetsEditClient() {
                         ))}
                       </DropdownSection>
                     </InputSelect>
-                    <div className="flex items-center gap-[16px]">
+                    <div className="flex items-center justify-between">
                       <Button
                         appearance="outline"
                         variant="primary"
@@ -875,71 +877,73 @@ export default function DatasetsEditClient() {
 
         {/* Resources Tab */}
         <Tab>
-          <TabHeader>Ficheiros</TabHeader>
+          <TabHeader>Ficheiros ({dataset.resources.length})</TabHeader>
           <TabBody>
             <div className="mt-[24px]">
               <div className="flex justify-between items-center mb-[16px]">
-                <h2 className="text-lg font-bold text-primary-900">
-                  Ficheiros ({dataset.resources.length})
+                <h2 className="font-medium text-neutral-900 text-base">
+                  {dataset.resources.length} {dataset.resources.length === 1 ? "FICHEIRO" : "FICHEIROS"}
                 </h2>
-                <ButtonUploader
-                  label="Ficheiros"
-                  inputLabel="Selecione ou arraste o ficheiro"
-                  selectedFilesLabel="ficheiros selecionados"
-                  removeFileButtonLabel="Remover"
-                  replaceFileButtonLabel="Substituir"
-                  onChange={handleFileUpload}
-                />
+                <div className="flex flex-col gap-[16px]">
+                  <Button appearance="outline" variant="primary">
+                    Reordene os ficheiros
+                  </Button>
+                  <ButtonUploader
+                    label="Adicionar ficheiros"
+                    inputLabel="Selecione ou arraste o ficheiro"
+                    selectedFilesLabel="ficheiros selecionados"
+                    removeFileButtonLabel="Remover"
+                    replaceFileButtonLabel="Substituir"
+                    onChange={handleFileUpload}
+                  />
+                </div>
               </div>
 
-              {dataset.resources.length > 0 ? (
+              {dataset.resources.length > 0 && (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHeaderCell>Título</TableHeaderCell>
+                      <TableHeaderCell>Nome do ficheiro</TableHeaderCell>
+                      <TableHeaderCell>Status</TableHeaderCell>
+                      <TableHeaderCell>Tipo</TableHeaderCell>
                       <TableHeaderCell>Formato</TableHeaderCell>
-                      <TableHeaderCell>Tamanho</TableHeaderCell>
                       <TableHeaderCell>Criado em</TableHeaderCell>
-                      <TableHeaderCell>Ações</TableHeaderCell>
+                      <TableHeaderCell>Atualizado em</TableHeaderCell>
+                      <TableHeaderCell>Ação</TableHeaderCell>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {dataset.resources.map((resource) => (
                       <TableRow key={resource.id}>
-                        <TableCell headerLabel="Título">
-                          <a
-                            href={resource.url}
-                            className="text-primary-600 underline"
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            {resource.title}
-                          </a>
+                        <TableCell headerLabel="Nome do ficheiro">
+                          {resource.title}
+                        </TableCell>
+                        <TableCell headerLabel="Status">
+                          <Pill variant="success">DISPONÍVEL</Pill>
+                        </TableCell>
+                        <TableCell headerLabel="Tipo">
+                          {resource.type === "main" ? "Ficheiros principais" : resource.type || "-"}
                         </TableCell>
                         <TableCell headerLabel="Formato">
-                          <Pill variant="informative">{resource.format || "-"}</Pill>
-                        </TableCell>
-                        <TableCell headerLabel="Tamanho">
-                          {formatFileSize(resource.filesize)}
+                          {resource.format || "-"}
                         </TableCell>
                         <TableCell headerLabel="Criado em">
-                          {formatDate(resource.created_at)}
+                          {format(new Date(resource.created_at), "d 'de' MMMM 'de' yyyy", { locale: pt })}
                         </TableCell>
-                        <TableCell headerLabel="Ações">
-                          <button
-                            onClick={() => handleDeleteResource(resource)}
-                            className="text-danger-600 hover:text-danger-800"
-                            disabled={isSubmitting}
-                          >
-                            <Icon name="agora-line-trash" className="w-[20px] h-[20px]" />
-                          </button>
+                        <TableCell headerLabel="Atualizado em">
+                          {resource.last_modified
+                            ? format(new Date(resource.last_modified), "d 'de' MMMM 'de' yyyy", { locale: pt })
+                            : format(new Date(resource.created_at), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                        </TableCell>
+                        <TableCell headerLabel="Ação">
+                          <a href={`/pages/admin/me/datasets/edit?id=${dataset.id}`}>
+                            <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
+                          </a>
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
-              ) : (
-                <p className="text-neutral-600">Nenhum ficheiro adicionado.</p>
               )}
             </div>
           </TabBody>
@@ -947,52 +951,25 @@ export default function DatasetsEditClient() {
 
         {/* Discussions Tab */}
         <Tab>
-          <TabHeader>Discussões</TabHeader>
+          <TabHeader>Discussões (0)</TabHeader>
           <TabBody>
             <div className="mt-[24px]">
-              <p className="text-neutral-600">
-                As discussões deste conjunto de dados serão exibidas aqui.
-              </p>
+              <h2 className="font-medium text-neutral-900 text-base mb-[16px]">
+                0 DISCUSSÕES
+              </h2>
+              <CardNoResults
+                position="center"
+                icon={
+                  <Icon name="agora-line-chat" className="w-12 h-12 text-primary-500 icon-xl" />
+                }
+                title="Sem discussões"
+                description="Ainda não existem discussões neste conjunto de dados."
+                hasAnchor={false}
+              />
             </div>
           </TabBody>
         </Tab>
 
-        {/* Activities Tab */}
-        <Tab>
-          <TabHeader>Atividades</TabHeader>
-          <TabBody>
-            <div className="mt-[24px]">
-              {activitiesLoading ? (
-                <p className="text-neutral-600">A carregar atividades...</p>
-              ) : activities.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHeaderCell>Ação</TableHeaderCell>
-                      <TableHeaderCell>Utilizador</TableHeaderCell>
-                      <TableHeaderCell>Data</TableHeaderCell>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {activities.map((activity, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell headerLabel="Ação">{activity.label}</TableCell>
-                        <TableCell headerLabel="Utilizador">
-                          {activity.actor.first_name} {activity.actor.last_name}
-                        </TableCell>
-                        <TableCell headerLabel="Data">
-                          {formatDate(activity.created_at)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p className="text-neutral-600">Nenhuma atividade registada.</p>
-              )}
-            </div>
-          </TabBody>
-        </Tab>
       </Tabs>
     </div>
   );
