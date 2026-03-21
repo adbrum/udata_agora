@@ -25,6 +25,7 @@ import {
   fetchReuseTopics,
 } from "@/services/api";
 import type { Reuse, ReuseType, ReuseTopic } from "@/types/api";
+import AuxiliarList from "@/components/admin/AuxiliarList";
 
 interface ReusesFormClientProps {
   currentStep: number;
@@ -73,7 +74,10 @@ export default function ReusesFormClient({
     if (!reuseName.trim()) errors.reuseName = true;
     if (!reuseLink.trim()) errors.reuseLink = true;
     if (!selectedReuseType) errors.reuseType = true;
+    if (!selectedReuseTopic) errors.reuseTopic = true;
     if (!reuseDescription.trim()) errors.reuseDescription = true;
+    if (reuseDescription.trim() && reuseDescription.trim().length < 200) errors.reuseDescriptionLength = true;
+    if (!reuseCoverImageFile) errors.reuseCoverImage = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -197,25 +201,30 @@ export default function ReusesFormClient({
       title: "Dê um nome à sua reutilização.",
       content:
         'Prefira um título que permita entender como os dados são usados, em vez do nome do site ou aplicativo ("Mecanismo de Busca de Acordos Comerciais" em vez de "Acordos-Comerciais.fr", por exemplo).',
+      hasError: !!formErrors.reuseName,
     },
     {
       title: "Qual link preencher?",
       content:
         "Insira o link para a página onde o conteúdo reutilizado está visível. Dê preferência ao link para o próprio conteúdo reutilizado, e não para a página inicial. Certifique-se de que o link permaneça estável ao longo do tempo.",
+      hasError: !!formErrors.reuseLink,
     },
     {
       title: "Escolha um tipo",
       content:
         "Indique o tipo em que deve ser classificada a reutilização (API, aplicação, artigo de imprensa, visualização, etc.).",
+      hasError: !!formErrors.reuseType,
     },
     {
       title: "Escolha um tema",
       content: "Escolha o tema associado à sua reutilização.",
+      hasError: !!formErrors.reuseTopic,
     },
     {
       title: "Descreva a sua reutilização.",
       content:
         "Pode fornecer detalhes como a forma como a reutilização foi criada, o que permite fazer ou demonstrar, e até mesmo falar mais sobre si e o contexto desta reutilização. É melhor manter um tom neutro: se a reutilização soar muito como uma mensagem promocional, podemos removê-la.",
+      hasError: !!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength,
     },
     {
       title: "Adicionar palavras-chave",
@@ -244,6 +253,7 @@ export default function ReusesFormClient({
       title: "Escolha uma imagem",
       content:
         'Se a sua reutilização assumir a forma de uma representação gráfica, pode fornecer uma pré-visualização para outros utilizadores usando uma imagem ou captura de ecrã. Esta imagem aparecerá na secção "Reutilizações" da página do conjunto de dados associado. Quando relevante, as capturas de ecrã ilustram melhor a reutilização e, portanto, são preferíveis a logotipos ou ilustrações, por exemplo.',
+      hasError: !!formErrors.reuseCoverImage,
     },
   ];
 
@@ -276,7 +286,7 @@ export default function ReusesFormClient({
               )}
 
               <form className="datasets-admin-page__form">
-                <p className="text-neutral-900 text-base leading-7">
+                <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
                 <h2 className="datasets-admin-page__section-title">Produtor</h2>
@@ -285,6 +295,9 @@ export default function ReusesFormClient({
                   label="Verifique a identidade que deseja usar na publicação."
                   placeholder="Para pesquisar..."
                   id="producer-identity"
+                  searchable
+                  searchInputPlaceholder="Escreva para pesquisar..."
+                  searchNoResultsText="Nenhum resultado encontrado"
                 >
                   <DropdownSection name="organizations">
                     <DropdownOption value="org1">
@@ -348,6 +361,9 @@ export default function ReusesFormClient({
                     label="Tipo *"
                     placeholder="Procure por um tipo..."
                     id="reuse-type"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
                     onChange={(options) => {
                       if (options.length > 0) {
                         setSelectedReuseType(options[0].value as string);
@@ -370,16 +386,24 @@ export default function ReusesFormClient({
                     </DropdownSection>
                   </InputSelect>
                   <InputSelect
-                    label="Tema"
+                    label="Tema *"
                     placeholder="Pesquise um tópico..."
                     id="reuse-theme"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
                     onChange={(options) => {
                       if (options.length > 0) {
                         setSelectedReuseTopic(options[0].value as string);
+                        clearError("reuseTopic");
                       } else {
                         setSelectedReuseTopic("");
                       }
                     }}
+                    hasError={!!formErrors.reuseTopic}
+                    hasFeedback={!!formErrors.reuseTopic}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
                   >
                     <DropdownSection name="themes">
                       {reuseTopics.map((t) => (
@@ -399,16 +423,18 @@ export default function ReusesFormClient({
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setReuseDescription(e.target.value);
                       if (e.target.value.trim()) clearError("reuseDescription");
+                      if (e.target.value.trim().length >= 200) clearError("reuseDescriptionLength");
                     }}
-                    hasError={!!formErrors.reuseDescription}
-                    hasFeedback={!!formErrors.reuseDescription}
-                    feedbackState="danger"
-                    errorFeedbackText="Campo obrigatório"
+                    hasError={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
+                    hasFeedback={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
+                    feedbackState={formErrors.reuseDescriptionLength ? "warning" : "danger"}
+                    errorFeedbackText={formErrors.reuseDescription ? "Campo obrigatório" : "A descrição deve ter pelo menos 200 caracteres"}
                   />
                   <InputSelect
                     label="Palavras-chave"
                     placeholder="Pesquise por uma palavra-chave..."
                     id="reuse-keywords"
+                    type="checkbox"
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
@@ -417,27 +443,29 @@ export default function ReusesFormClient({
                       <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
                     </DropdownSection>
                   </InputSelect>
-                  <div className="w-1/2">
+                  <div className="flex items-center gap-16">
+                    <div className="w-1/2">
+                      <Button
+                        appearance="outline"
+                        variant="primary"
+                        hasIcon
+                        leadingIcon="agora-line-edit"
+                        leadingIconHover="agora-solid-edit"
+                        fullWidth
+                      >
+                        Sugira palavras-chave
+                      </Button>
+                    </div>
                     <Button
-                      appearance="outline"
+                      appearance="link"
                       variant="primary"
                       hasIcon
-                      leadingIcon="agora-line-edit"
-                      leadingIconHover="agora-solid-edit"
-                      fullWidth
+                      trailingIcon="agora-line-external-link"
+                      trailingIconHover="agora-solid-external-link"
                     >
-                      Sugira palavras-chave
+                      O que achou desta sugestão?
                     </Button>
                   </div>
-                  <Button
-                    appearance="link"
-                    variant="primary"
-                    hasIcon
-                    trailingIcon="agora-line-external-link"
-                    trailingIconHover="agora-solid-external-link"
-                  >
-                    O que achou desta sugestão?
-                  </Button>
 
                   <div>
                     <span className="text-primary-900 text-base font-medium leading-7">
@@ -458,6 +486,10 @@ export default function ReusesFormClient({
                           setReuseCoverImageFile(files && files.length > 0 ? files[0] : null);
                           clearError("reuseCoverImage");
                         }}
+                        hasError={!!formErrors.reuseCoverImage}
+                        hasFeedback={!!formErrors.reuseCoverImage}
+                        feedbackState="danger"
+                        feedbackText="Campo obrigatório"
                       />
                     </div>
                   </div>
@@ -756,19 +788,7 @@ export default function ReusesFormClient({
                 />
                 <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
               </div>
-              <AccordionGroup>
-                {auxiliarItems.map((item, idx) => (
-                  <Accordion
-                    key={idx}
-                    headingTitle={item.title}
-                    headingLevel="h3"
-                  >
-                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                      {item.content}
-                    </div>
-                  </Accordion>
-                ))}
-              </AccordionGroup>
+              <AuxiliarList items={auxiliarItems} />
             </div>
           </aside>
         )}

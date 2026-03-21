@@ -17,6 +17,7 @@ import {
   AccordionGroup,
 } from "@ama-pt/agora-design-system";
 import PublishDropdown from "@/components/admin/PublishDropdown";
+import AuxiliarList from "@/components/admin/AuxiliarList";
 
 export default function OrganizationsNewClient() {
   const searchParams = useSearchParams();
@@ -62,6 +63,7 @@ export default function OrganizationsNewClient() {
     {
       title: "Dê um nome à sua organização.",
       content: "Nome público da sua organização.",
+      hasError: !!formErrors.orgName,
     },
     {
       title: "Escolha uma sigla",
@@ -92,6 +94,7 @@ export default function OrganizationsNewClient() {
       title: "Escreva uma boa descrição",
       content:
         "Por favor, descreva aqui o que sua organização faz e qual é a sua missão. Inclua todas as informações que permitam aos utilizadores entrar em contacto consigo: endereço de e-mail, endereço postal, conta do Twitter, etc.",
+      hasError: !!formErrors.orgDescription,
     },
     {
       title: "Digite um site",
@@ -225,7 +228,7 @@ export default function OrganizationsNewClient() {
               />
 
               <form className="datasets-admin-page__form">
-                <p className="text-neutral-900 text-base leading-7">
+                <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
 
@@ -360,19 +363,7 @@ export default function OrganizationsNewClient() {
                 />
                 <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
               </div>
-              <AccordionGroup>
-                {auxiliarItems.map((item, idx) => (
-                  <Accordion
-                    key={idx}
-                    headingTitle={item.title}
-                    headingLevel="h3"
-                  >
-                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                      {item.content}
-                    </div>
-                  </Accordion>
-                ))}
-              </AccordionGroup>
+              <AuxiliarList items={auxiliarItems} />
             </div>
           </aside>
         )}

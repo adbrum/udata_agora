@@ -79,7 +79,7 @@ export default function ReusesClient() {
             aria-label="Pesquisar reutilizações"
           />
         </div>
-        <InputSelect
+        {/* <InputSelect
           label=""
           hideLabel
           placeholder="Filtrar por estado"
@@ -91,7 +91,7 @@ export default function ReusesClient() {
             <DropdownOption value="draft">Rascunho</DropdownOption>
             <DropdownOption value="deleted">Excluído</DropdownOption>
           </DropdownSection>
-        </InputSelect>
+        </InputSelect> */}
       </div>
 
       {!isLoading && reuses.length > 0 ? (
