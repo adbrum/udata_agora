@@ -1260,7 +1260,6 @@ body:has(.admin-wrapper)>div>header.sticky {
   max-width: 592px;
   display: flex;
   flex-direction: column;
-  gap: 64px;
 }
 
 .datasets-admin-page__form {
@@ -1274,6 +1273,7 @@ body:has(.admin-wrapper)>div>header.sticky {
   font-weight: 600;
   line-height: 32px;
   color: var(--color-primary-900);
+  margin-top: 32px !important;
 }
 
 .datasets-admin-page__fields-group {
@@ -1391,6 +1391,67 @@ body:has(.admin-wrapper)>div>header.sticky {
   font-weight: 600;
   line-height: 32px;
   color: var(--color-primary-900);
+}
+
+/* Auxiliar list (replaces accordions) */
+.auxiliar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.auxiliar-list__item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.auxiliar-list__content {
+  padding: 0 16px 16px 56px;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--color-neutral-700);
+}
+
+.auxiliar-list__icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.auxiliar-list__icon {
+  color: var(--color-primary-600);
+}
+
+.auxiliar-list__icon svg,
+.auxiliar-list__icon svg path {
+  fill: currentColor !important;
+}
+
+.auxiliar-list__text {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 28px;
+  color: var(--color-neutral-900);
+}
+
+.auxiliar-list__chevron {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.auxiliar-list__chevron svg {
+  fill: var(--color-primary-600);
 }
 
 /* CardGeneral overrides in admin */

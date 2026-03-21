@@ -113,7 +113,7 @@ export default function PostsNewClient() {
           {/* Step 1: Descrição */}
           {currentStep === 1 && (
             <form className="datasets-admin-page__form">
-              <p className="text-neutral-900 text-base leading-7">
+              <p className="text-neutral-900 text-base leading-7 pt-32">
                 Os campos marcados com um asterisco ( * ) são obrigatórios.
               </p>
 

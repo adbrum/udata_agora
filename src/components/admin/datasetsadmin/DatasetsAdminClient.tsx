@@ -28,6 +28,7 @@ import {
   fetchMyDatasets,
 } from "@/services/api";
 import { License, Frequency, Dataset } from "@/types/api";
+import AuxiliarList from "@/components/admin/AuxiliarList";
 
 interface DatasetsAdminClientProps {
   currentStep: number;
@@ -225,6 +226,7 @@ export default function DatasetsAdminClient({
           </p>
         </>
       ),
+      hasError: !!formErrors.datasetTitle,
     },
     {
       title: "Adicione uma sigla ao conjunto de dados.",
@@ -256,6 +258,7 @@ export default function DatasetsAdminClient({
           </ul>
         </>
       ),
+      hasError: !!formErrors.datasetDescription,
     },
     {
       title: "Escreva uma breve descrição.",
@@ -313,6 +316,7 @@ export default function DatasetsAdminClient({
       title: "Escolha a frequência de atualização.",
       content:
         "A frequência de atualização refere-se à frequência com que planeja atualizar os dados publicados. Essa frequência de atualização é apenas indicativa.",
+      hasError: !!formErrors.datasetFrequency,
     },
     {
       title: "Forneça a cobertura de tempo.",
@@ -460,7 +464,7 @@ export default function DatasetsAdminClient({
                 className="datasets-admin-page__form"
                 onSubmit={(e) => e.preventDefault()}
               >
-                <p className="text-neutral-900 text-base leading-7">
+                <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
 
@@ -995,19 +999,7 @@ export default function DatasetsAdminClient({
                 />
                 <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
               </div>
-              <AccordionGroup>
-                {auxiliarItems.map((item, idx) => (
-                  <Accordion
-                    key={idx}
-                    headingTitle={item.title}
-                    headingLevel="h3"
-                  >
-                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                      {item.content}
-                    </div>
-                  </Accordion>
-                ))}
-              </AccordionGroup>
+              <AuxiliarList items={auxiliarItems} />
             </div>
           </aside>
         )}

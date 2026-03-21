@@ -18,6 +18,7 @@ import {
   Pill,
 } from "@ama-pt/agora-design-system";
 import PublishDropdown from "@/components/admin/PublishDropdown";
+import AuxiliarList from "@/components/admin/AuxiliarList";
 
 export default function HarvestersNewClient() {
   const searchParams = useSearchParams();
@@ -83,6 +84,7 @@ export default function HarvestersNewClient() {
       title: "Escolha um nome",
       content:
         "Dê um nome ao seu harvester. Esta é uma referência interna que o ajudará a identificá-lo caso crie vários harvesters. O nome do seu harvester não será público.",
+      hasError: !!formErrors.harvesterName,
     },
     {
       title: "Descreva o seu harvester",
@@ -93,6 +95,7 @@ export default function HarvestersNewClient() {
       title: "Selecione o URL correto",
       content:
         "Insira aqui o URL do portal que deseja recolher. Normalmente, trata-se do URL da página inicial do seu portal de dados abertos. O URL permite que o harvester navegue e recupere todos os seus conjuntos de dados.",
+      hasError: !!formErrors.harvesterUrl,
     },
     {
       title: "Selecione o tipo de implementação",
@@ -172,7 +175,7 @@ export default function HarvestersNewClient() {
               />
 
               <form className="datasets-admin-page__form">
-                <p className="text-neutral-900 text-base leading-7">
+                <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
 
@@ -484,19 +487,7 @@ export default function HarvestersNewClient() {
                 />
                 <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
               </div>
-              <AccordionGroup>
-                {auxiliarItems.map((item, idx) => (
-                  <Accordion
-                    key={idx}
-                    headingTitle={item.title}
-                    headingLevel="h3"
-                  >
-                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                      {item.content}
-                    </div>
-                  </Accordion>
-                ))}
-              </AccordionGroup>
+              <AuxiliarList items={auxiliarItems} />
             </div>
           </aside>
         )}

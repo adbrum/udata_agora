@@ -17,6 +17,7 @@ import {
 } from "@ama-pt/agora-design-system";
 import { createDataservice } from "@/services/api";
 import type { Dataservice } from "@/types/api";
+import AuxiliarList from "@/components/admin/AuxiliarList";
 
 interface ApiRegistrationClientProps {
   currentStep: number;
@@ -150,6 +151,7 @@ export default function ApiRegistrationClient({
       title: "Como dar nome à sua API",
       content:
         'Dê à sua API um nome relevante e descritivo que reflita sua função ou área de aplicação. Um bom nome facilita a busca e a identificação por parte dos utilizadores. Sempre adicione o prefixo "API" para manter a consistência.',
+      hasError: !!formErrors.apiName,
     },
     {
       title: "Adicione uma abreviação ou sigla à API.",
@@ -160,6 +162,7 @@ export default function ApiRegistrationClient({
       title: "Escreva uma boa descrição",
       content:
         "Escreva uma descrição clara e precisa da API. Os utilizadores precisam entender a finalidade da API, os dados fornecidos, o escopo abrangido (os dados são completos? Há alguma lacuna?), a frequência de atualização dos dados e os parâmetros que podem ser usados para fazer uma chamada.",
+      hasError: !!formErrors.apiDescription,
     },
     {
       title: "Defina o link correto para a API.",
@@ -231,7 +234,7 @@ export default function ApiRegistrationClient({
               )}
 
               <form className="datasets-admin-page__form">
-                <p className="text-neutral-900 text-base leading-7">
+                <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
                 <h2 className="datasets-admin-page__section-title">Produtor</h2>
@@ -579,19 +582,7 @@ export default function ApiRegistrationClient({
                 />
                 <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
               </div>
-              <AccordionGroup>
-                {auxiliarItems.map((item, idx) => (
-                  <Accordion
-                    key={idx}
-                    headingTitle={item.title}
-                    headingLevel="h3"
-                  >
-                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                      {item.content}
-                    </div>
-                  </Accordion>
-                ))}
-              </AccordionGroup>
+              <AuxiliarList items={auxiliarItems} />
             </div>
           </aside>
         )}
