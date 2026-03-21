@@ -152,9 +152,12 @@ function TypeSelect({
     );
   }
 
+  // Cast to accept mixed children (static + mapped elements)
+  const FlexDropdownSection = DropdownSection as React.FC<Omit<React.ComponentProps<typeof DropdownSection>, "children"> & { children: React.ReactNode }>;
+
   return (
     <InputSelect label="Tipo:" id="filter-type" ref={selectRef}>
-      <DropdownSection name="types">
+      <FlexDropdownSection name="types">
         <DropdownOption value="" selected={!currentType}>
           Todos os tipos
         </DropdownOption>
@@ -163,7 +166,7 @@ function TypeSelect({
             {rt.label}
           </DropdownOption>
         ))}
-      </DropdownSection>
+      </FlexDropdownSection>
     </InputSelect>
   );
 }

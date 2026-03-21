@@ -135,7 +135,6 @@ const SupportPage = () => {
         ]}
         backgroundImageUrl="/Banner/hero-bg.png"
         backgroundPosition="inherit"
-        height="480px"
         subtitle={
           <>
             <label className="block text-[20px] font-bold text-white mt-[48px]">

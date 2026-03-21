@@ -237,14 +237,14 @@ export default function MigrateAccountClient() {
 
               <div className="flex gap-16 mb-8">
                 <Button
-                  variant={!searchByName ? "primary" : "secondary"}
+                  variant={!searchByName ? "primary" : "neutral"}
                   onClick={() => setSearchByName(false)}
                   className="text-sm"
                 >
                   Por email
                 </Button>
                 <Button
-                  variant={searchByName ? "primary" : "secondary"}
+                  variant={searchByName ? "primary" : "neutral"}
                   onClick={() => setSearchByName(true)}
                   className="text-sm"
                 >
@@ -308,7 +308,7 @@ export default function MigrateAccountClient() {
                 >
                   {isLoading ? "A procurar..." : "Procurar conta"}
                 </Button>
-                <Button variant="secondary" onClick={handleSkip} disabled={isLoading}>
+                <Button variant="neutral" onClick={handleSkip} disabled={isLoading}>
                   Criar conta nova
                 </Button>
               </div>
@@ -370,7 +370,7 @@ export default function MigrateAccountClient() {
                   Sim, esta conta e minha
                 </Button>
                 <Button
-                  variant="secondary"
+                  variant="neutral"
                   onClick={handleSkip}
                   disabled={isLoading}
                 >
@@ -482,7 +482,7 @@ export default function MigrateAccountClient() {
                   {isLoading ? "A verificar..." : "Verificar"}
                 </Button>
                 <Button
-                  variant="secondary"
+                  variant="neutral"
                   onClick={handleResendCode}
                   disabled={isLoading || resendCountdown > 0}
                 >
