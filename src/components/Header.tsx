@@ -34,27 +34,44 @@ export const Header = () => {
   const pathname = usePathname();
   const { user, samlLogin } = useAuth();
 
-  // Create a DOM node for the "Desconectar" portal
+  // Create DOM nodes for "Administração" and "Desconectar" portals
+  const [adminPortalNode, setAdminPortalNode] = useState<HTMLLIElement | null>(null);
   const [logoutPortalNode, setLogoutPortalNode] = useState<HTMLLIElement | null>(null);
   React.useEffect(() => {
     const panelsList = document.querySelector("header.sticky .panels-menu > ul");
     if (!panelsList) return;
 
     if (user) {
-      let li = panelsList.querySelector(".logout-panel-menu") as HTMLLIElement | null;
-      if (!li) {
-        li = document.createElement("li");
-        li.className = "logout-panel-menu";
-        panelsList.appendChild(li);
+      // Administração portal
+      let adminLi = panelsList.querySelector(".admin-panel-menu") as HTMLLIElement | null;
+      if (!adminLi) {
+        adminLi = document.createElement("li");
+        adminLi.className = "admin-panel-menu";
+        panelsList.appendChild(adminLi);
       }
-      setLogoutPortalNode(li);
+      setAdminPortalNode(adminLi);
+
+      // Desconectar portal
+      let logoutLi = panelsList.querySelector(".logout-panel-menu") as HTMLLIElement | null;
+      if (!logoutLi) {
+        logoutLi = document.createElement("li");
+        logoutLi.className = "logout-panel-menu";
+        panelsList.appendChild(logoutLi);
+      }
+      setLogoutPortalNode(logoutLi);
     } else {
-      const existing = panelsList.querySelector(".logout-panel-menu");
-      if (existing) existing.remove();
+      const existingAdmin = panelsList.querySelector(".admin-panel-menu");
+      if (existingAdmin) existingAdmin.remove();
+      setAdminPortalNode(null);
+
+      const existingLogout = panelsList.querySelector(".logout-panel-menu");
+      if (existingLogout) existingLogout.remove();
       setLogoutPortalNode(null);
     }
 
     return () => {
+      panelsList.querySelector(".admin-panel-menu")?.remove();
+      setAdminPortalNode(null);
       panelsList.querySelector(".logout-panel-menu")?.remove();
       setLogoutPortalNode(null);
     };
@@ -350,12 +367,14 @@ export const Header = () => {
               onClick={() => router.push('/')}
               active={selectedArea === '1'}
             />
-            <Area
-              value="2"
-              label="Iniciar Sessão"
-              onClick={() => router.push('/pages/login')}
-              active={selectedArea === '2'}
-            />
+            <div className="hidden">
+              <Area
+                value="2"
+                label="Iniciar Sessão"
+                onClick={() => router.push('/pages/login')}
+                active={selectedArea === '2'}
+              />
+            </div>
           </Areas>
 
           <Languages
@@ -399,16 +418,16 @@ export const Header = () => {
           </div>
 
           <Unauthenticated
-            label={user ? "Administração" : "Autenticar"}
-            aria-label={user ? "Administração" : "Autenticar"}
+            label={user ? `${user.first_name} ${user.last_name}` : "Autenticar"}
+            aria-label={user ? `${user.first_name} ${user.last_name}` : "Autenticar"}
           >
             <UnauthenticatedLink
               hasIcon
               leadingIcon="agora-line-user"
               leadingIconHover="agora-solid-user"
             >
-              <Link href={user ? "/pages/admin/me/datasets" : "/pages/login"}>
-                {user ? "Administração" : "Autenticar"}
+              <Link href={user ? `/pages/users/${user.slug}` : "/pages/login"}>
+                {user ? `${user.first_name} ${user.last_name}` : "Autenticar"}
               </Link>
             </UnauthenticatedLink>
           </Unauthenticated>
@@ -636,6 +655,22 @@ export const Header = () => {
         </NavigationBar>
       </AgoraHeader>
     </header>
+    {adminPortalNode && createPortal(
+      <div className="panel-menu unauthenticated-panel-menu">
+        <span className="agora-link-wrapper agora-link-wrapper-link-neutral full-width inline-flex items-center justify-center min-h-[44px] min-w-[44px] py-8 custom-header-link-wrapper panel-menu-link-wrapper">
+          <Link
+            className="link-with-icon"
+            href="/pages/admin/me/datasets"
+          >
+            <div className="icon-wrapper leading">
+              <Icon name="agora-line-hardware-settings" dimensions="s" />
+            </div>
+            <span className="children-wrapper">Administração</span>
+          </Link>
+        </span>
+      </div>,
+      adminPortalNode
+    )}
     {logoutPortalNode && createPortal(
       <div className="panel-menu unauthenticated-panel-menu">
         <span className="agora-link-wrapper agora-link-wrapper-link-neutral full-width inline-flex items-center justify-center min-h-[44px] min-w-[44px] py-8 custom-header-link-wrapper panel-menu-link-wrapper">

@@ -8,7 +8,7 @@ const linkColumns = [
   {
     title: 'Dados abertos',
     links: [
-      { href: '/pages/datasets', label: 'Catálogo de dados' },
+      { href: '/pages/datasets', label: 'Catálogo dos dados' },
       { href: 'https://data.europa.eu/en', label: 'Portal de dados europeu' },
     ],
   },
@@ -23,7 +23,7 @@ const linkColumns = [
   {
     title: 'Desenvolvimento',
     links: [
-      { href: '/pages/docapi', label: 'API do portal' },
+      { href: '/pages/docapi', label: 'API dos dados.gov' },
       { href: 'https://github.com/opendatateam/udata', label: 'Motor de código aberto: udata (14.7.2)' },
       { href: '#', label: 'Interface de utilizador de dados.gov: frontend' },
     ],
@@ -62,7 +62,7 @@ const FooterNavigation = () => {
   const resolvedColumns = linkColumns.map((col) => ({
     ...col,
     links: col.links.map((link) => {
-      if (link.label === 'Catálogo de dados' && firstDatasetSlug) {
+      if (link.label === 'Catálogo dos dados' && firstDatasetSlug) {
         return { ...link, href: `/pages/datasets/${firstDatasetSlug}` };
       }
       return link;
