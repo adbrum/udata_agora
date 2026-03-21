@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -18,6 +18,13 @@ export default function DatasetsNewClient() {
   const { displayName } = useCurrentUser();
   const totalSteps = 4;
   const currentStep = Number(searchParams.get("step")) || 1;
+  const datasetId = searchParams.get("datasetId");
+
+  const buildStepUrl = (step: number) => {
+    const params = new URLSearchParams({ step: String(step) });
+    if (datasetId) params.set("datasetId", datasetId);
+    return `/pages/admin/me/datasets/new?${params.toString()}`;
+  };
   const totalSegments = 12;
   const displayStep = currentStep;
   const filledSegments = Math.round((displayStep / totalSteps) * totalSegments);
@@ -36,7 +43,7 @@ export default function DatasetsNewClient() {
 
       <div className="datasets-admin-page__header">
         <h1 className="datasets-admin-page__title">
-          {currentStep === 1 ? "Publicar em dados.gov" : "Formulário de inscrição"}
+          {currentStep === 1 ? "Publique em dados.gov" : "Formulário de inscrição"}
         </h1>
         <PublishDropdown />
       </div>
@@ -46,8 +53,8 @@ export default function DatasetsNewClient() {
         <p className="datasets-admin-page__step-text">
           <span className="text-primary-600 font-bold">Passo {currentStep} - </span>
           <span className="text-primary-900 font-bold">
-            {currentStep === 1 && "Descreva o conjunto de dados"}
-            {currentStep === 2 && "Descreva o conjunto de dados"}
+            {currentStep === 1 && "Descreva o seu conjunto de dados"}
+            {currentStep === 2 && "Descreva o seu conjunto de dados"}
             {currentStep === 3 && "Adicionar ficheiros"}
             {currentStep === 4 && "Finalizar a publicação"}
           </span>
@@ -84,7 +91,7 @@ export default function DatasetsNewClient() {
           <div className="datasets-new-page__cards mb-[32px]" style={{ maxWidth: "50%" }}>
             <CardAction
               variant="neutral-100"
-              titleText="Publicar um conjunto de dados"
+              titleText="Publique um conjunto de dados"
               descriptionText="Seja uma administração pública ou uma empresa pública, todos podem publicar em dados.gov!"
               icon={{ name: "agora-line-edit" }}
               button={{
@@ -113,6 +120,7 @@ export default function DatasetsNewClient() {
                   hasIcon
                   trailingIcon="agora-line-external-link"
                   trailingIconHover="agora-solid-external-link"
+                  onClick={() => router.push("/pages/faqs/api-documentation")}
                 >
                   Consulte a documentação da API.
                 </Button>
@@ -122,6 +130,7 @@ export default function DatasetsNewClient() {
                   hasIcon
                   trailingIcon="agora-line-external-link"
                   trailingIconHover="agora-solid-external-link"
+                  onClick={() => router.push("/pages/faqs/reuse")}
                 >
                   Saiba mais sobre o harvester.
                 </Button>
@@ -131,6 +140,7 @@ export default function DatasetsNewClient() {
                   hasIcon
                   trailingIcon="agora-line-external-link"
                   trailingIconHover="agora-solid-external-link"
+                  onClick={() => router.push("/pages/support")}
                 >
                   Contacte-nos
                 </Button>
@@ -164,8 +174,9 @@ export default function DatasetsNewClient() {
       {currentStep >= 2 && (
         <DatasetsAdminClient
           currentStep={currentStep}
-          onNextStep={() => router.push(`/pages/admin/me/datasets/new?step=${currentStep + 1}`)}
-          onPreviousStep={() => router.push(`/pages/admin/me/datasets/new?step=${currentStep - 1}`)}
+          datasetId={datasetId}
+          onNextStep={() => router.push(buildStepUrl(currentStep + 1))}
+          onPreviousStep={() => router.push(buildStepUrl(currentStep - 1))}
         />
       )}
     </div>

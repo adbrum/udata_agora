@@ -24,17 +24,21 @@ import {
   uploadResource,
   fetchLicenses,
   fetchFrequencies,
+  fetchDataset,
+  fetchMyDatasets,
 } from "@/services/api";
 import { License, Frequency, Dataset } from "@/types/api";
 
 interface DatasetsAdminClientProps {
   currentStep: number;
+  datasetId?: string | null;
   onNextStep: () => void;
   onPreviousStep: () => void;
 }
 
 export default function DatasetsAdminClient({
   currentStep,
+  datasetId,
   onNextStep,
   onPreviousStep,
 }: DatasetsAdminClientProps) {
@@ -53,6 +57,10 @@ export default function DatasetsAdminClient({
   const [temporalStart, setTemporalStart] = useState("");
   const [temporalEnd, setTemporalEnd] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [showNewContact, setShowNewContact] = useState(false);
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactLink, setContactLink] = useState("");
 
   // API state
   const [createdDataset, setCreatedDataset] = useState<Dataset | null>(null);
@@ -63,21 +71,42 @@ export default function DatasetsAdminClient({
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
 
+  // Whether user has existing datasets
+  const [hasDatasets, setHasDatasets] = useState(true);
+
   useEffect(() => {
     async function loadDropdownData() {
       try {
-        const [licensesData, frequenciesData] = await Promise.all([
+        const [licensesData, frequenciesData, myDatasetsData] = await Promise.all([
           fetchLicenses(),
           fetchFrequencies(),
+          fetchMyDatasets(1, 1),
         ]);
         setLicenses(licensesData);
         setFrequencies(frequenciesData);
+        setHasDatasets(myDatasetsData.data.length > 0);
       } catch (error) {
         console.error("Error loading dropdown data:", error);
       }
     }
     loadDropdownData();
   }, []);
+
+  // Restore dataset from API when datasetId is in the URL
+  useEffect(() => {
+    if (datasetId && !createdDataset) {
+      async function restoreDataset() {
+        try {
+          const dataset = await fetchDataset(datasetId as string);
+          setCreatedDataset(dataset);
+        } catch (error) {
+          console.error("Error restoring dataset:", error);
+          setApiError("Não foi possível recuperar o conjunto de dados. Volte ao passo anterior.");
+        }
+      }
+      restoreDataset();
+    }
+  }, [datasetId, createdDataset]);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -123,7 +152,9 @@ export default function DatasetsAdminClient({
 
       const dataset = await createDataset(payload);
       setCreatedDataset(dataset);
-      onNextStep();
+      router.push(
+        `/pages/admin/me/datasets/new?step=${currentStep + 1}&datasetId=${dataset.id}`,
+      );
     } catch (error: unknown) {
       const err = error as { status?: number; data?: Record<string, unknown> };
       if (err.data && typeof err.data === "object") {
@@ -381,6 +412,49 @@ export default function DatasetsAdminClient({
                   </>
                 }
               />
+              {!hasDatasets && (
+                <>
+                  <h2 className="datasets-admin-page__section-title">Produtor</h2>
+
+                  <div className="datasets-admin-page__fields-group">
+                    <span className="text-primary-900 text-base font-medium leading-7">
+                      Verifique a identidade que deseja usar na publicação.
+                    </span>
+                    <InputSelect
+                      label=""
+                      hideLabel
+                      placeholder="Para pesquisar..."
+                      id="dataset-producer"
+                      searchable
+                      searchInputPlaceholder="Para pesquisar..."
+                      searchNoResultsText="Nenhum resultado encontrado"
+                    >
+                      <DropdownSection name="producer">
+                        <DropdownOption value="">—</DropdownOption>
+                      </DropdownSection>
+                    </InputSelect>
+                  </div>
+
+                  <div className="datasets-admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center">
+                    <h3 className="text-primary-900 text-lg font-bold leading-7">
+                      Você não pertence a nenhuma organização.
+                    </h3>
+                    <p className="text-neutral-700 text-base leading-7">
+                      Recomendamos que publique em nome de uma organização se se tratar de uma
+                      atividade profissional.
+                    </p>
+                    <Button
+                      variant="primary"
+                      onClick={() => router.push("/pages/admin/me/organizations")}
+                    >
+                      Crie ou participe de uma organização
+                    </Button>
+                  </div>
+                </>
+              )}
+
+
+
 
               <form
                 className="datasets-admin-page__form"
@@ -422,16 +496,17 @@ export default function DatasetsAdminClient({
                     id="dataset-description"
                     rows={4}
                     maxLength={246}
+                    showCharCounter={true}
                     value={datasetDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setDatasetDescription(e.target.value);
                       if (e.target.value.trim()) clearError("datasetDescription");
                     }}
-                    hasError={!!formErrors.datasetDescription}
-                    hasFeedback={true}
-                    feedbackState={formErrors.datasetDescription ? "danger" : "info"}
-                    errorFeedbackText="Campo obrigatório"
-                    feedbackText="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
+                    hasError="true"
+                    hasFeedback="true"
+                    feedbackState="warning"
+                    feedbackText={datasetDescription}
+                    errorFeedbackText={datasetDescription}
                   />
                   <InputTextArea
                     label="Descrição resumida"
@@ -441,10 +516,13 @@ export default function DatasetsAdminClient({
                     value={datasetShortDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setDatasetShortDescription(e.target.value);
+                      if (e.target.value.trim()) clearError("datasetShortDescription");
                     }}
-                    hasFeedback={true}
-                    feedbackState="info"
-                    feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 200 caracteres da sua descrição."
+                    hasError="true"
+                    hasFeedback="true"
+                    feedbackState="warning"
+                    feedbackText={datasetShortDescription}
+                    errorFeedbackText={datasetShortDescription}
                   />
                   <div className="flex items-center gap-[16px]">
                     <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
@@ -460,6 +538,7 @@ export default function DatasetsAdminClient({
                     </a>
                   </div>
 
+                  <h3 className="text-primary-900 font-bold text-base">Tags</h3>
                   <InputSelect
                     label="Palavras-chave"
                     placeholder="Pesquise por uma palavra-chave..."
@@ -479,6 +558,8 @@ export default function DatasetsAdminClient({
                   </div>
                 </div>
 
+
+
                 <h2 className="datasets-admin-page__section-title">Acesso</h2>
 
                 <div className="datasets-admin-page__fields-group">
@@ -488,7 +569,7 @@ export default function DatasetsAdminClient({
                     </span>
                     <div className="flex flex-row gap-4">
                       <RadioButton
-                        label="Abrir"
+                        label="Aberto"
                         id="access-open"
                         name="access-type"
                         checked={accessType === "open"}
@@ -503,6 +584,63 @@ export default function DatasetsAdminClient({
                       />
                     </div>
                   </div>
+
+                  {accessType === "restricted" && (
+                    <>
+                      <div className="grid grid-cols-3 gap-8 mt-4 items-end">
+                        <InputSelect
+                          label="Comunidade e Administração"
+                          placeholder=""
+                          id="dataset-restriction-community"
+                        >
+                          <DropdownSection name="community">
+                            <DropdownOption value="sim">Sim</DropdownOption>
+                            <DropdownOption value="nao">Não</DropdownOption>
+                            <DropdownOption value="condicional">Condicional</DropdownOption>
+                          </DropdownSection>
+                        </InputSelect>
+                        <InputSelect
+                          label="Empresa e Associação"
+                          placeholder=""
+                          id="dataset-restriction-enterprise"
+                        >
+                          <DropdownSection name="enterprise">
+                            <DropdownOption value="sim">Sim</DropdownOption>
+                            <DropdownOption value="nao">Não</DropdownOption>
+                            <DropdownOption value="condicional">Condicional</DropdownOption>
+                          </DropdownSection>
+                        </InputSelect>
+                        <InputSelect
+                          label="Privado"
+                          placeholder=""
+                          id="dataset-restriction-private"
+                        >
+                          <DropdownSection name="private">
+                            <DropdownOption value="sim">Sim</DropdownOption>
+                            <DropdownOption value="nao">Não</DropdownOption>
+                            <DropdownOption value="condicional">Condicional</DropdownOption>
+                          </DropdownSection>
+                        </InputSelect>
+                      </div>
+                      <InputSelect
+                        label="Motivo da restrição"
+                        placeholder=""
+                        id="dataset-restriction-reason"
+                      >
+                        <DropdownSection name="restriction-reason">
+                          <DropdownOption value="confidencialidade-procedimentos">Confidencialidade dos procedimentos das autoridades públicas</DropdownOption>
+                          <DropdownOption value="relacoes-internacionais">Relações internacionais, segurança pública ou defesa nacional</DropdownOption>
+                          <DropdownOption value="curso-justica">Curso da justiça</DropdownOption>
+                          <DropdownOption value="confidencialidade-comercial">Confidencialidade comercial ou industrial</DropdownOption>
+                          <DropdownOption value="propriedade-intelectual">Direitos de propriedade intelectual</DropdownOption>
+                          <DropdownOption value="dados-pessoais">Confidencialidade dos dados pessoais</DropdownOption>
+                          <DropdownOption value="protecao-fornecedores">Proteção dos fornecedores voluntários de informações</DropdownOption>
+                          <DropdownOption value="protecao-ambiental">Proteção ambiental</DropdownOption>
+                          <DropdownOption value="outros">Outros</DropdownOption>
+                        </DropdownSection>
+                      </InputSelect>
+                    </>
+                  )}
 
                   <InputSelect
                     label="Licença"
@@ -522,6 +660,81 @@ export default function DatasetsAdminClient({
                       ))}
                     </DropdownSection>
                   </InputSelect>
+                </div>
+
+                <h2 className="datasets-admin-page__section-title">Pontos de contato</h2>
+
+                <div className="datasets-admin-page__fields-group">
+                  {showNewContact && (
+                    <>
+                      <div className="relative">
+                        <InputSelect
+                          label="Escolha um ponto de contato"
+                          placeholder="Selecione um contato"
+                          id="dataset-contact-point"
+                          searchable
+                          searchInputPlaceholder="Escreva para pesquisar..."
+                          searchNoResultsText="Nenhum resultado encontrado"
+                        >
+                          <DropdownSection name="contact-points">
+                            <DropdownOption value="contact1">Contato 1</DropdownOption>
+                          </DropdownSection>
+                        </InputSelect>
+                        <button
+                          type="button"
+                          className="absolute right-[40px] top-[45px] mt-[9px] text-primary-700 hover:text-primary-900 z-10"
+                          onClick={() => setShowNewContact(false)}
+                        >
+                          <Icon name="agora-line-trash" className="w-5 h-5" />
+                        </button>
+                      </div>
+                      <InputText
+                        label="Nome"
+                        placeholder="por exemplo, o nome do serviço"
+                        id="contact-name"
+                        required
+                        value={contactName}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContactName(e.target.value)}
+                      />
+                      <div className="grid grid-cols-2 gap-8">
+                        <InputText
+                          label="E-mail"
+                          placeholder="contact@organisation.org"
+                          id="contact-email"
+                          value={contactEmail}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContactEmail(e.target.value)}
+                        />
+                        <InputText
+                          label="Link"
+                          placeholder="https://..."
+                          id="contact-link"
+                          value={contactLink}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContactLink(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Button
+                          variant="primary"
+                          onClick={() => setShowNewContact(false)}
+                        >
+                          Salvar
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                  <div>
+                    <Button
+                      appearance="outline"
+                      variant="primary"
+                      onClick={(e: React.MouseEvent) => {
+                        e.preventDefault();
+                        setShowNewContact(true);
+                      }}
+                      type="button"
+                    >
+                      + Novo contato
+                    </Button>
+                  </div>
                 </div>
 
                 <h2 className="datasets-admin-page__section-title">Tempo</h2>
@@ -591,6 +804,41 @@ export default function DatasetsAdminClient({
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTemporalEnd(e.target.value)}
                     />
                   </div>
+                </div>
+
+                <h2 className="datasets-admin-page__section-title">Espaço</h2>
+
+                <div className="datasets-admin-page__fields-group">
+                  <InputSelect
+                    label="Cobertura espacial"
+                    placeholder="Procurando cobertura espacial..."
+                    id="dataset-spatial-coverage"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
+                  >
+                    <DropdownSection name="spatial-coverage">
+                      <DropdownOption value="national">Nacional</DropdownOption>
+                      <DropdownOption value="regional">Regional</DropdownOption>
+                      <DropdownOption value="local">Local</DropdownOption>
+                    </DropdownSection>
+                  </InputSelect>
+
+                  <InputSelect
+                    label="Granularidade espacial"
+                    placeholder="Procurando granularidade..."
+                    id="dataset-spatial-granularity"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
+                  >
+                    <DropdownSection name="spatial-granularity">
+                      <DropdownOption value="country">País</DropdownOption>
+                      <DropdownOption value="district">Distrito</DropdownOption>
+                      <DropdownOption value="municipality">Município</DropdownOption>
+                      <DropdownOption value="parish">Freguesia</DropdownOption>
+                    </DropdownSection>
+                  </InputSelect>
                 </div>
 
                 <div className="datasets-admin-page__actions">
