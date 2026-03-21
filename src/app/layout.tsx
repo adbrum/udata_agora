@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
 import '@ama-pt/agora-design-system/artifacts/dist/tailwind.css';
 import './globals.css';
-import { Header } from '@/components/Header';
+import { HeaderWrapper } from '@/components/HeaderWrapper';
 import { Footer } from '@/components/Footer';
 import { PopupProviderWrapper } from '@/components/PopupProviderWrapper';
 import { AuthProvider } from '@/context/AuthContext';
@@ -43,7 +43,7 @@ export default function RootLayout({
         <AuthProvider>
           <PopupProviderWrapper>
             <div className="min-h-screen w-full mx-auto flex flex-col">
-              <Header />
+              <HeaderWrapper />
               <div className="grow">{children}</div>
               <Footer />
             </div>

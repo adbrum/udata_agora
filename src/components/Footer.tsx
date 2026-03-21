@@ -1,14 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { FederatedFooter } from '@ama-pt/agora-design-system';
-import { fetchLatestDatasets } from '@/services/api';
 
 const linkColumns = [
   {
     title: 'Dados abertos',
     links: [
-      { href: '/pages/datasets', label: 'Catálogo dos dados' },
+      { href: '/pages/datasets/catalogo-de-dados-dos-dados-gov-pt', label: 'Catálogo dos dados' },
       { href: 'https://data.europa.eu/en', label: 'Portal de dados europeu' },
     ],
   },
@@ -43,37 +42,11 @@ const usefulLinksData = [
 
 // Element 1: Links Navigation
 const FooterNavigation = () => {
-  const [firstDatasetSlug, setFirstDatasetSlug] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetchLatestDatasets(1);
-        if (res.data && res.data.length > 0) {
-          setFirstDatasetSlug(res.data[0].slug);
-        }
-      } catch {
-        // fallback to datasets list
-      }
-    }
-    load();
-  }, []);
-
-  const resolvedColumns = linkColumns.map((col) => ({
-    ...col,
-    links: col.links.map((link) => {
-      if (link.label === 'Catálogo dos dados' && firstDatasetSlug) {
-        return { ...link, href: `/pages/datasets/${firstDatasetSlug}` };
-      }
-      return link;
-    }),
-  }));
-
   return (
     <div className="container mx-auto px-4 py-12 xl:py-64">
       <h3 className="text-l-bold mb-8 text-white mb-[32px]">Mais para descobrir no portal</h3>
       <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-32">
-        {resolvedColumns.map((column, idx) => (
+        {linkColumns.map((column, idx) => (
           <div key={idx}>
             <h4 className="text-m-semibold text-white mb-[16px]">{column.title}</h4>
             <ul className="space-y-2">
