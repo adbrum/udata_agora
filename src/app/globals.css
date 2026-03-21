@@ -113,7 +113,9 @@ body {
    ========================================================================== */
 
 /* Hide languages selector (temporarily) */
-header.sticky .languages-panel-menu {
+header.sticky .languages-panel-menu,
+.agora-header .languages-panel-menu,
+.panels-menu .languages-panel-menu {
   display: none !important;
 }
 
