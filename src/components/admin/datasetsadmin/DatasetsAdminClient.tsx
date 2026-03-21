@@ -447,7 +447,7 @@ export default function DatasetsAdminClient({
                 </p>
                 <Button
                   variant="primary"
-                  onClick={() => router.push("/pages/admin/me/organizations")}
+                  onClick={() => router.push("/pages/admin/organizations/new")}
                 >
                   Crie ou participe de uma organização
                 </Button>

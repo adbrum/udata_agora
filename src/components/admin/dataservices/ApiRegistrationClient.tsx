@@ -260,7 +260,7 @@ export default function ApiRegistrationClient({
                     tratar de uma atividade profissional.
                   </p>
                   <a
-                    href="#"
+                    href="/pages/admin/organizations/new"
                     className="datasets-admin-page__org-card-link"
                   >
                     Crie ou participe de uma organização

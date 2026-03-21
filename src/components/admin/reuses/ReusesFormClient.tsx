@@ -14,6 +14,7 @@ import {
   DropdownOption,
   ButtonUploader,
   CardGeneral,
+  CardLinks,
 } from "@ama-pt/agora-design-system";
 import {
   createReuse,
@@ -23,8 +24,12 @@ import {
   linkDataserviceToReuse,
   fetchReuseTypes,
   fetchReuseTopics,
+  fetchMyDatasets,
 } from "@/services/api";
-import type { Reuse, ReuseType, ReuseTopic } from "@/types/api";
+import type { Reuse, ReuseType, ReuseTopic, Dataset } from "@/types/api";
+import { formatDistanceToNow } from "date-fns";
+import { pt } from "date-fns/locale";
+import Link from "next/link";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 
 interface ReusesFormClientProps {
@@ -58,10 +63,13 @@ export default function ReusesFormClient({
   const [datasetLinkErrors, setDatasetLinkErrors] = useState<Record<number, string>>({});
   const [apiLinks, setApiLinks] = useState([{ url: "" }]);
   const [apiLinkErrors, setApiLinkErrors] = useState<Record<number, string>>({});
+  const [myDatasets, setMyDatasets] = useState<Dataset[]>([]);
+  const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
 
   useEffect(() => {
     fetchReuseTypes().then(setReuseTypes);
     fetchReuseTopics().then(setReuseTopics);
+    fetchMyDatasets(1, 5).then((res) => setMyDatasets(res.data || []));
   }, []);
 
   useEffect(() => {
@@ -76,7 +84,6 @@ export default function ReusesFormClient({
     if (!selectedReuseType) errors.reuseType = true;
     if (!selectedReuseTopic) errors.reuseTopic = true;
     if (!reuseDescription.trim()) errors.reuseDescription = true;
-    if (reuseDescription.trim() && reuseDescription.trim().length < 200) errors.reuseDescriptionLength = true;
     if (!reuseCoverImageFile) errors.reuseCoverImage = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -86,11 +93,13 @@ export default function ReusesFormClient({
     setApiError(null);
     setIsSubmitting(true);
 
+    const url = reuseLink.trim().match(/^https?:\/\//) ? reuseLink.trim() : `https://${reuseLink.trim()}`;
+
     try {
       const reuse = await createReuse({
         title: reuseName.trim(),
         description: reuseDescription.trim(),
-        url: reuseLink.trim(),
+        url,
         type: selectedReuseType,
         topic: selectedReuseTopic || undefined,
         private: true,
@@ -104,7 +113,9 @@ export default function ReusesFormClient({
       onNextStep();
     } catch (error: unknown) {
       const err = error as { status?: number; data?: Record<string, unknown> };
-      if (err.data && typeof err.data === "object") {
+      if (err.status === 500) {
+        setApiError("Erro interno do servidor. Verifique se todos os campos estão preenchidos corretamente e tente novamente.");
+      } else if (err.data && typeof err.data === "object") {
         const messages = Object.entries(err.data)
           .map(([key, val]) => `${key}: ${val}`)
           .join(", ");
@@ -282,7 +293,9 @@ export default function ReusesFormClient({
               />
 
               {apiError && (
-                <StatusCard type="danger" description={apiError} />
+                <div className="mt-[32px] mb-[16px]">
+                  <StatusCard type="danger" description={apiError} />
+                </div>
               )}
 
               <form className="datasets-admin-page__form">
@@ -315,7 +328,7 @@ export default function ReusesFormClient({
                     tratar de uma atividade profissional.
                   </p>
                   <a
-                    href="#"
+                    href="/pages/admin/organizations/new"
                     className="datasets-admin-page__org-card-link"
                   >
                     Crie ou participe de uma organização
@@ -345,12 +358,15 @@ export default function ReusesFormClient({
                   />
                   <InputText
                     label="Reutilização *"
-                    placeholder="Insira o URL aqui"
+                    placeholder="Insira o URL aqui (ex: https://...)"
                     id="reuse-link"
                     value={reuseLink}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setReuseLink(e.target.value);
-                      if (e.target.value.trim()) clearError("reuseLink");
+                      if (e.target.value.trim()) {
+                        clearError("reuseLink");
+                        clearError("reuseLinkInvalid");
+                      }
                     }}
                     hasError={!!formErrors.reuseLink}
                     hasFeedback={!!formErrors.reuseLink}
@@ -495,7 +511,17 @@ export default function ReusesFormClient({
                   </div>
                 </div>
 
-                <div className="datasets-admin-page__actions">
+                <div className="datasets-admin-page__actions flex justify-between gap-[18px]">
+                  <Button
+                    variant="primary"
+                    appearance="outline"
+                    hasIcon
+                    leadingIcon="agora-line-arrow-left-circle"
+                    leadingIconHover="agora-solid-arrow-left-circle"
+                    onClick={onPreviousStep}
+                  >
+                    Anterior
+                  </Button>
                   <Button
                     variant="primary"
                     hasIcon
@@ -514,12 +540,16 @@ export default function ReusesFormClient({
           {/* Step 2: Vinculando conjuntos de dados e APIs */}
           {currentStep === 2 && (
             <>
-              <StatusCard
-                type="info"
-                description="É importante vincular todos os conjuntos de dados utilizados, pois isso ajuda a compreender as referências cruzadas necessárias e a melhorar a visibilidade da sua reutilização."
-              />
+              <div className="mb-[24px]">
+                <StatusCard
+                  type="info"
+                  description="É importante vincular todos os conjuntos de dados utilizados, pois isso ajuda a compreender as referências cruzadas necessárias e a melhorar a visibilidade da sua reutilização."
+                />
+              </div>
               {apiError && (
-                <StatusCard type="danger" description={apiError} />
+                <div className="mt-[32px] mb-[16px]">
+                  <StatusCard type="danger" description={apiError} />
+                </div>
               )}
 
               <form className="datasets-admin-page__form">
@@ -528,13 +558,83 @@ export default function ReusesFormClient({
                   label="Pesquisar um conjunto de dados"
                   placeholder="Procurando um conjunto de dados..."
                   id="reuse-dataset-search"
+                  searchable
+                  searchInputPlaceholder="Escreva para pesquisar..."
+                  searchNoResultsText="Nenhum resultado encontrado"
+                  onChange={(options) => {
+                    if (options.length > 0) {
+                      const found = myDatasets.find((d) => d.id === options[0].value);
+                      setSelectedDataset(found || null);
+                    } else {
+                      setSelectedDataset(null);
+                    }
+                  }}
                 >
                   <DropdownSection name="datasets">
-                    <DropdownOption value="dataset1">
-                      Conjunto de dados 1
-                    </DropdownOption>
+                    {myDatasets.map((d) => (
+                      <DropdownOption key={d.id} value={d.id}>
+                        {d.title}
+                      </DropdownOption>
+                    ))}
                   </DropdownSection>
                 </InputSelect>
+
+                {selectedDataset && (
+                  <div className="agora-card-links-datasets-px0 mt-[16px]">
+                    <CardLinks
+                      onClick={() => {}}
+                      className="cursor-pointer text-neutral-900"
+                      variant="transparent"
+                      image={{
+                        src: selectedDataset.organization?.logo || "/images/placeholders/organization.png",
+                        alt: selectedDataset.organization?.name || "Organização sem logo",
+                      }}
+                      category={selectedDataset.organization?.name}
+                      title={selectedDataset.title}
+                      description={
+                        <div className="flex flex-col gap-12">
+                          <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px]">
+                            {selectedDataset.description}
+                          </p>
+                          <div className="flex flex-wrap gap-8 items-center mt-[8px]">
+                            <span className="text-sm font-medium text-neutral-900">
+                              Metadados: {selectedDataset.quality?.score != null ? Math.round(selectedDataset.quality.score * 100) : 0}%
+                            </span>
+                          </div>
+                          <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
+                            <div className="flex items-center gap-8" title="Visualizações">
+                              <Icon name="agora-line-eye" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.views || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Downloads">
+                              <Icon name="agora-line-download" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.resources_downloads || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Reutilizações">
+                              <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.reuses || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Favoritos">
+                              <img src="/Icons/favorite.svg" alt="" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.followers || 0}</span>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                      date={
+                        <span className="font-[300]">
+                          {`Atualizado há ${formatDistanceToNow(new Date(selectedDataset.last_modified), { locale: pt }).replace("aproximadamente ", "").replace("quase ", "").replace("menos de ", "").replace("cerca de ", "")}`}
+                        </span>
+                      }
+                      mainLink={
+                        <Link href={`/pages/datasets/${selectedDataset.slug}`}>
+                          <span className="underline">{selectedDataset.title}</span>
+                        </Link>
+                      }
+                      blockedLink={true}
+                    />
+                  </div>
+                )}
 
                 {datasetLinks.map((link, index) => (
                   <div key={`dataset-${index}`} className="mt-[16px]">
@@ -581,7 +681,8 @@ export default function ReusesFormClient({
                   </Button>
                 </div>
 
-                {/* APIs */}
+                {/* APIs - oculto temporariamente */}
+                {false && (<>
                 <div className="mt-[32px]">
                   <InputSelect
                     label="Pesquisar uma API"
@@ -638,11 +739,15 @@ export default function ReusesFormClient({
                     Adicionar
                   </Button>
                 </div>
+                </>)}
 
-                <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+                <div className="datasets-admin-page__actions flex justify-between gap-[18px]">
                   <Button
+                    variant="primary"
                     appearance="outline"
-                    variant="neutral"
+                    hasIcon
+                    leadingIcon="agora-line-arrow-left-circle"
+                    leadingIconHover="agora-solid-arrow-left-circle"
                     onClick={onPreviousStep}
                   >
                     Anterior
@@ -694,30 +799,107 @@ export default function ReusesFormClient({
           {/* Step 3: Finalizar a publicação */}
           {currentStep === 3 && (
             <>
-              <StatusCard
-                type="success"
-                description={
-                  <>
-                    <strong>A sua reutilização foi criada!</strong>
-                    <br />
-                    Agora pode publicar ou guardar como rascunho.
-                  </>
-                }
-              />
+              <div className="mb-[24px]">
+                <StatusCard
+                  type="success"
+                  description={
+                    <>
+                      <strong>A sua reutilização foi criada!</strong>
+                      <br />
+                      Agora pode publicar ou guardar como rascunho.
+                    </>
+                  }
+                />
+              </div>
 
-              <CardGeneral
-                variant="white-outline"
-                isCardHorizontal
-                isBlockedLink
-                iconDefault="agora-line-layers-menu"
-                iconHover="agora-solid-layers-menu"
-                titleText={reuseName || "Sem título"}
-                descriptionText={reuseDescription || "Sem descrição"}
-                anchor={{
-                  href: `/pages/reuses/preview?title=${encodeURIComponent(reuseName)}&description=${encodeURIComponent(reuseDescription)}`,
-                  children: "",
-                }}
-              />
+              <div className="agora-card-links-datasets-px0">
+                <CardLinks
+                  onClick={() => {}}
+                  className="cursor-pointer text-neutral-900"
+                  variant="transparent"
+                  image={{
+                    src: createdReuse?.image_thumbnail || createdReuse?.image || "/laptop.png",
+                    alt: reuseName || "Sem título",
+                  }}
+                  category={createdReuse?.organization?.name || "Reutilização"}
+                  title={<div className="underline text-xl-bold">{reuseName || "Sem título"}</div>}
+                  description={
+                    reuseDescription ? (
+                      <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                        {reuseDescription}
+                      </p>
+                    ) : undefined
+                  }
+                  date={
+                    <span className="font-[300]">
+                      Atualizado agora
+                    </span>
+                  }
+                  links={[
+                    {
+                      href: "#",
+                      hasIcon: true,
+                      leadingIcon: "agora-line-eye",
+                      leadingIconHover: "agora-solid-eye",
+                      trailingIcon: "",
+                      trailingIconHover: "",
+                      trailingIconActive: "",
+                      children: "0",
+                      title: "Visualizações",
+                      onClick: (e: React.MouseEvent) => e.preventDefault(),
+                      className: "text-[#034AD8]",
+                    },
+                    {
+                      href: "#",
+                      hasIcon: true,
+                      leadingIcon: "agora-line-calendar",
+                      leadingIconHover: "agora-solid-calendar",
+                      trailingIcon: "",
+                      trailingIconHover: "",
+                      trailingIconActive: "",
+                      children: "0 datasets",
+                      title: "Datasets",
+                      onClick: (e: React.MouseEvent) => e.preventDefault(),
+                      className: "text-[#034AD8]",
+                    },
+                    {
+                      href: "#",
+                      hasIcon: false,
+                      children: (
+                        <span className="flex items-center gap-8">
+                          <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
+                          <span>0</span>
+                        </span>
+                      ),
+                      title: "Métricas",
+                      onClick: (e: React.MouseEvent) => e.preventDefault(),
+                    },
+                    {
+                      href: "#",
+                      hasIcon: true,
+                      leadingIcon: "agora-line-star",
+                      leadingIconHover: "agora-solid-star",
+                      trailingIcon: "",
+                      trailingIconHover: "",
+                      trailingIconActive: "",
+                      children: 0,
+                      title: "Favoritos",
+                      onClick: (e: React.MouseEvent) => e.preventDefault(),
+                      className: "text-[#034AD8]",
+                    },
+                  ]}
+                  mainLink={
+                    createdReuse ? (
+                      <Link href={`/pages/reuses/${createdReuse.slug}`}>
+                        <span className="underline">{reuseName}</span>
+                      </Link>
+                    ) : (
+                      <span className="underline">{reuseName || "Sem título"}</span>
+                    )
+                  }
+                  blockedLink={true}
+                />
+              </div>
 
               <Button
                 appearance="link"
@@ -730,7 +912,9 @@ export default function ReusesFormClient({
               </Button>
 
               {apiError && (
-                <StatusCard type="danger" description={apiError} />
+                <div className="mt-[32px] mb-[16px]">
+                  <StatusCard type="danger" description={apiError} />
+                </div>
               )}
 
               <div className="datasets-admin-page__actions flex justify-end gap-[18px]">
