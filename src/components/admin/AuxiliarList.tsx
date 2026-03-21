@@ -40,10 +40,12 @@ export default function AuxiliarList({ items }: AuxiliarListProps) {
               />
             </span>
             <span className="auxiliar-list__text">{item.title}</span>
-            <Icon
-              name={openIndex === idx ? "agora-line-chevron-up" : "agora-line-chevron-down"}
-              className="auxiliar-list__chevron"
-            />
+            <span className="auxiliar-list__chevron">
+              <Icon
+                name={openIndex === idx ? "agora-line-chevron-up" : "agora-line-chevron-down"}
+                dimensions="s"
+              />
+            </span>
           </button>
           {openIndex === idx && (
             <div className="auxiliar-list__content">

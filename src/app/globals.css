@@ -1425,9 +1425,9 @@ body:has(.admin-wrapper)>div>header.sticky {
   flex-shrink: 0;
   width: 24px;
   height: 24px;
-}
-
-.auxiliar-list__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--color-primary-600);
 }
 
@@ -1442,6 +1442,21 @@ body:has(.admin-wrapper)>div>header.sticky {
   font-weight: 700;
   line-height: 28px;
   color: var(--color-neutral-900);
+}
+
+.auxiliar-list__chevron {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-600);
+}
+
+.auxiliar-list__chevron svg,
+.auxiliar-list__chevron svg path {
+  fill: currentColor !important;
 }
 
 .auxiliar-list__chevron {
