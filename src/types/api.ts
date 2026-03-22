@@ -827,6 +827,7 @@ export interface CommunityResourceCreatePayload {
   filetype?: string;
   format?: string;
   dataset: string;
+  organization?: string;
 }
 
 export interface CommunityResourceUpdatePayload {

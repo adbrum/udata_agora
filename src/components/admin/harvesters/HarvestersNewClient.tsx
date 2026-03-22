@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -9,7 +9,6 @@ import {
   DropdownOption,
   InputText,
   InputTextArea,
-  InputSelect,
   Icon,
   StatusCard,
   Accordion,
@@ -17,10 +16,13 @@ import {
   Switch,
   Pill,
 } from "@ama-pt/agora-design-system";
+import { useAuth } from "@/context/AuthContext";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 import AuxiliarList from "@/components/admin/AuxiliarList";
+import IsolatedSelect from "@/components/admin/IsolatedSelect";
 
 export default function HarvestersNewClient() {
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const totalSteps = 3;
@@ -36,6 +38,73 @@ export default function HarvestersNewClient() {
   const [filters, setFilters] = useState<
     { mode: string; type: string; value: string }[]
   >([]);
+
+  const selectedProducerRef = useRef("");
+  const selectedTypeRef = useRef("");
+  const filterModeRefs = useRef<Record<number, React.MutableRefObject<string>>>({});
+  const filterTypeRefs = useRef<Record<number, React.MutableRefObject<string>>>({});
+
+  const getFilterModeRef = (index: number) => {
+    if (!filterModeRefs.current[index]) {
+      filterModeRefs.current[index] = { current: "include" };
+    }
+    return filterModeRefs.current[index];
+  };
+
+  const getFilterTypeRef = (index: number) => {
+    if (!filterTypeRefs.current[index]) {
+      filterTypeRefs.current[index] = { current: "organization" };
+    }
+    return filterTypeRefs.current[index];
+  };
+
+  const producerOptions = useMemo(
+    () => (
+      <DropdownSection name="identity">
+        <DropdownOption value="user">
+          {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
+        </DropdownOption>
+        {(user?.organizations || []).map((org) => (
+          <DropdownOption key={org.id} value={org.id}>
+            {org.name}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [user],
+  );
+
+  const typeOptions = useMemo(
+    () => (
+      <DropdownSection name="types">
+        <DropdownOption value="dcat">DCAT</DropdownOption>
+        <DropdownOption value="ckan">CKAN</DropdownOption>
+        <DropdownOption value="csw">CSW</DropdownOption>
+        <DropdownOption value="ods">ODS</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
+
+  const filterModeOptions = useMemo(
+    () => (
+      <DropdownSection name="mode">
+        <DropdownOption value="include">Incluir</DropdownOption>
+        <DropdownOption value="exclude">Excluir</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
+
+  const filterTypeSelectOptions = useMemo(
+    () => (
+      <DropdownSection name="type">
+        <DropdownOption value="organization">Organização</DropdownOption>
+        <DropdownOption value="tag">Marcação</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
 
   const addFilter = () => {
     setFilters((prev) => [...prev, { mode: "include", type: "organization", value: "" }]);
@@ -182,17 +251,14 @@ export default function HarvestersNewClient() {
                 <h2 className="datasets-admin-page__section-title">Produtor</h2>
 
                 <div className="datasets-admin-page__fields-group">
-                  <InputSelect
+                  <IsolatedSelect
                     label="Verifique a identidade que deseja usar para publicar *"
                     placeholder="Para pesquisar..."
                     id="harvester-producer"
+                    onChangeRef={selectedProducerRef}
                   >
-                    <DropdownSection name="organizations">
-                      <DropdownOption value="org1">
-                        Organização
-                      </DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
+                    {producerOptions}
+                  </IsolatedSelect>
                 </div>
 
                 <h2 className="datasets-admin-page__section-title">Descrição</h2>
@@ -241,21 +307,17 @@ export default function HarvestersNewClient() {
                 </h2>
 
                 <div className="datasets-admin-page__fields-group">
-                  <InputSelect
+                  <IsolatedSelect
                     label="Tipo *"
                     placeholder=""
                     id="harvester-type"
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
+                    onChangeRef={selectedTypeRef}
                   >
-                    <DropdownSection name="types">
-                      <DropdownOption value="dcat">DCAT</DropdownOption>
-                      <DropdownOption value="ckan">CKAN</DropdownOption>
-                      <DropdownOption value="csw">CSW</DropdownOption>
-                      <DropdownOption value="ods">ODS</DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
+                    {typeOptions}
+                  </IsolatedSelect>
 
                   <div>
                     <p className="text-primary-900 text-base font-medium leading-7">
@@ -265,36 +327,24 @@ export default function HarvestersNewClient() {
                     {filters.map((filter, index) => (
                       <div key={index} className={`mt-[8px] pb-[16px] mb-[8px] ${index < filters.length - 1 ? "border-b border-neutral-200" : ""}`}>
                         <div className="flex items-center gap-[8px]">
-                          <InputSelect
+                          <IsolatedSelect
                             label=""
                             hideLabel
                             placeholder="Incluir"
                             id={`filter-mode-${index}`}
-                            onChange={(options) => {
-                              if (options.length > 0)
-                                updateFilter(index, "mode", options[0].value as string);
-                            }}
+                            onChangeRef={getFilterModeRef(index)}
                           >
-                            <DropdownSection name="mode">
-                              <DropdownOption value="include">Incluir</DropdownOption>
-                              <DropdownOption value="exclude">Excluir</DropdownOption>
-                            </DropdownSection>
-                          </InputSelect>
-                          <InputSelect
+                            {filterModeOptions}
+                          </IsolatedSelect>
+                          <IsolatedSelect
                             label=""
                             hideLabel
                             placeholder="Organização"
                             id={`filter-type-${index}`}
-                            onChange={(options) => {
-                              if (options.length > 0)
-                                updateFilter(index, "type", options[0].value as string);
-                            }}
+                            onChangeRef={getFilterTypeRef(index)}
                           >
-                            <DropdownSection name="type">
-                              <DropdownOption value="organization">Organização</DropdownOption>
-                              <DropdownOption value="tag">Marcação</DropdownOption>
-                            </DropdownSection>
-                          </InputSelect>
+                            {filterTypeSelectOptions}
+                          </IsolatedSelect>
                         </div>
                         <div className="flex items-center gap-[8px] mt-[8px]">
                           <div className="flex-1">
