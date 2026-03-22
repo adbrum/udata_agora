@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -16,6 +16,8 @@ import {
   Accordion,
   AccordionGroup,
 } from "@ama-pt/agora-design-system";
+import { suggestOrganizations } from "@/services/api";
+import type { OrganizationSuggestion } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 
@@ -30,6 +32,11 @@ export default function OrganizationsNewClient() {
   const [orgName, setOrgName] = useState("");
   const [orgDescription, setOrgDescription] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [orgSuggestions, setOrgSuggestions] = useState<OrganizationSuggestion[]>([]);
+
+  useEffect(() => {
+    suggestOrganizations("", 20).then(setOrgSuggestions);
+  }, []);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -188,8 +195,11 @@ export default function OrganizationsNewClient() {
                   searchNoResultsText="Nenhum resultado encontrado"
                 >
                   <DropdownSection name="organizations">
-                    <DropdownOption value="org1">Organização 1</DropdownOption>
-                    <DropdownOption value="org2">Organização 2</DropdownOption>
+                    {orgSuggestions.map((org) => (
+                      <DropdownOption key={org.id} value={org.id}>
+                        {org.name}
+                      </DropdownOption>
+                    ))}
                   </DropdownSection>
                 </InputSelect>
 

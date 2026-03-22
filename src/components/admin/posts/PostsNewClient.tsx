@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -13,6 +13,8 @@ import {
   ButtonUploader,
   RadioButton,
 } from "@ama-pt/agora-design-system";
+import { suggestTags } from "@/services/api";
+import type { TagSuggestion } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 
 export default function PostsNewClient() {
@@ -27,6 +29,11 @@ export default function PostsNewClient() {
   const [articleTitle, setArticleTitle] = useState("");
   const [articleHeader, setArticleHeader] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [tags, setTags] = useState<TagSuggestion[]>([]);
+
+  useEffect(() => {
+    suggestTags("", 50).then(setTags);
+  }, []);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -177,12 +184,17 @@ export default function PostsNewClient() {
                   label="Palavras-chave"
                   placeholder="Pesquise por uma palavra-chave..."
                   id="article-keywords"
-                    searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
-                    searchNoResultsText="Nenhum resultado encontrado"
+                  type="checkbox"
+                  searchable
+                  searchInputPlaceholder="Escreva para pesquisar..."
+                  searchNoResultsText="Nenhum resultado encontrado"
                 >
                   <DropdownSection name="keywords">
-                    <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
+                    {tags.map((tag) => (
+                      <DropdownOption key={tag.text} value={tag.text}>
+                        {tag.text}
+                      </DropdownOption>
+                    ))}
                   </DropdownSection>
                 </InputSelect>
 

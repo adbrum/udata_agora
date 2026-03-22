@@ -18,6 +18,7 @@ import {
 import { createDataservice } from "@/services/api";
 import type { Dataservice } from "@/types/api";
 import AuxiliarList from "@/components/admin/AuxiliarList";
+import { useAuth } from "@/context/AuthContext";
 
 interface ApiRegistrationClientProps {
   currentStep: number;
@@ -30,6 +31,7 @@ export default function ApiRegistrationClient({
   onNextStep,
   onPreviousStep,
 }: ApiRegistrationClientProps) {
+  const { user } = useAuth();
   const [accessType, setAccessType] = useState("open");
   const [apiName, setApiName] = useState("");
   const [apiAcronym, setApiAcronym] = useState("");
@@ -244,10 +246,17 @@ export default function ApiRegistrationClient({
                   placeholder="Para pesquisar..."
                   id="producer-identity"
                 >
-                  <DropdownSection name="organizations">
-                    <DropdownOption value="org1">
-                      Organização
+                  <DropdownSection name="identity">
+                    <DropdownOption value="user">
+                      {user
+                        ? `${user.first_name} ${user.last_name}`
+                        : "Eu próprio"}
                     </DropdownOption>
+                    {(user?.organizations || []).map((org) => (
+                      <DropdownOption key={org.id} value={org.id}>
+                        {org.name}
+                      </DropdownOption>
+                    ))}
                   </DropdownSection>
                 </InputSelect>
 
