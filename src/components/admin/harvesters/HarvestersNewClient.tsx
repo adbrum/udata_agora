@@ -16,11 +16,13 @@ import {
   Switch,
   Pill,
 } from "@ama-pt/agora-design-system";
+import { useAuth } from "@/context/AuthContext";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
 
 export default function HarvestersNewClient() {
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const totalSteps = 3;
@@ -58,11 +60,18 @@ export default function HarvestersNewClient() {
 
   const producerOptions = useMemo(
     () => (
-      <DropdownSection name="organizations">
-        <DropdownOption value="org1">Organização</DropdownOption>
+      <DropdownSection name="identity">
+        <DropdownOption value="user">
+          {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
+        </DropdownOption>
+        {(user?.organizations || []).map((org) => (
+          <DropdownOption key={org.id} value={org.id}>
+            {org.name}
+          </DropdownOption>
+        ))}
       </DropdownSection>
     ),
-    [],
+    [user],
   );
 
   const typeOptions = useMemo(

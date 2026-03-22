@@ -23,6 +23,7 @@ import {
 import type { Dataset, CommunityResource, ResourceType } from "@/types/api";
 import { formatDistanceToNow } from "date-fns";
 import { pt } from "date-fns/locale";
+import { useAuth } from "@/context/AuthContext";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
 
@@ -40,6 +41,7 @@ export default function CommunityResourceFormClient({
   onPreviousStep,
 }: CommunityResourceFormClientProps) {
   const router = useRouter();
+  const { user } = useAuth();
 
   // Form state
   const [title, setTitle] = useState("");
@@ -104,6 +106,9 @@ export default function CommunityResourceFormClient({
         description: description.trim() || undefined,
         filetype: selectedTypeRef.current || undefined,
         dataset: datasetId,
+        ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
+          ? { organization: selectedProducerRef.current }
+          : {}),
       });
 
       if (file) {
@@ -197,11 +202,21 @@ export default function CommunityResourceFormClient({
     },
   ];
 
-  const producerOptions = useMemo(() => (
-    <DropdownSection name="organizations">
-      <DropdownOption value="org1">Organização</DropdownOption>
-    </DropdownSection>
-  ), []);
+  const producerOptions = useMemo(
+    () => (
+      <DropdownSection name="identity">
+        <DropdownOption value="user">
+          {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
+        </DropdownOption>
+        {(user?.organizations || []).map((org) => (
+          <DropdownOption key={org.id} value={org.id}>
+            {org.name}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [user],
+  );
 
   const typeOptions = useMemo(() => (
     <DropdownSection name="types">

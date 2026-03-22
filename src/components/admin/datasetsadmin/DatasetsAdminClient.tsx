@@ -29,6 +29,7 @@ import {
 import { License, Frequency, Dataset } from "@/types/api";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
+import { useAuth } from "@/context/AuthContext";
 
 interface DatasetsAdminClientProps {
   currentStep: number;
@@ -44,6 +45,7 @@ export default function DatasetsAdminClient({
   onPreviousStep,
 }: DatasetsAdminClientProps) {
   const router = useRouter();
+  const { user } = useAuth();
 
   // Form state
   const [accessType, setAccessType] = useState("open");
@@ -53,6 +55,7 @@ export default function DatasetsAdminClient({
   const [datasetAcronym, setDatasetAcronym] = useState("");
   const [datasetDescription, setDatasetDescription] = useState("");
   const [datasetShortDescription, setDatasetShortDescription] = useState("");
+  const selectedProducerRef = useRef("");
   const selectedLicenseRef = useRef("");
   const selectedFrequencyRef = useRef("");
   const dummyRef = useRef("");
@@ -72,6 +75,22 @@ export default function DatasetsAdminClient({
   // Dropdown data
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
+
+  const producerOptions = useMemo(
+    () => (
+      <DropdownSection name="identity">
+        <DropdownOption value="user">
+          {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
+        </DropdownOption>
+        {(user?.organizations || []).map((org) => (
+          <DropdownOption key={org.id} value={org.id}>
+            {org.name}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [user]
+  );
 
   const licenseOptions = useMemo(
     () => (
@@ -169,6 +188,9 @@ export default function DatasetsAdminClient({
       if (datasetAcronym.trim()) payload.acronym = datasetAcronym.trim();
       if (datasetShortDescription.trim()) {
         payload.description_short = datasetShortDescription.trim();
+      }
+      if (selectedProducerRef.current && selectedProducerRef.current !== "user") {
+        payload.organization = selectedProducerRef.current;
       }
       if (selectedLicenseRef.current) payload.license = selectedLicenseRef.current;
       if (temporalStart) {
@@ -452,16 +474,11 @@ export default function DatasetsAdminClient({
                 <IsolatedSelect
                   label=""
                   hideLabel
-                  placeholder="Para pesquisar..."
+                  placeholder="Selecione o produtor..."
                   id="dataset-producer"
-                  searchable
-                  searchInputPlaceholder="Para pesquisar..."
-                  searchNoResultsText="Nenhum resultado encontrado"
-                  onChangeRef={dummyRef}
+                  onChangeRef={selectedProducerRef}
                 >
-                  <DropdownSection name="producer">
-                    <DropdownOption value="">—</DropdownOption>
-                  </DropdownSection>
+                  {producerOptions}
                 </IsolatedSelect>
               </div>
 
