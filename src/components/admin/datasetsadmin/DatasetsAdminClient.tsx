@@ -25,11 +25,13 @@ import {
   fetchFrequencies,
   fetchDataset,
   fetchMyDatasets,
+  suggestTags,
 } from "@/services/api";
-import { License, Frequency, Dataset } from "@/types/api";
+import { License, Frequency, Dataset, TagSuggestion } from "@/types/api";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
 import { useAuth } from "@/context/AuthContext";
+import { getFrequencyLabel } from "@/utils/frequencyLabels";
 
 interface DatasetsAdminClientProps {
   currentStep: number;
@@ -75,6 +77,7 @@ export default function DatasetsAdminClient({
   // Dropdown data
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
+  const [tags, setTags] = useState<TagSuggestion[]>([]);
 
   const producerOptions = useMemo(
     () => (
@@ -110,12 +113,25 @@ export default function DatasetsAdminClient({
       <DropdownSection name="frequencies">
         {frequencies.map((freq) => (
           <DropdownOption key={freq.id} value={freq.id}>
-            {freq.label}
+            {getFrequencyLabel(freq.id, freq.label)}
           </DropdownOption>
         ))}
       </DropdownSection>
     ),
     [frequencies],
+  );
+
+  const tagOptions = useMemo(
+    () => (
+      <DropdownSection name="keywords">
+        {tags.map((tag) => (
+          <DropdownOption key={tag.text} value={tag.text}>
+            {tag.text}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [tags],
   );
 
   // Whether user has existing datasets
@@ -124,14 +140,17 @@ export default function DatasetsAdminClient({
   useEffect(() => {
     async function loadDropdownData() {
       try {
-        const [licensesData, frequenciesData, myDatasetsData] = await Promise.all([
-          fetchLicenses(),
-          fetchFrequencies(),
-          fetchMyDatasets(1, 1),
-        ]);
+        const [licensesData, frequenciesData, myDatasetsData, tagsData] =
+          await Promise.all([
+            fetchLicenses(),
+            fetchFrequencies(),
+            fetchMyDatasets(1, 1),
+            suggestTags("", 50),
+          ]);
         setLicenses(licensesData);
         setFrequencies(frequenciesData);
         setHasDatasets(myDatasetsData.data.length > 0);
+        setTags(tagsData);
       } catch (error) {
         console.error("Error loading dropdown data:", error);
       }
@@ -591,9 +610,7 @@ export default function DatasetsAdminClient({
                     searchNoResultsText="Nenhum resultado encontrado"
                     onChangeRef={dummyRef}
                   >
-                    <DropdownSection name="keywords">
-                      <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
-                    </DropdownSection>
+                    {tagOptions}
                   </IsolatedSelect>
                   <div className="flex items-center justify-between">
                     <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">

@@ -25,8 +25,9 @@ import {
   fetchReuseTypes,
   fetchReuseTopics,
   fetchMyDatasets,
+  suggestTags,
 } from "@/services/api";
-import type { Reuse, ReuseType, ReuseTopic, Dataset } from "@/types/api";
+import type { Reuse, ReuseType, ReuseTopic, Dataset, TagSuggestion } from "@/types/api";
 import { formatDistanceToNow } from "date-fns";
 import { pt } from "date-fns/locale";
 import Link from "next/link";
@@ -62,6 +63,7 @@ export default function ReusesFormClient({
   // Dynamic options from backend
   const [reuseTypes, setReuseTypes] = useState<ReuseType[]>([]);
   const [reuseTopics, setReuseTopics] = useState<ReuseTopic[]>([]);
+  const [tags, setTags] = useState<TagSuggestion[]>([]);
 
   // Step 2 state
   const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
@@ -75,6 +77,7 @@ export default function ReusesFormClient({
     fetchReuseTypes().then(setReuseTypes);
     fetchReuseTopics().then(setReuseTopics);
     fetchMyDatasets(1, 5).then((res) => setMyDatasets(res.data || []));
+    suggestTags("", 50).then(setTags);
   }, []);
 
   useEffect(() => {
@@ -470,10 +473,17 @@ export default function ReusesFormClient({
                     placeholder="Selecione palavras-chave..."
                     id="reuse-keywords"
                     type="checkbox"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
                     onChangeRef={selectedKeywordsRef}
                   >
                     <DropdownSection name="keywords">
-                      <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
+                      {tags.map((tag) => (
+                        <DropdownOption key={tag.text} value={tag.text}>
+                          {tag.text}
+                        </DropdownOption>
+                      ))}
                     </DropdownSection>
                   </IsolatedSelect>
                   <div className="flex items-center gap-16">
