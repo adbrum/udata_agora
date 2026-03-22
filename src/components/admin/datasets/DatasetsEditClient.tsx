@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -9,7 +9,6 @@ import {
   Icon,
   InputText,
   InputTextArea,
-  InputSelect,
   InputDate,
   DropdownSection,
   DropdownOption,
@@ -43,6 +42,7 @@ import {
 } from "@/services/api";
 import { Dataset, License, Frequency, Activity, Resource } from "@/types/api";
 import AuxiliarList from "@/components/admin/AuxiliarList";
+import IsolatedSelect from "@/components/admin/IsolatedSelect";
 
 export default function DatasetsEditClient() {
   const searchParams = useSearchParams();
@@ -58,11 +58,20 @@ export default function DatasetsEditClient() {
   const [acronym, setAcronym] = useState("");
   const [description, setDescription] = useState("");
   const [shortDescription, setShortDescription] = useState("");
-  const [selectedLicense, setSelectedLicense] = useState("");
-  const [selectedFrequency, setSelectedFrequency] = useState("");
+  const selectedLicenseRef = useRef("");
+  const selectedFrequencyRef = useRef("");
   const [temporalStart, setTemporalStart] = useState("");
   const [temporalEnd, setTemporalEnd] = useState("");
   const [accessType, setAccessType] = useState("open");
+
+  // Refs for IsolatedSelect (avoid setState during render cycle)
+  const keywordsRef = useRef("");
+  const restrictionCommunityRef = useRef("");
+  const restrictionEnterpriseRef = useRef("");
+  const restrictionPrivateRef = useRef("");
+  const restrictionReasonRef = useRef("");
+  const spatialCoverageRef = useRef("");
+  const spatialGranularityRef = useRef("");
 
   // API state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,8 +102,8 @@ export default function DatasetsEditClient() {
         setAcronym(ds.acronym || "");
         setDescription(ds.description);
         setShortDescription(ds.description_short || "");
-        setSelectedLicense(ds.license || "");
-        setSelectedFrequency(ds.frequency || "");
+        selectedLicenseRef.current = ds.license || "";
+        selectedFrequencyRef.current = ds.frequency || "";
         if (ds.temporal_coverage) {
           setTemporalStart(ds.temporal_coverage.start || "");
           setTemporalEnd(ds.temporal_coverage.end || "");
@@ -129,6 +138,114 @@ export default function DatasetsEditClient() {
       .finally(() => setActivitiesLoading(false));
   };
 
+  // Memoized children for IsolatedSelect to prevent re-render cascades
+  const licenseOptions = useMemo(
+    () => (
+      <DropdownSection name="licenses">
+        {licenses.map((license) => (
+          <DropdownOption key={license.id} value={license.id}>
+            {license.title}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [licenses],
+  );
+
+  const frequencyOptions = useMemo(
+    () => (
+      <DropdownSection name="frequencies">
+        {frequencies.map((freq) => (
+          <DropdownOption key={freq.id} value={freq.id}>
+            {freq.label}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [frequencies],
+  );
+
+  const keywordOptions = useMemo(
+    () => (
+      <DropdownSection name="keywords">
+        {(dataset?.tags || []).map((tag) => (
+          <DropdownOption key={tag} value={tag}>
+            {tag}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [dataset?.tags],
+  );
+
+  const communityOptions = useMemo(
+    () => (
+      <DropdownSection name="community">
+        <DropdownOption value="sim">Sim</DropdownOption>
+        <DropdownOption value="nao">Não</DropdownOption>
+        <DropdownOption value="condicional">Condicional</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
+
+  const enterpriseOptions = useMemo(
+    () => (
+      <DropdownSection name="enterprise">
+        <DropdownOption value="sim">Sim</DropdownOption>
+        <DropdownOption value="nao">Não</DropdownOption>
+        <DropdownOption value="condicional">Condicional</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
+
+  const privateOptions = useMemo(
+    () => (
+      <DropdownSection name="private">
+        <DropdownOption value="sim">Sim</DropdownOption>
+        <DropdownOption value="nao">Não</DropdownOption>
+        <DropdownOption value="condicional">Condicional</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
+
+  const restrictionReasonOptions = useMemo(
+    () => (
+      <DropdownSection name="restriction-reason">
+        <DropdownOption value="confidencialidade-procedimentos">Confidencialidade dos procedimentos das autoridades públicas</DropdownOption>
+        <DropdownOption value="relacoes-internacionais">Relações internacionais, segurança pública ou defesa nacional</DropdownOption>
+        <DropdownOption value="curso-justica">Curso da justiça</DropdownOption>
+        <DropdownOption value="confidencialidade-comercial">Confidencialidade comercial ou industrial</DropdownOption>
+        <DropdownOption value="propriedade-intelectual">Direitos de propriedade intelectual</DropdownOption>
+        <DropdownOption value="dados-pessoais">Confidencialidade dos dados pessoais</DropdownOption>
+        <DropdownOption value="protecao-fornecedores">Proteção dos fornecedores voluntários de informações</DropdownOption>
+        <DropdownOption value="protecao-ambiental">Proteção ambiental</DropdownOption>
+        <DropdownOption value="outros">Outros</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
+
+  const spatialCoverageOptions = useMemo(
+    () => (
+      <DropdownSection name="spatial-coverage">
+        <DropdownOption value="">—</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
+
+  const spatialGranularityOptions = useMemo(
+    () => (
+      <DropdownSection name="spatial-granularity">
+        <DropdownOption value="">—</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
+
   const clearError = (field: string) => {
     if (formErrors[field]) {
       setFormErrors((prev) => {
@@ -159,8 +276,8 @@ export default function DatasetsEditClient() {
         description: description.trim(),
         description_short: shortDescription.trim() || undefined,
         acronym: acronym.trim() || undefined,
-        license: selectedLicense || undefined,
-        frequency: selectedFrequency || undefined,
+        license: selectedLicenseRef.current || undefined,
+        frequency: selectedFrequencyRef.current || undefined,
         temporal_coverage: temporalStart
           ? { start: temporalStart, ...(temporalEnd ? { end: temporalEnd } : {}) }
           : undefined,
@@ -513,23 +630,15 @@ export default function DatasetsEditClient() {
                       </a>
                     </div>
 
-                    <InputSelect
+                    <IsolatedSelect
                       label="Palavras-chave"
                       placeholder="Pesquise por uma palavra-chave..."
                       id="edit-keywords"
                       type="checkbox"
-                      searchable
-                      searchInputPlaceholder="Escreva para pesquisar..."
-                      searchNoResultsText="Nenhum resultado encontrado"
+                      onChangeRef={keywordsRef}
                     >
-                      <DropdownSection name="keywords">
-                        {(dataset.tags || []).map((tag) => (
-                          <DropdownOption key={tag} value={tag}>
-                            {tag}
-                          </DropdownOption>
-                        ))}
-                      </DropdownSection>
-                    </InputSelect>
+                      {keywordOptions}
+                    </IsolatedSelect>
                     <div className="flex items-center justify-between">
                       <Button
                         appearance="outline"
@@ -578,98 +687,62 @@ export default function DatasetsEditClient() {
                     {accessType === "restricted" && (
                       <>
                         <div className="grid grid-cols-3 gap-8 mt-4 items-end">
-                          <InputSelect
+                          <IsolatedSelect
                             label="Comunidade e Administração"
                             placeholder=""
                             id="edit-restriction-community"
+                            onChangeRef={restrictionCommunityRef}
                           >
-                            <DropdownSection name="community">
-                              <DropdownOption value="sim">Sim</DropdownOption>
-                              <DropdownOption value="nao">Não</DropdownOption>
-                              <DropdownOption value="condicional">Condicional</DropdownOption>
-                            </DropdownSection>
-                          </InputSelect>
-                          <InputSelect
+                            {communityOptions}
+                          </IsolatedSelect>
+                          <IsolatedSelect
                             label="Empresa e Associação"
                             placeholder=""
                             id="edit-restriction-enterprise"
+                            onChangeRef={restrictionEnterpriseRef}
                           >
-                            <DropdownSection name="enterprise">
-                              <DropdownOption value="sim">Sim</DropdownOption>
-                              <DropdownOption value="nao">Não</DropdownOption>
-                              <DropdownOption value="condicional">Condicional</DropdownOption>
-                            </DropdownSection>
-                          </InputSelect>
-                          <InputSelect
+                            {enterpriseOptions}
+                          </IsolatedSelect>
+                          <IsolatedSelect
                             label="Privado"
                             placeholder=""
                             id="edit-restriction-private"
+                            onChangeRef={restrictionPrivateRef}
                           >
-                            <DropdownSection name="private">
-                              <DropdownOption value="sim">Sim</DropdownOption>
-                              <DropdownOption value="nao">Não</DropdownOption>
-                              <DropdownOption value="condicional">Condicional</DropdownOption>
-                            </DropdownSection>
-                          </InputSelect>
+                            {privateOptions}
+                          </IsolatedSelect>
                         </div>
-                        <InputSelect
+                        <IsolatedSelect
                           label="Motivo da restrição"
                           placeholder=""
                           id="edit-restriction-reason"
+                          onChangeRef={restrictionReasonRef}
                         >
-                          <DropdownSection name="restriction-reason">
-                            <DropdownOption value="confidencialidade-procedimentos">Confidencialidade dos procedimentos das autoridades públicas</DropdownOption>
-                            <DropdownOption value="relacoes-internacionais">Relações internacionais, segurança pública ou defesa nacional</DropdownOption>
-                            <DropdownOption value="curso-justica">Curso da justiça</DropdownOption>
-                            <DropdownOption value="confidencialidade-comercial">Confidencialidade comercial ou industrial</DropdownOption>
-                            <DropdownOption value="propriedade-intelectual">Direitos de propriedade intelectual</DropdownOption>
-                            <DropdownOption value="dados-pessoais">Confidencialidade dos dados pessoais</DropdownOption>
-                            <DropdownOption value="protecao-fornecedores">Proteção dos fornecedores voluntários de informações</DropdownOption>
-                            <DropdownOption value="protecao-ambiental">Proteção ambiental</DropdownOption>
-                            <DropdownOption value="outros">Outros</DropdownOption>
-                          </DropdownSection>
-                        </InputSelect>
+                          {restrictionReasonOptions}
+                        </IsolatedSelect>
                       </>
                     )}
 
-                    <InputSelect
+                    <IsolatedSelect
                       label="Licença"
                       placeholder="Selecione uma licença"
                       id="edit-license"
-                      defaultValue={selectedLicense}
-                      onChange={(options) => {
-                        if (options.length > 0) setSelectedLicense(options[0].value as string);
-                      }}
+                      onChangeRef={selectedLicenseRef}
                     >
-                      <DropdownSection name="licenses">
-                        {licenses.map((license) => (
-                          <DropdownOption key={license.id} value={license.id}>
-                            {license.title}
-                          </DropdownOption>
-                        ))}
-                      </DropdownSection>
-                    </InputSelect>
+                      {licenseOptions}
+                    </IsolatedSelect>
                   </div>
 
                   <h2 className="datasets-admin-page__section-title">Tempo</h2>
                   <div className="datasets-admin-page__fields-group">
-                    <InputSelect
+                    <IsolatedSelect
                       label="Frequência de atualização"
                       placeholder="Selecione uma frequência"
                       id="edit-frequency"
-                      defaultValue={selectedFrequency}
-                      onChange={(options) => {
-                        if (options.length > 0) setSelectedFrequency(options[0].value as string);
-                      }}
+                      onChangeRef={selectedFrequencyRef}
                     >
-                      <DropdownSection name="frequencies">
-                        {frequencies.map((freq) => (
-                          <DropdownOption key={freq.id} value={freq.id}>
-                            {freq.label}
-                          </DropdownOption>
-                        ))}
-                      </DropdownSection>
-                    </InputSelect>
+                      {frequencyOptions}
+                    </IsolatedSelect>
 
                     <div className="flex gap-[18px]">
                       <InputDate
@@ -717,30 +790,22 @@ export default function DatasetsEditClient() {
 
                   <h2 className="datasets-admin-page__section-title">Espaço</h2>
                   <div className="datasets-admin-page__fields-group">
-                    <InputSelect
+                    <IsolatedSelect
                       label="Cobertura espacial"
                       placeholder="Pesquisar por cobertura espacial..."
                       id="edit-spatial-coverage"
-                      searchable
-                      searchInputPlaceholder="Pesquisar por cobertura espacial..."
-                      searchNoResultsText="Nenhum resultado encontrado"
+                      onChangeRef={spatialCoverageRef}
                     >
-                      <DropdownSection name="spatial-coverage">
-                        <DropdownOption value="">—</DropdownOption>
-                      </DropdownSection>
-                    </InputSelect>
-                    <InputSelect
+                      {spatialCoverageOptions}
+                    </IsolatedSelect>
+                    <IsolatedSelect
                       label="Granularidade espacial"
                       placeholder="Selecione uma granularidade..."
                       id="edit-spatial-granularity"
-                      searchable
-                      searchInputPlaceholder="Pesquisar..."
-                      searchNoResultsText="Nenhum resultado encontrado"
+                      onChangeRef={spatialGranularityRef}
                     >
-                      <DropdownSection name="spatial-granularity">
-                        <DropdownOption value="">—</DropdownOption>
-                      </DropdownSection>
-                    </InputSelect>
+                      {spatialGranularityOptions}
+                    </IsolatedSelect>
                   </div>
 
                   <div className="datasets-admin-page__actions flex justify-end mt-[24px]">

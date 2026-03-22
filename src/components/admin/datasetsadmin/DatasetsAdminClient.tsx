@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Button,
@@ -12,7 +12,6 @@ import {
   StatusCard,
   Accordion,
   AccordionGroup,
-  InputSelect,
   InputDate,
   DropdownSection,
   DropdownOption,
@@ -29,6 +28,8 @@ import {
 } from "@/services/api";
 import { License, Frequency, Dataset } from "@/types/api";
 import AuxiliarList from "@/components/admin/AuxiliarList";
+import IsolatedSelect from "@/components/admin/IsolatedSelect";
+import { useAuth } from "@/context/AuthContext";
 
 interface DatasetsAdminClientProps {
   currentStep: number;
@@ -44,6 +45,7 @@ export default function DatasetsAdminClient({
   onPreviousStep,
 }: DatasetsAdminClientProps) {
   const router = useRouter();
+  const { user } = useAuth();
 
   // Form state
   const [accessType, setAccessType] = useState("open");
@@ -53,8 +55,10 @@ export default function DatasetsAdminClient({
   const [datasetAcronym, setDatasetAcronym] = useState("");
   const [datasetDescription, setDatasetDescription] = useState("");
   const [datasetShortDescription, setDatasetShortDescription] = useState("");
-  const [selectedLicense, setSelectedLicense] = useState("");
-  const [selectedFrequency, setSelectedFrequency] = useState("");
+  const selectedProducerRef = useRef("");
+  const selectedLicenseRef = useRef("");
+  const selectedFrequencyRef = useRef("");
+  const dummyRef = useRef("");
   const [temporalStart, setTemporalStart] = useState("");
   const [temporalEnd, setTemporalEnd] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
@@ -71,6 +75,48 @@ export default function DatasetsAdminClient({
   // Dropdown data
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
+
+  const producerOptions = useMemo(
+    () => (
+      <DropdownSection name="identity">
+        <DropdownOption value="user">
+          {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
+        </DropdownOption>
+        {(user?.organizations || []).map((org) => (
+          <DropdownOption key={org.id} value={org.id}>
+            {org.name}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [user]
+  );
+
+  const licenseOptions = useMemo(
+    () => (
+      <DropdownSection name="licenses">
+        {licenses.map((license) => (
+          <DropdownOption key={license.id} value={license.id}>
+            {license.title}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [licenses],
+  );
+
+  const frequencyOptions = useMemo(
+    () => (
+      <DropdownSection name="frequencies">
+        {frequencies.map((freq) => (
+          <DropdownOption key={freq.id} value={freq.id}>
+            {freq.label}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [frequencies],
+  );
 
   // Whether user has existing datasets
   const [hasDatasets, setHasDatasets] = useState(true);
@@ -123,7 +169,7 @@ export default function DatasetsAdminClient({
     const errors: Record<string, boolean> = {};
     if (!datasetTitle.trim()) errors.datasetTitle = true;
     if (!datasetDescription.trim()) errors.datasetDescription = true;
-    if (!selectedFrequency) errors.datasetFrequency = true;
+    if (!selectedFrequencyRef.current) errors.datasetFrequency = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -136,14 +182,17 @@ export default function DatasetsAdminClient({
       const payload: Parameters<typeof createDataset>[0] = {
         title: datasetTitle.trim(),
         description: datasetDescription.trim(),
-        frequency: selectedFrequency,
+        frequency: selectedFrequencyRef.current,
         private: true,
       };
       if (datasetAcronym.trim()) payload.acronym = datasetAcronym.trim();
       if (datasetShortDescription.trim()) {
         payload.description_short = datasetShortDescription.trim();
       }
-      if (selectedLicense) payload.license = selectedLicense;
+      if (selectedProducerRef.current && selectedProducerRef.current !== "user") {
+        payload.organization = selectedProducerRef.current;
+      }
+      if (selectedLicenseRef.current) payload.license = selectedLicenseRef.current;
       if (temporalStart) {
         payload.temporal_coverage = {
           start: temporalStart,
@@ -422,19 +471,15 @@ export default function DatasetsAdminClient({
                 <span className="text-primary-900 text-base font-medium leading-7">
                   Verifique a identidade que deseja usar na publicação.
                 </span>
-                <InputSelect
+                <IsolatedSelect
                   label=""
                   hideLabel
-                  placeholder="Para pesquisar..."
+                  placeholder="Selecione o produtor..."
                   id="dataset-producer"
-                  searchable
-                  searchInputPlaceholder="Para pesquisar..."
-                  searchNoResultsText="Nenhum resultado encontrado"
+                  onChangeRef={selectedProducerRef}
                 >
-                  <DropdownSection name="producer">
-                    <DropdownOption value="">—</DropdownOption>
-                  </DropdownSection>
-                </InputSelect>
+                  {producerOptions}
+                </IsolatedSelect>
               </div>
 
               <div className="datasets-admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center mt-[24px]">
@@ -536,7 +581,7 @@ export default function DatasetsAdminClient({
                     </a>
                   </div>
 
-                  <InputSelect
+                  <IsolatedSelect
                     label="Palavras-chave"
                     placeholder="Pesquise por uma palavra-chave..."
                     id="dataset-keywords"
@@ -544,11 +589,12 @@ export default function DatasetsAdminClient({
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
+                    onChangeRef={dummyRef}
                   >
                     <DropdownSection name="keywords">
                       <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
                     </DropdownSection>
-                  </InputSelect>
+                  </IsolatedSelect>
                   <div className="flex items-center justify-between">
                     <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
                       Sugira palavras-chave
@@ -594,44 +640,48 @@ export default function DatasetsAdminClient({
                   {accessType === "restricted" && (
                     <>
                       <div className="grid grid-cols-3 gap-8 mt-4 items-end">
-                        <InputSelect
+                        <IsolatedSelect
                           label="Comunidade e Administração"
                           placeholder=""
                           id="dataset-restriction-community"
+                          onChangeRef={dummyRef}
                         >
                           <DropdownSection name="community">
                             <DropdownOption value="sim">Sim</DropdownOption>
                             <DropdownOption value="nao">Não</DropdownOption>
                             <DropdownOption value="condicional">Condicional</DropdownOption>
                           </DropdownSection>
-                        </InputSelect>
-                        <InputSelect
+                        </IsolatedSelect>
+                        <IsolatedSelect
                           label="Empresa e Associação"
                           placeholder=""
                           id="dataset-restriction-enterprise"
+                          onChangeRef={dummyRef}
                         >
                           <DropdownSection name="enterprise">
                             <DropdownOption value="sim">Sim</DropdownOption>
                             <DropdownOption value="nao">Não</DropdownOption>
                             <DropdownOption value="condicional">Condicional</DropdownOption>
                           </DropdownSection>
-                        </InputSelect>
-                        <InputSelect
+                        </IsolatedSelect>
+                        <IsolatedSelect
                           label="Privado"
                           placeholder=""
                           id="dataset-restriction-private"
+                          onChangeRef={dummyRef}
                         >
                           <DropdownSection name="private">
                             <DropdownOption value="sim">Sim</DropdownOption>
                             <DropdownOption value="nao">Não</DropdownOption>
                             <DropdownOption value="condicional">Condicional</DropdownOption>
                           </DropdownSection>
-                        </InputSelect>
+                        </IsolatedSelect>
                       </div>
-                      <InputSelect
+                      <IsolatedSelect
                         label="Motivo da restrição"
                         placeholder=""
                         id="dataset-restriction-reason"
+                        onChangeRef={dummyRef}
                       >
                         <DropdownSection name="restriction-reason">
                           <DropdownOption value="confidencialidade-procedimentos">Confidencialidade dos procedimentos das autoridades públicas</DropdownOption>
@@ -644,58 +694,33 @@ export default function DatasetsAdminClient({
                           <DropdownOption value="protecao-ambiental">Proteção ambiental</DropdownOption>
                           <DropdownOption value="outros">Outros</DropdownOption>
                         </DropdownSection>
-                      </InputSelect>
+                      </IsolatedSelect>
                     </>
                   )}
 
-                  <InputSelect
+                  <IsolatedSelect
                     label="Licença"
                     placeholder="Selecione uma licença"
                     id="dataset-license"
-                    onChange={(options) => {
-                      if (options.length > 0) {
-                        setSelectedLicense(options[0].value as string);
-                      }
-                    }}
+                    onChangeRef={selectedLicenseRef}
                   >
-                    <DropdownSection name="licenses">
-                      {licenses.map((license) => (
-                        <DropdownOption key={license.id} value={license.id}>
-                          {license.title}
-                        </DropdownOption>
-                      ))}
-                    </DropdownSection>
-                  </InputSelect>
+                    {licenseOptions}
+                  </IsolatedSelect>
                 </div>
 
                 <h2 className="datasets-admin-page__section-title">Tempo</h2>
 
                 <div className="datasets-admin-page__fields-group">
-                  <InputSelect
+                  <IsolatedSelect
                     label="Frequência de atualização *"
                     placeholder="Procure uma frequência..."
                     id="dataset-frequency"
-                    onChange={(options) => {
-                      if (options.length > 0) {
-                        setSelectedFrequency(options[0].value as string);
-                        clearError("datasetFrequency");
-                      } else {
-                        setSelectedFrequency("");
-                      }
-                    }}
+                    onChangeRef={selectedFrequencyRef}
                     hasError={!!formErrors.datasetFrequency}
-                    hasFeedback={!!formErrors.datasetFrequency}
-                    feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
                   >
-                    <DropdownSection name="frequencies">
-                      {frequencies.map((freq) => (
-                        <DropdownOption key={freq.id} value={freq.id}>
-                          {freq.label}
-                        </DropdownOption>
-                      ))}
-                    </DropdownSection>
-                  </InputSelect>
+                    {frequencyOptions}
+                  </IsolatedSelect>
 
                   <div className="grid grid-cols-2 gap-[18px]">
                     <InputDate
@@ -740,28 +765,30 @@ export default function DatasetsAdminClient({
                 <h2 className="datasets-admin-page__section-title">Espaço</h2>
 
                 <div className="datasets-admin-page__fields-group">
-                  <InputSelect
+                  <IsolatedSelect
                     label="Cobertura espacial"
                     placeholder="Procurando cobertura espacial..."
                     id="dataset-spatial-coverage"
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
+                    onChangeRef={dummyRef}
                   >
                     <DropdownSection name="spatial-coverage">
                       <DropdownOption value="national">Nacional</DropdownOption>
                       <DropdownOption value="regional">Regional</DropdownOption>
                       <DropdownOption value="local">Local</DropdownOption>
                     </DropdownSection>
-                  </InputSelect>
+                  </IsolatedSelect>
 
-                  <InputSelect
+                  <IsolatedSelect
                     label="Granularidade espacial"
                     placeholder="Procurando granularidade..."
                     id="dataset-spatial-granularity"
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
+                    onChangeRef={dummyRef}
                   >
                     <DropdownSection name="spatial-granularity">
                       <DropdownOption value="country">País</DropdownOption>
@@ -769,7 +796,7 @@ export default function DatasetsAdminClient({
                       <DropdownOption value="municipality">Município</DropdownOption>
                       <DropdownOption value="parish">Freguesia</DropdownOption>
                     </DropdownSection>
-                  </InputSelect>
+                  </IsolatedSelect>
                 </div>
 
                 <div className="datasets-admin-page__actions flex justify-between gap-[18px]">
