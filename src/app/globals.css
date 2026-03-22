@@ -982,21 +982,24 @@ body:has(.admin-wrapper)>div>header.sticky {
   padding: 0 112px;
 }
 
-.admin-header[style*="--admin-avatar-url"] .authenticated-panel-menu > .agora-btn {
-  background-image: var(--admin-avatar-url);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.admin-header[style*="--admin-avatar-url"] .authenticated-panel-menu > .agora-btn .icon {
-  display: none;
-}
-
 .admin-header .authenticated-panel-menu>.agora-btn {
   background-color: var(--color-white) !important;
   color: var(--color-primary-500) !important;
   border-color: transparent !important;
+}
+
+.admin-header[style*="--admin-avatar-url"] .authenticated-panel-menu > .agora-btn {
+  background-image: var(--admin-avatar-url) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-color: transparent !important;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.admin-header[style*="--admin-avatar-url"] .authenticated-panel-menu > .agora-btn .icon {
+  display: none;
 }
 
 .admin-header .authenticated-panel-menu>.agora-btn .children-wrapper {
@@ -1722,12 +1725,15 @@ body:has(.admin-wrapper)>div>header.sticky {
   min-width: 104px;
   height: 104px;
   min-height: 104px;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 .profile-card__avatar.agora-avatar .avatar.avatar-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
 }
 
 .profile-card__avatar.agora-avatar .avatar.avatar-icon {
