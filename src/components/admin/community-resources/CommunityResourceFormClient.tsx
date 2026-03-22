@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Button,
   InputText,
   InputTextArea,
-  InputSelect,
   DropdownSection,
   DropdownOption,
   Icon,
@@ -25,6 +24,7 @@ import type { Dataset, CommunityResource, ResourceType } from "@/types/api";
 import { formatDistanceToNow } from "date-fns";
 import { pt } from "date-fns/locale";
 import AuxiliarList from "@/components/admin/AuxiliarList";
+import IsolatedSelect from "@/components/admin/IsolatedSelect";
 
 interface CommunityResourceFormClientProps {
   datasetId: string;
@@ -45,7 +45,9 @@ export default function CommunityResourceFormClient({
   const [title, setTitle] = useState("");
   const [resourceUrl, setResourceUrl] = useState("");
   const [description, setDescription] = useState("");
-  const [selectedType, setSelectedType] = useState("");
+  const selectedTypeRef = useRef("");
+  const selectedProducerRef = useRef("");
+  const selectedSchemaRef = useRef("");
   const [schemaUrl, setSchemaUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
@@ -80,7 +82,7 @@ export default function CommunityResourceFormClient({
     const errors: Record<string, boolean> = {};
     if (!title.trim()) errors.title = true;
     if (!file && !resourceUrl.trim()) errors.resourceUrl = true;
-    if (!selectedType) errors.type = true;
+    if (!selectedTypeRef.current) errors.type = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -100,7 +102,7 @@ export default function CommunityResourceFormClient({
         title: title.trim(),
         url: finalUrl,
         description: description.trim() || undefined,
-        filetype: selectedType || undefined,
+        filetype: selectedTypeRef.current || undefined,
         dataset: datasetId,
       });
 
@@ -195,6 +197,28 @@ export default function CommunityResourceFormClient({
     },
   ];
 
+  const producerOptions = useMemo(() => (
+    <DropdownSection name="organizations">
+      <DropdownOption value="org1">Organização</DropdownOption>
+    </DropdownSection>
+  ), []);
+
+  const typeOptions = useMemo(() => (
+    <DropdownSection name="types">
+      {resourceTypes.map((t) => (
+        <DropdownOption key={t.id} value={t.id}>
+          {t.label}
+        </DropdownOption>
+      ))}
+    </DropdownSection>
+  ), [resourceTypes]);
+
+  const schemaOptions = useMemo(() => (
+    <DropdownSection name="schemas">
+      <DropdownOption value="">Nenhum</DropdownOption>
+    </DropdownSection>
+  ), []);
+
   return (
     <>
       <div className="datasets-admin-page__body">
@@ -229,18 +253,14 @@ export default function CommunityResourceFormClient({
 
                 <h2 className="datasets-admin-page__section-title">Produtor</h2>
 
-                <InputSelect
+                <IsolatedSelect
                   label="Verifique a identidade que deseja usar na publicação."
                   placeholder="Para pesquisar..."
                   id="producer-identity"
-                  searchable
-                  searchInputPlaceholder="Escreva para pesquisar..."
-                  searchNoResultsText="Nenhum resultado encontrado"
+                  onChangeRef={selectedProducerRef}
                 >
-                  <DropdownSection name="organizations">
-                    <DropdownOption value="org1">Organização</DropdownOption>
-                  </DropdownSection>
-                </InputSelect>
+                  {producerOptions}
+                </IsolatedSelect>
 
                 <div className="datasets-admin-page__org-card">
                   <p className="datasets-admin-page__org-card-title">
@@ -319,34 +339,16 @@ export default function CommunityResourceFormClient({
                     errorFeedbackText="Campo obrigatório"
                   />
 
-                  <InputSelect
+                  <IsolatedSelect
                     label="Tipo *"
                     placeholder="Arquivos principais"
                     id="resource-type"
-                    searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
-                    searchNoResultsText="Nenhum resultado encontrado"
-                    onChange={(options) => {
-                      if (options.length > 0) {
-                        setSelectedType(options[0].value as string);
-                        clearError("type");
-                      } else {
-                        setSelectedType("");
-                      }
-                    }}
+                    onChangeRef={selectedTypeRef}
                     hasError={!!formErrors.type}
-                    hasFeedback={!!formErrors.type}
-                    feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
                   >
-                    <DropdownSection name="types">
-                      {resourceTypes.map((t) => (
-                        <DropdownOption key={t.id} value={t.id}>
-                          {t.label}
-                        </DropdownOption>
-                      ))}
-                    </DropdownSection>
-                  </InputSelect>
+                    {typeOptions}
+                  </IsolatedSelect>
 
                   <InputTextArea
                     label="Descrição"
@@ -364,18 +366,14 @@ export default function CommunityResourceFormClient({
                 <h2 className="datasets-admin-page__section-title">Esquema de dados</h2>
 
                 <div className="datasets-admin-page__fields-group">
-                  <InputSelect
+                  <IsolatedSelect
                     label="Plano"
                     placeholder="Procure um esquema referenciado em schema.data.gouv.fr..."
                     id="resource-schema"
-                    searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
-                    searchNoResultsText="Nenhum resultado encontrado"
+                    onChangeRef={selectedSchemaRef}
                   >
-                    <DropdownSection name="schemas">
-                      <DropdownOption value="">Nenhum</DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
+                    {schemaOptions}
+                  </IsolatedSelect>
 
                   <div className="datasets-admin-page__divider-or">
                     <span className="datasets-admin-page__divider-or-text">ou</span>

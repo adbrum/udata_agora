@@ -31,51 +31,8 @@ import { formatDistanceToNow } from "date-fns";
 import { pt } from "date-fns/locale";
 import Link from "next/link";
 import AuxiliarList from "@/components/admin/AuxiliarList";
+import IsolatedSelect from "@/components/admin/IsolatedSelect";
 import { useAuth } from "@/context/AuthContext";
-
-// Isolated InputSelect wrappers to prevent re-render from parent state changes.
-// The Agora InputSelect calls setState during render (React 19 incompatibility),
-// so each select must be isolated in a memo'd component to avoid cascade re-renders.
-
-interface IsolatedSelectProps {
-  label: string;
-  placeholder: string;
-  id: string;
-  onChangeRef: React.MutableRefObject<string>;
-  type?: "radio" | "checkbox";
-  hasError?: boolean;
-  errorFeedbackText?: string;
-  children: React.ReactNode;
-}
-
-const IsolatedSelect = React.memo(function IsolatedSelect({
-  label,
-  placeholder,
-  id,
-  onChangeRef,
-  type,
-  hasError,
-  errorFeedbackText,
-  children,
-}: IsolatedSelectProps) {
-  return (
-    <InputSelect
-      label={label}
-      placeholder={placeholder}
-      id={id}
-      type={type}
-      onChange={(options) => {
-        onChangeRef.current = options.map((o) => o.value as string).join(",");
-      }}
-      hasError={hasError}
-      hasFeedback={hasError}
-      feedbackState="danger"
-      errorFeedbackText={errorFeedbackText}
-    >
-      {children}
-    </InputSelect>
-  );
-});
 
 interface ReusesFormClientProps {
   currentStep: number;
