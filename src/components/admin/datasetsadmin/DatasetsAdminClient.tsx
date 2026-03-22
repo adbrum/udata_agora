@@ -31,6 +31,7 @@ import { License, Frequency, Dataset, TagSuggestion } from "@/types/api";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
 import { useAuth } from "@/context/AuthContext";
+import { getFrequencyLabel } from "@/utils/frequencyLabels";
 
 interface DatasetsAdminClientProps {
   currentStep: number;
@@ -112,7 +113,7 @@ export default function DatasetsAdminClient({
       <DropdownSection name="frequencies">
         {frequencies.map((freq) => (
           <DropdownOption key={freq.id} value={freq.id}>
-            {freq.label}
+            {getFrequencyLabel(freq.id, freq.label)}
           </DropdownOption>
         ))}
       </DropdownSection>

@@ -42,6 +42,7 @@ import {
 import { Dataset, License, Frequency, Activity, Resource } from "@/types/api";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
+import { getFrequencyLabel } from "@/utils/frequencyLabels";
 
 export default function DatasetsEditClient() {
   const searchParams = useSearchParams();
@@ -156,7 +157,7 @@ export default function DatasetsEditClient() {
       <DropdownSection name="frequencies">
         {frequencies.map((freq) => (
           <DropdownOption key={freq.id} value={freq.id}>
-            {freq.label}
+            {getFrequencyLabel(freq.id, freq.label)}
           </DropdownOption>
         ))}
       </DropdownSection>

@@ -5,38 +5,11 @@ import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { Icon } from "@ama-pt/agora-design-system";
 import { Dataset } from "@/types/api";
+import { frequencyLabelsMap } from "@/utils/frequencyLabels";
 
 interface DatasetInfoProps {
   dataset: Dataset;
 }
-
-const frequencyMap: Record<string, string> = {
-  unknown: "Desconhecida",
-  punctual: "Pontual",
-  continuous: "Contínua",
-  hourly: "Horária",
-  fourTimesADay: "4 vezes ao dia",
-  threeTimesADay: "3 vezes ao dia",
-  semidaily: "Semidiária",
-  daily: "Diária",
-  fourTimesAWeek: "4 vezes por semana",
-  threeTimesAWeek: "3 vezes por semana",
-  semiweekly: "Bissemanal",
-  weekly: "Semanal",
-  biweekly: "Quinzenal",
-  threeTimesAMonth: "3 vezes por mês",
-  semimonthly: "Bimensal",
-  monthly: "Mensal",
-  bimonthly: "Bimestral",
-  quarterly: "Trimestral",
-  threeTimesAYear: "3 vezes por ano",
-  semiannual: "Semestral",
-  annual: "Anual",
-  biennial: "Bienal",
-  triennial: "Trienal",
-  quinquennial: "Quinquenal",
-  irregular: "Irregular",
-};
 
 const granularityMap: Record<string, string> = {
   poi: "Ponto de interesse",
@@ -192,7 +165,7 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
               <div>
                 <p className="font-bold text-neutral-900 text-sm mb-8">Frequência</p>
                 <span className="text-neutral-900 text-sm">
-                  {frequencyMap[dataset.frequency] || dataset.frequency}
+                  {frequencyLabelsMap[dataset.frequency] || dataset.frequency}
                 </span>
               </div>
             )}
