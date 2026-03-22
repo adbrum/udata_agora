@@ -203,11 +203,11 @@ export default function ProfileClient() {
 
       <div className="profile-card">
         <Avatar
-          avatarType={profile?.avatar_thumbnail ? "image" : "initials"}
+          avatarType={profile?.avatar_thumbnail ? "image" : "icon"}
           srcPath={
-            (profile?.avatar_thumbnail ||
-              `${profile?.first_name?.charAt(0).toUpperCase() ?? ""}${profile?.last_name?.charAt(0).toUpperCase() ?? ""}` ||
-              "U") as unknown as undefined
+            profile?.avatar_thumbnail
+              ? (profile.avatar_thumbnail as unknown as undefined)
+              : ("agora-line-user" as unknown as undefined)
           }
           alt={`${profile?.first_name ?? ""} ${profile?.last_name ?? ""}`}
           className="profile-card__avatar"
