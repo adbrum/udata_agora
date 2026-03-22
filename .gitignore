@@ -47,3 +47,8 @@ google-chrome-stable_current_amd64.deb
 figma_node.json
 # testsprite (vulnerability testing - contains API keys and credentials)
 /testsprite_tests/
+
+# tests E2E
+test-results/
+tests/__pycache__/
+playwright-report/
