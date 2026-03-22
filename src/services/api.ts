@@ -204,7 +204,7 @@ export async function fetchMyReuses(
     }
 
     const raw: Reuse[] = await res.json();
-    const allReuses = raw.filter((r) => !!r.owner && !r.organization);
+    const allReuses = raw;
     const total = allReuses.length;
     const start = (page - 1) * pageSize;
     const data = allReuses.slice(start, start + pageSize);

@@ -31,6 +31,7 @@ import { formatDistanceToNow } from "date-fns";
 import { pt } from "date-fns/locale";
 import Link from "next/link";
 import AuxiliarList from "@/components/admin/AuxiliarList";
+import { useAuth } from "@/context/AuthContext";
 
 interface ReusesFormClientProps {
   currentStep: number;
@@ -43,6 +44,8 @@ export default function ReusesFormClient({
   onNextStep,
   onPreviousStep,
 }: ReusesFormClientProps) {
+  const { user } = useAuth();
+  const [selectedProducer, setSelectedProducer] = useState("");
   const [reuseName, setReuseName] = useState("");
   const [reuseLink, setReuseLink] = useState("");
   const [selectedReuseType, setSelectedReuseType] = useState("");
@@ -103,6 +106,9 @@ export default function ReusesFormClient({
         type: selectedReuseType,
         topic: selectedReuseTopic || undefined,
         private: true,
+        ...(selectedProducer && selectedProducer !== "user"
+          ? { organization: selectedProducer }
+          : {}),
       });
 
       if (reuseCoverImageFile) {
@@ -311,11 +317,19 @@ export default function ReusesFormClient({
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
                   searchNoResultsText="Nenhum resultado encontrado"
+                  onChange={(options) => {
+                    setSelectedProducer(options.length > 0 ? (options[0].value as string) : "");
+                  }}
                 >
-                  <DropdownSection name="organizations">
-                    <DropdownOption value="org1">
-                      Organização
+                  <DropdownSection name="identity">
+                    <DropdownOption value="user">
+                      {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
                     </DropdownOption>
+                    {(user?.organizations || []).map((org) => (
+                      <DropdownOption key={org.id} value={org.id}>
+                        {org.name}
+                      </DropdownOption>
+                    ))}
                   </DropdownSection>
                 </InputSelect>
 
