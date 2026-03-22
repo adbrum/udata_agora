@@ -195,7 +195,7 @@ export async function fetchMyReuses(
 ): Promise<APIResponse<Reuse>> {
   try {
     const res = await fetch(
-      `${API_AUTH_URL}/me/reuses/?page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/me/reuses/`,
       { cache: "no-store", credentials: "include" }
     );
 
@@ -203,7 +203,20 @@ export async function fetchMyReuses(
       throw new Error(`Failed to fetch my reuses: ${res.statusText}`);
     }
 
-    return await res.json();
+    const raw: Reuse[] = await res.json();
+    const allReuses = raw;
+    const total = allReuses.length;
+    const start = (page - 1) * pageSize;
+    const data = allReuses.slice(start, start + pageSize);
+
+    return {
+      data,
+      page,
+      page_size: pageSize,
+      total,
+      next_page: start + pageSize < total ? String(page + 1) : null,
+      previous_page: page > 1 ? String(page - 1) : null,
+    };
   } catch (error) {
     console.error("Error fetching my reuses:", error);
     return {
@@ -814,6 +827,7 @@ export async function fetchReuse(rid: string): Promise<Reuse> {
   try {
     const res = await fetch(`${API_BASE_URL}/reuses/${rid}/`, {
       cache: "no-store",
+      credentials: "include",
     });
 
     if (!res.ok) {
@@ -891,7 +905,7 @@ export async function deleteReuse(id: string): Promise<void> {
 export async function uploadReuseImage(id: string, file: File): Promise<Reuse> {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetch(`${API_AUTH_URL}/reuses/${id}/image`, {
+  const res = await fetch(`${API_AUTH_URL}/reuses/${id}/image/`, {
     method: "POST",
     credentials: "include",
     body: formData,
@@ -2423,10 +2437,10 @@ export async function updateProfile(payload: UserUpdatePayload): Promise<UserPub
   return await res.json();
 }
 
-export async function uploadAvatar(file: File): Promise<UserPublic> {
+export async function uploadAvatar(file: File): Promise<{ image: string }> {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetch(`${API_AUTH_URL}/me/avatar`, {
+  const res = await fetch(`${API_AUTH_URL}/me/avatar/`, {
     method: "POST",
     credentials: "include",
     body: formData,
@@ -2436,6 +2450,52 @@ export async function uploadAvatar(file: File): Promise<UserPublic> {
     throw { status: res.status, data: error };
   }
   return await res.json();
+}
+
+export async function fetchFullProfile(): Promise<UserPublic> {
+  const res = await fetch(`${API_AUTH_URL}/me/`, {
+    cache: "no-store",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to fetch profile: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function generateApiKey(): Promise<string> {
+  const res = await fetch(`${API_AUTH_URL}/me/apikey`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to generate API key: ${res.statusText}`);
+  const data = await res.json();
+  return data.apikey;
+}
+
+export async function clearApiKey(): Promise<void> {
+  const res = await fetch(`${API_AUTH_URL}/me/apikey`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to clear API key: ${res.statusText}`);
+}
+
+export async function requestEmailChange(
+  newEmail: string,
+  csrfToken: string
+): Promise<{ message: string }> {
+  const body = new URLSearchParams({
+    new_email: newEmail,
+    new_email_confirm: newEmail,
+    csrf_token: csrfToken,
+  });
+  const res = await fetch("/change-email", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to request email change");
+  return data;
 }
 
 export async function deleteAccount(): Promise<void> {

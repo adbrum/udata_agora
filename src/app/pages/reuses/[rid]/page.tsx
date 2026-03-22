@@ -1,13 +1,11 @@
-import { fetchReuse } from '@/services/api';
-import ReuseDetailClient from '@/components/reuses/ReuseDetailClient';
+import ReuseDetailClient from "@/components/reuses/ReuseDetailClient";
 
 export default async function Page({
-    params,
+  params,
 }: {
-    params: Promise<{ rid: string }>;
+  params: Promise<{ rid: string }>;
 }) {
-    const { rid } = await params;
-    const reuse = await fetchReuse(rid);
+  const { rid } = await params;
 
-    return <ReuseDetailClient reuse={reuse} />;
+  return <ReuseDetailClient slug={rid} />;
 }

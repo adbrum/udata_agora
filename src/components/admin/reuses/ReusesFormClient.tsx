@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import {
   Button,
   InputText,
@@ -31,6 +31,51 @@ import { formatDistanceToNow } from "date-fns";
 import { pt } from "date-fns/locale";
 import Link from "next/link";
 import AuxiliarList from "@/components/admin/AuxiliarList";
+import { useAuth } from "@/context/AuthContext";
+
+// Isolated InputSelect wrappers to prevent re-render from parent state changes.
+// The Agora InputSelect calls setState during render (React 19 incompatibility),
+// so each select must be isolated in a memo'd component to avoid cascade re-renders.
+
+interface IsolatedSelectProps {
+  label: string;
+  placeholder: string;
+  id: string;
+  onChangeRef: React.MutableRefObject<string>;
+  type?: "radio" | "checkbox";
+  hasError?: boolean;
+  errorFeedbackText?: string;
+  children: React.ReactNode;
+}
+
+const IsolatedSelect = React.memo(function IsolatedSelect({
+  label,
+  placeholder,
+  id,
+  onChangeRef,
+  type,
+  hasError,
+  errorFeedbackText,
+  children,
+}: IsolatedSelectProps) {
+  return (
+    <InputSelect
+      label={label}
+      placeholder={placeholder}
+      id={id}
+      type={type}
+      onChange={(options) => {
+        onChangeRef.current = options.map((o) => o.value as string).join(",");
+      }}
+      hasError={hasError}
+      hasFeedback={hasError}
+      feedbackState="danger"
+      errorFeedbackText={errorFeedbackText}
+    >
+      {children}
+    </InputSelect>
+  );
+});
 
 interface ReusesFormClientProps {
   currentStep: number;
@@ -43,10 +88,13 @@ export default function ReusesFormClient({
   onNextStep,
   onPreviousStep,
 }: ReusesFormClientProps) {
+  const { user } = useAuth();
+  const selectedProducerRef = useRef("");
+  const selectedReuseTypeRef = useRef("");
+  const selectedReuseTopicRef = useRef("");
+  const selectedKeywordsRef = useRef("");
   const [reuseName, setReuseName] = useState("");
   const [reuseLink, setReuseLink] = useState("");
-  const [selectedReuseType, setSelectedReuseType] = useState("");
-  const [selectedReuseTopic, setSelectedReuseTopic] = useState("");
   const [reuseDescription, setReuseDescription] = useState("");
   const [reuseCoverImageFile, setReuseCoverImageFile] = useState<File | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
@@ -81,8 +129,8 @@ export default function ReusesFormClient({
     const errors: Record<string, boolean> = {};
     if (!reuseName.trim()) errors.reuseName = true;
     if (!reuseLink.trim()) errors.reuseLink = true;
-    if (!selectedReuseType) errors.reuseType = true;
-    if (!selectedReuseTopic) errors.reuseTopic = true;
+    if (!selectedReuseTypeRef.current) errors.reuseType = true;
+    if (!selectedReuseTopicRef.current) errors.reuseTopic = true;
     if (!reuseDescription.trim()) errors.reuseDescription = true;
     if (!reuseCoverImageFile) errors.reuseCoverImage = true;
     if (Object.keys(errors).length > 0) {
@@ -100,9 +148,12 @@ export default function ReusesFormClient({
         title: reuseName.trim(),
         description: reuseDescription.trim(),
         url,
-        type: selectedReuseType,
-        topic: selectedReuseTopic || undefined,
+        type: selectedReuseTypeRef.current,
+        topic: selectedReuseTopicRef.current || undefined,
         private: true,
+        ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
+          ? { organization: selectedProducerRef.current }
+          : {}),
       });
 
       if (reuseCoverImageFile) {
@@ -112,14 +163,34 @@ export default function ReusesFormClient({
       setCreatedReuse(reuse);
       onNextStep();
     } catch (error: unknown) {
-      const err = error as { status?: number; data?: Record<string, unknown> };
+      const err = error as { status?: number; data?: { errors?: Record<string, string>; message?: string } };
+
+      const fieldLabels: Record<string, string> = {
+        url: "URL da reutilização",
+        title: "Nome da reutilização",
+        description: "Descrição",
+        type: "Tipo",
+        topic: "Tema",
+        organization: "Organização",
+      };
+      const errorMessages: Record<string, string> = {
+        "This URL is already registered": "Este URL já está registado. Utilize um URL diferente.",
+      };
+
       if (err.status === 500) {
         setApiError("Erro interno do servidor. Verifique se todos os campos estão preenchidos corretamente e tente novamente.");
-      } else if (err.data && typeof err.data === "object") {
-        const messages = Object.entries(err.data)
-          .map(([key, val]) => `${key}: ${val}`)
-          .join(", ");
+      } else if (err.data?.errors && typeof err.data.errors === "object") {
+        const messages = Object.entries(err.data.errors)
+          .map(([field, msg]) => {
+            const label = fieldLabels[field] || field;
+            const translated = errorMessages[String(msg)] || String(msg);
+            return `${label}: ${translated}`;
+          })
+          .join("\n");
         setApiError(messages);
+      } else if (err.data?.message) {
+        const translated = errorMessages[err.data.message] || err.data.message;
+        setApiError(translated);
       } else {
         setApiError("Erro ao criar a reutilização. Tente novamente.");
       }
@@ -270,6 +341,39 @@ export default function ReusesFormClient({
 
   const auxiliarItems = auxiliarItemsStep1;
 
+  const producerOptions = useMemo(() => (
+    <DropdownSection name="identity">
+      <DropdownOption value="user">
+        {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
+      </DropdownOption>
+      {(user?.organizations || []).map((org) => (
+        <DropdownOption key={org.id} value={org.id}>
+          {org.name}
+        </DropdownOption>
+      ))}
+    </DropdownSection>
+  ), [user]);
+
+  const typeOptions = useMemo(() => (
+    <DropdownSection name="types">
+      {reuseTypes.map((t) => (
+        <DropdownOption key={t.id} value={t.id}>
+          {t.label}
+        </DropdownOption>
+      ))}
+    </DropdownSection>
+  ), [reuseTypes]);
+
+  const topicOptions = useMemo(() => (
+    <DropdownSection name="themes">
+      {reuseTopics.map((t) => (
+        <DropdownOption key={t.id} value={t.id}>
+          {t.label}
+        </DropdownOption>
+      ))}
+    </DropdownSection>
+  ), [reuseTopics]);
+
   return (
     <>
       {/* Main content area: form + auxiliar sidebar */}
@@ -304,20 +408,14 @@ export default function ReusesFormClient({
                 </p>
                 <h2 className="datasets-admin-page__section-title">Produtor</h2>
 
-                <InputSelect
+                <IsolatedSelect
                   label="Verifique a identidade que deseja usar na publicação."
-                  placeholder="Para pesquisar..."
+                  placeholder="Selecione o produtor..."
                   id="producer-identity"
-                  searchable
-                  searchInputPlaceholder="Escreva para pesquisar..."
-                  searchNoResultsText="Nenhum resultado encontrado"
+                  onChangeRef={selectedProducerRef}
                 >
-                  <DropdownSection name="organizations">
-                    <DropdownOption value="org1">
-                      Organização
-                    </DropdownOption>
-                  </DropdownSection>
-                </InputSelect>
+                  {producerOptions}
+                </IsolatedSelect>
 
                 <div className="datasets-admin-page__org-card">
                   <p className="datasets-admin-page__org-card-title">
@@ -373,62 +471,26 @@ export default function ReusesFormClient({
                     feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
                   />
-                  <InputSelect
+                  <IsolatedSelect
                     label="Tipo *"
-                    placeholder="Procure por um tipo..."
+                    placeholder="Selecione um tipo..."
                     id="reuse-type"
-                    searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
-                    searchNoResultsText="Nenhum resultado encontrado"
-                    onChange={(options) => {
-                      if (options.length > 0) {
-                        setSelectedReuseType(options[0].value as string);
-                        clearError("reuseType");
-                      } else {
-                        setSelectedReuseType("");
-                      }
-                    }}
+                    onChangeRef={selectedReuseTypeRef}
                     hasError={!!formErrors.reuseType}
-                    hasFeedback={!!formErrors.reuseType}
-                    feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
                   >
-                    <DropdownSection name="types">
-                      {reuseTypes.map((t) => (
-                        <DropdownOption key={t.id} value={t.id}>
-                          {t.label}
-                        </DropdownOption>
-                      ))}
-                    </DropdownSection>
-                  </InputSelect>
-                  <InputSelect
+                    {typeOptions}
+                  </IsolatedSelect>
+                  <IsolatedSelect
                     label="Tema *"
-                    placeholder="Pesquise um tópico..."
+                    placeholder="Selecione um tema..."
                     id="reuse-theme"
-                    searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
-                    searchNoResultsText="Nenhum resultado encontrado"
-                    onChange={(options) => {
-                      if (options.length > 0) {
-                        setSelectedReuseTopic(options[0].value as string);
-                        clearError("reuseTopic");
-                      } else {
-                        setSelectedReuseTopic("");
-                      }
-                    }}
+                    onChangeRef={selectedReuseTopicRef}
                     hasError={!!formErrors.reuseTopic}
-                    hasFeedback={!!formErrors.reuseTopic}
-                    feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
                   >
-                    <DropdownSection name="themes">
-                      {reuseTopics.map((t) => (
-                        <DropdownOption key={t.id} value={t.id}>
-                          {t.label}
-                        </DropdownOption>
-                      ))}
-                    </DropdownSection>
-                  </InputSelect>
+                    {topicOptions}
+                  </IsolatedSelect>
                   <InputTextArea
                     label="Descrição *"
                     placeholder="Insira a descrição aqui"
@@ -446,19 +508,17 @@ export default function ReusesFormClient({
                     feedbackState={formErrors.reuseDescriptionLength ? "warning" : "danger"}
                     errorFeedbackText={formErrors.reuseDescription ? "Campo obrigatório" : "A descrição deve ter pelo menos 200 caracteres"}
                   />
-                  <InputSelect
+                  <IsolatedSelect
                     label="Palavras-chave"
-                    placeholder="Pesquise por uma palavra-chave..."
+                    placeholder="Selecione palavras-chave..."
                     id="reuse-keywords"
                     type="checkbox"
-                    searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
-                    searchNoResultsText="Nenhum resultado encontrado"
+                    onChangeRef={selectedKeywordsRef}
                   >
                     <DropdownSection name="keywords">
                       <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
                     </DropdownSection>
-                  </InputSelect>
+                  </IsolatedSelect>
                   <div className="flex items-center gap-16">
                     <div className="w-1/2">
                       <Button

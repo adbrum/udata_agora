@@ -135,7 +135,11 @@ export default function ReusesClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant="success">Público</Pill>
+                  {reuse.private ? (
+                    <Pill variant="warning">Rascunho</Pill>
+                  ) : (
+                    <Pill variant="success">Público</Pill>
+                  )}
                 </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(reuse.created_at)}

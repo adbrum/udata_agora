@@ -17,26 +17,42 @@ import {
   SearchPagination,
 } from '@ama-pt/agora-design-system';
 import { Reuse, Dataset } from '@/types/api';
-import { fetchDataset } from '@/services/api';
+import { fetchDataset, fetchReuse } from '@/services/api';
 
 import { format, formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
 interface ReuseDetailClientProps {
-  reuse: Reuse;
+  slug: string;
 }
 
-export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
+export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
   const router = useRouter();
+  const [reuse, setReuse] = useState<Reuse | null>(null);
+  const [isLoadingReuse, setIsLoadingReuse] = useState(true);
   const [fullDatasets, setFullDatasets] = useState<Dataset[]>([]);
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(true);
+
+  useEffect(() => {
+    async function loadReuse() {
+      try {
+        const data = await fetchReuse(slug);
+        setReuse(data);
+      } catch (error) {
+        console.error("Error loading reuse:", error);
+      } finally {
+        setIsLoadingReuse(false);
+      }
+    }
+    loadReuse();
+  }, [slug]);
   const [datasetsPage, setDatasetsPage] = useState(1);
   const datasetsPageSize = 6;
 
-  const datasetRefs = reuse.datasets || [];
+  const datasetRefs = reuse?.datasets || [];
 
   useEffect(() => {
-    if (datasetRefs.length === 0) {
+    if (!reuse || datasetRefs.length === 0) {
       setIsLoadingDatasets(false);
       return;
     }
@@ -47,7 +63,7 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
           d.uri.split('/').filter(Boolean).pop() || d.id
         );
         const results = await Promise.all(
-          slugs.map((slug) => fetchDataset(slug).catch(() => null))
+          slugs.map((s) => fetchDataset(s).catch(() => null))
         );
         setFullDatasets(results.filter((d): d is Dataset => d !== null));
       } catch {
@@ -58,7 +74,15 @@ export default function ReuseDetailClient({ reuse }: ReuseDetailClientProps) {
     }
 
     loadDatasets();
-  }, [datasetRefs]);
+  }, [reuse]);
+
+  if (isLoadingReuse) {
+    return <p className="text-neutral-900 text-base p-32">A carregar...</p>;
+  }
+
+  if (!reuse) {
+    return <p className="text-neutral-900 text-base p-32">Reutilização não encontrada.</p>;
+  }
 
   const formatDate = (dateString: string) => {
     try {

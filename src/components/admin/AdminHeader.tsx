@@ -25,7 +25,12 @@ export function AdminHeader() {
   const { user, samlLogin } = useAuth();
 
   return (
-    <div className="admin-header">
+    <div
+      className="admin-header"
+      {...(user?.avatar_thumbnail
+        ? { style: { "--admin-avatar-url": `url(${user.avatar_thumbnail})` } as React.CSSProperties }
+        : {})}
+    >
       <Header darkMode>
         <GeneralBar aria-label="Barra de opções do administrador">
           <Languages
@@ -48,10 +53,11 @@ export function AdminHeader() {
             </DefaultSearch>
           </Search> */}
           <Authenticated
-            avatarType={user?.avatar_thumbnail ? "image" : "initials"}
+            avatarType="icon"
             srcPath={
-              (user?.avatar_thumbnail ||
-                `${user?.first_name.charAt(0).toUpperCase() ?? ""}${user?.last_name.charAt(0).toUpperCase() ?? ""}`) as unknown as undefined
+              (user?.avatar_thumbnail
+                ? "agora-line-user"
+                : "agora-line-user") as unknown as undefined
             }
             hasBadge
             badgePosition="top-right"
