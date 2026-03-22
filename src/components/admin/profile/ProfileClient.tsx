@@ -142,7 +142,8 @@ export default function ProfileClient() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     try {
-      const updated = await uploadAvatar(files[0]);
+      await uploadAvatar(files[0]);
+      const updated = await fetchFullProfile();
       setProfile(updated);
       await refresh();
     } catch (error) {

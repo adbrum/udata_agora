@@ -2423,10 +2423,10 @@ export async function updateProfile(payload: UserUpdatePayload): Promise<UserPub
   return await res.json();
 }
 
-export async function uploadAvatar(file: File): Promise<UserPublic> {
+export async function uploadAvatar(file: File): Promise<{ image: string }> {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetch(`${API_AUTH_URL}/me/avatar`, {
+  const res = await fetch(`${API_AUTH_URL}/me/avatar/`, {
     method: "POST",
     credentials: "include",
     body: formData,
