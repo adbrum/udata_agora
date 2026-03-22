@@ -68,6 +68,7 @@ export default function LoginClient() {
       payload.append("email", email);
       payload.append("password", password);
       payload.append("csrf_token", csrfToken);
+      payload.append("remember", "y");
 
       // 3. Login
       const response = await login(payload);

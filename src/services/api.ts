@@ -827,6 +827,7 @@ export async function fetchReuse(rid: string): Promise<Reuse> {
   try {
     const res = await fetch(`${API_BASE_URL}/reuses/${rid}/`, {
       cache: "no-store",
+      credentials: "include",
     });
 
     if (!res.ok) {

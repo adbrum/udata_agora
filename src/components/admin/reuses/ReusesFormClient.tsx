@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   Button,
   InputText,
@@ -45,11 +45,11 @@ export default function ReusesFormClient({
   onPreviousStep,
 }: ReusesFormClientProps) {
   const { user } = useAuth();
-  const [selectedProducer, setSelectedProducer] = useState("");
+  const selectedProducerRef = useRef("");
+  const selectedReuseTypeRef = useRef("");
+  const selectedReuseTopicRef = useRef("");
   const [reuseName, setReuseName] = useState("");
   const [reuseLink, setReuseLink] = useState("");
-  const [selectedReuseType, setSelectedReuseType] = useState("");
-  const [selectedReuseTopic, setSelectedReuseTopic] = useState("");
   const [reuseDescription, setReuseDescription] = useState("");
   const [reuseCoverImageFile, setReuseCoverImageFile] = useState<File | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
@@ -69,10 +69,19 @@ export default function ReusesFormClient({
   const [myDatasets, setMyDatasets] = useState<Dataset[]>([]);
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
 
+  const [dataLoaded, setDataLoaded] = useState(false);
+
   useEffect(() => {
-    fetchReuseTypes().then(setReuseTypes);
-    fetchReuseTopics().then(setReuseTopics);
-    fetchMyDatasets(1, 5).then((res) => setMyDatasets(res.data || []));
+    Promise.all([
+      fetchReuseTypes(),
+      fetchReuseTopics(),
+      fetchMyDatasets(1, 5),
+    ]).then(([types, topics, datasets]) => {
+      setReuseTypes(types);
+      setReuseTopics(topics);
+      setMyDatasets(datasets.data || []);
+      setDataLoaded(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -84,8 +93,8 @@ export default function ReusesFormClient({
     const errors: Record<string, boolean> = {};
     if (!reuseName.trim()) errors.reuseName = true;
     if (!reuseLink.trim()) errors.reuseLink = true;
-    if (!selectedReuseType) errors.reuseType = true;
-    if (!selectedReuseTopic) errors.reuseTopic = true;
+    if (!selectedReuseTypeRef.current) errors.reuseType = true;
+    if (!selectedReuseTopicRef.current) errors.reuseTopic = true;
     if (!reuseDescription.trim()) errors.reuseDescription = true;
     if (!reuseCoverImageFile) errors.reuseCoverImage = true;
     if (Object.keys(errors).length > 0) {
@@ -103,11 +112,11 @@ export default function ReusesFormClient({
         title: reuseName.trim(),
         description: reuseDescription.trim(),
         url,
-        type: selectedReuseType,
-        topic: selectedReuseTopic || undefined,
+        type: selectedReuseTypeRef.current,
+        topic: selectedReuseTopicRef.current || undefined,
         private: true,
-        ...(selectedProducer && selectedProducer !== "user"
-          ? { organization: selectedProducer }
+        ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
+          ? { organization: selectedProducerRef.current }
           : {}),
       });
 
@@ -283,7 +292,7 @@ export default function ReusesFormClient({
         {/* Left: Form */}
         <div className="datasets-admin-page__form-area">
           {/* Step 1: Descreva sua reutilização */}
-          {currentStep === 1 && (
+          {currentStep === 1 && dataLoaded && (
             <>
               <StatusCard
                 type="info"
@@ -312,13 +321,10 @@ export default function ReusesFormClient({
 
                 <InputSelect
                   label="Verifique a identidade que deseja usar na publicação."
-                  placeholder="Para pesquisar..."
+                  placeholder="Selecione o produtor..."
                   id="producer-identity"
-                  searchable
-                  searchInputPlaceholder="Escreva para pesquisar..."
-                  searchNoResultsText="Nenhum resultado encontrado"
                   onChange={(options) => {
-                    setSelectedProducer(options.length > 0 ? (options[0].value as string) : "");
+                    selectedProducerRef.current = options.length > 0 ? (options[0].value as string) : "";
                   }}
                 >
                   <DropdownSection name="identity">
@@ -389,18 +395,10 @@ export default function ReusesFormClient({
                   />
                   <InputSelect
                     label="Tipo *"
-                    placeholder="Procure por um tipo..."
+                    placeholder="Selecione um tipo..."
                     id="reuse-type"
-                    searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
-                    searchNoResultsText="Nenhum resultado encontrado"
                     onChange={(options) => {
-                      if (options.length > 0) {
-                        setSelectedReuseType(options[0].value as string);
-                        clearError("reuseType");
-                      } else {
-                        setSelectedReuseType("");
-                      }
+                      selectedReuseTypeRef.current = options.length > 0 ? (options[0].value as string) : "";
                     }}
                     hasError={!!formErrors.reuseType}
                     hasFeedback={!!formErrors.reuseType}
@@ -417,18 +415,10 @@ export default function ReusesFormClient({
                   </InputSelect>
                   <InputSelect
                     label="Tema *"
-                    placeholder="Pesquise um tópico..."
+                    placeholder="Selecione um tema..."
                     id="reuse-theme"
-                    searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
-                    searchNoResultsText="Nenhum resultado encontrado"
                     onChange={(options) => {
-                      if (options.length > 0) {
-                        setSelectedReuseTopic(options[0].value as string);
-                        clearError("reuseTopic");
-                      } else {
-                        setSelectedReuseTopic("");
-                      }
+                      selectedReuseTopicRef.current = options.length > 0 ? (options[0].value as string) : "";
                     }}
                     hasError={!!formErrors.reuseTopic}
                     hasFeedback={!!formErrors.reuseTopic}
@@ -462,12 +452,9 @@ export default function ReusesFormClient({
                   />
                   <InputSelect
                     label="Palavras-chave"
-                    placeholder="Pesquise por uma palavra-chave..."
+                    placeholder="Selecione palavras-chave..."
                     id="reuse-keywords"
                     type="checkbox"
-                    searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
-                    searchNoResultsText="Nenhum resultado encontrado"
                   >
                     <DropdownSection name="keywords">
                       <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
