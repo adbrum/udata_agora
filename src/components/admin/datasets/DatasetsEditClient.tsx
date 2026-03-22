@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -352,9 +353,12 @@ export default function DatasetsEditClient() {
           {latestActivity ? (
             <>
               {" Atividade mais recente: "}
-              <span className="text-neutral-900">
+              <Link
+                href={`/pages/users/${latestActivity.actor.slug}`}
+                className="text-primary-600 underline"
+              >
                 {latestActivity.actor.first_name} {latestActivity.actor.last_name}
-              </span>
+              </Link>
               {" — "}
               {latestActivity.label}
               {" — "}
@@ -369,9 +373,12 @@ export default function DatasetsEditClient() {
               {" Atividade mais recente: "}
               {dataset.owner && (
                 <>
-                  <span className="text-neutral-900">
+                  <Link
+                    href={`/pages/users/${dataset.owner.slug}`}
+                    className="text-primary-600 underline"
+                  >
                     {dataset.owner.first_name} {dataset.owner.last_name}
-                  </span>
+                  </Link>
                   {" "}
                 </>
               )}
