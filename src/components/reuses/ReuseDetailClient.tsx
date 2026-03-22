@@ -14,10 +14,15 @@ import {
   TabBody,
   CardArticle,
   CardLinks,
+  CardNoResults,
   SearchPagination,
+  StatusCard,
+  InputSearchBar,
+  InputText,
+  InputTextArea,
 } from '@ama-pt/agora-design-system';
-import { Reuse, Dataset } from '@/types/api';
-import { fetchDataset, fetchReuse } from '@/services/api';
+import { Reuse, Dataset, Discussion } from '@/types/api';
+import { fetchDataset, fetchReuse, fetchDiscussions } from '@/services/api';
 
 import { format, formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -32,6 +37,11 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
   const [isLoadingReuse, setIsLoadingReuse] = useState(true);
   const [fullDatasets, setFullDatasets] = useState<Dataset[]>([]);
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(true);
+  const [discussions, setDiscussions] = useState<Discussion[]>([]);
+  const [discussionCount, setDiscussionCount] = useState(0);
+  const [showNewDiscussion, setShowNewDiscussion] = useState(false);
+  const [newDiscTitle, setNewDiscTitle] = useState('');
+  const [newDiscMessage, setNewDiscMessage] = useState('');
 
   useEffect(() => {
     async function loadReuse() {
@@ -74,6 +84,20 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
     }
 
     loadDatasets();
+  }, [reuse]);
+
+  useEffect(() => {
+    if (!reuse) return;
+    async function loadDiscussions() {
+      try {
+        const response = await fetchDiscussions(reuse!.id);
+        setDiscussions(response.data || []);
+        setDiscussionCount(response.total || 0);
+      } catch (error) {
+        console.error("Error loading discussions:", error);
+      }
+    }
+    loadDiscussions();
   }, [reuse]);
 
   if (isLoadingReuse) {
@@ -174,6 +198,20 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
             </div>
           </div>
 
+          {/* Owner line */}
+          {reuse.owner && (
+            <p className="dataset-edit-info__activity">
+              <Icon name="agora-line-user" className="dataset-edit-info__clock-icon" />
+              {" Criado por: "}
+              <Link
+                href={`/pages/users/${reuse.owner.slug}`}
+                className="text-primary-600 underline"
+              >
+                {reuse.owner.first_name} {reuse.owner.last_name}
+              </Link>
+            </p>
+          )}
+
           {/* Hero Content */}
           <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6 mb-24">
             {/* Image Column */}
@@ -182,7 +220,8 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                 <img
                   src={reuse.image || '/laptop.png'}
                   alt={reuse.title}
-                  className="w-full object-cover rounded-[4px]"
+                  className="w-full rounded-[4px]"
+                  style={{ height: '308px', objectFit: 'contain' }}
                 />
               </div>
             </div>
@@ -190,7 +229,7 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
             {/* Card Column */}
             <div className="xl:col-span-4 card-article-3_2">
               <CardArticle
-                className="h-full bg-[#F2F6FF]! border-none shadow-none [&_.container-body]:p-32 [&_.container-body]:flex [&_.container-body]:flex-col [&_.container-body]:h-full"
+                className="bg-[#F2F6FF]! border-none shadow-none [&_.container-body]:p-32 [&_.container-body]:flex [&_.container-body]:flex-col"
                 title={reuse.title}
                 subtitle={
                   <div className="flex flex-col gap-24 mb-16">
@@ -206,18 +245,14 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                         {reuse.organization?.name || 'Sem organização'}
                       </div>
                     )}
-                    {reuse.organization ? (
+                    {reuse.organization && (
                       <Link
                         href={`/pages/organizations/${reuse.organization.slug}`}
                         className="text-sm font-medium underline text-primary-600 hover:text-primary-800"
                       >
                         {reuse.organization.name}
                       </Link>
-                    ) : reuse.owner ? (
-                      <span className="text-sm font-medium">
-                        {reuse.owner.first_name} {reuse.owner.last_name}
-                      </span>
-                    ) : null}
+                    )}
                   </div>
                 }
               >
@@ -335,7 +370,7 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
 
                     <div className="bg-white p-32 rounded-4">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Vistas</h3>
-                      <div className="text-2xl font-bold text-neutral-900 mb-8">
+                      <div className="text-2xl text-neutral-900 mb-8">
                         {reuse.metrics?.views
                           ? reuse.metrics.views >= 1000
                             ? (reuse.metrics.views / 1000).toLocaleString('pt-PT') + ' mil'
@@ -348,10 +383,135 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
               )}
             </Tab>
             <Tab>
-              <TabHeader>Discussões</TabHeader>
+              <TabHeader>Discussões ({discussionCount})</TabHeader>
               {renderTabBody(
-                <div className="text-neutral-500 italic">
-                  Nenhuma discussão iniciada ainda.
+                <div>
+                  <div className="mb-24">
+                    <StatusCard
+                      type="info"
+                      description={
+                        <>
+                          Sua pergunta é sobre algo diferente de reutilização?{" "}
+                          <a
+                            href="https://dados.gov.pt"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary-600 underline font-semibold"
+                          >
+                            Visite nosso fórum. <Icon name="agora-line-external-link" className="w-4 h-4 inline" />
+                          </a>
+                        </>
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center justify-between mb-24">
+                    <h3 className="font-medium text-neutral-900 text-base">
+                      {discussionCount} {discussionCount === 1 ? "DISCUSSÃO" : "DISCUSSÕES"}
+                    </h3>
+                    <div className="flex items-center gap-24">
+                      <InputSearchBar
+                        hasVoiceActionButton={false}
+                        placeholder="Pesquisar"
+                        aria-label="Pesquisar discussões"
+                      />
+                      <Button
+                        variant="primary"
+                        appearance="outline"
+                        hasIcon={true}
+                        leadingIcon="agora-line-plus-circle"
+                        leadingIconHover="agora-solid-plus-circle"
+                        onClick={() => setShowNewDiscussion(!showNewDiscussion)}
+                      >
+                        Iniciar uma nova discussão
+                      </Button>
+                    </div>
+                  </div>
+                  {showNewDiscussion && (
+                    <div className="bg-white rounded-8 p-32 mb-24">
+                      <div className="flex justify-between items-center mb-16">
+                        <h3 className="font-bold text-neutral-900 text-base">Nova discussão</h3>
+                        <Button variant="primary" appearance="link" onClick={() => setShowNewDiscussion(false)}>
+                          Fechar
+                        </Button>
+                      </div>
+                      <p className="text-sm text-neutral-900 mb-16">
+                        Os campos marcados com um asterisco (<span className="text-red-500">*</span>) são obrigatórios.
+                      </p>
+                      <div className="mb-24">
+                        <InputText
+                          label="Título *"
+                          value={newDiscTitle}
+                          onChange={(e) => setNewDiscTitle(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="mb-24">
+                        <InputTextArea
+                          label="A sua mensagem *"
+                          value={newDiscMessage}
+                          onChange={(e) => setNewDiscMessage(e.target.value)}
+                          rows={4}
+                          placeholder="Por favor, mantenha a cordialidade e uma postura construtiva. Evite partilhar informações pessoais."
+                          required
+                        />
+                      </div>
+                      <div className="flex justify-end">
+                        <Button variant="primary" appearance="solid">Enviar</Button>
+                      </div>
+                    </div>
+                  )}
+                  {discussionCount === 0 ? (
+                    <CardNoResults
+                      position="center"
+                      icon={
+                        <Icon name="agora-line-chat" className="w-[40px] h-[40px] text-primary-500 icon-xl" />
+                      }
+                      title="Ainda não há discussão."
+                      description=""
+                      hasAnchor={false}
+                    />
+                  ) : (
+                    <div className="space-y-16">
+                      {discussions.map((disc) => (
+                        <div key={disc.id} className="bg-white rounded-8 p-32">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h4 className="font-bold text-neutral-900 text-base">{disc.title}</h4>
+                              <p className="text-sm text-neutral-900 mt-4">
+                                <span className="text-primary-600 font-medium">
+                                  {disc.user.first_name} {disc.user.last_name}
+                                </span>
+                                {' — Publicado em '}
+                                {format(new Date(disc.created), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                              </p>
+                            </div>
+                          </div>
+                          {disc.discussion.length > 0 && (
+                            <p className="text-neutral-900 text-sm mt-16">{disc.discussion[0].content}</p>
+                          )}
+                          {disc.discussion.length > 1 && (
+                            <div className="mt-16 space-y-16 border-t border-neutral-200 pt-16">
+                              {disc.discussion.slice(1).map((msg, idx) => (
+                                <div key={idx} className="border-l-2 border-primary-600" style={{ paddingLeft: "24px" }}>
+                                  <p className="text-sm text-neutral-900">
+                                    <span className="text-primary-600 font-medium">
+                                      {msg.posted_by.first_name} {msg.posted_by.last_name}
+                                    </span>
+                                    {' — '}
+                                    {format(new Date(msg.posted_on), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                                  </p>
+                                  <p className="text-neutral-900 text-sm mt-4">{msg.content}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <div className="flex justify-end" style={{ marginTop: "32px" }}>
+                            <Button variant="primary" appearance="outline">Responder</Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </Tab>

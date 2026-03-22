@@ -110,14 +110,14 @@ export default function ReusesClient() {
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
+              <TableHeaderCell sortType="string" sortOrder="none">
                 Título da reutilização
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell sortType="numeric" sortOrder="descending">
+              <TableHeaderCell sortType="numeric" sortOrder="none">
                 Conjuntos de dados
               </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
@@ -145,11 +145,16 @@ export default function ReusesClient() {
                   {formatDate(reuse.created_at)}
                   <br />
                   <span className="text-sm text-neutral-500">
-                    sobre{" "}
-                    <span className="text-success-600">●</span>{" "}
-                    {reuse.owner
-                      ? `${reuse.owner.first_name} ${reuse.owner.last_name}`
-                      : "—"}
+                    {reuse.owner ? (
+                      <a
+                        href={`/pages/users/${reuse.owner.slug}`}
+                        className="text-primary-600 text-xs underline"
+                      >
+                        {reuse.owner.first_name} {reuse.owner.last_name}
+                      </a>
+                    ) : (
+                      "—"
+                    )}
                   </span>
                 </TableCell>
                 <TableCell headerLabel="Conjuntos de dados">
