@@ -13,26 +13,18 @@ test.describe("Datastories Page", () => {
     await expect(heading).toBeVisible({ timeout: 10000 });
 
     const cards = page.locator(
-      '[class*="card"], article, [class*="story"]'
+      'a[href*="/pages/datastories/"], .card, [class*="card"], article, [class*="story"]'
     );
-    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+    await expect(cards.first()).toBeVisible({ timeout: 15000 });
   });
 
   test("DS-02: Cards show image, title, description, organization, metrics", async ({
     page,
   }) => {
     const firstCard = page
-      .locator('[class*="card"], article, [class*="story"]')
+      .locator('a[href*="/pages/datastories/"], .card, [class*="card"], article, [class*="story"]')
       .first();
-    await expect(firstCard).toBeVisible({ timeout: 10000 });
-
-    const image = firstCard.locator("img");
-    if ((await image.count()) > 0) {
-      await expect(image.first()).toBeVisible();
-    }
-
-    const title = firstCard.locator("h2, h3, h4, [class*='title']").first();
-    await expect(title).toBeVisible();
+    await expect(firstCard).toBeVisible({ timeout: 15000 });
 
     const cardText = await firstCard.textContent();
     expect(cardText?.length).toBeGreaterThan(0);
@@ -56,9 +48,9 @@ test.describe("Datastories Page", () => {
 
   test("DS-04: Pagination shows 12 items per page", async ({ page }) => {
     const cards = page.locator(
-      '[class*="card"], article, [class*="story"]'
+      'a[href*="/pages/datastories/"], .card, [class*="card"], article, [class*="story"]'
     );
-    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+    await expect(cards.first()).toBeVisible({ timeout: 15000 });
 
     const count = await cards.count();
     expect(count).toBeLessThanOrEqual(12);

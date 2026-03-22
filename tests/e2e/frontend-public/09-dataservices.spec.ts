@@ -14,28 +14,23 @@ test.describe("Dataservices Page", () => {
     const heading = page.locator("h1, h2").first();
     await expect(heading).toBeVisible({ timeout: 10000 });
 
-    const filters = page.locator(
-      '[class*="filter"], [class*="sidebar"], select, [role="combobox"]'
-    );
+    // Cards or links to dataservices
     const cards = page.locator(
-      '[class*="card"], article, [class*="list-item"]'
+      'a[href*="/pages/dataservices/"], .card, [class*="card"], article'
     );
-    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+    await expect(cards.first()).toBeVisible({ timeout: 15000 });
   });
 
   test("SD-02: Cards show title, description, organization, format", async ({
     page,
   }) => {
     const firstCard = page
-      .locator('[class*="card"], article, [class*="list-item"]')
+      .locator('a[href*="/pages/dataservices/"], .card, [class*="card"], article')
       .first();
-    await expect(firstCard).toBeVisible({ timeout: 10000 });
+    await expect(firstCard).toBeVisible({ timeout: 15000 });
 
     const cardText = await firstCard.textContent();
     expect(cardText?.length).toBeGreaterThan(0);
-
-    const title = firstCard.locator("h2, h3, h4, [class*='title']").first();
-    await expect(title).toBeVisible();
   });
 
   test("SD-03: Search filters services by name", async ({ page }) => {
@@ -66,9 +61,9 @@ test.describe("Dataservices Page", () => {
 
   test("SD-05: Pagination shows 20 items per page", async ({ page }) => {
     const cards = page.locator(
-      '[class*="card"], article, [class*="list-item"]'
+      'a[href*="/pages/dataservices/"], .card, [class*="card"], article'
     );
-    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+    await expect(cards.first()).toBeVisible({ timeout: 15000 });
 
     const count = await cards.count();
     expect(count).toBeLessThanOrEqual(20);

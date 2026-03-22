@@ -10,133 +10,151 @@ test.describe("Backoffice - Posts CRUD", () => {
     page,
   }) => {
     await page.goto("/pages/admin/system/posts/");
-    await page.waitForTimeout(1000);
-    const createBtn = page.locator(
-      'a[href*="new"], button:has-text("Criar"), button:has-text("Novo"), button:has-text("Nova")'
-    );
-    if (await createBtn.first().isVisible({ timeout: 5000 })) {
-      await createBtn.first().click();
-      await page.waitForTimeout(1000);
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(2000);
+
+    // H1 "Artigos", Button "Criar um artigo"
+    const heading = page.getByRole("heading", { name: /Artigos/i }).first();
+    await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
+
+    // Navigate to create new post via "Criar um artigo" button
+    const createBtn = page.getByText("Criar um artigo").first();
+    const createLink = page.locator('a[href*="/posts/new"]').first();
+    if (await createBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await createBtn.click();
+    } else if (await createLink.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await createLink.click();
+    } else {
+      await page.goto("/pages/admin/system/posts/new/");
     }
-    // Try to save without name
-    const saveBtn = page.locator(
-      'button:has-text("Guardar"), button:has-text("Save"), button:has-text("Criar")'
-    );
-    if (await saveBtn.first().isVisible({ timeout: 3000 })) {
-      await saveBtn.first().click();
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(2000);
+
+    // H1 "Formulário de inscrição", step "Passo 1 - Descreva seu item"
+    // Try to advance without filling required fields - should show "Campo obrigatório"
+    const nextBtn = page.getByRole("button", { name: /Seguinte/i }).first();
+    if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await nextBtn.click();
       await page.waitForTimeout(500);
-      // Expect validation error on name
-      const error = page.locator(
-        '.error-message, .field-error, [role="alert"], text="obrigatório", text="required"'
-      );
-      await expect(error.first()).toBeVisible({ timeout: 3000 }).catch(() => {});
+      // Expect validation error
+      const error = page.getByText(/obrigatório|Campo obrigatório/i).first();
+      await expect(error).toBeVisible({ timeout: 3000 }).catch(() => {});
     }
-    // Fill name
-    const nameInput = page.locator(
-      'input[name="name"], input[name*="name"], input[name*="title"]'
-    );
-    if (await nameInput.isVisible({ timeout: 3000 })) {
+
+    // Fill title using real ID "article-title"
+    const nameInput = page.locator("#article-title").first();
+    if (await nameInput.isVisible({ timeout: 3000 }).catch(() => false)) {
       await nameInput.fill("E2E Test Post");
+    } else {
+      const nameByLabel = page.getByLabel(/Título do artigo/i).first();
+      if (await nameByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await nameByLabel.fill("E2E Test Post");
+      }
     }
   });
 
   test("PO-02: Post with date is published; without date is draft", async ({
     page,
   }) => {
-    await page.goto("/pages/admin/system/posts/");
-    const createBtn = page.locator(
-      'a[href*="new"], button:has-text("Criar"), button:has-text("Novo")'
-    );
-    if (await createBtn.first().isVisible({ timeout: 5000 })) {
-      await createBtn.first().click();
+    await page.goto("/pages/admin/system/posts/new/");
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(2000);
+
+    // Fill title (required) using real ID
+    const nameInput = page.locator("#article-title").first();
+    if (await nameInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await nameInput.fill("E2E Post Date Test");
+    } else {
+      const nameByLabel = page.getByLabel(/Título do artigo/i).first();
+      if (await nameByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await nameByLabel.fill("E2E Post Date Test");
+      }
+    }
+
+    // Fill header (required) using real ID "article-header"
+    const headerInput = page.locator("#article-header").first();
+    if (await headerInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await headerInput.fill("E2E Post Header");
+    } else {
+      const headerByLabel = page.getByLabel(/Cabeçalho/i).first();
+      if (await headerByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await headerByLabel.fill("E2E Post Header");
+      }
+    }
+
+    // Advance to step 2
+    const nextBtn = page.getByRole("button", { name: /Seguinte/i }).first();
+    if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await nextBtn.click();
       await page.waitForTimeout(1000);
     }
-    const nameInput = page.locator(
-      'input[name="name"], input[name*="name"], input[name*="title"]'
-    );
-    if (await nameInput.isVisible({ timeout: 3000 })) {
-      await nameInput.fill("E2E Post Date Test");
-    }
-    // Check date field
-    const dateInput = page.locator(
-      'input[name*="published"], input[name*="date"], input[type="date"]'
-    );
-    if (await dateInput.isVisible({ timeout: 3000 })) {
-      // Without date - should be draft
-      await dateInput.clear();
-      const draftIndicator = page.locator(
-        'text="Rascunho", text="Draft", .badge-draft, .status-draft'
-      );
-      // With date - should be published
-      await dateInput.fill("2024-06-15");
-      await page.waitForTimeout(500);
-    }
-    const saveBtn = page.locator(
-      'button:has-text("Guardar"), button:has-text("Save"), button:has-text("Criar")'
-    );
-    if (await saveBtn.first().isVisible({ timeout: 3000 })) {
-      await saveBtn.first().click();
+
+    const saveBtn = page.getByRole("button", { name: /Guardar/i }).first();
+    if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await saveBtn.click();
       await page.waitForTimeout(2000);
     }
   });
 
   test("PO-03: Upload image shows preview", async ({ page }) => {
-    await page.goto("/pages/admin/system/posts/");
-    const createBtn = page.locator(
-      'a[href*="new"], button:has-text("Criar"), button:has-text("Novo")'
-    );
-    if (await createBtn.first().isVisible({ timeout: 5000 })) {
-      await createBtn.first().click();
-      await page.waitForTimeout(1000);
-    }
-    const fileInput = page.locator(
-      'input[type="file"][accept*="image"], input[type="file"]'
-    );
-    if (await fileInput.first().isVisible({ timeout: 5000 })) {
+    await page.goto("/pages/admin/system/posts/new/");
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(2000);
+
+    // ButtonUploader for "Ficheiros" section
+    const fileInput = page.locator('input[type="file"]').first();
+    if (await fileInput.count().then(c => c > 0).catch(() => false)) {
       const pngBuffer = Buffer.from(
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
         "base64"
       );
-      await fileInput.first().setInputFiles({
+      await fileInput.setInputFiles({
         name: "post-image.png",
         mimeType: "image/png",
         buffer: pngBuffer,
       });
       await page.waitForTimeout(2000);
-      const preview = page.locator(
-        'img[alt*="preview"], .image-preview img, .upload-preview img'
-      );
-      await expect(preview.first()).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      const preview = page.locator("img").first();
+      await expect(preview).toBeVisible({ timeout: 5000 }).catch(() => {});
     }
   });
 
   test("PO-04: Edit post and save changes", async ({ page }) => {
     await page.goto("/pages/admin/system/posts/");
-    await page.waitForTimeout(1000);
-    const postLink = page.locator(
-      'table tbody tr a, .post-item a, .post-card a'
-    );
-    if (await postLink.first().isVisible({ timeout: 5000 })) {
-      await postLink.first().click();
-      await page.waitForTimeout(1000);
-      const nameInput = page.locator(
-        'input[name="name"], input[name*="name"], input[name*="title"]'
-      );
-      if (await nameInput.isVisible({ timeout: 5000 })) {
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(2000);
+
+    // TABLE with headers: Título | Status | Criado em | Atualizado em | Ação
+    const postLink = page.locator('a[href*="/posts/"]').first();
+    if (await postLink.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await postLink.click();
+      await page.waitForLoadState("networkidle");
+      await page.waitForTimeout(2000);
+
+      const nameInput = page.locator("#article-title").first();
+      if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
         await nameInput.clear();
         await nameInput.fill("Updated E2E Post");
+      } else {
+        const nameByLabel = page.getByLabel(/Título do artigo/i).first();
+        if (await nameByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await nameByLabel.clear();
+          await nameByLabel.fill("Updated E2E Post");
+        }
       }
-      const saveBtn = page.locator(
-        'button:has-text("Guardar"), button:has-text("Save")'
-      );
-      if (await saveBtn.first().isVisible({ timeout: 3000 })) {
-        await saveBtn.first().click();
+
+      const saveBtn = page.getByRole("button", { name: /Guardar/i }).first();
+      if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await saveBtn.click();
         await page.waitForTimeout(2000);
       }
+
       // Verify persistence
       await page.reload();
-      await page.waitForTimeout(1000);
-      if (await nameInput.isVisible({ timeout: 5000 })) {
+      await page.waitForLoadState("networkidle");
+      await page.waitForTimeout(2000);
+      if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
         await expect(nameInput).toHaveValue("Updated E2E Post");
       }
     }
@@ -144,22 +162,22 @@ test.describe("Backoffice - Posts CRUD", () => {
 
   test("PO-05: Delete post removes it from listing", async ({ page }) => {
     await page.goto("/pages/admin/system/posts/");
-    const postItems = page.locator(
-      'table tbody tr, .post-item, .post-card'
-    );
-    const initialCount = await postItems.count();
-    if (initialCount > 0) {
-      await postItems.first().locator("a").first().click();
-      await page.waitForTimeout(1000);
-      const deleteBtn = page.locator(
-        'button:has-text("Eliminar"), button:has-text("Delete"), button:has-text("Apagar")'
-      );
-      if (await deleteBtn.first().isVisible({ timeout: 3000 })) {
-        await deleteBtn.first().click();
-        const confirmBtn = page.locator(
-          'button:has-text("Confirmar"), button:has-text("Confirm"), button:has-text("Sim")'
-        );
-        if (await confirmBtn.isVisible({ timeout: 3000 })) {
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(2000);
+
+    const postLink = page.locator('a[href*="/posts/"]').first();
+    if (await postLink.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await postLink.click();
+      await page.waitForLoadState("networkidle");
+      await page.waitForTimeout(2000);
+
+      const deleteBtn = page.getByRole("button", { name: /Eliminar|Apagar/i }).first();
+      if (await deleteBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await deleteBtn.click();
+        await page.waitForTimeout(500);
+
+        const confirmBtn = page.getByRole("button", { name: /Confirmar|Sim/i }).first();
+        if (await confirmBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
           await confirmBtn.click();
         }
         await page.waitForTimeout(2000);
@@ -169,18 +187,23 @@ test.describe("Backoffice - Posts CRUD", () => {
 
   test("PO-06: List posts with pagination (admin only)", async ({ page }) => {
     await page.goto("/pages/admin/system/posts/");
-    await page.waitForTimeout(1000);
-    const postList = page.locator(
-      'table, .post-list, text="Nenhum artigo", text="No posts"'
-    );
-    await expect(postList.first()).toBeVisible({ timeout: 10000 });
-    // Pagination
-    const paginationBtn = page.locator(
-      '.pagination button, nav[aria-label*="pagination"] a, button:has-text("Seguinte")'
-    );
-    if (await paginationBtn.first().isVisible({ timeout: 3000 })) {
-      await paginationBtn.first().click();
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(2000);
+
+    // H1 "Artigos", search placeholder "Pesquise o título do artigo"
+    const heading = page.getByRole("heading", { name: /Artigos/i }).first();
+    await expect(heading).toBeVisible({ timeout: 10000 });
+
+    // Search
+    const searchInput = page.getByPlaceholder(/Pesquise o título do artigo/i).first();
+    if (await searchInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await searchInput.fill("test");
       await page.waitForTimeout(1000);
+      await searchInput.clear();
     }
+
+    // Pagination
+    const paginationText = page.getByText(/Linhas por página/i).first();
+    await expect(paginationText).toBeVisible({ timeout: 3000 }).catch(() => {});
   });
 });

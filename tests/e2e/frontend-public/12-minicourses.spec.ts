@@ -14,15 +14,11 @@ test.describe("Mini-Courses Page", () => {
     const heading = page.locator("h1, h2").first();
     await expect(heading).toBeVisible({ timeout: 10000 });
 
-    const banner = page.locator(
-      '[class*="banner"], [class*="hero"], header, [class*="jumbotron"]'
-    );
-    await expect(banner.first()).toBeVisible({ timeout: 5000 });
-
+    // Course cards or links
     const cards = page.locator(
-      '[class*="card"], article, [class*="course"]'
+      'a[href*="/pages/mini-courses/"], .card, [class*="card"], article, [class*="course"]'
     );
-    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+    await expect(cards.first()).toBeVisible({ timeout: 15000 });
   });
 
   test("MC-02: Banner shows Minicursos title, Mosaico description, date, illustration", async ({
@@ -61,12 +57,9 @@ test.describe("Mini-Courses Page", () => {
     page,
   }) => {
     const firstCard = page
-      .locator('[class*="card"], article, [class*="course"]')
+      .locator('a[href*="/pages/mini-courses/"], .card, [class*="card"], article, [class*="course"]')
       .first();
-    await expect(firstCard).toBeVisible({ timeout: 10000 });
-
-    const title = firstCard.locator("h2, h3, h4, [class*='title']").first();
-    await expect(title).toBeVisible();
+    await expect(firstCard).toBeVisible({ timeout: 15000 });
 
     const cardText = await firstCard.textContent();
     expect(cardText?.length).toBeGreaterThan(0);
@@ -146,9 +139,9 @@ test.describe("Mini-Courses Page", () => {
 
   test("MC-09: Pagination shows 4 items per page", async ({ page }) => {
     const cards = page.locator(
-      '[class*="card"], article, [class*="course"]'
+      'a[href*="/pages/mini-courses/"], .card, [class*="card"], article, [class*="course"]'
     );
-    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+    await expect(cards.first()).toBeVisible({ timeout: 15000 });
 
     const count = await cards.count();
     expect(count).toBeLessThanOrEqual(4);

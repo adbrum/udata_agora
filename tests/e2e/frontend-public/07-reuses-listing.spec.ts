@@ -10,29 +10,25 @@ test.describe("Reuses Listing", () => {
   });
 
   test("RL-01: Page loads with reuse cards and filters", async ({ page }) => {
-    // Reuse cards should be visible
-    const cards = page
-      .locator("a[href*='/pages/reuses/']")
-      .or(page.locator("[class*='reuse-card'], [class*='card']"))
-      .first();
+    // H1 heading
+    const heading = page.getByRole("heading", { name: /Reutilizações/i, level: 1 });
+    await expect(heading).toBeVisible({ timeout: 10000 });
+
+    // Reuse card links should be visible
+    const cards = page.locator("a[href*='/pages/reuses/']").first();
     await expect(cards).toBeVisible({ timeout: 15000 });
 
-    // Filter/search area should be present
-    const filters = page
-      .locator("input[type='search'], input[type='text'], [class*='filter'], aside")
-      .first();
-    if ((await filters.count()) > 0) {
-      await expect(filters).toBeVisible();
+    // Search input with page-specific ID
+    const searchInput = page.locator("#reuses-search");
+    if ((await searchInput.count()) > 0) {
+      await expect(searchInput).toBeVisible();
     }
   });
 
   test("RL-02: Cards show image, title, type, org, metrics", async ({
     page,
   }) => {
-    const firstCard = page
-      .locator("a[href*='/pages/reuses/']")
-      .or(page.locator("[class*='reuse-card'], [class*='card']"))
-      .first();
+    const firstCard = page.locator("a[href*='/pages/reuses/']").first();
     await expect(firstCard).toBeVisible({ timeout: 15000 });
 
     // Card should have text content
@@ -53,19 +49,15 @@ test.describe("Reuses Listing", () => {
   });
 
   test("RL-04: Search filters by name", async ({ page }) => {
-    const searchInput = page
-      .getByRole("textbox", { name: /pesquisar|search|filtrar/i })
-      .or(page.locator("input[type='search'], input[type='text']").first());
+    const searchInput = page.locator("#reuses-search");
 
     if ((await searchInput.count()) > 0) {
-      await searchInput.first().fill("dados");
-      await searchInput.first().press("Enter");
+      await searchInput.fill("dados");
+      await searchInput.press("Enter");
       await page.waitForLoadState("networkidle");
 
       // Results should update
-      const results = page
-        .locator("a[href*='/pages/reuses/']")
-        .or(page.locator("[class*='reuse-card'], [class*='card']"));
+      const results = page.locator("a[href*='/pages/reuses/']");
       const count = await results.count();
       expect(count).toBeGreaterThanOrEqual(0);
     }
@@ -90,7 +82,8 @@ test.describe("Reuses Listing", () => {
   });
 
   test("RL-07: Filter by organization", async ({ page }) => {
-    const orgFilter = page.getByText(/organização|organization/i).first();
+    // Filters are in the agora-sidebar
+    const orgFilter = page.locator(".agora-sidebar").getByText("Organizações", { exact: false }).first();
 
     if ((await orgFilter.count()) > 0) {
       await expect(orgFilter).toBeVisible();
@@ -109,6 +102,14 @@ test.describe("Reuses Listing", () => {
   });
 
   test("RL-09: Pagination (12 per page)", async ({ page }) => {
+    // Check that cards are present (up to 12)
+    const cards = page.locator("a[href*='/pages/reuses/']");
+    await expect(cards.first()).toBeVisible({ timeout: 15000 });
+    const count = await cards.count();
+    expect(count).toBeGreaterThan(0);
+    expect(count).toBeLessThanOrEqual(12);
+
+    // Pagination may not exist if results fit in one page
     const pagination = page
       .locator(
         "nav[aria-label*='paginat' i], [class*='pagination'], [class*='pager']"
@@ -118,11 +119,5 @@ test.describe("Reuses Listing", () => {
     if ((await pagination.count()) > 0) {
       await expect(pagination).toBeVisible();
     }
-
-    // Check that cards are present (up to 12)
-    const cards = page.locator("a[href*='/pages/reuses/']");
-    const count = await cards.count();
-    expect(count).toBeGreaterThan(0);
-    expect(count).toBeLessThanOrEqual(12);
   });
 });

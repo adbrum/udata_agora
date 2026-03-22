@@ -14,11 +14,13 @@ test.describe("Authentication Page", () => {
     await page.goto(BASE_URL);
     await page.waitForLoadState("networkidle");
 
-    const authButton = page.locator(
-      'a:has-text("Autenticar"), button:has-text("Autenticar"), a:has-text("Login"), button:has-text("Login")'
-    );
-    await expect(authButton.first()).toBeVisible({ timeout: 10000 });
-    await authButton.first().click();
+    // Wait for header to hydrate (client-rendered via Suspense)
+    await page.waitForTimeout(3000);
+
+    // Auth link: a[href="/pages/login"] with text "Autenticar"
+    const authButton = page.locator('a[href="/pages/login"]').first();
+    await expect(authButton).toBeVisible({ timeout: 10000 });
+    await authButton.click();
     await page.waitForLoadState("networkidle");
 
     expect(page.url()).toContain("login");
@@ -113,30 +115,27 @@ test.describe("Authentication Page", () => {
   test("AU-09: Email tab - empty fields prevent submission", async ({
     page,
   }) => {
-    const emailTab = page.locator(
-      'button:has-text("Email"), [role="tab"]:has-text("Email")'
-    );
+    // Click "Iniciar sessão" tab to show email/password form
+    const emailTab = page.getByText(/Iniciar sessão/i).first();
     if ((await emailTab.count()) > 0) {
-      await emailTab.first().click();
+      await emailTab.click();
       await page.waitForTimeout(500);
     }
 
-    const submitButton = page.locator(
-      'button[type="submit"], button:has-text("Entrar"), button:has-text("Login")'
-    );
-    if ((await submitButton.count()) > 0) {
-      await submitButton.first().click();
-      await page.waitForTimeout(500);
+    // Login form inputs have specific IDs
+    const emailInput = page.locator("#login-email");
+    const passwordInput = page.locator("#login-password");
 
-      // Check for validation errors or that form was not submitted
-      const emailInput = page.locator(
-        'input[type="email"], input[name="email"]'
+    if ((await emailInput.count()) > 0 && (await passwordInput.count()) > 0) {
+      // Try to submit without filling
+      const submitButton = page.locator(
+        'button[type="submit"], button:has-text("Entrar"), button:has-text("Login")'
       );
-      if ((await emailInput.count()) > 0) {
-        const validationMessage = await emailInput
-          .first()
-          .evaluate((el: HTMLInputElement) => el.validationMessage);
-        // Either native validation or still on login page
+      if ((await submitButton.count()) > 0) {
+        await submitButton.first().click();
+        await page.waitForTimeout(500);
+
+        // Should still be on login page
         expect(page.url()).toContain("login");
       }
     }

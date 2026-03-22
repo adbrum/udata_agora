@@ -9,20 +9,20 @@ test.describe("Homepage", () => {
   test("HP-01: Homepage loads correctly with banner, stats, highlights and news sections", async ({
     page,
   }) => {
-    // Banner / hero section
-    const hero = page.locator(".agora-card-highlight-newsletter");
-    await expect(hero).toBeVisible({ timeout: 10000 });
+    // Search section (portal search bar)
+    const searchInput = page.locator("#portal-search");
+    await expect(searchInput).toBeVisible({ timeout: 10000 });
 
     // Stats section
     const stats = page.locator(".stats-icon-wrapper").first();
     await expect(stats).toBeVisible({ timeout: 10000 });
 
     // Featured datasets section - loaded via Suspense, wait for hydration
-    const datasetsHeading = page.getByText("Conjunto de dados", { exact: false });
+    const datasetsHeading = page.getByRole("heading", { name: /Conjunto de dados/i });
     await expect(datasetsHeading).toBeVisible({ timeout: 10000 });
 
     // Latest news section
-    const newsHeading = page.getByText("Últimas novidades", { exact: false });
+    const newsHeading = page.getByRole("heading", { name: /Últimas novidades/i });
     await expect(newsHeading).toBeVisible({ timeout: 10000 });
   });
 
@@ -40,15 +40,20 @@ test.describe("Homepage", () => {
   });
 
   test("HP-03: Search bar shows suggestion examples", async ({ page }) => {
-    const hero = page.locator(".agora-card-highlight-newsletter");
-    await expect(hero).toBeVisible();
+    // The search area contains suggestion keywords near the search input
+    const searchInput = page.locator("#portal-search");
+    await expect(searchInput).toBeVisible({ timeout: 10000 });
 
-    // Check for suggestion keywords in the hero area
-    const heroText = await hero.textContent();
-    const suggestions = ["educação", "saúde pública", "ambiente"];
+    // Check placeholder text for suggestion keywords
+    const placeholder = await searchInput.getAttribute("placeholder");
+    const bodyText = await page.textContent("body");
+    const suggestions = ["educação", "saúde pública", "ambiente", "datasets", "organizações", "temas"];
     let foundSuggestions = 0;
     for (const suggestion of suggestions) {
-      if (heroText?.toLowerCase().includes(suggestion.toLowerCase())) {
+      if (
+        placeholder?.toLowerCase().includes(suggestion.toLowerCase()) ||
+        bodyText?.toLowerCase().includes(suggestion.toLowerCase())
+      ) {
         foundSuggestions++;
       }
     }
@@ -84,8 +89,8 @@ test.describe("Homepage", () => {
   );
 
   test("HP-06: Stats section shows 4 counters", async ({ page }) => {
-    // Wait for stats to hydrate
-    await page.waitForTimeout(2000);
+    // Wait for stats to hydrate (client-rendered via Suspense)
+    await page.waitForTimeout(3000);
 
     const expectedLabels = [
       "Conjuntos de Dados",
@@ -99,8 +104,9 @@ test.describe("Homepage", () => {
       await expect(element).toBeVisible({ timeout: 10000 });
     }
 
-    // Verify 4 stat icons exist
+    // Verify 4 stat icon wrappers exist
     const statsIcons = page.locator(".stats-icon-wrapper");
+    await expect(statsIcons.first()).toBeVisible({ timeout: 10000 });
     const count = await statsIcons.count();
     expect(count).toBeGreaterThanOrEqual(4);
   });
@@ -109,21 +115,21 @@ test.describe("Homepage", () => {
     page,
   }) => {
     // Dataset cards load via Suspense - wait for heading then cards
-    const heading = page.getByText("Conjunto de dados", { exact: false });
+    const heading = page.getByRole("heading", { name: /Conjunto de dados/i });
     await expect(heading).toBeVisible({ timeout: 10000 });
 
-    // Cards are inside a grid after the heading - wait for links to datasets
-    const datasetsGrid = heading.locator("..").locator("..").locator("a[href*='/pages/datasets/']");
-    await expect(datasetsGrid.first()).toBeVisible({ timeout: 15000 });
+    // Wait for dataset links to hydrate
+    const datasetLinks = page.locator("a[href*='/pages/datasets/']");
+    await expect(datasetLinks.first()).toBeVisible({ timeout: 15000 });
 
-    const count = await datasetsGrid.count();
+    const count = await datasetLinks.count();
     expect(count).toBeGreaterThanOrEqual(3);
   });
 
   test("HP-08: Click featured dataset card navigates to dataset detail", async ({
     page,
   }) => {
-    const heading = page.getByText("Conjunto de dados", { exact: false });
+    const heading = page.getByRole("heading", { name: /Conjunto de dados/i });
     await expect(heading).toBeVisible({ timeout: 10000 });
 
     const datasetLink = page.locator("a[href*='/pages/datasets/']").first();
@@ -163,15 +169,15 @@ test.describe("Homepage", () => {
   test("HP-11: Data Stories section shows 3 cards on dark background", async ({
     page,
   }) => {
-    const storiesHeading = page.getByText("Data Stories", { exact: false });
+    const storiesHeading = page.getByRole("heading", { name: /Data Stories/i });
     await expect(storiesHeading).toBeVisible({ timeout: 10000 });
 
     const storiesSection = page.locator(".storytellings");
     await expect(storiesSection).toBeVisible({ timeout: 10000 });
 
-    // Wait for hydrated content
-    await page.waitForTimeout(2000);
-    const cards = storiesSection.locator("a, > div");
+    // Wait for hydrated content (client-rendered via Suspense)
+    await page.waitForTimeout(3000);
+    const cards = storiesSection.locator("a, .card, > div");
     const count = await cards.count();
     expect(count).toBeGreaterThanOrEqual(1);
   });

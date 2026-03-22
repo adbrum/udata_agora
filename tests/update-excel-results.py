@@ -14,6 +14,7 @@ Usage:
 import json
 import os
 import re
+import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -33,7 +34,7 @@ RESULTS_FILE = FRONTEND_DIR / "test-results" / "e2e-results.json"
 
 EXCEL_FILES = {
     "frontend": FRONTEND_DIR / ".." / "docs" / "caderno_testes_frontend_publico.xlsx",
-    "backoffice": FRONTEND_DIR / ".." / "docs" / "caderno_testes_backoffice_dadosgov_simplificado.xlsx",
+    "backoffice": FRONTEND_DIR / ".." / "docs" / "caderno_testes_backoffice_admin.xlsx",
 }
 
 SHEET_NAME = "Caderno de Testes"
@@ -41,14 +42,42 @@ SHEET_NAME = "Caderno de Testes"
 # Test ID prefixes that belong to each Excel file.
 # DS-* is ambiguous (Data Stories in frontend, Datasets in backoffice) and appears in both.
 FRONTEND_PREFIXES = {
-    "HP", "PQ", "DL", "DD", "OL", "OD", "RL", "RD", "SD",
+    "HP",
+    "PQ",
+    "DL",
+    "DD",
+    "OL",
+    "OD",
+    "RL",
+    "RD",
+    "SD",
     "DS",  # Data Stories
-    "TM", "MC", "NT", "AU", "PF", "DI", "PI", "NV", "RA",
+    "TM",
+    "MC",
+    "NT",
+    "AU",
+    "PF",
+    "DI",
+    "PI",
+    "NV",
+    "RA",
 }
 
 BACKOFFICE_PREFIXES = {
     "DS",  # Datasets
-    "RU", "ORG", "API", "HV", "PO", "TP", "CR", "ED", "PM", "IA", "VL", "US", "UI",
+    "RU",
+    "ORG",
+    "API",
+    "HV",
+    "PO",
+    "TP",
+    "CR",
+    "ED",
+    "PM",
+    "IA",
+    "VL",
+    "US",
+    "UI",
 }
 
 # Prefixes that are unique to one file (used to resolve DS-* ambiguity).
@@ -58,6 +87,7 @@ SHARED_PREFIXES = FRONTEND_PREFIXES & BACKOFFICE_PREFIXES  # {"DS"}
 
 
 # --- Playwright JSON Parsing ---
+
 
 def load_results(path: Path) -> dict:
     """Load the Playwright JSON report file."""
@@ -99,11 +129,21 @@ def determine_file_target(test_id: str, suite_path: list[str]) -> str:
     # Shared prefix (DS-*): disambiguate using suite path context.
     suite_text = " ".join(suite_path).lower()
     backoffice_keywords = [
-        "backoffice", "admin", "dataset", "criar", "editar",
-        "eliminar", "publicar", "arquivar", "listar",
+        "backoffice",
+        "admin",
+        "dataset",
+        "criar",
+        "editar",
+        "eliminar",
+        "publicar",
+        "arquivar",
+        "listar",
     ]
     frontend_keywords = [
-        "data stor", "frontend", "public", "portal",
+        "data stor",
+        "frontend",
+        "public",
+        "portal",
     ]
 
     backoffice_score = sum(1 for kw in backoffice_keywords if kw in suite_text)
@@ -154,8 +194,14 @@ def parse_results(data: dict) -> dict[str, dict[str, dict]]:
                             if isinstance(error_obj, dict):
                                 error_message = error_obj.get("message", "Test failed")
                             else:
-                                error_message = str(error_obj) if error_obj else "Test failed"
-                        elif result_status == "skipped" and status != "passed" and status != "failed":
+                                error_message = (
+                                    str(error_obj) if error_obj else "Test failed"
+                                )
+                        elif (
+                            result_status == "skipped"
+                            and status != "passed"
+                            and status != "failed"
+                        ):
                             status = "skipped"
 
                     # Also check top-level test status
@@ -165,15 +211,20 @@ def parse_results(data: dict) -> dict[str, dict[str, dict]]:
                         status = "failed"
                         if not error_message:
                             error_message = "Test failed (unexpected status)"
-                    elif test_status == "skipped" and status not in ("passed", "failed"):
+                    elif test_status == "skipped" and status not in (
+                        "passed",
+                        "failed",
+                    ):
                         status = "skipped"
 
                 file_target = determine_file_target(test_id, current_path)
 
                 # Clean ANSI escape codes and illegal characters for Excel
                 if error_message:
-                    error_message = re.sub(r'\x1b\[[0-9;]*m', '', error_message)
-                    error_message = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', error_message)
+                    error_message = re.sub(r"\x1b\[[0-9;]*m", "", error_message)
+                    error_message = re.sub(
+                        r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", error_message
+                    )
                     if len(error_message) > 500:
                         error_message = error_message[:497] + "..."
 
@@ -191,6 +242,7 @@ def parse_results(data: dict) -> dict[str, dict[str, dict]]:
 
 # --- Excel Update ---
 
+
 def find_test_rows(ws) -> dict[str, int]:
     """
     Scan the worksheet and return a mapping of test_id -> row_number
@@ -199,7 +251,11 @@ def find_test_rows(ws) -> dict[str, int]:
     test_rows = {}
     for row in ws.iter_rows(min_row=1, max_row=ws.max_row, min_col=1, max_col=1):
         cell = row[0]
-        if cell.value and isinstance(cell.value, str) and re.match(r"^[A-Z]+-\d+$", cell.value):
+        if (
+            cell.value
+            and isinstance(cell.value, str)
+            and re.match(r"^[A-Z]+-\d+$", cell.value)
+        ):
             test_rows[cell.value] = cell.row
     return test_rows
 
@@ -215,20 +271,28 @@ def find_section_rows(ws) -> list[dict]:
 
     for row in ws.iter_rows(min_row=1, max_row=ws.max_row, min_col=1, max_col=1):
         cell = row[0]
-        if cell.value and isinstance(cell.value, str) and re.match(r"^\d+\.", cell.value):
+        if (
+            cell.value
+            and isinstance(cell.value, str)
+            and re.match(r"^\d+\.", cell.value)
+        ):
             if current_section:
-                sections.append({
-                    "name": current_section,
-                    "header_row": current_section_row,
-                })
+                sections.append(
+                    {
+                        "name": current_section,
+                        "header_row": current_section_row,
+                    }
+                )
             current_section = cell.value
             current_section_row = cell.row
 
     if current_section:
-        sections.append({
-            "name": current_section,
-            "header_row": current_section_row,
-        })
+        sections.append(
+            {
+                "name": current_section,
+                "header_row": current_section_row,
+            }
+        )
 
     return sections
 
@@ -256,7 +320,9 @@ def find_summary_table(ws) -> dict[str, int]:
     return summary_rows
 
 
-def get_section_for_test(test_id: str, test_rows: dict[str, int], sections: list[dict]) -> str | None:
+def get_section_for_test(
+    test_id: str, test_rows: dict[str, int], sections: list[dict]
+) -> str | None:
     """Determine which section a test belongs to based on its row position."""
     row_num = test_rows.get(test_id)
     if not row_num:
@@ -272,18 +338,47 @@ def get_section_for_test(test_id: str, test_rows: dict[str, int], sections: list
     return matching_section
 
 
-def update_excel(file_key: str, file_path: Path, test_results: dict[str, dict], dry_run: bool = False):
-    """Update a single Excel file with test results."""
+def copy_with_timestamp(original_path: Path) -> Path:
+    """
+    Create a copy of the Excel file with date and time in the name.
+    E.g., 'caderno_testes_frontend_publico.xlsx'
+       -> 'caderno_testes_frontend_publico_20260322_153045.xlsx'
+    """
+    now = datetime.now()
+    timestamp = now.strftime("%Y%m%d_%H%M%S")
+    stem = original_path.stem
+    suffix = original_path.suffix
+    copy_name = f"{stem}_{timestamp}{suffix}"
+    copy_path = original_path.parent / copy_name
+    shutil.copy2(original_path, copy_path)
+    return copy_path
+
+
+def update_excel(
+    file_key: str, file_path: Path, test_results: dict[str, dict], dry_run: bool = False
+):
+    """
+    Copy the original Excel file (adding date/time to the name) and
+    fill in test results only in the copy, leaving the original untouched.
+    """
     resolved_path = file_path.resolve()
     if not resolved_path.exists():
         print(f"  WARNING: Excel file not found: {resolved_path}")
         return
 
-    print(f"\n  Updating: {resolved_path.name}")
-    wb = openpyxl.load_workbook(resolved_path)
+    # Create timestamped copy
+    if not dry_run:
+        copy_path = copy_with_timestamp(resolved_path)
+        print(f"\n  Original: {resolved_path.name}")
+        print(f"  Copy:     {copy_path.name}")
+    else:
+        copy_path = resolved_path  # dry-run reads original without saving
+        print(f"\n  [DRY RUN] Would copy: {resolved_path.name}")
+
+    wb = openpyxl.load_workbook(copy_path)
 
     if SHEET_NAME not in wb.sheetnames:
-        print(f"  WARNING: Sheet '{SHEET_NAME}' not found in {resolved_path.name}")
+        print(f"  WARNING: Sheet '{SHEET_NAME}' not found in {copy_path.name}")
         wb.close()
         return
 
@@ -302,12 +397,13 @@ def update_excel(file_key: str, file_path: Path, test_results: dict[str, dict], 
     # First, count existing OK results for sections that won't be updated
     for test_id, row_num in test_rows.items():
         if test_id not in test_results:
-            # Check if this test already has an OK in column F
             existing_status = ws.cell(row=row_num, column=6).value
             if existing_status and str(existing_status).strip().upper() == "OK":
                 section_name = get_section_for_test(test_id, test_rows, sections)
                 if section_name:
-                    section_ok_counts[section_name] = section_ok_counts.get(section_name, 0) + 1
+                    section_ok_counts[section_name] = (
+                        section_ok_counts.get(section_name, 0) + 1
+                    )
 
     # Update test result rows
     for test_id, result in test_results.items():
@@ -337,19 +433,23 @@ def update_excel(file_key: str, file_path: Path, test_results: dict[str, dict], 
         else:
             observation = ""
 
-        ws.cell(row=row_num, column=6, value=ok_nok)        # Column F
-        ws.cell(row=row_num, column=7, value=today_str)      # Column G
-        ws.cell(row=row_num, column=8, value=observation)    # Column H
+        ws.cell(row=row_num, column=6, value=ok_nok)  # Column F
+        ws.cell(row=row_num, column=7, value=today_str)  # Column G
+        ws.cell(row=row_num, column=8, value=observation)  # Column H
 
         # Track OK counts for summary
         if ok_nok == "OK":
             section_name = get_section_for_test(test_id, test_rows, sections)
             if section_name:
-                section_ok_counts[section_name] = section_ok_counts.get(section_name, 0) + 1
+                section_ok_counts[section_name] = (
+                    section_ok_counts.get(section_name, 0) + 1
+                )
 
         updated_count += 1
 
-        status_symbol = {"passed": "OK", "failed": "NOK", "skipped": "SKIP"}.get(status, "?")
+        status_symbol = {"passed": "OK", "failed": "NOK", "skipped": "SKIP"}.get(
+            status, "?"
+        )
         print(f"    {test_id}: {status_symbol}")
 
     # Update summary table
@@ -371,15 +471,16 @@ def update_excel(file_key: str, file_path: Path, test_results: dict[str, dict], 
     print(f"    Updated {updated_count} test(s), {summary_updated} summary section(s)")
 
     if not dry_run:
-        wb.save(resolved_path)
-        print(f"    Saved: {resolved_path.name}")
+        wb.save(copy_path)
+        print(f"    Saved: {copy_path.name}")
     else:
-        print(f"    DRY RUN: changes not saved")
+        print("    DRY RUN: changes not saved")
 
     wb.close()
 
 
 # --- Main ---
+
 
 def main():
     dry_run = "--dry-run" in sys.argv
@@ -402,7 +503,9 @@ def main():
     backoffice_count = len(parsed["backoffice"])
     total = frontend_count + backoffice_count
 
-    print(f"  Found {total} test result(s): {frontend_count} frontend, {backoffice_count} backoffice")
+    print(
+        f"  Found {total} test result(s): {frontend_count} frontend, {backoffice_count} backoffice"
+    )
 
     if total == 0:
         print("\n  No test results with recognized IDs found. Nothing to update.")

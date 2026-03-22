@@ -51,3 +51,4 @@ figma_node.json
 # tests E2E
 test-results/
 tests/__pycache__/
+playwright-report/

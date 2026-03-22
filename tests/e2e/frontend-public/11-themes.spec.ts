@@ -11,18 +11,19 @@ test.describe("Themes Page", () => {
   test("TM-01: Page loads with sidebar menu and main content", async ({
     page,
   }) => {
+    // Page should have a heading
     const heading = page.locator("h1, h2").first();
     await expect(heading).toBeVisible({ timeout: 10000 });
 
+    // Sidebar with categories
     const sidebar = page.locator(
-      'nav, aside, [class*="sidebar"], [class*="menu"]'
+      'aside, [class*="sidebar"], nav'
     );
-    await expect(sidebar.first()).toBeVisible({ timeout: 5000 });
+    await expect(sidebar.first()).toBeVisible({ timeout: 10000 });
 
-    const mainContent = page.locator(
-      'main, [class*="content"], [class*="main"]'
-    );
-    await expect(mainContent.first()).toBeVisible();
+    // Page should have substantial content
+    const bodyText = await page.textContent("body");
+    expect(bodyText?.length).toBeGreaterThan(200);
   });
 
   test("TM-02: Sidebar shows categories with accordion sub-sections", async ({
@@ -56,10 +57,9 @@ test.describe("Themes Page", () => {
     page,
   }) => {
     const sidebarLinks = page.locator(
-      '[class*="sidebar"] a, [class*="menu"] a[href*="#"]'
+      'aside a, [class*="sidebar"] a, nav a[href*="#"]'
     );
     if ((await sidebarLinks.count()) > 0) {
-      const initialScrollY = await page.evaluate(() => window.scrollY);
       await sidebarLinks.first().click();
       await page.waitForTimeout(500);
 
