@@ -5,10 +5,6 @@ import {
   Breadcrumb,
   CardNoResults,
   Icon,
-  InputSelect,
-  InputSearchBar,
-  DropdownSection,
-  DropdownOption,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -66,33 +62,6 @@ export default function CommunityResourcesClient() {
         <PublishDropdown />
       </div>
 
-      <p className="text-neutral-700 text-sm mb-[16px]">
-        {resources.length} resultados
-      </p>
-
-      <div className="flex items-end gap-[16px] mb-[24px]">
-        <div className="w-[60%]">
-          <InputSearchBar
-            hasVoiceActionButton={false}
-            label="Pesquisar"
-            placeholder="Pesquise o nome do recurso comunitário"
-            aria-label="Pesquisar recursos comunitários"
-          />
-        </div>
-        <InputSelect
-          label=""
-          hideLabel
-          placeholder="Filtrar por estado"
-          id="filter-status"
-        >
-          <DropdownSection name="status">
-            <DropdownOption value="public">Público</DropdownOption>
-            <DropdownOption value="archived">Arquivo</DropdownOption>
-            <DropdownOption value="draft">Rascunho</DropdownOption>
-            <DropdownOption value="deleted">Excluído</DropdownOption>
-          </DropdownSection>
-        </InputSelect>
-      </div>
 
       {!isLoading && resources.length > 0 ? (
         <Table

@@ -344,12 +344,14 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                     Atualmente, não existem recursos comunitários disponíveis para este conjunto de dados.
                                 </p>
                                 <div className="flex flex-row items-center gap-16 mt-32">
-                                    <Button
-                                        variant="primary"
-                                        appearance="solid"
-                                    >
-                                        Compartilhe os seus recursos
-                                    </Button>
+                                    <Link href={`/pages/admin/community-resources/new?dataset_id=${dataset.id}`}>
+                                        <Button
+                                            variant="primary"
+                                            appearance="solid"
+                                        >
+                                            Compartilhe os seus recursos
+                                        </Button>
+                                    </Link>
                                     <Button
                                         variant="primary"
                                         appearance="outline"
@@ -370,15 +372,17 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                     <h3 className="font-medium text-neutral-900 text-base">
                                         {communityCount} {communityCount === 1 ? "RECURSO COMUNITÁRIO" : "RECURSOS COMUNITÁRIOS"}
                                     </h3>
-                                    <Button
-                                        variant="primary"
-                                        appearance="outline"
-                                        hasIcon={true}
-                                        leadingIcon="agora-line-plus-circle"
-                                        leadingIconHover="agora-solid-plus-circle"
-                                    >
-                                        Compartilhe os seus recursos
-                                    </Button>
+                                    <Link href={`/pages/admin/community-resources/new?dataset_id=${dataset.id}`}>
+                                        <Button
+                                            variant="primary"
+                                            appearance="outline"
+                                            hasIcon={true}
+                                            leadingIcon="agora-line-plus-circle"
+                                            leadingIconHover="agora-solid-plus-circle"
+                                        >
+                                            Compartilhe os seus recursos
+                                        </Button>
+                                    </Link>
                                 </div>
                                 <DatasetResourcesTable resources={communityResources} />
                             </div>
