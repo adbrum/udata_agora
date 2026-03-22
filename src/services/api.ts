@@ -2438,6 +2438,33 @@ export async function uploadAvatar(file: File): Promise<UserPublic> {
   return await res.json();
 }
 
+export async function fetchFullProfile(): Promise<UserPublic> {
+  const res = await fetch(`${API_AUTH_URL}/me/`, {
+    cache: "no-store",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to fetch profile: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function generateApiKey(): Promise<string> {
+  const res = await fetch(`${API_AUTH_URL}/me/apikey`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to generate API key: ${res.statusText}`);
+  const data = await res.json();
+  return data.apikey;
+}
+
+export async function clearApiKey(): Promise<void> {
+  const res = await fetch(`${API_AUTH_URL}/me/apikey`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error(`Failed to clear API key: ${res.statusText}`);
+}
+
 export async function deleteAccount(): Promise<void> {
   const res = await fetch(`${API_AUTH_URL}/me/`, {
     method: "DELETE",
