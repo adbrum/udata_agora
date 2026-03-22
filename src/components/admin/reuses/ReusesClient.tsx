@@ -165,7 +165,7 @@ export default function ReusesClient() {
                     <a href={`/pages/reuses/${reuse.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/me/reuses/edit?slug=${reuse.slug}`}>
+                    <a href={`/pages/admin/me/reuses/edit?id=${reuse.id}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
