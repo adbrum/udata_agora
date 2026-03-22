@@ -33,6 +33,7 @@ import {
   fetchReuseTopics,
   fetchMyDatasets,
   linkDatasetToReuse,
+  linkDataserviceToReuse,
 } from "@/services/api";
 import { Reuse, ReuseType, ReuseTopic, Dataset } from "@/types/api";
 import { formatDistanceToNow } from "date-fns";
@@ -41,7 +42,7 @@ import AuxiliarList from "@/components/admin/AuxiliarList";
 export default function ReusesEditClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const slug = searchParams.get("slug") || "";
+  const reuseId = searchParams.get("id") || searchParams.get("slug") || "";
 
   const [reuse, setReuse] = useState<Reuse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,12 +69,15 @@ export default function ReusesEditClient() {
   const [associatedDatasets, setAssociatedDatasets] = useState<Dataset[]>([]);
   const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
   const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
+  const [datasetLinkErrors, setDatasetLinkErrors] = useState<Record<number, string>>({});
+  const [apiLinks, setApiLinks] = useState([{ url: "" }]);
+  const [apiLinkErrors, setApiLinkErrors] = useState<Record<number, string>>({});
 
   useEffect(() => {
     async function loadData() {
       try {
         const [r, types, topics, datasetsRes] = await Promise.all([
-          fetchReuse(slug),
+          fetchReuse(reuseId),
           fetchReuseTypes(),
           fetchReuseTopics(),
           fetchMyDatasets(1, 50),
@@ -94,8 +98,8 @@ export default function ReusesEditClient() {
         setIsLoading(false);
       }
     }
-    if (slug) loadData();
-  }, [slug]);
+    if (reuseId) loadData();
+  }, [reuseId]);
 
   useEffect(() => {
     if (!reuse || !reuse.datasets || reuse.datasets.length === 0) return;
@@ -767,8 +771,12 @@ export default function ReusesEditClient() {
                   </DropdownSection>
                 </InputSelect>
 
+                <div className="admin-page__divider-or">
+                  <span className="admin-page__divider-or-text">ou</span>
+                </div>
+
                 {datasetLinks.map((link, index) => (
-                  <div key={`dataset-${index}`} className="mt-[16px]">
+                  <div key={`dataset-${index}`}>
                     <InputText
                       label="Link para o conjunto de dados"
                       placeholder="Insira o URL aqui"
@@ -778,10 +786,21 @@ export default function ReusesEditClient() {
                         const newLinks = [...datasetLinks];
                         newLinks[index] = { url: e.target.value };
                         setDatasetLinks(newLinks);
+                        if (e.target.value.trim()) {
+                          setDatasetLinkErrors((prev) => {
+                            const next = { ...prev };
+                            delete next[index];
+                            return next;
+                          });
+                        }
                       }}
+                      hasError={!!datasetLinkErrors[index]}
+                      hasFeedback={!!datasetLinkErrors[index]}
+                      feedbackState="danger"
+                      errorFeedbackText={datasetLinkErrors[index]}
                     />
                     {link.url.trim() && (
-                      <div className="flex justify-end mt-[8px]">
+                      <div className="flex justify-end mt-[24px]">
                         <Button
                           appearance="outline"
                           variant="danger"
@@ -807,17 +826,38 @@ export default function ReusesEditClient() {
                     hasIcon
                     leadingIcon="agora-line-plus-circle"
                     leadingIconHover="agora-solid-plus-circle"
-                    onClick={() => setDatasetLinks([...datasetLinks, { url: "" }])}
+                    onClick={() => {
+                      const lastIndex = datasetLinks.length - 1;
+                      if (!datasetLinks[lastIndex].url.trim()) {
+                        setDatasetLinkErrors((prev) => ({
+                          ...prev,
+                          [lastIndex]: "Campo obrigatório",
+                        }));
+                        return;
+                      }
+                      setDatasetLinks([...datasetLinks, { url: "" }]);
+                    }}
                   >
                     Adicionar
                   </Button>
                 </div>
 
-                <div className="admin-page__actions flex justify-end gap-[18px] mt-[24px]">
+                <div className="admin-page__actions flex justify-end gap-[18px]">
                   <Button
                     variant="primary"
                     onClick={async () => {
                       if (!reuse) return;
+                      const errors: Record<number, string> = {};
+                      datasetLinks.forEach((link, index) => {
+                        if (!link.url.trim() && datasetLinks.length > 1) {
+                          errors[index] = "Campo obrigatório";
+                        }
+                      });
+                      if (Object.keys(errors).length > 0) {
+                        setDatasetLinkErrors(errors);
+                        return;
+                      }
+                      setDatasetLinkErrors({});
                       setIsSubmitting(true);
                       setApiError(null);
                       try {
@@ -826,7 +866,7 @@ export default function ReusesEditClient() {
                             await linkDatasetToReuse(reuse.id, link.url.trim());
                           }
                         }
-                        const updated = await fetchReuse(slug);
+                        const updated = await fetchReuse(reuseId);
                         setReuse(updated);
                         setDatasetLinks([{ url: "" }]);
                         setSelectedDataset(null);
@@ -837,7 +877,7 @@ export default function ReusesEditClient() {
                         setIsSubmitting(false);
                       }
                     }}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || (!selectedDataset && !datasetLinks.some((l) => l.url.trim()))}
                   >
                     {isSubmitting ? "A guardar..." : "Guardar alterações"}
                   </Button>
@@ -852,34 +892,155 @@ export default function ReusesEditClient() {
         <Tab>
           <TabHeader>API ({reuse.dataservices?.length || 0})</TabHeader>
           <TabBody>
-            {reuse.dataservices && reuse.dataservices.length > 0 ? (
-              <div className="admin-page__body">
-                <div className="admin-page__form-area">
-                  <h2 className="font-medium text-neutral-900 text-base mb-[16px] mt-[24px]">
-                    {reuse.dataservices.length} {reuse.dataservices.length === 1 ? "API" : "APIS"}
-                  </h2>
-                  <div className="space-y-16">
+            <div className="admin-page__body mt-[24px]">
+              <div className="admin-page__form-area">
+                {reuse.dataservices && reuse.dataservices.length > 0 && (
+                  <div className="space-y-16 mb-[24px]">
                     {reuse.dataservices.map((api) => (
                       <div key={api.id} className="border border-neutral-200 rounded-4 p-16 flex items-center justify-between">
-                        <span className="text-neutral-900 text-sm">{api.title}</span>
+                        <div className="flex items-center gap-12">
+                          <Icon name="agora-line-code" className="w-[24px] h-[24px]" />
+                          <span className="text-neutral-900 font-medium">{api.title}</span>
+                        </div>
+                        <button
+                          type="button"
+                          className="border border-neutral-300 rounded-4 p-8 hover:bg-neutral-100"
+                          title="Eliminar API"
+                        >
+                          <Icon name="agora-line-trash" className="w-[20px] h-[20px]" />
+                        </button>
                       </div>
                     ))}
                   </div>
-                </div>
+                )}
+
+                <form className="admin-page__form">
+                  <InputSelect
+                    label="Pesquisar uma API"
+                    placeholder="Pesquise uma API..."
+                    id="edit-api-search"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
+                  >
+                    <DropdownSection name="apis">
+                      <DropdownOption value="">—</DropdownOption>
+                    </DropdownSection>
+                  </InputSelect>
+
+                  <div className="admin-page__divider-or">
+                    <span className="admin-page__divider-or-text">ou</span>
+                  </div>
+
+                  {apiLinks.map((link, index) => (
+                    <div key={`api-${index}`} className="mt-[16px]">
+                      <InputText
+                        label="Link para a API"
+                        placeholder="https://..."
+                        id={`edit-api-url-${index}`}
+                        value={link.url}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          const newLinks = [...apiLinks];
+                          newLinks[index] = { url: e.target.value };
+                          setApiLinks(newLinks);
+                          if (e.target.value.trim()) {
+                            setApiLinkErrors((prev) => {
+                              const next = { ...prev };
+                              delete next[index];
+                              return next;
+                            });
+                          }
+                        }}
+                        hasError={!!apiLinkErrors[index]}
+                        hasFeedback={!!apiLinkErrors[index]}
+                        feedbackState="danger"
+                        errorFeedbackText={apiLinkErrors[index]}
+                      />
+                      {link.url.trim() && (
+                        <div className="flex justify-end mt-[24px]">
+                          <Button
+                            appearance="outline"
+                            variant="danger"
+                            hasIcon
+                            leadingIcon="agora-line-trash"
+                            leadingIconHover="agora-solid-trash"
+                            onClick={() => {
+                              const newLinks = apiLinks.filter((_, i) => i !== index);
+                              setApiLinks(newLinks.length > 0 ? newLinks : [{ url: "" }]);
+                            }}
+                          >
+                            Eliminar
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  <div className="flex justify-end">
+                    <Button
+                      appearance="outline"
+                      variant="primary"
+                      hasIcon
+                      leadingIcon="agora-line-plus-circle"
+                      leadingIconHover="agora-solid-plus-circle"
+                      onClick={() => {
+                        const lastIndex = apiLinks.length - 1;
+                        if (!apiLinks[lastIndex].url.trim()) {
+                          setApiLinkErrors((prev) => ({
+                            ...prev,
+                            [lastIndex]: "Campo obrigatório",
+                          }));
+                          return;
+                        }
+                        setApiLinks([...apiLinks, { url: "" }]);
+                      }}
+                    >
+                      Adicionar
+                    </Button>
+                  </div>
+
+                  <div className="admin-page__actions flex justify-end gap-[18px] mt-[32px]">
+                    <Button
+                      variant="primary"
+                      onClick={async () => {
+                        if (!reuse) return;
+                        const errors: Record<number, string> = {};
+                        apiLinks.forEach((link, index) => {
+                          if (!link.url.trim() && apiLinks.length > 1) {
+                            errors[index] = "Campo obrigatório";
+                          }
+                        });
+                        if (Object.keys(errors).length > 0) {
+                          setApiLinkErrors(errors);
+                          return;
+                        }
+                        setApiLinkErrors({});
+                        setIsSubmitting(true);
+                        setApiError(null);
+                        try {
+                          for (const link of apiLinks) {
+                            if (link.url.trim()) {
+                              await linkDataserviceToReuse(reuse.id, link.url.trim());
+                            }
+                          }
+                          const updated = await fetchReuse(reuseId);
+                          setReuse(updated);
+                          setApiLinks([{ url: "" }]);
+                          setApiSuccess("APIs associadas com sucesso.");
+                        } catch {
+                          setApiError("Erro ao associar APIs.");
+                        } finally {
+                          setIsSubmitting(false);
+                        }
+                      }}
+                      disabled={isSubmitting || !apiLinks.some((l) => l.url.trim())}
+                    >
+                      {isSubmitting ? "A guardar..." : "Para salvaguardar"}
+                    </Button>
+                  </div>
+                </form>
               </div>
-            ) : (
-              <div className="mt-[24px]">
-                <CardNoResults
-                  position="center"
-                  icon={
-                    <Icon name="agora-line-code" className="w-12 h-12 text-primary-500 icon-xl" />
-                  }
-                  title="Sem APIs"
-                  description="Ainda não existem APIs associadas a esta reutilização."
-                  hasAnchor={false}
-                />
-              </div>
-            )}
+            </div>
           </TabBody>
         </Tab>
 

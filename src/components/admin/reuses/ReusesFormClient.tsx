@@ -28,7 +28,7 @@ import {
   suggestTags,
 } from "@/services/api";
 import type { Reuse, ReuseType, ReuseTopic, Dataset, TagSuggestion } from "@/types/api";
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { pt } from "date-fns/locale";
 import Link from "next/link";
 import AuxiliarList from "@/components/admin/AuxiliarList";
@@ -663,6 +663,10 @@ export default function ReusesFormClient({
                   </DropdownSection>
                 </InputSelect>
 
+                <div className="admin-page__divider-or">
+                  <span className="admin-page__divider-or-text">ou</span>
+                </div>
+
                 {datasetLinks.map((link, index) => (
                   <div key={`dataset-${index}`} className="mt-[16px]">
                     <InputText
@@ -679,9 +683,9 @@ export default function ReusesFormClient({
                       errorFeedbackText={datasetLinkErrors[index]}
                     />
                     {link.url.trim() && (
-                      <div className="flex justify-end mt-[8px]">
+                      <div className="flex justify-end mt-[24px]">
                         <Button
-                          appearance="link"
+                          appearance="outline"
                           variant="danger"
                           hasIcon
                           leadingIcon="agora-line-trash"
@@ -851,15 +855,13 @@ export default function ReusesFormClient({
                   category={createdReuse?.organization?.name || "Reutilização"}
                   title={<div className="underline text-xl-bold">{reuseName || "Sem título"}</div>}
                   description={
-                    reuseDescription ? (
-                      <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
-                        {reuseDescription}
-                      </p>
-                    ) : undefined
+                    <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                      {reuseDescription || ""}
+                    </p>
                   }
                   date={
                     <span className="font-[300]">
-                      Atualizado agora
+                      {`Atualizado ${format(new Date(), "dd MM yyyy", { locale: pt })}`}
                     </span>
                   }
                   links={[
@@ -884,7 +886,7 @@ export default function ReusesFormClient({
                       trailingIcon: "",
                       trailingIconHover: "",
                       trailingIconActive: "",
-                      children: "0 datasets",
+                      children: `${createdReuse?.datasets?.length || 0} datasets`,
                       title: "Datasets",
                       onClick: (e: React.MouseEvent) => e.preventDefault(),
                       className: "text-[#034AD8]",

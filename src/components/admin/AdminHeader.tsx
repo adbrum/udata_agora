@@ -1,15 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import {
   Header,
   GeneralBar,
-  Languages,
-  Language,
-  Search,
-  DefaultSearch,
-  SearchInputContainer,
-  InputSearchBar,
   Authenticated,
   AuthenticatedHeader,
   AuthenticatedBody,
@@ -21,29 +14,22 @@ import { useAuth } from "@/context/AuthContext";
 import { logout } from "@/services/api";
 
 export function AdminHeader() {
-  const [currentLang, setCurrentLang] = useState("pt");
   const { user, samlLogin } = useAuth();
+
+  const initials = user
+    ? `${(user.first_name || "")[0] || ""}${(user.last_name || "")[0] || ""}`.toUpperCase()
+    : "";
 
   return (
     <div
       className="admin-header"
       {...(user?.avatar_thumbnail
         ? { style: { "--admin-avatar-url": `url(${user.avatar_thumbnail})` } as React.CSSProperties }
-        : {})}
+        : { style: { "--admin-initials": `"${initials}"` } as React.CSSProperties })}
     >
       <Header darkMode>
         <GeneralBar aria-label="Barra de opções do administrador">
-          <Languages
-            aria-label="Selecionar idioma"
-            onChange={(lang) => {
-              setCurrentLang(lang);
-            }}
-          >
-            <Language label="Português" abbr="PT" value="pt" checked={currentLang === "pt"} />
-            <Language label="Inglês" abbr="EN" value="en" checked={currentLang === "en"} />
-            <Language label="Espanhol" abbr="ES" value="es" checked={currentLang === "es"} />
-            <Language label="Francês" abbr="FR" value="fr" checked={currentLang === "fr"} />
-          </Languages>
+          {/* Idioma oculto temporariamente */}
           {/* Pesquisar oculto temporariamente */}
           {/* <Search label="Pesquisar">
             <DefaultSearch>
@@ -53,11 +39,9 @@ export function AdminHeader() {
             </DefaultSearch>
           </Search> */}
           <Authenticated
-            avatarType="icon"
+            avatarType={user?.avatar_thumbnail ? "image" : "icon"}
             srcPath={
-              (user?.avatar_thumbnail
-                ? "agora-line-user"
-                : "agora-line-user") as unknown as undefined
+              (user?.avatar_thumbnail || "agora-line-user") as unknown as undefined
             }
             hasBadge
             badgePosition="top-right"

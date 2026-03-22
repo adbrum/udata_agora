@@ -982,13 +982,15 @@ body:has(.admin-wrapper)>div>header.sticky {
   padding: 0 112px;
 }
 
-.admin-header .authenticated-panel-menu > .agora-btn {
+.admin-header .authenticated-panel-menu>.agora-btn {
   background-color: var(--color-white);
   color: var(--color-primary-500);
   border-color: transparent;
+  margin: 8px 0;
+  font-size: 16px;
 }
 
-.admin-header[style*="--admin-avatar-url"] .authenticated-panel-menu > .agora-btn {
+.admin-header[style*="--admin-avatar-url"] .authenticated-panel-menu>.agora-btn {
   background-image: var(--admin-avatar-url);
   background-size: cover;
   background-position: center;
@@ -998,12 +1000,24 @@ body:has(.admin-wrapper)>div>header.sticky {
   overflow: hidden;
 }
 
-.admin-header[style*="--admin-avatar-url"] .authenticated-panel-menu > .agora-btn .icon {
+.admin-header[style*="--admin-avatar-url"] .authenticated-panel-menu>.agora-btn .icon {
   display: none;
 }
 
-.admin-header .authenticated-panel-menu > .agora-btn .children-wrapper {
+.admin-header .authenticated-panel-menu>.agora-btn .children-wrapper {
   color: var(--color-primary-500);
+}
+
+/* Initials avatar when no image */
+.admin-header[style*="--admin-initials"] .authenticated-panel-menu>.agora-btn .icon {
+  display: none;
+}
+
+.admin-header[style*="--admin-initials"] .authenticated-panel-menu>.agora-btn::before {
+  content: var(--admin-initials);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-primary-600);
 }
 
 /* 7.2 Side Navigation */
@@ -1651,6 +1665,11 @@ body:has(.admin-wrapper)>div>header.sticky {
   color: var(--color-neutral-900);
   white-space: nowrap;
   margin: 24px 0;
+}
+
+.admin-edit-info__activity span,
+.admin-edit-info__activity a {
+  font-size: 14px !important;
 }
 
 
