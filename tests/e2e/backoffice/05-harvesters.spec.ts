@@ -13,35 +13,35 @@ test.describe("Backoffice - Harvesters CRUD", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // H1 "Formulário de inscrição", step "Passo 1/3"
-    const heading = page.getByRole("heading", { name: /Formulário de inscrição/i }).first();
-    await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
+    // Step 1: STEP="Passo 1/3", H2s="Produtor","Descrição","Implementação"
+    const stepIndicator = page.getByText("Passo 1/3").first();
+    await expect(stepIndicator).toBeVisible({ timeout: 10000 }).catch(() => {});
 
-    // Fill name using real ID "harvester-name"
+    // Fill name using exact ID #harvester-name (label="Nome *")
     const nameInput = page.locator("#harvester-name").first();
     if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
       await nameInput.fill("E2E Test Harvester");
-    } else {
-      const nameByLabel = page.getByLabel(/Nome \*/i).first();
-      if (await nameByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await nameByLabel.fill("E2E Test Harvester");
-      }
     }
 
-    // Fill source URL using real ID "harvester-url"
+    // Fill source URL using exact ID #harvester-url (label="URL *")
     const urlInput = page.locator("#harvester-url").first();
     if (await urlInput.isVisible({ timeout: 3000 }).catch(() => false)) {
       await urlInput.fill("https://data.example.com/catalog.xml");
-    } else {
-      const urlByLabel = page.getByLabel(/URL/i).first();
-      if (await urlByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await urlByLabel.fill("https://data.example.com/catalog.xml");
-      }
     }
 
-    // Select harvest type - IsolatedSelect with id "harvester-type"
-    const typeLabel = page.getByText(/Implementação|Backend/i).first();
-    await expect(typeLabel).toBeVisible({ timeout: 3000 }).catch(() => {});
+    // Fill description using exact ID #harvester-description
+    const descInput = page.locator("#harvester-description").first();
+    if (await descInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await descInput.fill("Harvester created by E2E tests");
+    }
+
+    // Select harvest type - agora-input-select-harvester-type-control (options: DCAT,CKAN,CSW,ODS)
+    const typeSelect = page.locator("#agora-input-select-harvester-type-control").first();
+    await expect(typeSelect).toBeVisible({ timeout: 3000 }).catch(() => {});
+
+    // "Adicionar um filtro" button
+    const addFilterBtn = page.getByRole("button", { name: "Adicionar um filtro" }).first();
+    await expect(addFilterBtn).toBeVisible({ timeout: 3000 }).catch(() => {});
   });
 
   test("HV-02: Save harvester appears in listing", async ({ page }) => {
@@ -59,24 +59,29 @@ test.describe("Backoffice - Harvesters CRUD", () => {
       await urlInput.fill("https://data.example.com/catalog.xml");
     }
 
-    // Navigate through steps with "Seguinte"
+    // Navigate to step 2 with "Seguinte"
     const nextBtn = page.getByRole("button", { name: /Seguinte/i }).first();
     if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await nextBtn.click();
       await page.waitForTimeout(1000);
     }
 
-    const saveBtn = page.getByRole("button", { name: /Guardar|Criar/i }).first();
-    if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await saveBtn.click();
+    // Step 2: STEP="Passo 2/3", BTN "Ver em administração"
+    const stepIndicator = page.getByText("Passo 2/3").first();
+    await expect(stepIndicator).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+    const viewBtn = page.getByRole("button", { name: "Ver em administração" }).first();
+    if (await viewBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await viewBtn.click();
       await page.waitForTimeout(2000);
     }
 
-    // Navigate to listing - H1 "Harvesters"
+    // Navigate to listing
     await page.goto("/pages/admin/org/harvesters/");
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
+    // TABLE with headers: Nome | Estatuto | Implementação | Criado em | Última execução | Ações
     const harvesterItem = page.getByText("E2E Test Harvester Save").first();
     await expect(harvesterItem).toBeVisible({ timeout: 5000 }).catch(() => {
       // Harvester may appear with different name format
@@ -90,7 +95,6 @@ test.describe("Backoffice - Harvesters CRUD", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // H1 "Harvesters", TABLE with search placeholder "Pesquise o nome do harvester"
     const harvesterLink = page.locator('a[href*="/harvesters/"]').first();
     if (await harvesterLink.isVisible({ timeout: 5000 }).catch(() => false)) {
       await harvesterLink.click();
@@ -101,12 +105,6 @@ test.describe("Backoffice - Harvesters CRUD", () => {
       if (await urlInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await urlInput.clear();
         await urlInput.fill("https://updated.example.com/catalog.xml");
-      } else {
-        const urlByLabel = page.getByLabel(/URL/i).first();
-        if (await urlByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await urlByLabel.clear();
-          await urlByLabel.fill("https://updated.example.com/catalog.xml");
-        }
       }
 
       const saveBtn = page.getByRole("button", { name: /Guardar/i }).first();
@@ -165,7 +163,7 @@ test.describe("Backoffice - Harvesters CRUD", () => {
       }
 
       // Verify page has content
-      const pageContent = await page.locator(".admin-page").first().textContent().catch(() => "");
+      const pageContent = await page.locator("main").first().textContent().catch(() => "");
       expect((pageContent || "").length).toBeGreaterThan(50);
     }
   });

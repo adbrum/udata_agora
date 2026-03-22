@@ -14,49 +14,59 @@ test.describe("Backoffice - Organizations CRUD", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Verify the creation page loaded with H1 "Formulário de inscrição"
-      const heading = page.getByRole("heading", { name: /Formulário de inscrição/i }).first();
-      await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
+      // Step 1: STEP="Passo 1/3", search select and BTN "Criar uma organização"
+      const stepIndicator = page.getByText("Passo 1/3").first();
+      await expect(stepIndicator).toBeVisible({ timeout: 10000 }).catch(() => {});
 
-      // Verify step indicator "Passo 1/2" or "Passo 1/3"
-      const stepLabel = page.locator(".admin-page__stepper-label").first();
-      await expect(stepLabel).toBeVisible({ timeout: 5000 }).catch(() => {});
+      // Search select for existing orgs
+      const searchSelect = page.locator("#agora-input-select-search-organization-control").first();
+      await expect(searchSelect).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      // "Criar uma organização" button
+      const createOrgBtn = page.getByRole("button", { name: "Criar uma organização" }).first();
+      await expect(createOrgBtn).toBeVisible({ timeout: 5000 }).catch(() => {});
     });
 
     test("ORG-02: Fill name and description (required fields) accepted", async ({
       page,
     }) => {
       // Step 2 has the actual form fields
-      await page.goto("/pages/admin/organizations/new?step=2");
+      await page.goto("/pages/admin/organizations/new/?step=2");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Fill name using the real ID "org-name"
+      // Step 2: STEP="Passo 2/3", H2s="Descrição","Logotipo","Auxiliar"
+      const stepIndicator = page.getByText("Passo 2/3").first();
+      await expect(stepIndicator).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      // Fill name using the exact ID #org-name
       const nameInput = page.locator("#org-name").first();
       if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
         await nameInput.fill("E2E Test Organization");
-      } else {
-        const nameByLabel = page.getByLabel(/Nome \*/i).first();
-        if (await nameByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await nameByLabel.fill("E2E Test Organization");
-        }
       }
 
-      // Fill description using the real ID "org-description"
+      // Fill description using the exact ID #org-description
       const descInput = page.locator("#org-description").first();
       if (await descInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await descInput.fill("Organization created by E2E tests");
-      } else {
-        const descByLabel = page.getByLabel(/Descrição/i).first();
-        if (await descByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await descByLabel.fill("Organization created by E2E tests");
-        }
       }
 
-      // Try advancing
-      const nextBtn = page.getByRole("button", { name: /Seguinte|Criar/i }).first();
-      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await nextBtn.click();
+      // Fill acronym using the exact ID #org-acronym
+      const acronymInput = page.locator("#org-acronym").first();
+      if (await acronymInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await acronymInput.fill("E2EORG");
+      }
+
+      // Fill website using the exact ID #org-website
+      const websiteInput = page.locator("#org-website").first();
+      if (await websiteInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await websiteInput.fill("https://example.com/org");
+      }
+
+      // "Criar a organização" button
+      const createBtn = page.getByRole("button", { name: "Criar a organização" }).first();
+      if (await createBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await createBtn.click();
         await page.waitForTimeout(1000);
       }
     });
@@ -64,7 +74,7 @@ test.describe("Backoffice - Organizations CRUD", () => {
     test("ORG-03: Fill SIRET (14 digit number) validates correctly", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/organizations/new?step=2");
+      await page.goto("/pages/admin/organizations/new/?step=2");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
@@ -72,9 +82,9 @@ test.describe("Backoffice - Organizations CRUD", () => {
       if (await siretInput.isVisible({ timeout: 5000 }).catch(() => false)) {
         // Invalid SIRET
         await siretInput.fill("123");
-        const nextBtn = page.getByRole("button", { name: /Seguinte|Criar/i }).first();
-        if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await nextBtn.click();
+        const createBtn = page.getByRole("button", { name: "Criar a organização" }).first();
+        if (await createBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await createBtn.click();
           await page.waitForTimeout(500);
           const error = page.getByText(/erro|inválid/i).first();
           await expect(error).toBeVisible({ timeout: 3000 }).catch(() => {});
@@ -88,11 +98,11 @@ test.describe("Backoffice - Organizations CRUD", () => {
     test("ORG-04: Upload logo (max 500KB) shows preview", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/organizations/new?step=2");
+      await page.goto("/pages/admin/organizations/new/?step=2");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // ButtonUploader for "Ficheiros" section
+      // File upload for logo (H2="Logotipo" section)
       const fileInput = page.locator('input[type="file"]').first();
       if (await fileInput.count().then(c => c > 0).catch(() => false)) {
         const pngBuffer = Buffer.from(
@@ -116,43 +126,47 @@ test.describe("Backoffice - Organizations CRUD", () => {
     test("ORG-05: Edit profile - name, acronym, description, website and save", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/org/profile");
+      await page.goto("/pages/admin/org/profile/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // H1 is "Perfil da organização", H2 is "EDITAR ORGANIZAÇÃO"
+      // H1="Perfil da organização", H2="EDITAR ORGANIZAÇÃO"
       const heading = page.getByRole("heading", { name: /Perfil da organização/i }).first();
       await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
 
-      // Fill name using real ID "org-name"
+      const subHeading = page.getByText("EDITAR ORGANIZAÇÃO").first();
+      await expect(subHeading).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      // Fill name using exact ID #org-name
       const nameInput = page.locator("#org-name").first();
       if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
         await nameInput.clear();
         await nameInput.fill("Updated E2E Organization");
       }
 
-      // Fill acronym using real ID "org-acronym"
+      // Fill acronym using exact ID #org-acronym
       const acronymInput = page.locator("#org-acronym").first();
       if (await acronymInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await acronymInput.clear();
         await acronymInput.fill("E2EORG");
       }
 
-      // Fill description using real ID "org-description"
+      // Fill description using exact ID #org-description
       const descInput = page.locator("#org-description").first();
       if (await descInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await descInput.click();
         await descInput.fill("Updated org description");
       }
 
-      // Fill website using real ID "org-url"
+      // Fill website using exact ID #org-url (note: profile edit uses #org-url, not #org-website)
       const websiteInput = page.locator("#org-url").first();
       if (await websiteInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await websiteInput.clear();
         await websiteInput.fill("https://example.com/org");
       }
 
-      const saveBtn = page.getByRole("button", { name: /Guardar/i }).first();
+      // "Guardar" button
+      const saveBtn = page.getByRole("button", { name: "Guardar" }).first();
       if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
         await saveBtn.click();
         await page.waitForTimeout(2000);
@@ -164,15 +178,11 @@ test.describe("Backoffice - Organizations CRUD", () => {
     test("ORG-06: Members section shows list with roles (Admin, Editor, Member)", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/org/members");
+      await page.goto("/pages/admin/org/members/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // H1 is "Membros"
-      const heading = page.getByRole("heading", { name: /Membros/i }).first();
-      await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
-
-      // Table with headers: Membros | Estatuto | Membro desde | Última conexão | Ações
+      // TABLE with headers: Membros | Estatuto | Membro desde | Última conexão | Ações
       const table = page.locator("table").first();
       await expect(table).toBeVisible({ timeout: 5000 }).catch(() => {});
 
@@ -182,7 +192,7 @@ test.describe("Backoffice - Organizations CRUD", () => {
     });
 
     test("ORG-07: Add new member to organization", async ({ page }) => {
-      await page.goto("/pages/admin/org/members");
+      await page.goto("/pages/admin/org/members/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
@@ -204,7 +214,7 @@ test.describe("Backoffice - Organizations CRUD", () => {
     });
 
     test("ORG-08: Change member role", async ({ page }) => {
-      await page.goto("/pages/admin/org/members");
+      await page.goto("/pages/admin/org/members/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
@@ -223,7 +233,7 @@ test.describe("Backoffice - Organizations CRUD", () => {
     });
 
     test("ORG-09: Remove member from organization", async ({ page }) => {
-      await page.goto("/pages/admin/org/members");
+      await page.goto("/pages/admin/org/members/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
@@ -241,7 +251,7 @@ test.describe("Backoffice - Organizations CRUD", () => {
     });
 
     test("ORG-10: Accept or refuse membership requests", async ({ page }) => {
-      await page.goto("/pages/admin/org/members");
+      await page.goto("/pages/admin/org/members/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
@@ -263,7 +273,7 @@ test.describe("Backoffice - Organizations CRUD", () => {
 
   test.describe("Organization Lifecycle", () => {
     test("ORG-11: Delete org (admin only)", async ({ page }) => {
-      await page.goto("/pages/admin/org/profile");
+      await page.goto("/pages/admin/org/profile/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
@@ -292,7 +302,7 @@ test.describe("Backoffice - Organizations CRUD", () => {
       await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
 
       // Search with real placeholder
-      const searchInput = page.getByPlaceholder(/Pesquise o nome da organização/i).first();
+      const searchInput = page.getByPlaceholder(/Pesquise o nome/i).first();
       if (await searchInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await searchInput.fill("test");
         await page.waitForTimeout(1000);

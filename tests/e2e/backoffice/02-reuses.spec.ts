@@ -29,60 +29,53 @@ test.describe("Backoffice - Reuses CRUD", () => {
         if (await emptyBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
           await emptyBtn.click();
         } else {
-          await page.goto("/pages/admin/me/reuses/new");
+          await page.goto("/pages/admin/me/reuses/new/");
         }
       }
 
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Verify wizard loaded - check for H1 "Formulário de inscrição" and step indicator
+      // Step 1: H1="Formulário de inscrição", STEP="Passo 1/3"
       const heading = page.getByRole("heading", { name: /Formulário de inscrição/i }).first();
       await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
 
-      const stepIndicator = page.locator(".admin-page__stepper-label").first();
+      const stepIndicator = page.getByText("Passo 1/3").first();
       await expect(stepIndicator).toBeVisible({ timeout: 5000 }).catch(() => {});
     });
 
     test("RU-02: Step 1 - fill title, description, URL, type with validation", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/me/reuses/new");
+      await page.goto("/pages/admin/me/reuses/new/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Fill title using the real ID "reuse-title"
+      // Fill title using the exact ID #reuse-title
       const titleInput = page.locator("#reuse-title").first();
       if (await titleInput.isVisible({ timeout: 5000 }).catch(() => false)) {
         await titleInput.fill("E2E Test Reuse");
-      } else {
-        const titleByLabel = page.getByLabel(/Nome da reutilização/i).first();
-        if (await titleByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await titleByLabel.fill("E2E Test Reuse");
-        }
       }
 
-      // Fill description using the real ID "reuse-description"
+      // Fill description using the exact ID #reuse-description
       const descInput = page.locator("#reuse-description").first();
       if (await descInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await descInput.fill("Test reuse description from E2E");
-      } else {
-        const descByLabel = page.getByLabel(/Descrição/i).first();
-        if (await descByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await descByLabel.fill("Test reuse description from E2E");
-        }
       }
 
-      // Fill URL using the real ID "reuse-link"
+      // Fill URL using the exact ID #reuse-link
       const urlInput = page.locator("#reuse-link").first();
       if (await urlInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await urlInput.fill("https://example.com/reuse");
-      } else {
-        const urlByLabel = page.getByLabel(/Reutilização/i).first();
-        if (await urlByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await urlByLabel.fill("https://example.com/reuse");
-        }
       }
+
+      // Select reuse type via agora-input-select-reuse-type-control
+      const typeSelect = page.locator("#agora-input-select-reuse-type-control").first();
+      await expect(typeSelect).toBeVisible({ timeout: 3000 }).catch(() => {});
+
+      // Select producer identity via agora-input-select-producer-identity-control
+      const producerSelect = page.locator("#agora-input-select-producer-identity-control").first();
+      await expect(producerSelect).toBeVisible({ timeout: 3000 }).catch(() => {});
 
       // Validate required field behavior - try to proceed without title
       if (await titleInput.isVisible({ timeout: 1000 }).catch(() => false)) {
@@ -105,7 +98,7 @@ test.describe("Backoffice - Reuses CRUD", () => {
     test("RU-03: Step 2 - associate datasets and services", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/me/reuses/new");
+      await page.goto("/pages/admin/me/reuses/new/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
@@ -116,18 +109,24 @@ test.describe("Backoffice - Reuses CRUD", () => {
         await page.waitForTimeout(1000);
       }
 
-      // Search for datasets to associate
-      const searchInput = page.getByPlaceholder(/Pesquis/i).first();
-      if (await searchInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-        await searchInput.fill("test");
-        await page.waitForTimeout(1000);
+      // Step 2: STEP="Passo 2/3", input #reuse-dataset-url-0
+      const stepIndicator = page.getByText("Passo 2/3").first();
+      await expect(stepIndicator).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      const datasetUrlInput = page.locator("#reuse-dataset-url-0").first();
+      if (await datasetUrlInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await datasetUrlInput.fill("https://dados.gov.pt/datasets/test");
       }
+
+      // "Adicionar" button
+      const addBtn = page.getByRole("button", { name: "Adicionar" }).first();
+      await expect(addBtn).toBeVisible({ timeout: 3000 }).catch(() => {});
     });
 
     test("RU-04: Step 3 - optional cover image, save and create", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/me/reuses/new");
+      await page.goto("/pages/admin/me/reuses/new/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
@@ -139,6 +138,10 @@ test.describe("Backoffice - Reuses CRUD", () => {
           await page.waitForTimeout(1000);
         }
       }
+
+      // Step 3: STEP="Passo 3/3"
+      const stepIndicator = page.getByText("Passo 3/3").first();
+      await expect(stepIndicator).toBeVisible({ timeout: 5000 }).catch(() => {});
 
       // Upload cover image (optional)
       const fileInput = page.locator('input[type="file"]').first();
@@ -155,10 +158,16 @@ test.describe("Backoffice - Reuses CRUD", () => {
         await page.waitForTimeout(2000);
       }
 
-      // Save
-      const saveBtn = page.getByRole("button", { name: /Guardar|Criar/i }).first();
-      if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await saveBtn.click();
+      // Publish or save draft buttons
+      const publishBtn = page.getByRole("button", { name: "Publicar reutilização" }).first();
+      if (await publishBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await publishBtn.click();
+        await page.waitForTimeout(2000);
+      }
+
+      const draftBtn = page.getByRole("button", { name: "Salvar rascunho" }).first();
+      if (await draftBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await draftBtn.click();
         await page.waitForTimeout(2000);
       }
     });
@@ -181,12 +190,6 @@ test.describe("Backoffice - Reuses CRUD", () => {
         if (await titleInput.isVisible({ timeout: 5000 }).catch(() => false)) {
           await titleInput.clear();
           await titleInput.fill("Updated E2E Reuse");
-        } else {
-          const titleByLabel = page.getByLabel(/Nome da reutilização/i).first();
-          if (await titleByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-            await titleByLabel.clear();
-            await titleByLabel.fill("Updated E2E Reuse");
-          }
         }
 
         const urlInput = page.locator("#reuse-link").first();
@@ -252,14 +255,14 @@ test.describe("Backoffice - Reuses CRUD", () => {
       await page.goto("/pages/admin/org/reuses/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
-      const orgContent = await page.locator("main, .admin-page").first().textContent().catch(() => "");
+      const orgContent = await page.locator("main").first().textContent().catch(() => "");
       expect((orgContent || "").length).toBeGreaterThan(10);
 
       // System
       await page.goto("/pages/admin/system/reuses/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
-      const systemContent = await page.locator("main, .admin-page").first().textContent().catch(() => "");
+      const systemContent = await page.locator("main").first().textContent().catch(() => "");
       expect((systemContent || "").length).toBeGreaterThan(10);
     });
 
@@ -301,7 +304,7 @@ test.describe("Backoffice - Reuses CRUD", () => {
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        const publishBtn = page.getByRole("button", { name: /Publicar/i }).first();
+        const publishBtn = page.getByRole("button", { name: /Publicar reutilização/i }).first();
         if (await publishBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
           await publishBtn.click();
           await page.waitForTimeout(2000);

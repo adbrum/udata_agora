@@ -13,12 +13,12 @@ test.describe("Backoffice - Posts CRUD", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // H1 "Artigos", Button "Criar um artigo"
+    // Posts listing: BTN "Criar um artigo", TABLE headers=[Título | Status | Criado em | Atualizado em | Ação]
     const heading = page.getByRole("heading", { name: /Artigos/i }).first();
     await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
 
     // Navigate to create new post via "Criar um artigo" button
-    const createBtn = page.getByText("Criar um artigo").first();
+    const createBtn = page.getByRole("button", { name: "Criar um artigo" }).first();
     const createLink = page.locator('a[href*="/posts/new"]').first();
     if (await createBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await createBtn.click();
@@ -30,8 +30,11 @@ test.describe("Backoffice - Posts CRUD", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // H1 "Formulário de inscrição", step "Passo 1 - Descreva seu item"
-    // Try to advance without filling required fields - should show "Campo obrigatório"
+    // Step 1: STEP="Passo 1/2"
+    const stepIndicator = page.getByText("Passo 1/2").first();
+    await expect(stepIndicator).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+    // Try to advance without filling required fields - should show validation
     const nextBtn = page.getByRole("button", { name: /Seguinte/i }).first();
     if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await nextBtn.click();
@@ -41,16 +44,21 @@ test.describe("Backoffice - Posts CRUD", () => {
       await expect(error).toBeVisible({ timeout: 3000 }).catch(() => {});
     }
 
-    // Fill title using real ID "article-title"
+    // Fill title using exact ID #article-title (label="Título do artigo *")
     const nameInput = page.locator("#article-title").first();
     if (await nameInput.isVisible({ timeout: 3000 }).catch(() => false)) {
       await nameInput.fill("E2E Test Post");
-    } else {
-      const nameByLabel = page.getByLabel(/Título do artigo/i).first();
-      if (await nameByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await nameByLabel.fill("E2E Test Post");
-      }
     }
+
+    // Fill header using exact ID #article-header (label="Cabeçalho *") - REQUIRED
+    const headerInput = page.locator("#article-header").first();
+    if (await headerInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await headerInput.fill("E2E Test Post Header");
+    }
+
+    // Content type radio: #content-html / #content-markdown
+    const htmlRadio = page.locator("#content-html").first();
+    await expect(htmlRadio).toBeVisible({ timeout: 3000 }).catch(() => {});
   });
 
   test("PO-02: Post with date is published; without date is draft", async ({
@@ -60,26 +68,16 @@ test.describe("Backoffice - Posts CRUD", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // Fill title (required) using real ID
+    // Fill title (required) using exact ID #article-title
     const nameInput = page.locator("#article-title").first();
     if (await nameInput.isVisible({ timeout: 3000 }).catch(() => false)) {
       await nameInput.fill("E2E Post Date Test");
-    } else {
-      const nameByLabel = page.getByLabel(/Título do artigo/i).first();
-      if (await nameByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await nameByLabel.fill("E2E Post Date Test");
-      }
     }
 
-    // Fill header (required) using real ID "article-header"
+    // Fill header (required) using exact ID #article-header
     const headerInput = page.locator("#article-header").first();
     if (await headerInput.isVisible({ timeout: 3000 }).catch(() => false)) {
       await headerInput.fill("E2E Post Header");
-    } else {
-      const headerByLabel = page.getByLabel(/Cabeçalho/i).first();
-      if (await headerByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await headerByLabel.fill("E2E Post Header");
-      }
     }
 
     // Advance to step 2
@@ -89,7 +87,16 @@ test.describe("Backoffice - Posts CRUD", () => {
       await page.waitForTimeout(1000);
     }
 
-    const saveBtn = page.getByRole("button", { name: /Guardar/i }).first();
+    // Step 2: STEP="Passo 2/2", #article-content (textarea, label="Contente *"), BTN "Guardar"
+    const stepIndicator = page.getByText("Passo 2/2").first();
+    await expect(stepIndicator).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+    const contentInput = page.locator("#article-content").first();
+    if (await contentInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await contentInput.fill("E2E Post Content");
+    }
+
+    const saveBtn = page.getByRole("button", { name: "Guardar" }).first();
     if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await saveBtn.click();
       await page.waitForTimeout(2000);
@@ -101,7 +108,7 @@ test.describe("Backoffice - Posts CRUD", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // ButtonUploader for "Ficheiros" section
+    // File upload in step 1
     const fileInput = page.locator('input[type="file"]').first();
     if (await fileInput.count().then(c => c > 0).catch(() => false)) {
       const pngBuffer = Buffer.from(
@@ -136,15 +143,9 @@ test.describe("Backoffice - Posts CRUD", () => {
       if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
         await nameInput.clear();
         await nameInput.fill("Updated E2E Post");
-      } else {
-        const nameByLabel = page.getByLabel(/Título do artigo/i).first();
-        if (await nameByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await nameByLabel.clear();
-          await nameByLabel.fill("Updated E2E Post");
-        }
       }
 
-      const saveBtn = page.getByRole("button", { name: /Guardar/i }).first();
+      const saveBtn = page.getByRole("button", { name: "Guardar" }).first();
       if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
         await saveBtn.click();
         await page.waitForTimeout(2000);
@@ -190,9 +191,12 @@ test.describe("Backoffice - Posts CRUD", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // H1 "Artigos", search placeholder "Pesquise o título do artigo"
     const heading = page.getByRole("heading", { name: /Artigos/i }).first();
     await expect(heading).toBeVisible({ timeout: 10000 });
+
+    // "Criar um artigo" button
+    const createBtn = page.getByRole("button", { name: "Criar um artigo" }).first();
+    await expect(createBtn).toBeVisible({ timeout: 5000 }).catch(() => {});
 
     // Search
     const searchInput = page.getByPlaceholder(/Pesquise o título do artigo/i).first();

@@ -12,25 +12,21 @@ test.describe("Backoffice - Navigation and UI", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Admin sidebar - uses nav.admin-side-nav with Agora Sidebar component
-      const sidebar = page.locator("nav.admin-side-nav").first();
-      await expect(sidebar).toBeVisible({ timeout: 10000 });
-
-      // "Meu perfil" group label should be visible
-      const profileGroup = page.getByText("Meu perfil").first();
-      await expect(profileGroup).toBeVisible({ timeout: 5000 }).catch(() => {});
-
-      // Check for sidebar child links - "Conjunto de dados"
-      const datasetsLink = page.locator('a[href*="/admin/me/datasets"]').first();
+      // Sidebar links: "Conjunto de dados", "Reutilizações", "Recursos comunitários", "Perfil", "Estatísticas"
+      const datasetsLink = page.getByText("Conjunto de dados").first();
       await expect(datasetsLink).toBeVisible({ timeout: 5000 }).catch(() => {});
 
-      // "Reutilizações" link
-      const reusesLink = page.locator('a[href*="/admin/me/reuses"]').first();
+      const reusesLink = page.getByText("Reutilizações").first();
       await expect(reusesLink).toBeVisible({ timeout: 5000 }).catch(() => {});
 
-      // "Ir para dados.gov" home link
-      const homeLink = page.getByText("Ir para dados.gov").first();
-      await expect(homeLink).toBeVisible({ timeout: 5000 }).catch(() => {});
+      const communityLink = page.getByText("Recursos comunitários").first();
+      await expect(communityLink).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      const profileLink = page.getByText("Perfil").first();
+      await expect(profileLink).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      const statsLink = page.getByText("Estatísticas").first();
+      await expect(statsLink).toBeVisible({ timeout: 5000 }).catch(() => {});
 
       // Test as editor
       await loginAsEditor(page);
@@ -39,8 +35,8 @@ test.describe("Backoffice - Navigation and UI", () => {
       await page.waitForTimeout(2000);
 
       // Editor should see personal section too
-      const editorProfileGroup = page.getByText("Meu perfil").first();
-      await expect(editorProfileGroup).toBeVisible({ timeout: 5000 }).catch(() => {});
+      const editorDatasetsLink = page.getByText("Conjunto de dados").first();
+      await expect(editorDatasetsLink).toBeVisible({ timeout: 5000 }).catch(() => {});
     });
   });
 
@@ -54,14 +50,9 @@ test.describe("Backoffice - Navigation and UI", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // AdminHeader rendered with admin-header class
-      const header = page.locator(".admin-header, header").first();
+      // Header rendered
+      const header = page.locator("header").first();
       await expect(header).toBeVisible({ timeout: 10000 });
-
-      // User authentication area - shows user name with dropdown containing
-      // "O meu perfil", "Eliminar conta", "Terminar sessão"
-      const authenticatedArea = page.locator(".admin-header").first();
-      await expect(authenticatedArea).toBeVisible({ timeout: 5000 }).catch(() => {});
     });
   });
 
@@ -77,7 +68,7 @@ test.describe("Backoffice - Navigation and UI", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // PublishDropdown button text is "Publicar dados.gov"
+      // BTN "Publicar dados.gov"
       const publishBtn = page.getByText("Publicar dados.gov").first();
       if (await publishBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
         await publishBtn.click();
@@ -116,7 +107,7 @@ test.describe("Backoffice - Navigation and UI", () => {
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        // Agora Table pagination - "Linhas por página"
+        // Pagination - "Linhas por página 5"
         const paginationText = page.getByText(/Linhas por página/i).first();
         if (await paginationText.isVisible({ timeout: 3000 }).catch(() => false)) {
           // Pagination exists on this page
@@ -146,16 +137,15 @@ test.describe("Backoffice - Navigation and UI", () => {
       }
     });
 
-    test("UI-06: Sort by column headers (title, date, views)", async ({
+    test("UI-06: Sort by column headers (title, date)", async ({
       page,
     }) => {
       await page.goto("/pages/admin/system/datasets/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Click on sortable column headers
-      // Real headers: "Título do conjunto de dad", "Criado em", "Modificado em"
-      const titleHeader = page.getByText("Título do conjunto de dad").first();
+      // Sort buttons: "Título do conjunto de dados", "Criado em", "Modificado em"
+      const titleHeader = page.getByText("Título do conjunto de dados").first();
       if (await titleHeader.isVisible({ timeout: 3000 }).catch(() => false)) {
         await titleHeader.click();
         await page.waitForTimeout(1000);
@@ -183,21 +173,21 @@ test.describe("Backoffice - Navigation and UI", () => {
       await loginAsAdmin(page);
     });
 
-    test("UI-07: Statistics pages load (personal, org, system)", async ({
+    test("UI-07: Statistics pages load (personal, org)", async ({
       page,
     }) => {
-      // Personal stats - H1 "Estatísticas"
-      await page.goto("/pages/admin/statistics");
+      // Personal stats - H1="Estatísticas"
+      await page.goto("/pages/admin/statistics/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
-      const personalHeading = page.getByRole("heading", { name: /Estatísticas/i }).first();
+      const personalHeading = page.getByRole("heading", { name: "Estatísticas" }).first();
       await expect(personalHeading).toBeVisible({ timeout: 10000 }).catch(() => {});
 
-      // Org stats - H1 "Estatísticas da organização"
-      await page.goto("/pages/admin/org/statistics");
+      // Org stats - H1="Estatísticas da organização"
+      await page.goto("/pages/admin/org/statistics/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
-      const orgHeading = page.getByRole("heading", { name: /Estatísticas/i }).first();
+      const orgHeading = page.getByRole("heading", { name: /Estatísticas da organização/i }).first();
       await expect(orgHeading).toBeVisible({ timeout: 10000 }).catch(() => {});
     });
 
@@ -218,7 +208,7 @@ test.describe("Backoffice - Navigation and UI", () => {
         await page.waitForTimeout(2000);
 
         // Verify discussion detail page loaded
-        const detailContent = await page.locator(".admin-page").first().textContent().catch(() => "");
+        const detailContent = await page.locator("main").first().textContent().catch(() => "");
         expect((detailContent || "").length).toBeGreaterThan(50);
       }
     });

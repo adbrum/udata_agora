@@ -11,29 +11,20 @@ test.describe("Backoffice - Integration (Backoffice to Public Portal)", () => {
   }) => {
     const uniqueTitle = `Integration Test Dataset ${Date.now()}`;
     // Create dataset in backoffice - go directly to step 2
-    await page.goto("/pages/admin/me/datasets/new?step=2");
+    await page.goto("/pages/admin/me/datasets/new/?step=2");
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // Fill title
-    const titleInput = page.getByLabel(/Título/i).first();
+    // Fill title using exact ID #api-name
+    const titleInput = page.locator("#api-name").first();
     if (await titleInput.isVisible({ timeout: 5000 }).catch(() => false)) {
       await titleInput.fill(uniqueTitle);
-    } else {
-      const titleById = page.locator("#dataset-title").first();
-      if (await titleById.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await titleById.fill(uniqueTitle);
-      }
     }
 
-    const descInput = page.getByLabel(/Descrição/i).first();
+    // Fill description using exact ID #dataset-description
+    const descInput = page.locator("#dataset-description").first();
     if (await descInput.isVisible({ timeout: 3000 }).catch(() => false)) {
       await descInput.fill("Integration test dataset description");
-    } else {
-      const descById = page.locator("#dataset-description").first();
-      if (await descById.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await descById.fill("Integration test dataset description");
-      }
     }
 
     // Navigate through steps
@@ -45,7 +36,7 @@ test.describe("Backoffice - Integration (Backoffice to Public Portal)", () => {
       }
     }
 
-    const publishBtn = page.getByRole("button", { name: /Publique o conjunto de dados|Publicar/i }).first();
+    const publishBtn = page.getByRole("button", { name: "Publique o conjunto de dados" }).first();
     if (await publishBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
       await publishBtn.click();
       await page.waitForTimeout(3000);
@@ -69,19 +60,20 @@ test.describe("Backoffice - Integration (Backoffice to Public Portal)", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+    const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
     if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
       await editLink.click();
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      const titleInput = page.getByLabel(/Título/i).first();
+      // Edit title using exact ID #edit-title
+      const titleInput = page.locator("#edit-title").first();
       if (await titleInput.isVisible({ timeout: 5000 }).catch(() => false)) {
         await titleInput.clear();
         await titleInput.fill(updatedTitle);
       }
 
-      const saveBtn = page.getByRole("button", { name: /Guardar/i }).first();
+      const saveBtn = page.getByRole("button", { name: "Guardar alterações" }).first();
       if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
         await saveBtn.click();
         await page.waitForTimeout(2000);
@@ -105,11 +97,18 @@ test.describe("Backoffice - Integration (Backoffice to Public Portal)", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+    const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
     if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
       await editLink.click();
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
+
+      // Click on "Ficheiros (N)" tab
+      const resourcesTab = page.getByText(/Ficheiros \(/).first();
+      if (await resourcesTab.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await resourcesTab.click();
+        await page.waitForTimeout(1000);
+      }
 
       // Upload CSV
       const fileInput = page.locator('input[type="file"]').first();
@@ -123,7 +122,7 @@ test.describe("Backoffice - Integration (Backoffice to Public Portal)", () => {
         await page.waitForTimeout(3000);
       }
 
-      const saveBtn = page.getByRole("button", { name: /Guardar/i }).first();
+      const saveBtn = page.getByRole("button", { name: "Guardar alterações" }).first();
       if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
         await saveBtn.click();
         await page.waitForTimeout(2000);
@@ -141,13 +140,14 @@ test.describe("Backoffice - Integration (Backoffice to Public Portal)", () => {
     // Get title of first dataset from table
     const firstDatasetTitle = await page.locator("table a").first().textContent().catch(() => "");
 
-    const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+    const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
     if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
       await editLink.click();
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      const deleteBtn = page.getByRole("button", { name: /Eliminar/i }).first();
+      // "Exclua o conjunto de dados" button
+      const deleteBtn = page.getByRole("button", { name: "Exclua o conjunto de dados" }).first();
       if (await deleteBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
         await deleteBtn.click();
         await page.waitForTimeout(500);
@@ -241,23 +241,27 @@ test.describe("Backoffice - Integration (Backoffice to Public Portal)", () => {
     page,
   }) => {
     const uniqueTitle = `Integration Reuse ${Date.now()}`;
-    await page.goto("/pages/admin/me/reuses/new");
+    await page.goto("/pages/admin/me/reuses/new/");
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // Fill title using real ID "reuse-title"
+    // Fill title using exact ID #reuse-title
     const titleInput = page.locator("#reuse-title").first();
     if (await titleInput.isVisible({ timeout: 5000 }).catch(() => false)) {
       await titleInput.fill(uniqueTitle);
-    } else {
-      const titleByLabel = page.getByLabel(/Nome da reutilização/i).first();
-      if (await titleByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await titleByLabel.fill(uniqueTitle);
+    }
+
+    // Navigate through steps and publish
+    for (let i = 0; i < 2; i++) {
+      const nextBtn = page.getByRole("button", { name: /Seguinte/i }).first();
+      if (await nextBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await nextBtn.click();
+        await page.waitForTimeout(1000);
       }
     }
 
-    // Save and publish
-    const publishBtn = page.getByRole("button", { name: /Publicar|Criar/i }).first();
+    // "Publicar reutilização" button
+    const publishBtn = page.getByRole("button", { name: "Publicar reutilização" }).first();
     if (await publishBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
       await publishBtn.click();
       await page.waitForTimeout(3000);
@@ -271,35 +275,26 @@ test.describe("Backoffice - Integration (Backoffice to Public Portal)", () => {
 
   test("IA-10: Create org is visible on portal", async ({ page }) => {
     const uniqueName = `Integration Org ${Date.now()}`;
-    await page.goto("/pages/admin/organizations/new?step=2");
+    await page.goto("/pages/admin/organizations/new/?step=2");
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // Fill name using real ID "org-name"
+    // Fill name using exact ID #org-name
     const nameInput = page.locator("#org-name").first();
     if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
       await nameInput.fill(uniqueName);
-    } else {
-      const nameByLabel = page.getByLabel(/Nome \*/i).first();
-      if (await nameByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await nameByLabel.fill(uniqueName);
-      }
     }
 
-    // Fill description using real ID "org-description"
+    // Fill description using exact ID #org-description
     const descInput = page.locator("#org-description").first();
     if (await descInput.isVisible({ timeout: 3000 }).catch(() => false)) {
       await descInput.fill("Integration test org");
-    } else {
-      const descByLabel = page.getByLabel(/Descrição/i).first();
-      if (await descByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await descByLabel.fill("Integration test org");
-      }
     }
 
-    const saveBtn = page.getByRole("button", { name: /Guardar|Criar|Seguinte/i }).first();
-    if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await saveBtn.click();
+    // "Criar a organização" button
+    const createBtn = page.getByRole("button", { name: "Criar a organização" }).first();
+    if (await createBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await createBtn.click();
       await page.waitForTimeout(3000);
     }
 
@@ -316,18 +311,20 @@ test.describe("Backoffice - Integration (Backoffice to Public Portal)", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    const titleInput = page.getByLabel(/Título/i).first();
+    // Fill title using exact ID #api-name
+    const titleInput = page.locator("#api-name").first();
     if (await titleInput.isVisible({ timeout: 5000 }).catch(() => false)) {
       await titleInput.fill(`Integration Data Service ${Date.now()}`);
     }
 
-    const descInput = page.getByLabel(/Descrição/i).first();
+    // Fill description using exact ID #api-description
+    const descInput = page.locator("#api-description").first();
     if (await descInput.isVisible({ timeout: 3000 }).catch(() => false)) {
       await descInput.fill("Integration test data service");
     }
 
     // Navigate and save
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       const nextBtn = page.getByRole("button", { name: /Seguinte/i }).first();
       if (await nextBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
         await nextBtn.click();
@@ -335,9 +332,10 @@ test.describe("Backoffice - Integration (Backoffice to Public Portal)", () => {
       }
     }
 
-    const saveBtn = page.getByRole("button", { name: /Guardar|Criar/i }).first();
-    if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await saveBtn.click();
+    // "Publicar API" button
+    const publishBtn = page.getByRole("button", { name: "Publicar API" }).first();
+    if (await publishBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await publishBtn.click();
       await page.waitForTimeout(3000);
     }
   });

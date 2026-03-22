@@ -13,11 +13,11 @@ test.describe("Backoffice - Topics CRUD", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // H1 "Temas", TABLE with headers: Nome | Criado em | Conjuntos de dados | Reutilizar
-    const heading = page.getByRole("heading", { name: /Temas/i }).first();
-    await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
+    // TABLE with headers: Nome | Criado em | Conjuntos de dados | Reutilizar
+    const table = page.locator("table").first();
+    await expect(table).toBeVisible({ timeout: 10000 }).catch(() => {});
 
-    // Navigate to create - search placeholder "Pesquise o nome do tema"
+    // Navigate to create
     const createLink = page.locator('a[href*="/topics/new"]').first();
     const createBtn = page.getByRole("button", { name: /Criar|Novo/i }).first();
     if (await createLink.isVisible({ timeout: 3000 }).catch(() => false)) {

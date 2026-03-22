@@ -32,23 +32,23 @@ test.describe("Backoffice - Datasets CRUD", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Wizard step indicator: "Passo X/Y" text in stepper label
-      const stepIndicator = page.locator(".admin-page__stepper-label").first();
+      // Step 1: H1="Publique em dados.gov", H2="Tipo de publicação", STEP="Passo 1/4"
+      const stepIndicator = page.getByText("Passo 1/4").first();
       await expect(stepIndicator).toBeVisible({ timeout: 10000 }).catch(() => {
         // Wizard step text may differ
       });
     });
 
     test("DS-02: Step 1 - choose organization", async ({ page }) => {
-      await page.goto("/pages/admin/me/datasets/new?step=1");
+      await page.goto("/pages/admin/me/datasets/new/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Step 1 shows "Tipo de publicacao" heading and "Comece a publicar" button
+      // Step 1 shows H1="Publique em dados.gov", H2="Tipo de publicação" and BTN "Comece a publicar"
       const heading = page.getByText("Tipo de publicação").first();
       await expect(heading).toBeVisible({ timeout: 5000 }).catch(() => {});
 
-      const startBtn = page.getByText("Comece a publicar").first();
+      const startBtn = page.getByRole("button", { name: "Comece a publicar" }).first();
       if (await startBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
         await startBtn.click();
         await page.waitForLoadState("networkidle");
@@ -65,36 +65,25 @@ test.describe("Backoffice - Datasets CRUD", () => {
     test("DS-03: Step 2 - fill title, description, frequency, temporal period and save as draft", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/me/datasets/new?step=2");
+      await page.goto("/pages/admin/me/datasets/new/?step=2");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Fill title using the label or ID
-      const titleInput = page.getByLabel(/Título/i).first();
+      // Fill title using the exact ID #api-name
+      const titleInput = page.locator("#api-name").first();
       if (await titleInput.isVisible({ timeout: 5000 }).catch(() => false)) {
         await titleInput.fill("E2E Test Dataset");
-      } else {
-        // Try by ID used in DatasetsAdminClient
-        const titleById = page.locator("#dataset-title").first();
-        if (await titleById.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await titleById.fill("E2E Test Dataset");
-        }
       }
 
-      // Fill description
-      const descInput = page.getByLabel(/Descrição/i).first();
+      // Fill description using the exact ID #dataset-description
+      const descInput = page.locator("#dataset-description").first();
       if (await descInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await descInput.fill("This is a test dataset created by E2E tests");
-      } else {
-        const descById = page.locator("#dataset-description").first();
-        if (await descById.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await descById.fill("This is a test dataset created by E2E tests");
-        }
       }
 
-      // Frequency - uses IsolatedSelect with label "Frequencia de atualizacao"
-      const frequencyLabel = page.getByText(/Frequência de atualização/i).first();
-      await expect(frequencyLabel).toBeVisible({ timeout: 5000 }).catch(() => {});
+      // Frequency - uses IsolatedSelect with control id
+      const frequencySelect = page.locator("#agora-input-select-dataset-frequency-control").first();
+      await expect(frequencySelect).toBeVisible({ timeout: 5000 }).catch(() => {});
 
       // Click "Seguinte" to advance
       const nextBtn = page.getByRole("button", { name: /Seguinte/i }).first();
@@ -107,15 +96,22 @@ test.describe("Backoffice - Datasets CRUD", () => {
     test("DS-04: Step 3 - upload file (CSV/Excel) appears in resource list", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/me/datasets/new?step=3");
+      await page.goto("/pages/admin/me/datasets/new/?step=3");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Step 3 shows "Ficheiros" section with ButtonUploader
-      const filesSection = page.getByText(/Ficheiros/i).first();
+      // Step 3 shows H2="FICHEIROS" section with ButtonUploader
+      const filesSection = page.getByText("FICHEIROS").first();
       await expect(filesSection).toBeVisible({ timeout: 10000 }).catch(() => {});
 
-      // Upload file via the file input (ButtonUploader renders input[type="file"])
+      // Step indicator
+      const stepIndicator = page.getByText("Passo 3/4").first();
+      await expect(stepIndicator).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      // Upload file via the file input (ButtonUploader with class "agora-button-file-uploader")
+      const fileUploadBtn = page.getByRole("button", { name: /Selecione ou arraste o ficheiro/i }).first();
+      await expect(fileUploadBtn).toBeVisible({ timeout: 5000 }).catch(() => {});
+
       const fileInput = page.locator('input[type="file"]').first();
       if (await fileInput.count().then(c => c > 0).catch(() => false)) {
         const csvContent = "col1,col2\nval1,val2\n";
@@ -132,18 +128,21 @@ test.describe("Backoffice - Datasets CRUD", () => {
     test("DS-05: Step 4 - click Publicar to make dataset public", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/me/datasets/new?step=4");
+      await page.goto("/pages/admin/me/datasets/new/?step=4");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Step 4 shows publish and draft buttons
-      const publishBtn = page.getByRole("button", { name: /Publique o conjunto de dados|Publicar/i }).first();
+      // Step 4 shows "Passo 4/4" and publish/draft buttons
+      const stepIndicator = page.getByText("Passo 4/4").first();
+      await expect(stepIndicator).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      const publishBtn = page.getByRole("button", { name: "Publique o conjunto de dados" }).first();
       if (await publishBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
         await publishBtn.click();
         await page.waitForTimeout(2000);
       }
 
-      const draftBtn = page.getByRole("button", { name: /Salvar rascunho|Rascunho/i }).first();
+      const draftBtn = page.getByRole("button", { name: "Salvar rascunho" }).first();
       await expect(draftBtn).toBeVisible({ timeout: 5000 }).catch(() => {
         // Draft button may not be visible after publish
       });
@@ -152,21 +151,17 @@ test.describe("Backoffice - Datasets CRUD", () => {
     test("DS-06: Create dataset without org (individual user)", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/me/datasets/new?step=2");
+      await page.goto("/pages/admin/me/datasets/new/?step=2");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
       // In step 2, producer dropdown allows "Eu proprio" selection
-      const producerSection = page.getByText(/Produtor/i).first();
+      const producerSection = page.getByText("Produtor").first();
       await expect(producerSection).toBeVisible({ timeout: 5000 }).catch(() => {});
 
-      // The form should be accessible for individual users
-      const titleInput = page.getByLabel(/Título/i).first();
-      await expect(titleInput).toBeVisible({ timeout: 5000 }).catch(() => {
-        // Title input may use a different label
-        const titleById = page.locator("#dataset-title");
-        expect(titleById).toBeVisible({ timeout: 5000 }).catch(() => {});
-      });
+      // The form should be accessible for individual users - title input is #api-name
+      const titleInput = page.locator("#api-name").first();
+      await expect(titleInput).toBeVisible({ timeout: 5000 }).catch(() => {});
     });
   });
 
@@ -178,16 +173,22 @@ test.describe("Backoffice - Datasets CRUD", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Click on first dataset edit link (pencil icon link in the table)
-      const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+      // Click on first dataset edit link
+      const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
       if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await editLink.click();
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        // Verify the edit page loaded with content
-        const mainContent = await page.locator("main, .admin-page").first().textContent().catch(() => "");
-        expect((mainContent || "").length).toBeGreaterThan(50);
+        // Verify the edit page has 3 tabs: "Metadados", "Ficheiros (N)", "Discussões (N)"
+        const metadadosTab = page.getByText("Metadados").first();
+        await expect(metadadosTab).toBeVisible({ timeout: 5000 });
+
+        const ficheirosTab = page.getByText(/Ficheiros/).first();
+        await expect(ficheirosTab).toBeVisible({ timeout: 5000 });
+
+        const discussoesTab = page.getByText(/Discussões/).first();
+        await expect(discussoesTab).toBeVisible({ timeout: 5000 });
       } else {
         // If no datasets, the empty state should show
         const emptyState = page.getByText(/Publique no portal/i).first();
@@ -202,25 +203,28 @@ test.describe("Backoffice - Datasets CRUD", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+      const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
       if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await editLink.click();
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        const titleInput = page.getByLabel(/Título/i).first();
+        // Edit title using exact ID #edit-title
+        const titleInput = page.locator("#edit-title").first();
         if (await titleInput.isVisible({ timeout: 5000 }).catch(() => false)) {
           await titleInput.clear();
           await titleInput.fill("Updated E2E Dataset Title");
         }
 
-        const descInput = page.getByLabel(/Descrição/i).first();
+        // Edit description using exact ID #edit-description
+        const descInput = page.locator("#edit-description").first();
         if (await descInput.isVisible({ timeout: 3000 }).catch(() => false)) {
           await descInput.click();
           await descInput.fill("Updated description via E2E test");
         }
 
-        const saveBtn = page.getByRole("button", { name: /Guardar/i }).first();
+        // Save using "Guardar alterações" button
+        const saveBtn = page.getByRole("button", { name: "Guardar alterações" }).first();
         if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
           await saveBtn.click();
           await page.waitForTimeout(2000);
@@ -243,27 +247,36 @@ test.describe("Backoffice - Datasets CRUD", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+      const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
       if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await editLink.click();
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        // Acronym (Sigla)
-        const acronymInput = page.getByLabel(/Sigla/i).first();
+        // Acronym using exact ID #edit-acronym
+        const acronymInput = page.locator("#edit-acronym").first();
         if (await acronymInput.isVisible({ timeout: 3000 }).catch(() => false)) {
           await acronymInput.clear();
           await acronymInput.fill("E2ETEST");
         }
 
-        // License and Frequency are IsolatedSelect components
-        const licenseLabel = page.getByText(/Licença/i).first();
-        await expect(licenseLabel).toBeVisible({ timeout: 3000 }).catch(() => {});
+        // Short description using exact ID #edit-short-description
+        const shortDescInput = page.locator("#edit-short-description").first();
+        if (await shortDescInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await shortDescInput.clear();
+          await shortDescInput.fill("Short description for E2E test");
+        }
 
-        const frequencyLabel = page.getByText(/Frequência/i).first();
-        await expect(frequencyLabel).toBeVisible({ timeout: 3000 }).catch(() => {});
+        // License select control
+        const licenseSelect = page.locator("#agora-input-select-edit-license-control").first();
+        await expect(licenseSelect).toBeVisible({ timeout: 3000 }).catch(() => {});
 
-        const saveBtn = page.getByRole("button", { name: /Guardar/i }).first();
+        // Frequency select control
+        const frequencySelect = page.locator("#agora-input-select-edit-frequency-control").first();
+        await expect(frequencySelect).toBeVisible({ timeout: 3000 }).catch(() => {});
+
+        // Save using "Guardar alterações" button
+        const saveBtn = page.getByRole("button", { name: "Guardar alterações" }).first();
         if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
           await saveBtn.click();
           await page.waitForTimeout(2000);
@@ -280,20 +293,20 @@ test.describe("Backoffice - Datasets CRUD", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+      const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
       if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await editLink.click();
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        // Look for resources section or tab
-        const resourcesSection = page.getByText(/Ficheiros/i).first();
-        if (await resourcesSection.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await resourcesSection.click().catch(() => {});
+        // Click on "Ficheiros (N)" tab
+        const resourcesTab = page.getByText(/Ficheiros \(/).first();
+        if (await resourcesTab.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await resourcesTab.click();
           await page.waitForTimeout(1000);
         }
 
-        // Upload file
+        // Upload file via "Selecione ou arraste o ficheiro" button
         const fileInput = page.locator('input[type="file"]').first();
         if (await fileInput.count().then(c => c > 0).catch(() => false)) {
           const csvContent = "id,name\n1,test\n";
@@ -314,16 +327,16 @@ test.describe("Backoffice - Datasets CRUD", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+      const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
       if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await editLink.click();
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        // Navigate to resources
-        const resourcesSection = page.getByText(/Ficheiros/i).first();
-        if (await resourcesSection.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await resourcesSection.click().catch(() => {});
+        // Navigate to resources tab
+        const resourcesTab = page.getByText(/Ficheiros \(/).first();
+        if (await resourcesTab.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await resourcesTab.click();
           await page.waitForTimeout(1000);
         }
 
@@ -355,15 +368,16 @@ test.describe("Backoffice - Datasets CRUD", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+      const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
       if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await editLink.click();
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        const resourcesSection = page.getByText(/Ficheiros/i).first();
-        if (await resourcesSection.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await resourcesSection.click().catch(() => {});
+        // Navigate to resources tab
+        const resourcesTab = page.getByText(/Ficheiros \(/).first();
+        if (await resourcesTab.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await resourcesTab.click();
           await page.waitForTimeout(1000);
         }
 
@@ -384,25 +398,26 @@ test.describe("Backoffice - Datasets CRUD", () => {
     });
   });
 
-  test.describe("Activity Tab", () => {
-    test("DS-13: Activity tab shows change history", async ({ page }) => {
+  test.describe("Discussions Tab", () => {
+    test("DS-13: Discussions tab shows dataset discussions", async ({ page }) => {
       await page.goto("/pages/admin/me/datasets/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+      const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
       if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await editLink.click();
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        const activityTab = page.getByText(/Atividade|Atividades|Histórico/i).first();
-        if (await activityTab.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await activityTab.click();
+        // Click on "Discussões (N)" tab
+        const discussionsTab = page.getByText(/Discussões \(/).first();
+        if (await discussionsTab.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await discussionsTab.click();
           await page.waitForTimeout(1000);
 
           // Verify some content loaded
-          const mainContent = await page.locator(".admin-page").first().textContent().catch(() => "");
+          const mainContent = await page.locator("main").first().textContent().catch(() => "");
           expect((mainContent || "").length).toBeGreaterThan(50);
         }
       }
@@ -438,7 +453,7 @@ test.describe("Backoffice - Datasets CRUD", () => {
       const heading = page.getByRole("heading", { name: /Conjuntos de dados/i }).first();
       await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
 
-      const mainContent = await page.locator("main, .admin-page").first().textContent().catch(() => "");
+      const mainContent = await page.locator("main").first().textContent().catch(() => "");
       expect((mainContent || "").length).toBeGreaterThan(10);
     });
 
@@ -450,20 +465,20 @@ test.describe("Backoffice - Datasets CRUD", () => {
       await page.waitForTimeout(2000);
 
       // Search - uses InputSearchBar with placeholder containing "Pesquis"
-      const searchInput = page.getByPlaceholder(/Pesquis/i).first();
+      const searchInput = page.getByPlaceholder(/Pesquise o nome, código ou sigla/i).first();
       if (await searchInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await searchInput.fill("test");
         await page.waitForTimeout(1000);
       }
 
       // Sort - click on table header cells
-      const titleHeader = page.getByText("Título do conjunto de dad").first();
+      const titleHeader = page.getByText("Título do conjunto de dados").first();
       if (await titleHeader.isVisible({ timeout: 3000 }).catch(() => false)) {
         await titleHeader.click();
         await page.waitForTimeout(1000);
       }
 
-      // Pagination - "Linhas por página" or page navigation
+      // Pagination - "Linhas por página" text
       const paginationText = page.getByText(/Linhas por página/i).first();
       await expect(paginationText).toBeVisible({ timeout: 3000 }).catch(() => {});
     });
@@ -477,13 +492,14 @@ test.describe("Backoffice - Datasets CRUD", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+      const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
       if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await editLink.click();
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        const deleteBtn = page.getByRole("button", { name: /Eliminar|Apagar/i }).first();
+        // "Exclua o conjunto de dados" button
+        const deleteBtn = page.getByRole("button", { name: "Exclua o conjunto de dados" }).first();
         if (await deleteBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
           await deleteBtn.click();
           await page.waitForTimeout(500);
@@ -513,12 +529,12 @@ test.describe("Backoffice - Datasets CRUD", () => {
     test("DS-19: Create draft then publish makes it visible on public portal", async ({
       page,
     }) => {
-      await page.goto("/pages/admin/me/datasets/new?step=1");
+      await page.goto("/pages/admin/me/datasets/new/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Start the wizard
-      const startBtn = page.getByText("Comece a publicar").first();
+      // Start the wizard - Step 1 BTN "Comece a publicar"
+      const startBtn = page.getByRole("button", { name: "Comece a publicar" }).first();
       if (await startBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
         await startBtn.click();
         await page.waitForLoadState("networkidle");
@@ -534,8 +550,8 @@ test.describe("Backoffice - Datasets CRUD", () => {
         }
       }
 
-      // Publish
-      const publishBtn = page.getByRole("button", { name: /Publique o conjunto de dados|Publicar/i }).first();
+      // Publish - "Publique o conjunto de dados"
+      const publishBtn = page.getByRole("button", { name: "Publique o conjunto de dados" }).first();
       if (await publishBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
         await publishBtn.click();
         await page.waitForTimeout(3000);
@@ -549,13 +565,14 @@ test.describe("Backoffice - Datasets CRUD", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      const editLink = page.locator('a[href*="/admin/me/datasets/edit"]').first();
+      const editLink = page.locator('a[href*="/admin/me/datasets/edit?slug="]').first();
       if (await editLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await editLink.click();
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        const archiveBtn = page.getByRole("button", { name: /Arquivar/i }).first();
+        // "Arquivar o conjunto de dados" button
+        const archiveBtn = page.getByRole("button", { name: "Arquivar o conjunto de dados" }).first();
         if (await archiveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
           await archiveBtn.click();
           await page.waitForTimeout(500);

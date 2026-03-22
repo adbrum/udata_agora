@@ -13,12 +13,8 @@ test.describe("Backoffice - Editorial (Featured Content)", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // H1 "Editorial", Tabs: "Conjuntos de dados (0)", "Reutilizações (0)"
-    const heading = page.getByRole("heading", { name: /Editorial/i }).first();
-    await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
-
-    // Look for datasets tab
-    const datasetsTab = page.getByText(/Conjuntos de dados/i).first();
+    // Tabs: "Conjuntos de dados (0)", "Reutilizações (0)"
+    const datasetsTab = page.getByText(/Conjuntos de dados/).first();
     if (await datasetsTab.isVisible({ timeout: 5000 }).catch(() => false)) {
       await datasetsTab.click().catch(() => {});
     }
@@ -36,8 +32,8 @@ test.describe("Backoffice - Editorial (Featured Content)", () => {
       }
     }
 
-    // Save - "Guardar alterações" button (may be DISABLED if no changes)
-    const saveBtn = page.getByText("Guardar alterações").first();
+    // "Guardar alterações" button (may be DISABLED if no changes)
+    const saveBtn = page.getByRole("button", { name: "Guardar alterações" }).first();
     if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await saveBtn.click().catch(() => {
         // May be disabled
@@ -53,13 +49,13 @@ test.describe("Backoffice - Editorial (Featured Content)", () => {
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(2000);
 
-    // Look for reuses tab - "Reutilizações (0)"
-    const reusesTab = page.getByText(/Reutilizações/i).first();
+    // Click "Reutilizações" tab
+    const reusesTab = page.getByText(/Reutilizações/).first();
     if (await reusesTab.isVisible({ timeout: 5000 }).catch(() => false)) {
       await reusesTab.click().catch(() => {});
     }
 
-    // Search label: "Pesquisar reutilizações para adicionar"
+    // Search
     const searchInput = page.getByLabel(/Pesquisar reutilizações/i).first();
     if (await searchInput.isVisible({ timeout: 5000 }).catch(() => false)) {
       await searchInput.fill("test");
@@ -72,7 +68,8 @@ test.describe("Backoffice - Editorial (Featured Content)", () => {
       }
     }
 
-    const saveBtn = page.getByText("Guardar alterações").first();
+    // "Guardar alterações" button
+    const saveBtn = page.getByRole("button", { name: "Guardar alterações" }).first();
     if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await saveBtn.click().catch(() => {
         // May be disabled

@@ -12,21 +12,18 @@ test.describe("Backoffice - Permissions", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Admin sidebar - uses nav.admin-side-nav
-      const sidebar = page.locator("nav.admin-side-nav").first();
-      await expect(sidebar).toBeVisible({ timeout: 10000 }).catch(() => {});
+      // Sidebar links: "Conjunto de dados", "Reutilizações", "Recursos comunitários", "Perfil", "Estatísticas"
+      const datasetsLink = page.getByText("Conjunto de dados").first();
+      await expect(datasetsLink).toBeVisible({ timeout: 5000 }).catch(() => {});
 
-      // "Meu perfil" group label should be visible (sidebar group)
-      const profileGroup = page.getByText("Meu perfil").first();
-      await expect(profileGroup).toBeVisible({ timeout: 5000 }).catch(() => {});
+      const reusesLink = page.getByText("Reutilizações").first();
+      await expect(reusesLink).toBeVisible({ timeout: 5000 }).catch(() => {});
 
-      // Check for sidebar links - "Conjunto de dados" link to /admin/me/datasets
-      const datasetLink = page.locator('a[href*="/admin/me/datasets"]').first();
-      await expect(datasetLink).toBeVisible({ timeout: 5000 }).catch(() => {});
+      const profileLink = page.getByText("Perfil").first();
+      await expect(profileLink).toBeVisible({ timeout: 5000 }).catch(() => {});
 
-      // "Ir para dados.gov" link
-      const homeLink = page.getByText("Ir para dados.gov").first();
-      await expect(homeLink).toBeVisible({ timeout: 5000 }).catch(() => {});
+      const statsLink = page.getByText("Estatísticas").first();
+      await expect(statsLink).toBeVisible({ timeout: 5000 }).catch(() => {});
     });
 
     test("PM-10: System admin can edit any dataset", async ({ page }) => {
@@ -40,7 +37,7 @@ test.describe("Backoffice - Permissions", () => {
     });
 
     test("PM-11: Only org admin can delete org", async ({ page }) => {
-      await page.goto("/pages/admin/org/profile");
+      await page.goto("/pages/admin/org/profile/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
@@ -53,13 +50,13 @@ test.describe("Backoffice - Permissions", () => {
     });
 
     test("PM-12: Only org admin can manage members", async ({ page }) => {
-      await page.goto("/pages/admin/org/members");
+      await page.goto("/pages/admin/org/members/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // H1 "Membros"
-      const heading = page.getByRole("heading", { name: /Membros/i }).first();
-      await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
+      // TABLE with headers: Membros | Estatuto | Membro desde | Última conexão | Ações
+      const table = page.locator("table").first();
+      await expect(table).toBeVisible({ timeout: 10000 }).catch(() => {});
     });
   });
 
@@ -97,7 +94,7 @@ test.describe("Backoffice - Permissions", () => {
       await page.waitForTimeout(2000);
 
       // Should see content or redirect
-      const pageContent = await page.locator("main, .admin-page").first().textContent().catch(() => "");
+      const pageContent = await page.locator("main").first().textContent().catch(() => "");
       expect((pageContent || "").length).toBeGreaterThan(10);
     });
 
@@ -120,15 +117,15 @@ test.describe("Backoffice - Permissions", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Edit links: a[href*="/pages/admin/me/datasets/edit?slug=..."]
-      const datasetLink = page.locator('a[href*="/datasets/edit"], a[href*="/datasets/"]').first();
+      // Edit links: a[href*="/pages/admin/me/datasets/edit?slug="]
+      const datasetLink = page.locator('a[href*="/datasets/edit?slug="], a[href*="/datasets/"]').first();
       if (await datasetLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await datasetLink.click();
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
         // Verify edit form or content loaded
-        const pageContent = await page.locator(".admin-page").first().textContent().catch(() => "");
+        const pageContent = await page.locator("main").first().textContent().catch(() => "");
         expect((pageContent || "").length).toBeGreaterThan(50);
       }
     });
@@ -138,7 +135,7 @@ test.describe("Backoffice - Permissions", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // Drafts should not appear in public listing - "Rascunho" badge should not be visible
+      // Drafts should not appear in public listing
       const draftBadge = page.getByText(/Rascunho|Draft/i).first();
       await expect(draftBadge).not.toBeVisible({ timeout: 3000 }).catch(() => {});
     });
@@ -151,7 +148,7 @@ test.describe("Backoffice - Permissions", () => {
       await page.waitForTimeout(2000);
 
       // Should be able to see content in the admin area
-      const pageContent = await page.locator("main, .admin-page").first().textContent().catch(() => "");
+      const pageContent = await page.locator("main").first().textContent().catch(() => "");
       expect((pageContent || "").length).toBeGreaterThan(10);
     });
 
@@ -206,10 +203,12 @@ test.describe("Backoffice - Permissions", () => {
 
   test.describe("Unauthenticated Access", () => {
     test("PM-05: No session redirects to login", async ({ page }) => {
+      // Do NOT login - test unauthenticated access
       await page.goto("/pages/admin/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
+      // Should redirect to /login
       const url = page.url();
       const isRedirected = url.includes("/login");
       const loginForm = page.getByLabel(/Email|Palavra-passe/i).first();
@@ -243,13 +242,13 @@ test.describe("Backoffice - Permissions", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      const datasetLink = page.locator('a[href*="/datasets/edit"], a[href*="/datasets/"]').first();
+      const datasetLink = page.locator('a[href*="/datasets/edit?slug="], a[href*="/datasets/"]').first();
       if (await datasetLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await datasetLink.click();
         await page.waitForLoadState("networkidle");
         await page.waitForTimeout(2000);
 
-        const pageContent = await page.locator(".admin-page").first().textContent().catch(() => "");
+        const pageContent = await page.locator("main").first().textContent().catch(() => "");
         expect((pageContent || "").length).toBeGreaterThan(50);
       }
     });
@@ -260,10 +259,6 @@ test.describe("Backoffice - Permissions", () => {
       await page.goto("/pages/admin/org/discussions/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
-
-      // H1 "Discussões"
-      const heading = page.getByRole("heading", { name: /Discussões/i }).first();
-      await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
 
       const discussionLink = page.locator('a[href*="/discussions/"]').first();
       if (await discussionLink.isVisible({ timeout: 5000 }).catch(() => false)) {

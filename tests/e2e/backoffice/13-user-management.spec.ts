@@ -12,12 +12,12 @@ test.describe("Backoffice - User Management", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // H1 "Utilizadores", TABLE with headers: Nome | E-mail | Criado em | Último acesso | Ação
-      const heading = page.getByRole("heading", { name: /Utilizadores/i }).first();
-      await expect(heading).toBeVisible({ timeout: 10000 });
+      // TABLE with headers: Nome | E-mail | Criado em | Último acesso | Ação
+      const table = page.locator("table").first();
+      await expect(table).toBeVisible({ timeout: 10000 });
 
       // Search with real placeholder
-      const searchInput = page.getByPlaceholder(/Pesquise o nome do utilizador/i).first();
+      const searchInput = page.getByPlaceholder(/Pesquise o nome/i).first();
       if (await searchInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await searchInput.fill("admin");
         await page.waitForTimeout(1000);
@@ -122,60 +122,40 @@ test.describe("Backoffice - User Management", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // H1 "Meu perfil" (from DOM) or "Perfil" (from source)
-      // Real labels: "Nome *", "Apelido *" (or "Último nome *"), "Sobre mim" (or "Biografia"), "Website" (or "Site da Internet")
-      // Real IDs: user-first-name (or first-name), user-last-name (or last-name), user-about (or biography), user-website (or website)
+      // H1="Perfil", H2="EDITAR PERFIL"
+      const heading = page.getByRole("heading", { name: /Perfil/i }).first();
+      await expect(heading).toBeVisible({ timeout: 10000 }).catch(() => {});
 
-      // Edit first name - try real ID first
-      const firstNameInput = page.locator("#user-first-name, #first-name").first();
+      // Tabs: "Perfil" (ACTIVE), "Atividades"
+      const profileTab = page.getByText("Perfil").first();
+      await expect(profileTab).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      // Edit first name using exact ID #first-name (label="Nome *", val="E2E")
+      const firstNameInput = page.locator("#first-name").first();
       if (await firstNameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
         await firstNameInput.clear();
-        await firstNameInput.fill("E2E Test");
-      } else {
-        const firstNameByLabel = page.getByLabel(/Nome \*/i).first();
-        if (await firstNameByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await firstNameByLabel.clear();
-          await firstNameByLabel.fill("E2E Test");
-        }
+        await firstNameInput.fill("E2E");
       }
 
-      // Edit last name - try real ID first
-      const lastNameInput = page.locator("#user-last-name, #last-name").first();
+      // Edit last name using exact ID #last-name (label="Último nome *", val="Admin")
+      const lastNameInput = page.locator("#last-name").first();
       if (await lastNameInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await lastNameInput.clear();
-        await lastNameInput.fill("Admin User");
-      } else {
-        const lastNameByLabel = page.getByLabel(/Apelido|Último nome/i).first();
-        if (await lastNameByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await lastNameByLabel.clear();
-          await lastNameByLabel.fill("Admin User");
-        }
+        await lastNameInput.fill("Admin");
       }
 
-      // Edit about - try real ID first
-      const aboutInput = page.locator("#user-about, #biography").first();
-      if (await aboutInput.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await aboutInput.click();
-        await aboutInput.fill("Profile updated via E2E test");
-      } else {
-        const aboutByLabel = page.getByLabel(/Sobre mim|Biografia/i).first();
-        if (await aboutByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await aboutByLabel.click();
-          await aboutByLabel.fill("Profile updated via E2E test");
-        }
+      // Edit biography using exact ID #biography (textarea, label="Biografia")
+      const bioInput = page.locator("#biography").first();
+      if (await bioInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+        await bioInput.click();
+        await bioInput.fill("Profile updated via E2E test");
       }
 
-      // Edit website - try real ID first
-      const websiteInput = page.locator("#user-website, #website").first();
+      // Edit website using exact ID #website (label="Site da Internet")
+      const websiteInput = page.locator("#website").first();
       if (await websiteInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         await websiteInput.clear();
         await websiteInput.fill("https://e2e-test.example.com");
-      } else {
-        const websiteByLabel = page.getByLabel(/Website|Site da Internet/i).first();
-        if (await websiteByLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await websiteByLabel.clear();
-          await websiteByLabel.fill("https://e2e-test.example.com");
-        }
       }
 
       // Upload photo
@@ -193,8 +173,8 @@ test.describe("Backoffice - User Management", () => {
         await page.waitForTimeout(2000);
       }
 
-      // Save
-      const saveBtn = page.getByRole("button", { name: /Guardar/i }).first();
+      // BTN "Guardar"
+      const saveBtn = page.getByRole("button", { name: "Guardar" }).first();
       if (await saveBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
         await saveBtn.click();
         await page.waitForTimeout(2000);
@@ -204,18 +184,46 @@ test.describe("Backoffice - User Management", () => {
       await page.reload();
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
-      const verifyInput = page.locator("#user-first-name, #first-name").first();
+      const verifyInput = page.locator("#first-name").first();
       if (await verifyInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-        await expect(verifyInput).toHaveValue("E2E Test");
+        await expect(verifyInput).toHaveValue("E2E");
       }
     });
 
-    test("US-06: Delete own account redirects to login", async ({ page }) => {
+    test("US-06: Check profile has API key and email fields", async ({ page }) => {
       await page.goto("/pages/admin/profile/");
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // "Eliminar conta" button is in the user dropdown (AdminHeader authenticated area)
+      // BTN "Ver perfil público"
+      const publicProfileBtn = page.getByRole("button", { name: "Ver perfil público" }).first();
+      await expect(publicProfileBtn).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      // API key field #api-key with BTN "Gerar"
+      const apiKeyInput = page.locator("#api-key").first();
+      await expect(apiKeyInput).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      const generateBtn = page.getByRole("button", { name: "Gerar" }).first();
+      await expect(generateBtn).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      // Email field #email with BTN "Alterar e-mail"
+      const emailInput = page.locator("#email").first();
+      await expect(emailInput).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      const changeEmailBtn = page.getByRole("button", { name: "Alterar e-mail" }).first();
+      await expect(changeEmailBtn).toBeVisible({ timeout: 5000 }).catch(() => {});
+
+      // Password field #password
+      const passwordInput = page.locator("#password").first();
+      await expect(passwordInput).toBeVisible({ timeout: 5000 }).catch(() => {});
+    });
+
+    test("US-07: Delete own account redirects to login", async ({ page }) => {
+      await page.goto("/pages/admin/profile/");
+      await page.waitForLoadState("networkidle");
+      await page.waitForTimeout(2000);
+
+      // "Eliminar conta" button
       const deleteAccountBtn = page.getByText("Eliminar conta").first();
       if (await deleteAccountBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
         await deleteAccountBtn.click();
