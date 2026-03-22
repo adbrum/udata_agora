@@ -86,8 +86,8 @@ export default function MembersClient() {
   const members = mockMembers;
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -97,8 +97,8 @@ export default function MembersClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Membros</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Membros</h1>
         <PublishDropdown />
       </div>
 

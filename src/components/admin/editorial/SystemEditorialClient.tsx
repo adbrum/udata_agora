@@ -374,8 +374,8 @@ export default function SystemEditorialClient() {
 
   if (isLoading) {
     return (
-      <div className="datasets-admin-page">
-        <div className="datasets-admin-page__breadcrumb">
+      <div className="admin-page">
+        <div className="admin-page__breadcrumb">
           <Breadcrumb
             items={[
               { label: "Administração", url: "/pages/admin" },
@@ -383,15 +383,15 @@ export default function SystemEditorialClient() {
             ]}
           />
         </div>
-        <h1 className="datasets-admin-page__title mb-[24px]">Editorial</h1>
+        <h1 className="admin-page__title mb-[24px]">Editorial</h1>
         <p className="text-neutral-500">A carregar...</p>
       </div>
     );
   }
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -400,7 +400,7 @@ export default function SystemEditorialClient() {
         />
       </div>
 
-      <h1 className="datasets-admin-page__title mb-[24px]">Editorial</h1>
+      <h1 className="admin-page__title mb-[24px]">Editorial</h1>
 
       {saveMessage && (
         <div

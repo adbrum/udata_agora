@@ -39,7 +39,7 @@ export default function OrgStatisticsClient() {
   if (isOrgLoading || isLoading) return <p>A carregar...</p>;
   if (!activeOrg) {
     return (
-      <div className="datasets-admin-page">
+      <div className="admin-page">
         <CardNoResults
           className="datasets-page__empty"
           position="center"
@@ -53,8 +53,8 @@ export default function OrgStatisticsClient() {
   }
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -64,7 +64,7 @@ export default function OrgStatisticsClient() {
         />
       </div>
 
-      <h1 className="datasets-admin-page__title mt-[64px] mb-[16px]">
+      <h1 className="admin-page__title mt-[64px] mb-[16px]">
         Estatísticas da organização
       </h1>
 

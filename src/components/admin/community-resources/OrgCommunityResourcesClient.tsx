@@ -55,7 +55,7 @@ export default function OrgCommunityResourcesClient() {
   if (isOrgLoading) return <p>A carregar...</p>;
   if (!activeOrg) {
     return (
-      <div className="datasets-admin-page">
+      <div className="admin-page">
         <CardNoResults
           className="datasets-page__empty"
           position="center"
@@ -69,8 +69,8 @@ export default function OrgCommunityResourcesClient() {
   }
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -83,8 +83,8 @@ export default function OrgCommunityResourcesClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Recursos comunitários</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Recursos comunitários</h1>
         <PublishDropdown />
       </div>
 

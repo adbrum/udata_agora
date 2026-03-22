@@ -200,8 +200,8 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
 
           {/* Owner line */}
           {reuse.owner && (
-            <p className="dataset-edit-info__activity">
-              <Icon name="agora-line-user" className="dataset-edit-info__clock-icon" />
+            <p className="admin-edit-info__activity">
+              <Icon name="agora-line-user" className="admin-edit-info__clock-icon" />
               {" Criado por: "}
               <Link
                 href={`/pages/users/${reuse.owner.slug}`}

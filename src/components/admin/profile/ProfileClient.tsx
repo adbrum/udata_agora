@@ -188,8 +188,8 @@ export default function ProfileClient() {
     : "";
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -199,7 +199,7 @@ export default function ProfileClient() {
         />
       </div>
 
-      <h1 className="datasets-admin-page__title mt-[64px] mb-[32px]">Perfil</h1>
+      <h1 className="admin-page__title mt-[64px] mb-[32px]">Perfil</h1>
 
       <div className="profile-card">
         <Avatar
@@ -251,13 +251,13 @@ export default function ProfileClient() {
             <TabHeader>Perfil</TabHeader>
             <TabBody>
               <div
-                className="datasets-admin-page__form mt-[24px]"
+                className="admin-page__form mt-[24px]"
                 style={{
                   maxWidth:
                     "calc(100% - var(--admin-auxiliar-width) - var(--admin-auxiliar-gap))",
                 }}
               >
-                <h2 className="datasets-admin-page__section-title">EDITAR PERFIL</h2>
+                <h2 className="admin-page__section-title">EDITAR PERFIL</h2>
 
                 {saveSuccess && (
                   <StatusCard
@@ -269,7 +269,7 @@ export default function ProfileClient() {
                   <StatusCard type="danger" description={saveError} />
                 )}
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <div className="flex gap-[18px]">
                     <div className="flex-1">
                       <InputText

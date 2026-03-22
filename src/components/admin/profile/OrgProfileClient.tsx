@@ -83,7 +83,7 @@ export default function OrgProfileClient() {
   if (isOrgLoading || isLoading) return <p>A carregar...</p>;
   if (!activeOrg) {
     return (
-      <div className="datasets-admin-page">
+      <div className="admin-page">
         <CardNoResults
           className="datasets-page__empty"
           position="center"
@@ -97,8 +97,8 @@ export default function OrgProfileClient() {
   }
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -108,7 +108,7 @@ export default function OrgProfileClient() {
         />
       </div>
 
-      <h1 className="datasets-admin-page__title mt-[64px] mb-[32px]">
+      <h1 className="admin-page__title mt-[64px] mb-[32px]">
         Perfil da organização
       </h1>
 
@@ -144,10 +144,10 @@ export default function OrgProfileClient() {
         </div>
       )}
 
-      <div className="datasets-admin-page__form mt-[32px]">
-        <h2 className="datasets-admin-page__section-title">EDITAR ORGANIZAÇÃO</h2>
+      <div className="admin-page__form mt-[32px]">
+        <h2 className="admin-page__section-title">EDITAR ORGANIZAÇÃO</h2>
 
-        <div className="datasets-admin-page__fields-group">
+        <div className="admin-page__fields-group">
           <InputText
             label="Nome *"
             placeholder="Insira o nome aqui"

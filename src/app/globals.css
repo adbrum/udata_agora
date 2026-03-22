@@ -67,7 +67,7 @@
      7.1 Admin Wrapper & Header
      7.2 Side Navigation
      7.3 Content Area
-     7.4 Datasets Admin Page
+     7.4 Admin Page
      7.5 Admin Forms (Steps, Fields, Auxiliar)
      7.6 Admin Tabs & Statistics
      7.7 Profile Card
@@ -1104,23 +1104,23 @@ body:has(.admin-wrapper)>div>header.sticky {
   min-width: 0;
 }
 
-/* 7.4 Datasets Admin Page */
-.datasets-admin-page {
+/* 7.4 Admin Page */
+.admin-page {
   padding: 32px 112px 64px 104px;
 }
 
-.datasets-admin-page__breadcrumb {
+.admin-page__breadcrumb {
   margin-bottom: 64px;
 }
 
-.datasets-admin-page__header {
+.admin-page__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 64px;
 }
 
-.datasets-admin-page__title {
+.admin-page__title {
   font-size: 32px;
   font-weight: 700;
   line-height: 48px;
@@ -1207,16 +1207,16 @@ body:has(.admin-wrapper)>div>header.sticky {
 }
 
 /* 7.5 Admin Forms (Steps, Fields, Auxiliar) */
-.datasets-admin-page__step-header {
+.admin-page__step-header {
   margin-bottom: 20px;
 }
 
-.datasets-admin-page__step-text {
+.admin-page__step-text {
   font-size: 20px;
   line-height: 32px;
 }
 
-.datasets-admin-page__stepper {
+.admin-page__stepper {
   background-color: var(--color-neutral-100);
   border-radius: 4px;
   padding: 12px;
@@ -1226,55 +1226,55 @@ body:has(.admin-wrapper)>div>header.sticky {
   gap: 8px;
 }
 
-.datasets-admin-page__stepper-bar {
+.admin-page__stepper-bar {
   display: flex;
   width: 100%;
   height: 4px;
   background-color: var(--color-neutral-200);
 }
 
-.datasets-admin-page__stepper-mark {
+.admin-page__stepper-mark {
   width: 4px;
   height: 4px;
   background-color: var(--color-primary-900);
   flex-shrink: 0;
 }
 
-.datasets-admin-page__stepper-mark--start {
+.admin-page__stepper-mark--start {
   border-right: 2px solid white;
 }
 
-.datasets-admin-page__stepper-mark--end {
+.admin-page__stepper-mark--end {
   border-left: 2px solid white;
 }
 
-.datasets-admin-page__stepper-segment {
+.admin-page__stepper-segment {
   flex: 1;
   height: 100%;
   background-color: var(--color-neutral-200);
 }
 
-.datasets-admin-page__stepper-segment--filled {
+.admin-page__stepper-segment--filled {
   background-color: var(--color-primary-900);
 }
 
-.datasets-admin-page__stepper-label {
+.admin-page__stepper-label {
   font-size: 14px;
   line-height: 18px;
   color: var(--color-neutral-700);
 }
 
-.datasets-admin-page {
+.admin-page {
   --admin-auxiliar-width: 400px;
   --admin-auxiliar-gap: 70px;
 }
 
-.datasets-admin-page__body {
+.admin-page__body {
   display: flex;
   gap: var(--admin-auxiliar-gap);
 }
 
-.datasets-admin-page__form-area {
+.admin-page__form-area {
   flex: 1;
   min-width: 0;
   max-width: calc(100% - var(--admin-auxiliar-width) - var(--admin-auxiliar-gap));
@@ -1282,13 +1282,13 @@ body:has(.admin-wrapper)>div>header.sticky {
   flex-direction: column;
 }
 
-.datasets-admin-page__form {
+.admin-page__form {
   display: flex;
   flex-direction: column;
   gap: 32px;
 }
 
-.datasets-admin-page__section-title {
+.admin-page__section-title {
   font-size: 20px;
   font-weight: 600;
   line-height: 32px;
@@ -1296,13 +1296,13 @@ body:has(.admin-wrapper)>div>header.sticky {
   margin-top: 32px !important;
 }
 
-.datasets-admin-page__fields-group {
+.admin-page__fields-group {
   display: flex;
   flex-direction: column;
   gap: 32px;
 }
 
-.datasets-admin-page__org-card {
+.admin-page__org-card {
   background-color: var(--color-neutral-100);
   border-radius: 4px;
   padding: 32px;
@@ -1311,21 +1311,21 @@ body:has(.admin-wrapper)>div>header.sticky {
   gap: 16px;
 }
 
-.datasets-admin-page__org-card-title {
+.admin-page__org-card-title {
   font-size: 20px;
   font-weight: 700;
   line-height: 32px;
   color: var(--color-neutral-900);
 }
 
-.datasets-admin-page__org-card-description {
+.admin-page__org-card-description {
   font-size: 16px;
   font-weight: 400;
   line-height: 28px;
   color: var(--color-neutral-900);
 }
 
-.datasets-admin-page__org-card-link {
+.admin-page__org-card-link {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1335,42 +1335,42 @@ body:has(.admin-wrapper)>div>header.sticky {
   text-decoration: none;
 }
 
-.datasets-admin-page__org-card-link:hover {
+.admin-page__org-card-link:hover {
   text-decoration: underline;
 }
 
-.datasets-admin-page__divider-or {
+.admin-page__divider-or {
   display: flex;
   align-items: center;
   gap: 16px;
   margin: 16px 0;
 }
 
-.datasets-admin-page__divider-or::before,
-.datasets-admin-page__divider-or::after {
+.admin-page__divider-or::before,
+.admin-page__divider-or::after {
   content: "";
   flex: 1;
   height: 1px;
   background-color: var(--color-neutral-300);
 }
 
-.datasets-admin-page__divider-or-text {
+.admin-page__divider-or-text {
   font-size: 14px;
   color: var(--color-neutral-700);
   white-space: nowrap;
 }
 
-.datasets-admin-page__actions {
+.admin-page__actions {
   display: flex;
   justify-content: flex-end;
 }
 
-.datasets-admin-page__actions--between {
+.admin-page__actions--between {
   justify-content: space-between;
 }
 
 /* Info card (unused but kept for reference) */
-.datasets-admin-page__info-card {
+.admin-page__info-card {
   display: flex;
   gap: 8px;
   padding: 16px;
@@ -1378,25 +1378,25 @@ body:has(.admin-wrapper)>div>header.sticky {
   border-radius: 4px;
 }
 
-.datasets-admin-page__info-icon {
+.admin-page__info-icon {
   width: 24px;
   height: 24px;
   flex-shrink: 0;
   color: var(--color-informative-600, #00598c);
 }
 
-.datasets-admin-page__info-icon svg {
+.admin-page__info-icon svg {
   fill: var(--color-informative-600, #00598c);
 }
 
-.datasets-admin-page__info-title {
+.admin-page__info-title {
   font-size: 16px;
   font-weight: 700;
   line-height: 28px;
   color: var(--color-neutral-900);
 }
 
-.datasets-admin-page__info-description {
+.admin-page__info-description {
   font-size: 16px;
   font-weight: 400;
   line-height: 28px;
@@ -1404,32 +1404,32 @@ body:has(.admin-wrapper)>div>header.sticky {
 }
 
 /* Auxiliar sidebar */
-.datasets-admin-page__auxiliar {
+.admin-page__auxiliar {
   flex: 0 0 var(--admin-auxiliar-width);
   max-width: var(--admin-auxiliar-width);
   min-width: 0;
   margin-left: auto;
 }
 
-.datasets-admin-page__auxiliar-inner {
+.admin-page__auxiliar-inner {
   background-color: var(--color-neutral-100);
   padding: 64px;
   position: sticky;
   top: 80px;
 }
 
-.datasets-admin-page__auxiliar-header {
+.admin-page__auxiliar-header {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
 }
 
-.datasets-admin-page__auxiliar-header svg {
+.admin-page__auxiliar-header svg {
   fill: var(--color-primary-600);
 }
 
-.datasets-admin-page__auxiliar-title {
+.admin-page__auxiliar-title {
   font-size: 20px;
   font-weight: 600;
   line-height: 32px;
@@ -1498,17 +1498,17 @@ body:has(.admin-wrapper)>div>header.sticky {
 }
 
 /* CardGeneral overrides in admin */
-.datasets-admin-page .card-general {
+.admin-page .card-general {
   width: 100%;
 }
 
-.datasets-admin-page .card-general .icon-container {
+.admin-page .card-general .icon-container {
   border: none;
   border-radius: 0;
   background-color: transparent;
 }
 
-.datasets-admin-page .card-general .icon-set {
+.admin-page .card-general .icon-set {
   border: none;
   border-radius: 0;
   padding: 0;
@@ -1516,29 +1516,29 @@ body:has(.admin-wrapper)>div>header.sticky {
 }
 
 /* Hide download icon in profile uploader */
-.datasets-admin-page .agora-drag-and-drop-file-uploader .download-icon,
-.datasets-admin-page .agora-drag-and-drop-file-uploader .separator-label {
+.admin-page .agora-drag-and-drop-file-uploader .download-icon,
+.admin-page .agora-drag-and-drop-file-uploader .separator-label {
   display: none;
 }
 
 /* 7.6 Admin Tabs & Statistics */
-.datasets-admin-page .agora-tabs.desktop .tab-panel.current-neutral,
-.datasets-admin-page .agora-tabs.desktop .tab-list.desktop .tab-list-item.current-neutral {
+.admin-page .agora-tabs.desktop .tab-panel.current-neutral,
+.admin-page .agora-tabs.desktop .tab-list.desktop .tab-list-item.current-neutral {
   background-color: transparent;
 }
 
-.datasets-admin-page .agora-tabs.desktop .tab-list.desktop .tab-list-item.active.current-neutral {
+.admin-page .agora-tabs.desktop .tab-list.desktop .tab-list-item.active.current-neutral {
   background-color: var(--color-primary-100);
 }
 
-.datasets-admin-page .agora-tabs.desktop .tab-list.desktop {
+.admin-page .agora-tabs.desktop .tab-list.desktop {
   max-width: none;
   margin-left: 0;
   margin-right: 0;
 }
 
-.datasets-admin-page .tab-panel-content,
-.datasets-admin-page .agora-tabs.desktop .tab-panel .tab-panel-content {
+.admin-page .tab-panel-content,
+.admin-page .agora-tabs.desktop .tab-panel .tab-panel-content {
   padding: 0;
   max-width: none;
   margin-left: 0;
@@ -1546,12 +1546,12 @@ body:has(.admin-wrapper)>div>header.sticky {
   background-color: transparent;
 }
 
-.datasets-admin-page .tab-panel-content::before,
-.datasets-admin-page .tab-panel-content::after {
+.admin-page .tab-panel-content::before,
+.admin-page .tab-panel-content::after {
   display: none;
 }
 
-.datasets-admin-page .agora-tabs .tab-panel {
+.admin-page .agora-tabs .tab-panel {
   background-color: transparent;
 }
 
@@ -1576,22 +1576,22 @@ body:has(.admin-wrapper)>div>header.sticky {
   border-right: none;
 }
 
-/* Dataset edit info section */
-.dataset-edit-info {
+/* Admin edit info section */
+.admin-edit-info {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 24px;
 }
 
-.dataset-edit-info__badges {
+.admin-edit-info__badges {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
 }
 
-.dataset-edit-info__stat {
+.admin-edit-info__stat {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -1599,8 +1599,8 @@ body:has(.admin-wrapper)>div>header.sticky {
   color: var(--color-neutral-600);
 }
 
-.dataset-edit-info__clock-icon,
-.dataset-edit-info__clock-icon.icon {
+.admin-edit-info__clock-icon,
+.admin-edit-info__clock-icon.icon {
   width: 14px !important;
   height: 14px !important;
   min-width: 14px !important;
@@ -1611,8 +1611,8 @@ body:has(.admin-wrapper)>div>header.sticky {
   color: #64718B !important;
 }
 
-.dataset-edit-info__stat-icon,
-.dataset-edit-info__stat-icon.icon {
+.admin-edit-info__stat-icon,
+.admin-edit-info__stat-icon.icon {
   width: 14px !important;
   height: 14px !important;
   min-width: 14px !important;
@@ -1631,24 +1631,24 @@ body:has(.admin-wrapper)>div>header.sticky {
   margin-bottom: 16px;
 }
 
-.dataset-edit-info__btn-content {
+.admin-edit-info__btn-content {
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
-.dataset-edit-info__btn-content .icon {
+.admin-edit-info__btn-content .icon {
   display: inline-flex !important;
 }
 
-.dataset-edit-info__activity {
+.admin-edit-info__activity {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
   gap: 4px;
-  font-size: 14px;
+  font-size: 14px !important;
   line-height: 24px;
-  color: var(--color-neutral-700);
+  color: var(--color-neutral-900);
   white-space: nowrap;
   margin: 24px 0;
 }
@@ -1681,7 +1681,7 @@ body:has(.admin-wrapper)>div>header.sticky {
 }
 
 /* Profile form width */
-.admin-layout__content .datasets-admin-page .agora-tabs .datasets-admin-page__form {
+.admin-layout__content .admin-page .agora-tabs .admin-page__form {
   max-width: 100%;
 }
 
@@ -1779,15 +1779,15 @@ body:has(.admin-wrapper)>div>header.sticky {
     flex-direction: column;
   }
 
-  .datasets-admin-page {
+  .admin-page {
     padding: 32px 24px;
   }
 
-  .datasets-admin-page__body {
+  .admin-page__body {
     flex-direction: column;
   }
 
-  .datasets-admin-page__form-area {
+  .admin-page__form-area {
     flex: 1;
     max-width: 100%;
   }

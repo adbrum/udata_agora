@@ -23,8 +23,8 @@ export default function ApiNewClient() {
   };
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -34,14 +34,14 @@ export default function ApiNewClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Formulário de inscrição</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Formulário de inscrição</h1>
         <PublishDropdown />
       </div>
 
       {/* Step indicator */}
-      <div className="datasets-admin-page__step-header">
-        <p className="datasets-admin-page__step-text">
+      <div className="admin-page__step-header">
+        <p className="admin-page__step-text">
           <span className="text-primary-600 font-bold">Passo {currentStep} - </span>
           <span className="text-primary-900 font-bold">
             {stepTitles[currentStep]}
@@ -50,22 +50,22 @@ export default function ApiNewClient() {
       </div>
 
       {/* Progress bar */}
-      <div className="datasets-admin-page__stepper">
-        <div className="datasets-admin-page__stepper-bar">
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--start" />
+      <div className="admin-page__stepper">
+        <div className="admin-page__stepper-bar">
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--start" />
           {Array.from({ length: totalSegments }).map((_, i) => (
             <div
               key={i}
-              className={`datasets-admin-page__stepper-segment ${
+              className={`admin-page__stepper-segment ${
                 i < filledSegments
-                  ? "datasets-admin-page__stepper-segment--filled"
+                  ? "admin-page__stepper-segment--filled"
                   : ""
               }`}
             />
           ))}
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--end" />
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--end" />
         </div>
-        <span className="datasets-admin-page__stepper-label">
+        <span className="admin-page__stepper-label">
           Passo {currentStep}/{totalSteps}
         </span>
       </div>
