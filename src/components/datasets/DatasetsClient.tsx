@@ -148,8 +148,24 @@ export default function DatasetsClient({
                           image={{
                             src: dataset.organization?.logo || '/images/placeholders/organization.png',
                             alt: dataset.organization?.name || 'Organização sem logo',
+                            onClick: dataset.organization?.slug ? (e: React.MouseEvent) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              router.push(`/pages/organizations/${dataset.organization!.slug}`);
+                            } : undefined,
+                            className: dataset.organization?.slug ? 'cursor-pointer' : undefined,
                           }}
-                          category={dataset.organization?.name}
+                          category={
+                            dataset.organization?.slug ? (
+                              <Link
+                                href={`/pages/organizations/${dataset.organization.slug}`}
+                                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                                className="text-primary-500 hover:underline hover:text-primary-700 transition-colors"
+                              >
+                                {dataset.organization.name}
+                              </Link>
+                            ) : dataset.organization?.name
+                          }
                           title={dataset.title}
                           description={
                             <div className="flex flex-col gap-12">
