@@ -195,7 +195,7 @@ export async function fetchMyReuses(
 ): Promise<APIResponse<Reuse>> {
   try {
     const res = await fetch(
-      `${API_AUTH_URL}/me/reuses/?page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/me/reuses/`,
       { cache: "no-store", credentials: "include" }
     );
 
@@ -203,7 +203,20 @@ export async function fetchMyReuses(
       throw new Error(`Failed to fetch my reuses: ${res.statusText}`);
     }
 
-    return await res.json();
+    const raw: Reuse[] = await res.json();
+    const allReuses = raw.filter((r) => !!r.owner && !r.organization);
+    const total = allReuses.length;
+    const start = (page - 1) * pageSize;
+    const data = allReuses.slice(start, start + pageSize);
+
+    return {
+      data,
+      page,
+      page_size: pageSize,
+      total,
+      next_page: start + pageSize < total ? String(page + 1) : null,
+      previous_page: page > 1 ? String(page - 1) : null,
+    };
   } catch (error) {
     console.error("Error fetching my reuses:", error);
     return {
@@ -891,7 +904,7 @@ export async function deleteReuse(id: string): Promise<void> {
 export async function uploadReuseImage(id: string, file: File): Promise<Reuse> {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetch(`${API_AUTH_URL}/reuses/${id}/image`, {
+  const res = await fetch(`${API_AUTH_URL}/reuses/${id}/image/`, {
     method: "POST",
     credentials: "include",
     body: formData,

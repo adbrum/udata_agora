@@ -112,13 +112,13 @@ export default function ReusesFormClient({
       setCreatedReuse(reuse);
       onNextStep();
     } catch (error: unknown) {
-      const err = error as { status?: number; data?: Record<string, unknown> };
+      const err = error as { status?: number; data?: { errors?: Record<string, string>; message?: string } };
       if (err.status === 500) {
         setApiError("Erro interno do servidor. Verifique se todos os campos estão preenchidos corretamente e tente novamente.");
-      } else if (err.data && typeof err.data === "object") {
-        const messages = Object.entries(err.data)
-          .map(([key, val]) => `${key}: ${val}`)
-          .join(", ");
+      } else if (err.data?.message) {
+        setApiError(err.data.message);
+      } else if (err.data?.errors && typeof err.data.errors === "object") {
+        const messages = Object.values(err.data.errors).join(", ");
         setApiError(messages);
       } else {
         setApiError("Erro ao criar a reutilização. Tente novamente.");
