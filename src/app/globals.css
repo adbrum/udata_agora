@@ -1252,7 +1252,7 @@ body:has(.admin-wrapper)>div>header.sticky {
 
 .datasets-admin-page {
   --admin-auxiliar-width: 400px;
-  --admin-auxiliar-gap: 32px;
+  --admin-auxiliar-gap: 70px;
 }
 
 .datasets-admin-page__body {
@@ -1325,6 +1325,27 @@ body:has(.admin-wrapper)>div>header.sticky {
   text-decoration: underline;
 }
 
+.datasets-admin-page__divider-or {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.datasets-admin-page__divider-or::before,
+.datasets-admin-page__divider-or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-neutral-300);
+}
+
+.datasets-admin-page__divider-or-text {
+  font-size: 14px;
+  color: var(--color-neutral-700);
+  white-space: nowrap;
+}
+
 .datasets-admin-page__actions {
   display: flex;
   justify-content: flex-end;
@@ -1373,6 +1394,7 @@ body:has(.admin-wrapper)>div>header.sticky {
   flex: 0 0 var(--admin-auxiliar-width);
   max-width: var(--admin-auxiliar-width);
   min-width: 0;
+  margin-left: auto;
 }
 
 .datasets-admin-page__auxiliar-inner {

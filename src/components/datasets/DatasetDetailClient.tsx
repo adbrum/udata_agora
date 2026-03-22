@@ -176,9 +176,9 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                       {dataset.owner.first_name} {dataset.owner.last_name}
                     </Link>
                   ) : (
-                    <span className="text-neutral-700 text-sm">Desconhecido</span>
+                    <span className="text-neutral-900 text-sm">Desconhecido</span>
                   )}
-                  <p className="text-neutral-700 text-xs mt-8">
+                  <p className="text-neutral-900 text-xs mt-8">
                     Este conjunto de dados foi publicado por iniciativa e sob a responsabilidade de{' '}
                     {dataset.owner ? `${dataset.owner.first_name} ${dataset.owner.last_name}` : 'Desconhecido'}.
                   </p>

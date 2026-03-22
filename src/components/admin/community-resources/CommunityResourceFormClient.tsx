@@ -1,0 +1,599 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Button,
+  InputText,
+  InputTextArea,
+  InputSelect,
+  DropdownSection,
+  DropdownOption,
+  Icon,
+  StatusCard,
+  ButtonUploader,
+  CardLinks,
+} from "@ama-pt/agora-design-system";
+import {
+  createCommunityResource,
+  uploadCommunityResourceFile,
+  fetchDataset,
+  fetchResourceTypes,
+} from "@/services/api";
+import type { Dataset, CommunityResource, ResourceType } from "@/types/api";
+import { formatDistanceToNow } from "date-fns";
+import { pt } from "date-fns/locale";
+import AuxiliarList from "@/components/admin/AuxiliarList";
+
+interface CommunityResourceFormClientProps {
+  datasetId: string;
+  currentStep: number;
+  onNextStep: () => void;
+  onPreviousStep: () => void;
+}
+
+export default function CommunityResourceFormClient({
+  datasetId,
+  currentStep,
+  onNextStep,
+  onPreviousStep,
+}: CommunityResourceFormClientProps) {
+  const router = useRouter();
+
+  // Form state
+  const [title, setTitle] = useState("");
+  const [resourceUrl, setResourceUrl] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [schemaUrl, setSchemaUrl] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createdResource, setCreatedResource] = useState<CommunityResource | null>(null);
+
+  // Data from API
+  const [dataset, setDataset] = useState<Dataset | null>(null);
+  const [resourceTypes, setResourceTypes] = useState<ResourceType[]>([]);
+
+  useEffect(() => {
+    if (datasetId) {
+      fetchDataset(datasetId)
+        .then(setDataset)
+        .catch(() => console.error("Error loading dataset"));
+    }
+    fetchResourceTypes()
+      .then(setResourceTypes)
+      .catch(() => console.error("Error loading resource types"));
+  }, [datasetId]);
+
+  const clearError = (key: string) => {
+    setFormErrors((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
+
+  const handleStep1Next = async () => {
+    const errors: Record<string, boolean> = {};
+    if (!title.trim()) errors.title = true;
+    if (!file && !resourceUrl.trim()) errors.resourceUrl = true;
+    if (!selectedType) errors.type = true;
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
+    setApiError(null);
+    setIsSubmitting(true);
+
+    const finalUrl = file
+      ? "https://placeholder.local"
+      : resourceUrl.trim().match(/^https?:\/\//)
+        ? resourceUrl.trim()
+        : `https://${resourceUrl.trim()}`;
+
+    try {
+      const resource = await createCommunityResource({
+        title: title.trim(),
+        url: finalUrl,
+        description: description.trim() || undefined,
+        filetype: selectedType || undefined,
+        dataset: datasetId,
+      });
+
+      if (file) {
+        await uploadCommunityResourceFile(resource.id, file);
+      }
+
+      setCreatedResource(resource);
+      onNextStep();
+    } catch (err: unknown) {
+      const error = err as { status?: number; data?: Record<string, unknown> };
+      console.error("Error creating community resource:", err, error?.data);
+      if (error?.status === 401) {
+        setApiError("Sessão expirada. Faça login novamente.");
+      } else {
+        const detail = error?.data
+          ? JSON.stringify(error.data)
+          : "Erro desconhecido";
+        setApiError(`Erro ao criar recurso comunitário: ${detail}`);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const auxiliarItems = [
+    {
+      title: "Escolha o link correto",
+      content:
+        "É recomendável criar um link para o próprio arquivo em vez de uma página da web para permitir que o {site} o analise.",
+      hasError: !!formErrors.resourceUrl,
+    },
+    {
+      title: "Dê um nome ao arquivo",
+      content: (
+        <>
+          Recomenda-se escolher um título que informe claramente qualquer usuário sobre o conteúdo
+          do arquivo. Algumas práticas a serem evitadas:
+          <ul className="list-disc pl-16 mt-8">
+            <li>atribuir um título muito genérico (por exemplo, &quot;list.csv&quot;);</li>
+            <li>Dar um título muito longo dificultaria a manipulação do arquivo;</li>
+            <li>
+              fornecer um título que contenha acentos ou caracteres especiais (problemas de
+              interoperabilidade de arquivos);
+            </li>
+            <li>
+              Dar um título que seja demasiado técnico e derivado de nomenclaturas da indústria.
+            </li>
+          </ul>
+        </>
+      ),
+      hasError: !!formErrors.title,
+    },
+    {
+      title: "Publique os tipos de arquivos corretos.",
+      content: (
+        <>
+          Você pode escolher entre os seguintes tipos:
+          <ul className="list-disc pl-16 mt-8">
+            <li>Arquivos principais</li>
+            <li>Documentação</li>
+            <li>Atualizar</li>
+            <li>API</li>
+            <li>Código-fonte</li>
+            <li>Outro</li>
+          </ul>
+        </>
+      ),
+      hasError: !!formErrors.type,
+    },
+    {
+      title: "Adicionar documentação",
+      content: (
+        <>
+          A descrição de um arquivo facilita a reutilização de dados. Ela inclui, entre outras
+          coisas:
+          <ul className="list-disc pl-16 mt-8">
+            <li>uma descrição geral do conjunto de dados;</li>
+            <li>uma descrição do método de produção de dados;</li>
+            <li>uma descrição do modelo de dados;</li>
+            <li>uma descrição do esquema de dados;</li>
+            <li>uma descrição dos metadados;</li>
+            <li>Uma descrição das principais mudanças.</li>
+          </ul>
+        </>
+      ),
+    },
+    {
+      title: "Selecione um esquema",
+      content:
+        "É possível identificar um esquema de dados existente visitando o site schema.data.gouv.fr, que contém uma lista de esquemas de dados existentes.esquema.dados.gouv.fr",
+    },
+  ];
+
+  return (
+    <>
+      <div className="datasets-admin-page__body">
+        {/* Left: Form */}
+        <div className="datasets-admin-page__form-area">
+          {/* Step 1 */}
+          {currentStep === 1 && (
+            <>
+              <StatusCard
+                type="info"
+                description={
+                  <>
+                    <strong>O que é um recurso comunitário?</strong>
+                    <br />
+                    Um recurso comunitário é um conteúdo adicionado por um usuário, como dados de
+                    referência cruzada, para enriquecer ou complementar um recurso comunitário
+                    público.
+                  </>
+                }
+              />
+
+              {apiError && (
+                <div className="mt-[32px] mb-[16px]">
+                  <StatusCard type="danger" description={apiError} />
+                </div>
+              )}
+
+              <form className="datasets-admin-page__form">
+                <p className="text-neutral-900 text-base leading-7 pt-32">
+                  Os campos marcados com um asterisco ( * ) são obrigatórios.
+                </p>
+
+                <h2 className="datasets-admin-page__section-title">Produtor</h2>
+
+                <InputSelect
+                  label="Verifique a identidade que deseja usar na publicação."
+                  placeholder="Para pesquisar..."
+                  id="producer-identity"
+                  searchable
+                  searchInputPlaceholder="Escreva para pesquisar..."
+                  searchNoResultsText="Nenhum resultado encontrado"
+                >
+                  <DropdownSection name="organizations">
+                    <DropdownOption value="org1">Organização</DropdownOption>
+                  </DropdownSection>
+                </InputSelect>
+
+                <div className="datasets-admin-page__org-card">
+                  <p className="datasets-admin-page__org-card-title">
+                    Não pertence a nenhuma organização.
+                  </p>
+                  <p className="datasets-admin-page__org-card-description">
+                    Recomendamos que publique em nome de uma organização se se tratar de uma
+                    atividade profissional.
+                  </p>
+                  <a
+                    href="/pages/admin/organizations/new"
+                    className="datasets-admin-page__org-card-link"
+                  >
+                    Crie ou participe de uma organização
+                    <Icon name="agora-line-arrow-right-circle" className="w-[24px] h-[24px]" />
+                  </a>
+                </div>
+
+                {/* Arquivo ou Link */}
+                <h2 className="datasets-admin-page__section-title">Ficheiro ou link</h2>
+
+                <div className="datasets-admin-page__fields-group">
+                  <div>
+                    <ButtonUploader
+                      label="Ficheiros"
+                      inputLabel="Arraste e solte arquivos"
+                      removeFileButtonLabel="Remover ficheiro"
+                      replaceFileButtonLabel="Substituir ficheiro"
+                      extensionsInstructions="Tamanho máximo: 420 MB."
+                      maxSize={440401920}
+                      maxCount={1}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const files = e.target.files;
+                        setFile(files && files.length > 0 ? files[0] : null);
+                        if (files && files.length > 0) clearError("resourceUrl");
+                      }}
+                    />
+                  </div>
+
+                  <div className="datasets-admin-page__divider-or">
+                    <span className="datasets-admin-page__divider-or-text">ou</span>
+                  </div>
+
+                  <InputText
+                    label="Link exato para o arquivo *"
+                    placeholder="https://..."
+                    id="resource-url"
+                    value={resourceUrl}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setResourceUrl(e.target.value);
+                      if (e.target.value.trim()) clearError("resourceUrl");
+                    }}
+                    hasError={!!formErrors.resourceUrl}
+                    hasFeedback={!!formErrors.resourceUrl}
+                    feedbackState="danger"
+                    errorFeedbackText="Forneça um ficheiro ou um link."
+                  />
+                </div>
+
+                {/* Descrição */}
+                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+
+                <div className="datasets-admin-page__fields-group">
+                  <InputText
+                    label="Título *"
+                    placeholder="Insira o título aqui"
+                    id="resource-title"
+                    value={title}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setTitle(e.target.value);
+                      if (e.target.value.trim()) clearError("title");
+                    }}
+                    hasError={!!formErrors.title}
+                    hasFeedback={!!formErrors.title}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
+                  />
+
+                  <InputSelect
+                    label="Tipo *"
+                    placeholder="Arquivos principais"
+                    id="resource-type"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
+                    onChange={(options) => {
+                      if (options.length > 0) {
+                        setSelectedType(options[0].value as string);
+                        clearError("type");
+                      } else {
+                        setSelectedType("");
+                      }
+                    }}
+                    hasError={!!formErrors.type}
+                    hasFeedback={!!formErrors.type}
+                    feedbackState="danger"
+                    errorFeedbackText="Campo obrigatório"
+                  >
+                    <DropdownSection name="types">
+                      {resourceTypes.map((t) => (
+                        <DropdownOption key={t.id} value={t.id}>
+                          {t.label}
+                        </DropdownOption>
+                      ))}
+                    </DropdownSection>
+                  </InputSelect>
+
+                  <InputTextArea
+                    label="Descrição"
+                    placeholder="Insira a descrição aqui"
+                    id="resource-description"
+                    rows={6}
+                    value={description}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                      setDescription(e.target.value)
+                    }
+                  />
+                </div>
+
+                {/* Esquema de dados */}
+                <h2 className="datasets-admin-page__section-title">Esquema de dados</h2>
+
+                <div className="datasets-admin-page__fields-group">
+                  <InputSelect
+                    label="Plano"
+                    placeholder="Procure um esquema referenciado em schema.data.gouv.fr..."
+                    id="resource-schema"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
+                  >
+                    <DropdownSection name="schemas">
+                      <DropdownOption value="">Nenhum</DropdownOption>
+                    </DropdownSection>
+                  </InputSelect>
+
+                  <div className="datasets-admin-page__divider-or">
+                    <span className="datasets-admin-page__divider-or-text">ou</span>
+                  </div>
+
+                  <InputText
+                    label="Adicione um link para o diagrama."
+                    placeholder="https://..."
+                    id="resource-schema-url"
+                    value={schemaUrl}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSchemaUrl(e.target.value)
+                    }
+                  />
+                </div>
+
+                {/* Associe um conjunto de dados */}
+                <h2 className="datasets-admin-page__section-title">
+                  Associe um conjunto de dados
+                </h2>
+
+                {dataset && (
+                  <div className="agora-card-links-datasets-px0 mt-[16px]">
+                    <CardLinks
+                      onClick={() => {}}
+                      className="cursor-pointer text-neutral-900"
+                      variant="transparent"
+                      image={{
+                        src:
+                          dataset.organization?.logo ||
+                          "/images/placeholders/organization.png",
+                        alt: dataset.organization?.name || "Organização sem logo",
+                      }}
+                      category={dataset.organization?.name}
+                      title={dataset.title}
+                      description={
+                        <div className="flex flex-col gap-12">
+                          <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                            {dataset.description}
+                          </p>
+                          <div className="flex flex-wrap gap-8 items-center mt-[8px]">
+                            <span className="text-sm font-medium text-neutral-900">
+                              Metadados: {dataset.quality?.score != null ? Math.round(dataset.quality.score * 100) : 0}%
+                            </span>
+                          </div>
+                          <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
+                            <div className="flex items-center gap-8" title="Visualizações">
+                              <Icon name="agora-line-eye" className="" aria-hidden="true" />
+                              <span>
+                                {dataset.metrics?.views
+                                  ? dataset.metrics.views >= 1000000
+                                    ? (dataset.metrics.views / 1000000).toFixed(1).replace(".", ",") + " M"
+                                    : dataset.metrics.views >= 1000
+                                      ? (dataset.metrics.views / 1000).toFixed(0) + " mil"
+                                      : dataset.metrics.views
+                                  : "0"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Downloads">
+                              <Icon name="agora-line-download" className="" aria-hidden="true" />
+                              <span>
+                                {dataset.metrics?.resources_downloads
+                                  ? dataset.metrics.resources_downloads >= 1000
+                                    ? (dataset.metrics.resources_downloads / 1000).toFixed(0) + " mil"
+                                    : dataset.metrics.resources_downloads
+                                  : "0"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Reutilizações">
+                              <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
+                              <span>{dataset.metrics?.reuses || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Favoritos">
+                              <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
+                              <span>
+                                {dataset.metrics?.followers
+                                  ? dataset.metrics.followers >= 1000
+                                    ? (dataset.metrics.followers / 1000).toFixed(0) + " mil"
+                                    : dataset.metrics.followers
+                                  : "0"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                      date={
+                        <span className="font-[300]">
+                          {`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt }).replace("aproximadamente ", "").replace("quase ", "").replace("menos de ", "").replace("cerca de ", "")}`}
+                        </span>
+                      }
+                      mainLink={
+                        <Link href={`/pages/datasets/${dataset.slug}`}>
+                          <span className="underline">{dataset.title}</span>
+                        </Link>
+                      }
+                      blockedLink={true}
+                    />
+                  </div>
+                )}
+
+                <div className="datasets-admin-page__actions flex justify-between gap-[18px]">
+                  <Button
+                    variant="primary"
+                    appearance="outline"
+                    hasIcon
+                    leadingIcon="agora-line-arrow-left-circle"
+                    leadingIconHover="agora-solid-arrow-left-circle"
+                    onClick={onPreviousStep}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="primary"
+                    hasIcon
+                    trailingIcon="agora-line-arrow-right-circle"
+                    trailingIconHover="agora-solid-arrow-right-circle"
+                    onClick={handleStep1Next}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "A criar..." : "Seguinte"}
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
+
+          {/* Step 2: Finalizar a publicação */}
+          {currentStep === 2 && (
+            <>
+              <StatusCard
+                type="success"
+                description={
+                  <>
+                    <strong>Seu recurso comunitário foi criado!</strong>
+                    <br />
+                    Veja na página pública.
+                  </>
+                }
+              />
+
+              {createdResource && (
+                <div className="mt-[24px] border border-neutral-200 rounded-4 p-24 flex items-start justify-between">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-8">
+                      <Icon name="agora-line-file" className="w-[20px] h-[20px]" />
+                      <span className="font-bold text-neutral-900">
+                        {createdResource.title}
+                      </span>
+                    </div>
+                    <p className="text-sm text-neutral-700">
+                      Atualizado hoje
+                      {createdResource.format
+                        ? ` — ${createdResource.format.toUpperCase()}`
+                        : ""}
+                    </p>
+                    {createdResource.url && (
+                      <p className="text-sm text-neutral-700 flex items-center gap-4">
+                        <Icon name="agora-line-map-pin" className="w-[16px] h-[16px]" />
+                        Localização: {new URL(createdResource.url).hostname}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className="border border-neutral-300 rounded-4 p-8 hover:bg-neutral-100"
+                    title="Eliminar recurso"
+                    onClick={async () => {
+                      try {
+                        const { deleteCommunityResource } = await import("@/services/api");
+                        await deleteCommunityResource(createdResource.id);
+                        router.push("/pages/admin/community-resources");
+                      } catch {
+                        setApiError("Erro ao eliminar recurso.");
+                      }
+                    }}
+                  >
+                    <Icon name="agora-line-trash" className="w-[20px] h-[20px]" />
+                  </button>
+                </div>
+              )}
+
+              {apiError && (
+                <div className="mt-[32px] mb-[16px]">
+                  <StatusCard type="danger" description={apiError} />
+                </div>
+              )}
+
+              <div className="datasets-admin-page__actions flex justify-end gap-[18px] mt-[32px]">
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    if (dataset) {
+                      router.push(`/pages/datasets/${dataset.slug}`);
+                    } else {
+                      router.push("/pages/admin/community-resources");
+                    }
+                  }}
+                >
+                  Veja a página pública
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Right: Auxiliar sidebar (only for step 1) */}
+        {currentStep === 1 && (
+          <aside className="datasets-admin-page__auxiliar">
+            <div className="datasets-admin-page__auxiliar-inner">
+              <div className="datasets-admin-page__auxiliar-header">
+                <Icon name="agora-line-question-mark" className="w-[24px] h-[24px]" />
+                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+              </div>
+              <AuxiliarList items={auxiliarItems} />
+            </div>
+          </aside>
+        )}
+      </div>
+    </>
+  );
+}
