@@ -982,18 +982,18 @@ body:has(.admin-wrapper)>div>header.sticky {
   padding: 0 112px;
 }
 
-.admin-header .authenticated-panel-menu>.agora-btn {
-  background-color: var(--color-white) !important;
-  color: var(--color-primary-500) !important;
-  border-color: transparent !important;
+.admin-header .authenticated-panel-menu > .agora-btn {
+  background-color: var(--color-white);
+  color: var(--color-primary-500);
+  border-color: transparent;
 }
 
 .admin-header[style*="--admin-avatar-url"] .authenticated-panel-menu > .agora-btn {
-  background-image: var(--admin-avatar-url) !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-color: transparent !important;
+  background-image: var(--admin-avatar-url);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: transparent;
   border-radius: 50%;
   overflow: hidden;
 }
@@ -1002,8 +1002,8 @@ body:has(.admin-wrapper)>div>header.sticky {
   display: none;
 }
 
-.admin-header .authenticated-panel-menu>.agora-btn .children-wrapper {
-  color: var(--color-primary-500) !important;
+.admin-header .authenticated-panel-menu > .agora-btn .children-wrapper {
+  color: var(--color-primary-500);
 }
 
 /* 7.2 Side Navigation */
