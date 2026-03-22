@@ -2465,6 +2465,25 @@ export async function clearApiKey(): Promise<void> {
   if (!res.ok) throw new Error(`Failed to clear API key: ${res.statusText}`);
 }
 
+export async function requestEmailChange(
+  newEmail: string,
+  csrfToken: string
+): Promise<{ message: string }> {
+  const body = new URLSearchParams({
+    new_email: newEmail,
+    new_email_confirm: newEmail,
+    csrf_token: csrfToken,
+  });
+  const res = await fetch("/change-email", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to request email change");
+  return data;
+}
+
 export async function deleteAccount(): Promise<void> {
   const res = await fetch(`${API_AUTH_URL}/me/`, {
     method: "DELETE",

@@ -7,10 +7,12 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
   fetchFullProfile,
   fetchUserActivity,
+  fetchCsrfToken,
   updateProfile,
   uploadAvatar,
   generateApiKey,
   clearApiKey,
+  requestEmailChange,
 } from "@/services/api";
 import { Activity, UserPublic } from "@/types/api";
 import { format } from "date-fns";
@@ -33,7 +35,7 @@ import {
 export default function ProfileClient() {
   const router = useRouter();
   const { displayName } = useCurrentUser();
-  const { user, refresh } = useAuth();
+  const { user, samlLogin, refresh } = useAuth();
 
   const [profile, setProfile] = useState<UserPublic | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
@@ -44,6 +46,11 @@ export default function ProfileClient() {
   const [website, setWebsite] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [email, setEmail] = useState("");
+
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [isChangingEmail, setIsChangingEmail] = useState(false);
+  const [emailChangeSuccess, setEmailChangeSuccess] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingKey, setIsGeneratingKey] = useState(false);
@@ -141,6 +148,27 @@ export default function ProfileClient() {
     } catch (error) {
       console.error("Error uploading avatar:", error);
       setSaveError("Erro ao carregar a foto de perfil. Tente novamente.");
+    }
+  };
+
+  const handleEmailChange = async () => {
+    if (!newEmail || newEmail === email) return;
+    setIsChangingEmail(true);
+    setSaveError("");
+    setEmailChangeSuccess(false);
+    try {
+      const csrfToken = await fetchCsrfToken();
+      await requestEmailChange(newEmail, csrfToken);
+      setEmailChangeSuccess(true);
+      setIsEditingEmail(false);
+      setNewEmail("");
+    } catch (error) {
+      console.error("Error requesting email change:", error);
+      setSaveError(
+        "Erro ao solicitar a alteração de e-mail. Verifique o endereço e tente novamente."
+      );
+    } finally {
+      setIsChangingEmail(false);
     }
   };
 
@@ -329,16 +357,76 @@ export default function ProfileClient() {
                     </Button>
                   </div>
 
+                  {emailChangeSuccess && (
+                    <StatusCard
+                      type="success"
+                      description="Foi enviado um e-mail de confirmação para o novo endereço. Verifique a sua caixa de entrada."
+                    />
+                  )}
+
                   <div className="flex items-end gap-[16px]">
                     <div className="flex-1">
-                      <InputText
-                        label="Endereço de e-mail"
-                        placeholder="Insira o e-mail aqui"
-                        id="email"
-                        value={email}
-                        readOnly
-                      />
+                      {isEditingEmail ? (
+                        <InputText
+                          label="Novo endereço de e-mail"
+                          placeholder="Insira o novo e-mail aqui"
+                          id="new-email"
+                          value={newEmail}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            setNewEmail(e.target.value)
+                          }
+                        />
+                      ) : (
+                        <InputText
+                          label="Endereço de e-mail"
+                          placeholder="Insira o e-mail aqui"
+                          id="email"
+                          value={email}
+                          readOnly
+                        />
+                      )}
                     </div>
+                    {!samlLogin && (
+                      <>
+                        {isEditingEmail ? (
+                          <div className="flex gap-[8px]">
+                            <Button
+                              appearance="outline"
+                              variant="primary"
+                              onClick={handleEmailChange}
+                              disabled={isChangingEmail || !newEmail || newEmail === email}
+                            >
+                              {isChangingEmail ? "A enviar..." : "Confirmar"}
+                            </Button>
+                            <Button
+                              appearance="outline"
+                              variant="neutral"
+                              onClick={() => {
+                                setIsEditingEmail(false);
+                                setNewEmail("");
+                              }}
+                              disabled={isChangingEmail}
+                            >
+                              Cancelar
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button
+                            appearance="outline"
+                            variant="neutral"
+                            hasIcon
+                            leadingIcon="agora-line-edit"
+                            leadingIconHover="agora-solid-edit"
+                            onClick={() => {
+                              setIsEditingEmail(true);
+                              setNewEmail(email);
+                            }}
+                          >
+                            Alterar e-mail
+                          </Button>
+                        )}
+                      </>
+                    )}
                   </div>
 
                   <div className="flex items-end gap-[16px]">
