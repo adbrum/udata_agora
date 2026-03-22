@@ -77,7 +77,7 @@ export default function PublicProfileClient() {
 
   return (
     <div className="container mx-auto">
-      <div className="datasets-admin-page__breadcrumb">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Início", url: "/" },
@@ -86,7 +86,7 @@ export default function PublicProfileClient() {
         />
       </div>
 
-      <h1 className="datasets-admin-page__title mt-[64px] mb-[32px]">Perfil</h1>
+      <h1 className="admin-page__title mt-[64px] mb-[32px]">Perfil</h1>
 
       {/* Profile Card */}
       <div className="profile-card">

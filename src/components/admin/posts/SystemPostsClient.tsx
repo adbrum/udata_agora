@@ -97,8 +97,8 @@ export default function SystemPostsClient() {
   const articles = mockArticles;
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -107,8 +107,8 @@ export default function SystemPostsClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Artigos</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Artigos</h1>
         <div className="flex items-center gap-[16px]">
           <PublishDropdown />
         </div>

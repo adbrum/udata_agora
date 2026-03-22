@@ -27,8 +27,8 @@ import PublishDropdown from "@/components/admin/PublishDropdown";
 export default function StatisticsClient() {
   const { displayName } = useCurrentUser();
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -38,7 +38,7 @@ export default function StatisticsClient() {
         />
       </div>
 
-      <h1 className="datasets-admin-page__title mt-[64px] mb-[16px]">Estatísticas</h1>
+      <h1 className="admin-page__title mt-[64px] mb-[16px]">Estatísticas</h1>
 
       <p className="text-neutral-700 text-sm leading-relaxed mb-[24px]">
         As estatísticas foram compiladas a partir de julho de 2022

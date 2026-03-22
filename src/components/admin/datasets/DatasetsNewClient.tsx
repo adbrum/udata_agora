@@ -30,8 +30,8 @@ export default function DatasetsNewClient() {
   const filledSegments = Math.round((displayStep / totalSteps) * totalSegments);
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -41,16 +41,16 @@ export default function DatasetsNewClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">
           {currentStep === 1 ? "Publique em dados.gov" : "Formulário de inscrição"}
         </h1>
         <PublishDropdown />
       </div>
 
       {/* Step indicator */}
-      <div className="datasets-admin-page__step-header">
-        <p className="datasets-admin-page__step-text">
+      <div className="admin-page__step-header">
+        <p className="admin-page__step-text">
           <span className="text-primary-600 font-bold">Passo {currentStep} - </span>
           <span className="text-primary-900 font-bold">
             {currentStep === 1 && "Descreva o seu conjunto de dados"}
@@ -62,28 +62,28 @@ export default function DatasetsNewClient() {
       </div>
 
       {/* Progress bar */}
-      <div className="datasets-admin-page__stepper">
-        <div className="datasets-admin-page__stepper-bar">
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--start" />
+      <div className="admin-page__stepper">
+        <div className="admin-page__stepper-bar">
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--start" />
           {Array.from({ length: totalSegments }).map((_, i) => (
             <div
               key={i}
-              className={`datasets-admin-page__stepper-segment ${i < filledSegments
-                  ? "datasets-admin-page__stepper-segment--filled"
+              className={`admin-page__stepper-segment ${i < filledSegments
+                  ? "admin-page__stepper-segment--filled"
                   : ""
                 }`}
             />
           ))}
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--end" />
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--end" />
         </div>
-        <span className="datasets-admin-page__stepper-label">
+        <span className="admin-page__stepper-label">
           Passo {displayStep}/{totalSteps}
         </span>
       </div>
 
       {currentStep === 1 && (
         <>
-          <h2 className="datasets-admin-page__section-title mb-[16px]">Tipo de publicação</h2>
+          <h2 className="admin-page__section-title mb-[16px]">Tipo de publicação</h2>
 
           <StatusCard
             type="info"

@@ -174,8 +174,8 @@ export default function HarvestersNewClient() {
   ];
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -188,14 +188,14 @@ export default function HarvestersNewClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Formulário de inscrição</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Formulário de inscrição</h1>
         <PublishDropdown />
       </div>
 
       {/* Step indicator */}
-      <div className="datasets-admin-page__step-header">
-        <p className="datasets-admin-page__step-text">
+      <div className="admin-page__step-header">
+        <p className="admin-page__step-text">
           <span className="text-primary-600 font-bold">Passo {currentStep} - </span>
           <span className="text-primary-900 font-bold">
             {stepTitles[currentStep]}
@@ -204,29 +204,29 @@ export default function HarvestersNewClient() {
       </div>
 
       {/* Progress bar */}
-      <div className="datasets-admin-page__stepper">
-        <div className="datasets-admin-page__stepper-bar">
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--start" />
+      <div className="admin-page__stepper">
+        <div className="admin-page__stepper-bar">
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--start" />
           {Array.from({ length: totalSegments }).map((_, i) => (
             <div
               key={i}
-              className={`datasets-admin-page__stepper-segment ${
+              className={`admin-page__stepper-segment ${
                 i < filledSegments
-                  ? "datasets-admin-page__stepper-segment--filled"
+                  ? "admin-page__stepper-segment--filled"
                   : ""
               }`}
             />
           ))}
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--end" />
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--end" />
         </div>
-        <span className="datasets-admin-page__stepper-label">
+        <span className="admin-page__stepper-label">
           Passo {currentStep}/{totalSteps}
         </span>
       </div>
 
       {/* Main content area */}
-      <div className="datasets-admin-page__body">
-        <div className="datasets-admin-page__form-area">
+      <div className="admin-page__body">
+        <div className="admin-page__form-area">
           {/* Step 1: Descreva o seu harvester */}
           {currentStep === 1 && (
             <>
@@ -243,14 +243,14 @@ export default function HarvestersNewClient() {
                 }
               />
 
-              <form className="datasets-admin-page__form">
+              <form className="admin-page__form">
                 <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
 
-                <h2 className="datasets-admin-page__section-title">Produtor</h2>
+                <h2 className="admin-page__section-title">Produtor</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <IsolatedSelect
                     label="Verifique a identidade que deseja usar para publicar *"
                     placeholder="Para pesquisar..."
@@ -261,9 +261,9 @@ export default function HarvestersNewClient() {
                   </IsolatedSelect>
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+                <h2 className="admin-page__section-title">Descrição</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <InputText
                     label="Nome *"
                     placeholder=""
@@ -302,11 +302,11 @@ export default function HarvestersNewClient() {
                   />
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">
+                <h2 className="admin-page__section-title">
                   Implementação
                 </h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <IsolatedSelect
                     label="Tipo *"
                     placeholder=""
@@ -400,7 +400,7 @@ export default function HarvestersNewClient() {
                   </div>
                 </div>
 
-                <div className="datasets-admin-page__actions">
+                <div className="admin-page__actions">
                   <Button
                     variant="primary"
                     hasIcon
@@ -417,7 +417,7 @@ export default function HarvestersNewClient() {
 
           {/* Step 2: Visualize */}
           {currentStep === 2 && (
-            <div className="datasets-admin-page__form">
+            <div className="admin-page__form">
               <div className="flex flex-col gap-[8px] mb-[24px]">
                 <p className="text-neutral-700 text-sm flex items-center gap-[6px]">
                   <Icon name="agora-line-calendar" className="w-[16px] h-[16px]" />
@@ -451,7 +451,7 @@ export default function HarvestersNewClient() {
                 }
               />
 
-              <h2 className="datasets-admin-page__section-title">Erros</h2>
+              <h2 className="admin-page__section-title">Erros</h2>
 
               <StatusCard
                 type="danger"
@@ -466,7 +466,7 @@ export default function HarvestersNewClient() {
                 0 itens
               </p>
 
-              <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+              <div className="admin-page__actions admin-page__actions--between">
                 <Button
                   appearance="outline"
                   variant="neutral"
@@ -491,7 +491,7 @@ export default function HarvestersNewClient() {
 
           {/* Step 3: Finalizar */}
           {currentStep === 3 && (
-            <div className="datasets-admin-page__form">
+            <div className="admin-page__form">
               <StatusCard
                 type="success"
                 description={
@@ -503,7 +503,7 @@ export default function HarvestersNewClient() {
                 }
               />
 
-              <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+              <div className="admin-page__actions admin-page__actions--between">
                 <Button
                   appearance="outline"
                   variant="neutral"
@@ -528,14 +528,14 @@ export default function HarvestersNewClient() {
 
         {/* Right: Auxiliar sidebar (only for step 1) */}
         {currentStep === 1 && (
-          <aside className="datasets-admin-page__auxiliar">
-            <div className="datasets-admin-page__auxiliar-inner">
-              <div className="datasets-admin-page__auxiliar-header">
+          <aside className="admin-page__auxiliar">
+            <div className="admin-page__auxiliar-inner">
+              <div className="admin-page__auxiliar-header">
                 <Icon
                   name="agora-line-question-mark"
                   className="w-[24px] h-[24px]"
                 />
-                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
               </div>
               <AuxiliarList items={auxiliarItems} />
             </div>

@@ -334,9 +334,9 @@ export default function ReusesFormClient({
   return (
     <>
       {/* Main content area: form + auxiliar sidebar */}
-      <div className="datasets-admin-page__body">
+      <div className="admin-page__body">
         {/* Left: Form */}
-        <div className="datasets-admin-page__form-area">
+        <div className="admin-page__form-area">
           {/* Step 1: Descreva sua reutilização */}
           {currentStep === 1 && (
             <>
@@ -359,11 +359,11 @@ export default function ReusesFormClient({
                 </div>
               )}
 
-              <form className="datasets-admin-page__form">
+              <form className="admin-page__form">
                 <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
-                <h2 className="datasets-admin-page__section-title">Produtor</h2>
+                <h2 className="admin-page__section-title">Produtor</h2>
 
                 <IsolatedSelect
                   label="Verifique a identidade que deseja usar na publicação."
@@ -374,17 +374,17 @@ export default function ReusesFormClient({
                   {producerOptions}
                 </IsolatedSelect>
 
-                <div className="datasets-admin-page__org-card">
-                  <p className="datasets-admin-page__org-card-title">
+                <div className="admin-page__org-card">
+                  <p className="admin-page__org-card-title">
                     Não pertence a nenhuma organização.
                   </p>
-                  <p className="datasets-admin-page__org-card-description">
+                  <p className="admin-page__org-card-description">
                     Recomendamos que publique em nome de uma organização se se
                     tratar de uma atividade profissional.
                   </p>
                   <a
                     href="/pages/admin/organizations/new"
-                    className="datasets-admin-page__org-card-link"
+                    className="admin-page__org-card-link"
                   >
                     Crie ou participe de uma organização
                     <Icon
@@ -394,9 +394,9 @@ export default function ReusesFormClient({
                   </a>
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+                <h2 className="admin-page__section-title">Descrição</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <InputText
                     label="Nome da reutilização *"
                     placeholder="Insira o nome aqui"
@@ -528,7 +528,7 @@ export default function ReusesFormClient({
                   </div>
                 </div>
 
-                <div className="datasets-admin-page__actions flex justify-between gap-[18px]">
+                <div className="admin-page__actions flex justify-between gap-[18px]">
                   <Button
                     variant="primary"
                     appearance="outline"
@@ -569,33 +569,8 @@ export default function ReusesFormClient({
                 </div>
               )}
 
-              <form className="datasets-admin-page__form">
+              <form className="admin-page__form">
                 {/* Conjuntos de dados */}
-                <InputSelect
-                  label="Pesquisar um conjunto de dados"
-                  placeholder="Procurando um conjunto de dados..."
-                  id="reuse-dataset-search"
-                  searchable
-                  searchInputPlaceholder="Escreva para pesquisar..."
-                  searchNoResultsText="Nenhum resultado encontrado"
-                  onChange={(options) => {
-                    if (options.length > 0) {
-                      const found = myDatasets.find((d) => d.id === options[0].value);
-                      setSelectedDataset(found || null);
-                    } else {
-                      setSelectedDataset(null);
-                    }
-                  }}
-                >
-                  <DropdownSection name="datasets">
-                    {myDatasets.map((d) => (
-                      <DropdownOption key={d.id} value={d.id}>
-                        {d.title}
-                      </DropdownOption>
-                    ))}
-                  </DropdownSection>
-                </InputSelect>
-
                 {selectedDataset && (
                   <div className="agora-card-links-datasets-px0 mt-[16px]">
                     <CardLinks
@@ -652,6 +627,31 @@ export default function ReusesFormClient({
                     />
                   </div>
                 )}
+
+                <InputSelect
+                  label="Pesquisar um conjunto de dados"
+                  placeholder="Procurando um conjunto de dados..."
+                  id="reuse-dataset-search"
+                  searchable
+                  searchInputPlaceholder="Escreva para pesquisar..."
+                  searchNoResultsText="Nenhum resultado encontrado"
+                  onChange={(options) => {
+                    if (options.length > 0) {
+                      const found = myDatasets.find((d) => d.id === options[0].value);
+                      setSelectedDataset(found || null);
+                    } else {
+                      setSelectedDataset(null);
+                    }
+                  }}
+                >
+                  <DropdownSection name="datasets">
+                    {myDatasets.map((d) => (
+                      <DropdownOption key={d.id} value={d.id}>
+                        {d.title}
+                      </DropdownOption>
+                    ))}
+                  </DropdownSection>
+                </InputSelect>
 
                 {datasetLinks.map((link, index) => (
                   <div key={`dataset-${index}`} className="mt-[16px]">
@@ -758,7 +758,7 @@ export default function ReusesFormClient({
                 </div>
                 </>)}
 
-                <div className="datasets-admin-page__actions flex justify-between gap-[18px]">
+                <div className="admin-page__actions flex justify-between gap-[18px]">
                   <Button
                     variant="primary"
                     appearance="outline"
@@ -934,7 +934,7 @@ export default function ReusesFormClient({
                 </div>
               )}
 
-              <div className="datasets-admin-page__actions flex justify-end gap-[18px]">
+              <div className="admin-page__actions flex justify-end gap-[18px]">
                 <Button
                   appearance="outline"
                   variant="neutral"
@@ -980,14 +980,14 @@ export default function ReusesFormClient({
 
         {/* Right: Auxiliar sidebar (only for step 1) */}
         {currentStep === 1 && (
-          <aside className="datasets-admin-page__auxiliar">
-            <div className="datasets-admin-page__auxiliar-inner">
-              <div className="datasets-admin-page__auxiliar-header">
+          <aside className="admin-page__auxiliar">
+            <div className="admin-page__auxiliar-inner">
+              <div className="admin-page__auxiliar-header">
                 <Icon
                   name="agora-line-question-mark"
                   className="w-[24px] h-[24px]"
                 />
-                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
               </div>
               <AuxiliarList items={auxiliarItems} />
             </div>

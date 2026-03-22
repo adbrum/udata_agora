@@ -109,8 +109,8 @@ export default function OrganizationsNewClient() {
   ];
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -123,14 +123,14 @@ export default function OrganizationsNewClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Formulário de inscrição</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Formulário de inscrição</h1>
         <PublishDropdown />
       </div>
 
       {/* Step indicator */}
-      <div className="datasets-admin-page__step-header">
-        <p className="datasets-admin-page__step-text">
+      <div className="admin-page__step-header">
+        <p className="admin-page__step-text">
           <span className="text-primary-600 font-bold">Passo {currentStep} - </span>
           <span className="text-primary-900 font-bold">
             {stepTitles[currentStep]}
@@ -139,32 +139,32 @@ export default function OrganizationsNewClient() {
       </div>
 
       {/* Progress bar */}
-      <div className="datasets-admin-page__stepper">
-        <div className="datasets-admin-page__stepper-bar">
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--start" />
+      <div className="admin-page__stepper">
+        <div className="admin-page__stepper-bar">
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--start" />
           {Array.from({ length: totalSegments }).map((_, i) => (
             <div
               key={i}
-              className={`datasets-admin-page__stepper-segment ${
+              className={`admin-page__stepper-segment ${
                 i < filledSegments
-                  ? "datasets-admin-page__stepper-segment--filled"
+                  ? "admin-page__stepper-segment--filled"
                   : ""
               }`}
             />
           ))}
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--end" />
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--end" />
         </div>
-        <span className="datasets-admin-page__stepper-label">
+        <span className="admin-page__stepper-label">
           Passo {currentStep}/{totalSteps}
         </span>
       </div>
 
       {/* Main content area */}
-      <div className="datasets-admin-page__body">
-        <div className="datasets-admin-page__form-area">
+      <div className="admin-page__body">
+        <div className="admin-page__form-area">
           {/* Step 1: Ingressar ou criar */}
           {currentStep === 1 && (
-            <div className="datasets-admin-page__form">
+            <div className="admin-page__form">
               <StatusCard
                 type="info"
                 description={
@@ -227,14 +227,14 @@ export default function OrganizationsNewClient() {
                 }
               />
 
-              <form className="datasets-admin-page__form">
+              <form className="admin-page__form">
                 <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
 
-                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+                <h2 className="admin-page__section-title">Descrição</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <InputText
                     label="Nome *"
                     placeholder="Insira o nome aqui"
@@ -279,9 +279,9 @@ export default function OrganizationsNewClient() {
                   />
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Logotipo</h2>
+                <h2 className="admin-page__section-title">Logotipo</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <ButtonUploader
                     label="Ficheiros"
                     inputLabel="Selecione ou arraste o ficheiro"
@@ -294,7 +294,7 @@ export default function OrganizationsNewClient() {
                   />
                 </div>
 
-                <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+                <div className="admin-page__actions admin-page__actions--between">
                   <Button
                     appearance="outline"
                     variant="neutral"
@@ -317,7 +317,7 @@ export default function OrganizationsNewClient() {
 
           {/* Step 3: Finalizar */}
           {currentStep === 3 && (
-            <div className="datasets-admin-page__form">
+            <div className="admin-page__form">
               <StatusCard
                 type="success"
                 description={
@@ -329,7 +329,7 @@ export default function OrganizationsNewClient() {
                 }
               />
 
-              <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+              <div className="admin-page__actions admin-page__actions--between">
                 <Button
                   appearance="outline"
                   variant="neutral"
@@ -354,14 +354,14 @@ export default function OrganizationsNewClient() {
 
         {/* Right: Auxiliar sidebar (only for step 2) */}
         {currentStep === 2 && (
-          <aside className="datasets-admin-page__auxiliar">
-            <div className="datasets-admin-page__auxiliar-inner">
-              <div className="datasets-admin-page__auxiliar-header">
+          <aside className="admin-page__auxiliar">
+            <div className="admin-page__auxiliar-inner">
+              <div className="admin-page__auxiliar-header">
                 <Icon
                   name="agora-line-question-mark"
                   className="w-[24px] h-[24px]"
                 />
-                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
               </div>
               <AuxiliarList items={auxiliarItems} />
             </div>

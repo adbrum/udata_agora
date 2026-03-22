@@ -352,7 +352,7 @@ export default function DatasetsEditClient() {
 
   if (isLoading) {
     return (
-      <div className="datasets-admin-page">
+      <div className="admin-page">
         <p className="text-neutral-600">A carregar...</p>
       </div>
     );
@@ -360,7 +360,7 @@ export default function DatasetsEditClient() {
 
   if (!dataset) {
     return (
-      <div className="datasets-admin-page">
+      <div className="admin-page">
         <StatusCard type="danger" description="Conjunto de dados não encontrado." />
         <Button
           variant="primary"
@@ -415,8 +415,8 @@ export default function DatasetsEditClient() {
   };
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -426,14 +426,14 @@ export default function DatasetsEditClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">{dataset.title}</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">{dataset.title}</h1>
         <Button
           variant="primary"
           appearance="outline"
           onClick={() => window.open(`/pages/datasets/${dataset.slug}`, "_blank")}
         >
-          <span className="dataset-edit-info__btn-content">
+          <span className="admin-edit-info__btn-content">
             <Icon name="agora-line-eye" className="w-[16px] h-[16px]" />
             Ver página pública do conjunto de dados
           </span>
@@ -443,30 +443,30 @@ export default function DatasetsEditClient() {
       {apiError && <StatusCard type="danger" description={apiError} />}
       {apiSuccess && <StatusCard type="success" description={apiSuccess} />}
 
-      <div className="dataset-edit-info">
-        <div className="dataset-edit-info__badges">
+      <div className="admin-edit-info">
+        <div className="admin-edit-info__badges">
           <Pill variant={dataset.private ? "warning" : "success"}>
             {dataset.private ? "RASCUNHO" : "PÚBLICO"}
           </Pill>
           {dataset.featured && <Pill variant="informative">DESTAQUE</Pill>}
-          <span className="dataset-edit-info__stat">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="dataset-edit-info__stat-icon">
+          <span className="admin-edit-info__stat">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="admin-edit-info__stat-icon">
               <path d="M4 22.9091V15.2727C4 14.6702 4.47969 14.1818 5.07143 14.1818C5.66316 14.1818 6.14286 14.6702 6.14286 15.2727V22.9091C6.14286 23.5116 5.66316 24 5.07143 24C4.47969 24 4 23.5116 4 22.9091ZM10.4286 22.9091V1.09091C10.4286 0.488417 10.9083 0 11.5 0C12.0917 0 12.5714 0.488417 12.5714 1.09091V22.9091C12.5714 23.5116 12.0917 24 11.5 24C10.9083 24 10.4286 23.5116 10.4286 22.9091ZM16.8571 22.9091V9.81818C16.8571 9.21569 17.3368 8.72727 17.9286 8.72727C18.5203 8.72727 19 9.21569 19 9.81818V22.9091C19 23.5116 18.5203 24 17.9286 24C17.3368 24 16.8571 23.5116 16.8571 22.9091Z" fill="#64718B" />
             </svg>
             {`${(dataset.metrics?.views ?? 0) + (dataset.metrics?.resources_downloads ?? 0) + (dataset.metrics?.reuses ?? 0) + (dataset.metrics?.followers ?? 0)} estatísticas`}
           </span>
-          <span className="dataset-edit-info__stat">
-            <Icon name="agora-line-document" className="dataset-edit-info__stat-icon" />
+          <span className="admin-edit-info__stat">
+            <Icon name="agora-line-document" className="admin-edit-info__stat-icon" />
             {`${metadataCount} metadados`}
           </span>
-          <span className="dataset-edit-info__stat">
-            <Icon name="agora-line-star" className="dataset-edit-info__stat-icon" />
+          <span className="admin-edit-info__stat">
+            <Icon name="agora-line-star" className="admin-edit-info__stat-icon" />
             {qualityScore > 0 ? (qualityScore / 10).toFixed(1).replace(".", ",") : "0"}
           </span>
         </div>
 
-        <p className="dataset-edit-info__activity">
-          <Icon name="agora-line-clock" className="dataset-edit-info__clock-icon" />
+        <p className="admin-edit-info__activity">
+          <Icon name="agora-line-clock" className="admin-edit-info__clock-icon" />
           {latestActivity ? (
             <>
               {" Atividade mais recente: "}
@@ -479,7 +479,7 @@ export default function DatasetsEditClient() {
               {" — "}
               {latestActivity.label}
               {" — "}
-              <span className="text-neutral-900">
+              <span>
                 {format(new Date(latestActivity.created_at), "d 'de' MMMM 'de' yyyy", {
                   locale: pt,
                 })}
@@ -496,12 +496,10 @@ export default function DatasetsEditClient() {
                   >
                     {dataset.owner.first_name} {dataset.owner.last_name}
                   </Link>
-                  {" "}
                 </>
               )}
               {" — editou o conjunto de dados — "}
-              {" "}
-              <span className="text-neutral-900">
+              <span>
                 {format(new Date(dataset.last_modified), "d 'de' MMMM 'de' yyyy", {
                   locale: pt,
                 })}
@@ -521,8 +519,8 @@ export default function DatasetsEditClient() {
         <Tab>
           <TabHeader>Metadados</TabHeader>
           <TabBody>
-            <div className="datasets-admin-page__body">
-              <div className="datasets-admin-page__form-area">
+            <div className="admin-page__body">
+              <div className="admin-page__form-area">
                 {dataset.private && (
                   <div className="dataset-edit-visibility-banner">
                     <StatusCard
@@ -558,15 +556,15 @@ export default function DatasetsEditClient() {
                 )}
 
                 <form
-                  className="datasets-admin-page__form"
+                  className="admin-page__form"
                   onSubmit={(e) => e.preventDefault()}
                 >
                   <p className="text-neutral-900 text-base leading-7 pt-32">
                     Os campos marcados com um asterisco ( * ) são obrigatórios.
                   </p>
 
-                  <h2 className="datasets-admin-page__section-title">Descrição</h2>
-                  <div className="datasets-admin-page__fields-group">
+                  <h2 className="admin-page__section-title">Descrição</h2>
+                  <div className="admin-page__fields-group">
                     <InputText
                       label="Título*"
                       placeholder="Insira o título aqui"
@@ -660,8 +658,8 @@ export default function DatasetsEditClient() {
                     </div>
                   </div>
 
-                  <h2 className="datasets-admin-page__section-title">Acesso</h2>
-                  <div className="datasets-admin-page__fields-group">
+                  <h2 className="admin-page__section-title">Acesso</h2>
+                  <div className="admin-page__fields-group">
                     <div className="flex flex-col gap-[8px]">
                       <span className="text-primary-900 text-base font-medium leading-7">
                         Tipo de acesso
@@ -733,8 +731,8 @@ export default function DatasetsEditClient() {
                     </IsolatedSelect>
                   </div>
 
-                  <h2 className="datasets-admin-page__section-title">Tempo</h2>
-                  <div className="datasets-admin-page__fields-group">
+                  <h2 className="admin-page__section-title">Tempo</h2>
+                  <div className="admin-page__fields-group">
                     <IsolatedSelect
                       label="Frequência de atualização"
                       placeholder="Selecione uma frequência"
@@ -788,8 +786,8 @@ export default function DatasetsEditClient() {
                     </div>
                   </div>
 
-                  <h2 className="datasets-admin-page__section-title">Espaço</h2>
-                  <div className="datasets-admin-page__fields-group">
+                  <h2 className="admin-page__section-title">Espaço</h2>
+                  <div className="admin-page__fields-group">
                     <IsolatedSelect
                       label="Cobertura espacial"
                       placeholder="Pesquisar por cobertura espacial..."
@@ -808,7 +806,7 @@ export default function DatasetsEditClient() {
                     </IsolatedSelect>
                   </div>
 
-                  <div className="datasets-admin-page__actions flex justify-end mt-[24px]">
+                  <div className="admin-page__actions flex justify-end mt-[24px]">
                     <Button
                       variant="primary"
                       onClick={handleSaveMetadata}
@@ -879,14 +877,14 @@ export default function DatasetsEditClient() {
                 </form>
               </div>
 
-              <aside className="datasets-admin-page__auxiliar">
-                <div className="datasets-admin-page__auxiliar-inner">
-                  <div className="datasets-admin-page__auxiliar-header">
+              <aside className="admin-page__auxiliar">
+                <div className="admin-page__auxiliar-inner">
+                  <div className="admin-page__auxiliar-header">
                     <Icon
                       name="agora-line-question-mark"
                       className="w-[24px] h-[24px]"
                     />
-                    <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                    <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
                   </div>
                   <AuxiliarList
                     items={[

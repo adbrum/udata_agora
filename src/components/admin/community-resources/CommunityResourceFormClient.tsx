@@ -236,9 +236,9 @@ export default function CommunityResourceFormClient({
 
   return (
     <>
-      <div className="datasets-admin-page__body">
+      <div className="admin-page__body">
         {/* Left: Form */}
-        <div className="datasets-admin-page__form-area">
+        <div className="admin-page__form-area">
           {/* Step 1 */}
           {currentStep === 1 && (
             <>
@@ -261,12 +261,12 @@ export default function CommunityResourceFormClient({
                 </div>
               )}
 
-              <form className="datasets-admin-page__form">
+              <form className="admin-page__form">
                 <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
 
-                <h2 className="datasets-admin-page__section-title">Produtor</h2>
+                <h2 className="admin-page__section-title">Produtor</h2>
 
                 <IsolatedSelect
                   label="Verifique a identidade que deseja usar na publicação."
@@ -277,17 +277,17 @@ export default function CommunityResourceFormClient({
                   {producerOptions}
                 </IsolatedSelect>
 
-                <div className="datasets-admin-page__org-card">
-                  <p className="datasets-admin-page__org-card-title">
+                <div className="admin-page__org-card">
+                  <p className="admin-page__org-card-title">
                     Não pertence a nenhuma organização.
                   </p>
-                  <p className="datasets-admin-page__org-card-description">
+                  <p className="admin-page__org-card-description">
                     Recomendamos que publique em nome de uma organização se se tratar de uma
                     atividade profissional.
                   </p>
                   <a
                     href="/pages/admin/organizations/new"
-                    className="datasets-admin-page__org-card-link"
+                    className="admin-page__org-card-link"
                   >
                     Crie ou participe de uma organização
                     <Icon name="agora-line-arrow-right-circle" className="w-[24px] h-[24px]" />
@@ -295,9 +295,9 @@ export default function CommunityResourceFormClient({
                 </div>
 
                 {/* Arquivo ou Link */}
-                <h2 className="datasets-admin-page__section-title">Ficheiro ou link</h2>
+                <h2 className="admin-page__section-title">Ficheiro ou link</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <div>
                     <ButtonUploader
                       label="Ficheiros"
@@ -315,8 +315,8 @@ export default function CommunityResourceFormClient({
                     />
                   </div>
 
-                  <div className="datasets-admin-page__divider-or">
-                    <span className="datasets-admin-page__divider-or-text">ou</span>
+                  <div className="admin-page__divider-or">
+                    <span className="admin-page__divider-or-text">ou</span>
                   </div>
 
                   <InputText
@@ -336,9 +336,9 @@ export default function CommunityResourceFormClient({
                 </div>
 
                 {/* Descrição */}
-                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+                <h2 className="admin-page__section-title">Descrição</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <InputText
                     label="Título *"
                     placeholder="Insira o título aqui"
@@ -378,9 +378,9 @@ export default function CommunityResourceFormClient({
                 </div>
 
                 {/* Esquema de dados */}
-                <h2 className="datasets-admin-page__section-title">Esquema de dados</h2>
+                <h2 className="admin-page__section-title">Esquema de dados</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <IsolatedSelect
                     label="Plano"
                     placeholder="Procure um esquema referenciado em schema.data.gouv.fr..."
@@ -390,8 +390,8 @@ export default function CommunityResourceFormClient({
                     {schemaOptions}
                   </IsolatedSelect>
 
-                  <div className="datasets-admin-page__divider-or">
-                    <span className="datasets-admin-page__divider-or-text">ou</span>
+                  <div className="admin-page__divider-or">
+                    <span className="admin-page__divider-or-text">ou</span>
                   </div>
 
                   <InputText
@@ -406,7 +406,7 @@ export default function CommunityResourceFormClient({
                 </div>
 
                 {/* Associe um conjunto de dados */}
-                <h2 className="datasets-admin-page__section-title">
+                <h2 className="admin-page__section-title">
                   Associe um conjunto de dados
                 </h2>
 
@@ -489,7 +489,7 @@ export default function CommunityResourceFormClient({
                   </div>
                 )}
 
-                <div className="datasets-admin-page__actions flex justify-between gap-[18px]">
+                <div className="admin-page__actions flex justify-between gap-[18px]">
                   <Button
                     variant="primary"
                     appearance="outline"
@@ -576,7 +576,7 @@ export default function CommunityResourceFormClient({
                 </div>
               )}
 
-              <div className="datasets-admin-page__actions flex justify-end gap-[18px] mt-[32px]">
+              <div className="admin-page__actions flex justify-end gap-[18px] mt-[32px]">
                 <Button
                   variant="primary"
                   onClick={() => {
@@ -596,11 +596,11 @@ export default function CommunityResourceFormClient({
 
         {/* Right: Auxiliar sidebar (only for step 1) */}
         {currentStep === 1 && (
-          <aside className="datasets-admin-page__auxiliar">
-            <div className="datasets-admin-page__auxiliar-inner">
-              <div className="datasets-admin-page__auxiliar-header">
+          <aside className="admin-page__auxiliar">
+            <div className="admin-page__auxiliar-inner">
+              <div className="admin-page__auxiliar-header">
                 <Icon name="agora-line-question-mark" className="w-[24px] h-[24px]" />
-                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
               </div>
               <AuxiliarList items={auxiliarItems} />
             </div>

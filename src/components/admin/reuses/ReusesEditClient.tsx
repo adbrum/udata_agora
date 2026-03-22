@@ -15,6 +15,7 @@ import {
   StatusCard,
   Pill,
   CardNoResults,
+  CardLinks,
   ButtonUploader,
   Tabs,
   Tab,
@@ -25,12 +26,16 @@ import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import {
   fetchReuse,
+  fetchDataset,
   updateReuse,
   deleteReuse,
   fetchReuseTypes,
   fetchReuseTopics,
+  fetchMyDatasets,
+  linkDatasetToReuse,
 } from "@/services/api";
-import { Reuse, ReuseType, ReuseTopic } from "@/types/api";
+import { Reuse, ReuseType, ReuseTopic, Dataset } from "@/types/api";
+import { formatDistanceToNow } from "date-fns";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 
 export default function ReusesEditClient() {
@@ -58,13 +63,20 @@ export default function ReusesEditClient() {
   const [reuseTypes, setReuseTypes] = useState<ReuseType[]>([]);
   const [reuseTopics, setReuseTopics] = useState<ReuseTopic[]>([]);
 
+  // Datasets tab state
+  const [myDatasets, setMyDatasets] = useState<Dataset[]>([]);
+  const [associatedDatasets, setAssociatedDatasets] = useState<Dataset[]>([]);
+  const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
+  const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
+
   useEffect(() => {
     async function loadData() {
       try {
-        const [r, types, topics] = await Promise.all([
+        const [r, types, topics, datasetsRes] = await Promise.all([
           fetchReuse(slug),
           fetchReuseTypes(),
           fetchReuseTopics(),
+          fetchMyDatasets(1, 50),
         ]);
         setReuse(r);
         setTitle(r.title);
@@ -74,6 +86,7 @@ export default function ReusesEditClient() {
         setSelectedTopic(r.topic || "");
         setReuseTypes(types);
         setReuseTopics(topics);
+        setMyDatasets(datasetsRes.data || []);
       } catch (error) {
         console.error("Error loading reuse:", error);
         setApiError("Erro ao carregar a reutilização.");
@@ -83,6 +96,24 @@ export default function ReusesEditClient() {
     }
     if (slug) loadData();
   }, [slug]);
+
+  useEffect(() => {
+    if (!reuse || !reuse.datasets || reuse.datasets.length === 0) return;
+    async function loadAssociatedDatasets() {
+      try {
+        const slugs = reuse!.datasets.map((d) =>
+          d.uri.split("/").filter(Boolean).pop() || d.id
+        );
+        const results = await Promise.all(
+          slugs.map((s) => fetchDataset(s).catch(() => null))
+        );
+        setAssociatedDatasets(results.filter((d): d is Dataset => d !== null));
+      } catch {
+        setAssociatedDatasets([]);
+      }
+    }
+    loadAssociatedDatasets();
+  }, [reuse]);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -151,7 +182,7 @@ export default function ReusesEditClient() {
 
   if (isLoading) {
     return (
-      <div className="datasets-admin-page">
+      <div className="admin-page">
         <p className="text-neutral-600">A carregar...</p>
       </div>
     );
@@ -159,7 +190,7 @@ export default function ReusesEditClient() {
 
   if (!reuse) {
     return (
-      <div className="datasets-admin-page">
+      <div className="admin-page">
         <StatusCard type="danger" description="Reutilização não encontrada." />
         <Button
           variant="primary"
@@ -172,8 +203,8 @@ export default function ReusesEditClient() {
   }
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -183,41 +214,41 @@ export default function ReusesEditClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">{reuse.title}</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">{reuse.title}</h1>
         <Button
           variant="primary"
           appearance="outline"
           onClick={() => window.open(`/pages/reuses/${reuse.slug}`, "_blank")}
         >
-          <span className="dataset-edit-info__btn-content">
+          <span className="admin-edit-info__btn-content">
             <Icon name="agora-line-eye" className="w-[16px] h-[16px]" />
             Ver página pública da reutilização
           </span>
         </Button>
       </div>
 
-      {apiError && <StatusCard type="danger" description={apiError} />}
-      {apiSuccess && <StatusCard type="success" description={apiSuccess} />}
+      {apiError && <div className="mb-16"><StatusCard type="danger" description={apiError} /></div>}
+      {apiSuccess && <div className="mb-16"><StatusCard type="success" description={apiSuccess} /></div>}
 
-      <div className="dataset-edit-info">
-        <div className="dataset-edit-info__badges">
+      <div className="admin-edit-info">
+        <div className="admin-edit-info__badges">
           <Pill variant={reuse.private ? "warning" : "success"}>
             {reuse.private ? "RASCUNHO" : "PÚBLICO"}
           </Pill>
           {reuse.featured && <Pill variant="informative">DESTAQUE</Pill>}
-          <span className="dataset-edit-info__stat">
-            <Icon name="agora-line-eye" className="dataset-edit-info__stat-icon" />
+          <span className="admin-edit-info__stat">
+            <Icon name="agora-line-eye" className="admin-edit-info__stat-icon" />
             {`${reuse.metrics?.views || 0} visualizações`}
           </span>
-          <span className="dataset-edit-info__stat">
-            <Icon name="agora-line-star" className="dataset-edit-info__stat-icon" />
+          <span className="admin-edit-info__stat">
+            <Icon name="agora-line-star" className="admin-edit-info__stat-icon" />
             {`${reuse.metrics?.followers || 0} favoritos`}
           </span>
         </div>
 
-        <p className="dataset-edit-info__activity">
-          <Icon name="agora-line-clock" className="dataset-edit-info__clock-icon" />
+        <p className="admin-edit-info__activity">
+          <Icon name="agora-line-clock" className="admin-edit-info__clock-icon" />
           {" Atividade mais recente: "}
           {reuse.owner && (
             <>
@@ -227,11 +258,10 @@ export default function ReusesEditClient() {
               >
                 {reuse.owner.first_name} {reuse.owner.last_name}
               </Link>
-              {" "}
             </>
           )}
           {" — editou a reutilização — "}
-          <span className="text-neutral-900">
+          <span>
             {format(new Date(reuse.last_modified), "d 'de' MMMM 'de' yyyy", {
               locale: pt,
             })}
@@ -249,8 +279,8 @@ export default function ReusesEditClient() {
         <Tab>
           <TabHeader>Metadados</TabHeader>
           <TabBody>
-            <div className="datasets-admin-page__body">
-              <div className="datasets-admin-page__form-area">
+            <div className="admin-page__body">
+              <div className="admin-page__form-area">
                 <div className="dataset-edit-visibility-banner">
                   <StatusCard
                     type="info"
@@ -291,15 +321,15 @@ export default function ReusesEditClient() {
                 </div>
 
                 <form
-                  className="datasets-admin-page__form"
+                  className="admin-page__form"
                   onSubmit={(e) => e.preventDefault()}
                 >
                   <p className="text-neutral-900 text-base leading-7 pt-32">
                     Os campos marcados com um asterisco ( * ) são obrigatórios.
                   </p>
 
-                  <h2 className="datasets-admin-page__section-title">Descrição</h2>
-                  <div className="datasets-admin-page__fields-group">
+                  <h2 className="admin-page__section-title">Descrição</h2>
+                  <div className="admin-page__fields-group">
                     <InputText
                       label="Nome da reutilização *"
                       placeholder="Insira o nome aqui"
@@ -457,7 +487,7 @@ export default function ReusesEditClient() {
                     </div>
                   </div>
 
-                  <div className="datasets-admin-page__actions flex justify-end mt-[24px]">
+                  <div className="admin-page__actions flex justify-end mt-[24px]">
                     <Button
                       variant="primary"
                       onClick={handleSaveMetadata}
@@ -534,14 +564,14 @@ export default function ReusesEditClient() {
                 </form>
               </div>
 
-              <aside className="datasets-admin-page__auxiliar">
-                <div className="datasets-admin-page__auxiliar-inner">
-                  <div className="datasets-admin-page__auxiliar-header">
+              <aside className="admin-page__auxiliar">
+                <div className="admin-page__auxiliar-inner">
+                  <div className="admin-page__auxiliar-header">
                     <Icon
                       name="agora-line-question-mark"
                       className="w-[24px] h-[24px]"
                     />
-                    <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                    <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
                   </div>
                   <AuxiliarList
                     items={[
@@ -573,6 +603,283 @@ export default function ReusesEditClient() {
                 </div>
               </aside>
             </div>
+          </TabBody>
+        </Tab>
+
+        {/* Datasets Tab */}
+        <Tab>
+          <TabHeader>Conjuntos de dados ({reuse.datasets?.length || 0})</TabHeader>
+          <TabBody>
+            <div className="admin-page__body mt-[24px]">
+              <div className="admin-page__form-area">
+                {associatedDatasets.length > 0 && (
+                  <div className="agora-card-links-datasets-px0 mb-[24px]">
+                    {associatedDatasets.map((dataset) => (
+                      <CardLinks
+                        key={dataset.id}
+                        onClick={() => {}}
+                        className="cursor-pointer text-neutral-900"
+                        variant="transparent"
+                        image={{
+                          src: dataset.organization?.logo || "/images/placeholders/organization.png",
+                          alt: dataset.organization?.name || "Organização sem logo",
+                        }}
+                        category={dataset.organization?.name}
+                        title={dataset.title}
+                        description={
+                          <div className="flex flex-col gap-12">
+                            <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                              {dataset.description}
+                            </p>
+                            <div className="flex flex-wrap gap-8 items-center mt-[8px]">
+                              <span className="text-sm font-medium text-neutral-900">
+                                Metadados: {dataset.quality?.score != null ? Math.round(dataset.quality.score * 100) : 0}%
+                              </span>
+                            </div>
+                            <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
+                              <div className="flex items-center gap-8" title="Visualizações">
+                                <Icon name="agora-line-eye" className="" aria-hidden="true" />
+                                <span>
+                                  {dataset.metrics?.views
+                                    ? dataset.metrics.views >= 1000
+                                      ? (dataset.metrics.views / 1000).toFixed(0) + " mil"
+                                      : dataset.metrics.views
+                                    : "0"}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-8" title="Downloads">
+                                <Icon name="agora-line-download" className="" aria-hidden="true" />
+                                <span>
+                                  {dataset.metrics?.resources_downloads
+                                    ? dataset.metrics.resources_downloads >= 1000
+                                      ? (dataset.metrics.resources_downloads / 1000).toFixed(0) + " mil"
+                                      : dataset.metrics.resources_downloads
+                                    : "0"}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-8" title="Reutilizações">
+                                <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
+                                <span>{dataset.metrics?.reuses || 0}</span>
+                              </div>
+                              <div className="flex items-center gap-8" title="Favoritos">
+                                <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
+                                <span>{dataset.metrics?.followers || 0}</span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                        date={
+                          <span className="font-[300]">
+                            {`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt }).replace("aproximadamente ", "").replace("quase ", "").replace("menos de ", "").replace("cerca de ", "")}`}
+                          </span>
+                        }
+                        mainLink={
+                          <Link href={`/pages/datasets/${dataset.slug}`}>
+                            <span className="underline">{dataset.title}</span>
+                          </Link>
+                        }
+                        blockedLink={true}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                <form className="admin-page__form">
+                {selectedDataset && (
+                  <div className="agora-card-links-datasets-px0 mt-[16px]">
+                    <CardLinks
+                      onClick={() => {}}
+                      className="cursor-pointer text-neutral-900"
+                      variant="transparent"
+                      image={{
+                        src: selectedDataset.organization?.logo || "/images/placeholders/organization.png",
+                        alt: selectedDataset.organization?.name || "Organização sem logo",
+                      }}
+                      category={selectedDataset.organization?.name}
+                      title={selectedDataset.title}
+                      description={
+                        <div className="flex flex-col gap-12">
+                          <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                            {selectedDataset.description}
+                          </p>
+                          <div className="flex flex-wrap gap-8 items-center mt-[8px]">
+                            <span className="text-sm font-medium text-neutral-900">
+                              Metadados: {selectedDataset.quality?.score != null ? Math.round(selectedDataset.quality.score * 100) : 0}%
+                            </span>
+                          </div>
+                          <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
+                            <div className="flex items-center gap-8" title="Visualizações">
+                              <Icon name="agora-line-eye" className="" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.views || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Downloads">
+                              <Icon name="agora-line-download" className="" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.resources_downloads || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Reutilizações">
+                              <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.reuses || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Favoritos">
+                              <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.followers || 0}</span>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                      date={
+                        <span className="font-[300]">
+                          {`Atualizado há ${formatDistanceToNow(new Date(selectedDataset.last_modified), { locale: pt }).replace("aproximadamente ", "").replace("quase ", "").replace("menos de ", "").replace("cerca de ", "")}`}
+                        </span>
+                      }
+                      mainLink={
+                        <Link href={`/pages/datasets/${selectedDataset.slug}`}>
+                          <span className="underline">{selectedDataset.title}</span>
+                        </Link>
+                      }
+                      blockedLink={true}
+                    />
+                  </div>
+                )}
+
+                <InputSelect
+                  label="Pesquisar um conjunto de dados"
+                  placeholder="Procurando um conjunto de dados..."
+                  id="edit-dataset-search"
+                  searchable
+                  searchInputPlaceholder="Escreva para pesquisar..."
+                  searchNoResultsText="Nenhum resultado encontrado"
+                  onChange={(options) => {
+                    if (options.length > 0) {
+                      const found = myDatasets.find((d) => d.id === options[0].value);
+                      setSelectedDataset(found || null);
+                    } else {
+                      setSelectedDataset(null);
+                    }
+                  }}
+                >
+                  <DropdownSection name="datasets">
+                    {myDatasets.map((d) => (
+                      <DropdownOption key={d.id} value={d.id}>
+                        {d.title}
+                      </DropdownOption>
+                    ))}
+                  </DropdownSection>
+                </InputSelect>
+
+                {datasetLinks.map((link, index) => (
+                  <div key={`dataset-${index}`} className="mt-[16px]">
+                    <InputText
+                      label="Link para o conjunto de dados"
+                      placeholder="Insira o URL aqui"
+                      id={`edit-dataset-url-${index}`}
+                      value={link.url}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const newLinks = [...datasetLinks];
+                        newLinks[index] = { url: e.target.value };
+                        setDatasetLinks(newLinks);
+                      }}
+                    />
+                    {link.url.trim() && (
+                      <div className="flex justify-end mt-[8px]">
+                        <Button
+                          appearance="outline"
+                          variant="danger"
+                          hasIcon
+                          leadingIcon="agora-line-trash"
+                          leadingIconHover="agora-solid-trash"
+                          onClick={() => {
+                            const newLinks = datasetLinks.filter((_, i) => i !== index);
+                            setDatasetLinks(newLinks.length > 0 ? newLinks : [{ url: "" }]);
+                          }}
+                        >
+                          Eliminar
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                <div className="flex justify-end">
+                  <Button
+                    appearance="outline"
+                    variant="primary"
+                    hasIcon
+                    leadingIcon="agora-line-plus-circle"
+                    leadingIconHover="agora-solid-plus-circle"
+                    onClick={() => setDatasetLinks([...datasetLinks, { url: "" }])}
+                  >
+                    Adicionar
+                  </Button>
+                </div>
+
+                <div className="admin-page__actions flex justify-end gap-[18px] mt-[24px]">
+                  <Button
+                    variant="primary"
+                    onClick={async () => {
+                      if (!reuse) return;
+                      setIsSubmitting(true);
+                      setApiError(null);
+                      try {
+                        for (const link of datasetLinks) {
+                          if (link.url.trim()) {
+                            await linkDatasetToReuse(reuse.id, link.url.trim());
+                          }
+                        }
+                        const updated = await fetchReuse(slug);
+                        setReuse(updated);
+                        setDatasetLinks([{ url: "" }]);
+                        setSelectedDataset(null);
+                        setApiSuccess("Conjuntos de dados associados com sucesso.");
+                      } catch {
+                        setApiError("Erro ao associar conjuntos de dados.");
+                      } finally {
+                        setIsSubmitting(false);
+                      }
+                    }}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "A guardar..." : "Guardar alterações"}
+                  </Button>
+                </div>
+                </form>
+              </div>
+            </div>
+          </TabBody>
+        </Tab>
+
+        {/* API Tab */}
+        <Tab>
+          <TabHeader>API ({reuse.dataservices?.length || 0})</TabHeader>
+          <TabBody>
+            {reuse.dataservices && reuse.dataservices.length > 0 ? (
+              <div className="admin-page__body">
+                <div className="admin-page__form-area">
+                  <h2 className="font-medium text-neutral-900 text-base mb-[16px] mt-[24px]">
+                    {reuse.dataservices.length} {reuse.dataservices.length === 1 ? "API" : "APIS"}
+                  </h2>
+                  <div className="space-y-16">
+                    {reuse.dataservices.map((api) => (
+                      <div key={api.id} className="border border-neutral-200 rounded-4 p-16 flex items-center justify-between">
+                        <span className="text-neutral-900 text-sm">{api.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-[24px]">
+                <CardNoResults
+                  position="center"
+                  icon={
+                    <Icon name="agora-line-code" className="w-12 h-12 text-primary-500 icon-xl" />
+                  }
+                  title="Sem APIs"
+                  description="Ainda não existem APIs associadas a esta reutilização."
+                  hasAnchor={false}
+                />
+              </div>
+            )}
           </TabBody>
         </Tab>
 

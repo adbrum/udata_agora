@@ -445,9 +445,9 @@ export default function DatasetsAdminClient({
   return (
     <>
       {/* Main content area: form + auxiliar sidebar */}
-      <div className="datasets-admin-page__body">
+      <div className="admin-page__body">
         {/* Left: Form */}
-        <div className="datasets-admin-page__form-area">
+        <div className="admin-page__form-area">
           {apiError && (
             <StatusCard type="danger" description={apiError} />
           )}
@@ -465,9 +465,9 @@ export default function DatasetsAdminClient({
                   </>
                 }
               />
-              <h2 className="datasets-admin-page__section-title">Produtor</h2>
+              <h2 className="admin-page__section-title">Produtor</h2>
 
-              <div className="datasets-admin-page__fields-group">
+              <div className="admin-page__fields-group">
                 <span className="text-primary-900 text-base font-medium leading-7">
                   Verifique a identidade que deseja usar na publicação.
                 </span>
@@ -482,7 +482,7 @@ export default function DatasetsAdminClient({
                 </IsolatedSelect>
               </div>
 
-              <div className="datasets-admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center mt-[24px]">
+              <div className="admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center mt-[24px]">
                 <h3 className="text-primary-900 text-lg font-bold leading-7">
                   Você não pertence a nenhuma organização.
                 </h3>
@@ -502,16 +502,16 @@ export default function DatasetsAdminClient({
 
 
               <form
-                className="datasets-admin-page__form"
+                className="admin-page__form"
                 onSubmit={(e) => e.preventDefault()}
               >
                 <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
 
-                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+                <h2 className="admin-page__section-title">Descrição</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <InputText
                     label="Título*"
                     placeholder="Insira o título aqui"
@@ -612,9 +612,9 @@ export default function DatasetsAdminClient({
 
 
 
-                <h2 className="datasets-admin-page__section-title">Acesso</h2>
+                <h2 className="admin-page__section-title">Acesso</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <div className="flex flex-col gap-[8px]">
                     <span className="text-primary-900 text-base font-medium leading-7">
                       Tipo de acesso
@@ -708,9 +708,9 @@ export default function DatasetsAdminClient({
                   </IsolatedSelect>
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Tempo</h2>
+                <h2 className="admin-page__section-title">Tempo</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <IsolatedSelect
                     label="Frequência de atualização *"
                     placeholder="Procure uma frequência..."
@@ -762,9 +762,9 @@ export default function DatasetsAdminClient({
                   </div>
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Espaço</h2>
+                <h2 className="admin-page__section-title">Espaço</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <IsolatedSelect
                     label="Cobertura espacial"
                     placeholder="Procurando cobertura espacial..."
@@ -799,7 +799,7 @@ export default function DatasetsAdminClient({
                   </IsolatedSelect>
                 </div>
 
-                <div className="datasets-admin-page__actions flex justify-between gap-[18px]">
+                <div className="admin-page__actions flex justify-between gap-[18px]">
                   <Button
                     variant="primary"
                     appearance="outline"
@@ -840,10 +840,10 @@ export default function DatasetsAdminClient({
                 }
               />
 
-              <div className="datasets-admin-page__form">
-                <h2 className="datasets-admin-page__section-title">FICHEIROS</h2>
+              <div className="admin-page__form">
+                <h2 className="admin-page__section-title">FICHEIROS</h2>
 
-                <div className="datasets-admin-page__org-card flex flex-col items-center gap-[16px]">
+                <div className="admin-page__org-card flex flex-col items-center gap-[16px]">
                   <ButtonUploader
                     label="Ficheiros"
                     inputLabel="Selecione ou arraste o ficheiro"
@@ -864,7 +864,7 @@ export default function DatasetsAdminClient({
                   />
                 </div>
 
-                <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+                <div className="admin-page__actions admin-page__actions--between">
                   <Button
                     appearance="outline"
                     variant="neutral"
@@ -931,7 +931,7 @@ export default function DatasetsAdminClient({
                 Dê-nos o seu feedback sobre o processo de publicação.
               </Button>
 
-              <div className="datasets-admin-page__actions flex justify-end gap-[18px]">
+              <div className="admin-page__actions flex justify-end gap-[18px]">
                 <Button
                   appearance="outline"
                   variant="neutral"
@@ -954,14 +954,14 @@ export default function DatasetsAdminClient({
 
         {/* Right: Auxiliar sidebar */}
         {currentStep !== 4 && (
-          <aside className="datasets-admin-page__auxiliar">
-            <div className="datasets-admin-page__auxiliar-inner">
-              <div className="datasets-admin-page__auxiliar-header">
+          <aside className="admin-page__auxiliar">
+            <div className="admin-page__auxiliar-inner">
+              <div className="admin-page__auxiliar-header">
                 <Icon
                   name="agora-line-question-mark"
                   className="w-[24px] h-[24px]"
                 />
-                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
               </div>
               <AuxiliarList items={auxiliarItems} />
             </div>
