@@ -1376,6 +1376,7 @@ body:has(.admin-wrapper)>div>header.sticky {
 .admin-page__actions {
   display: flex;
   justify-content: flex-end;
+  gap: 18px;
 }
 
 .admin-page__actions--between {

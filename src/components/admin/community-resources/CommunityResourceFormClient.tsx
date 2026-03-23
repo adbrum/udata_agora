@@ -489,7 +489,7 @@ export default function CommunityResourceFormClient({
                     />
                     <div className="flex justify-end mt-[8px]">
                       <Button
-                        appearance="outline"
+                        appearance="solid"
                         variant="danger"
                         hasIcon
                         leadingIcon="agora-line-trash"

@@ -504,7 +504,7 @@ export default function ApiRegistrationClient({
                   </Button>
                 </div>
 
-                <div className="admin-page__actions admin-page__actions--between">
+                <div className="admin-page__actions">
                   <Button
                     appearance="outline"
                     variant="neutral"

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -10,19 +10,22 @@ import {
 } from "@ama-pt/agora-design-system";
 import DatasetsAdminClient from "@/components/admin/datasetsadmin/DatasetsAdminClient";
 import PublishDropdown from "@/components/admin/PublishDropdown";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
 export default function OrgDatasetsNewClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { activeOrg } = useActiveOrganization();
   const totalSteps = 4;
   const currentStep = Number(searchParams.get("step")) || 1;
-  const datasetId = searchParams.get("datasetId");
+  const [createdDatasetId, setCreatedDatasetId] = useState<string | null>(null);
+
+  const orgBase = activeOrg ? `/pages/admin/org/${activeOrg.id}` : "/pages/admin/org";
 
   const buildStepUrl = (step: number) => {
-    const params = new URLSearchParams({ step: String(step) });
-    if (datasetId) params.set("datasetId", datasetId);
-    return `/pages/admin/org/datasets/new?${params.toString()}`;
+    return `${orgBase}/datasets/new?step=${step}`;
   };
+
   const totalSegments = 12;
   const displayStep = currentStep;
   const filledSegments = Math.round((displayStep / totalSteps) * totalSegments);
@@ -34,7 +37,7 @@ export default function OrgDatasetsNewClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: "Organização", url: "#" },
-            { label: "Conjuntos de dados", url: "/pages/admin/org/datasets" },
+            { label: "Conjuntos de dados", url: `${orgBase}/datasets` },
           ]}
         />
       </div>
@@ -97,7 +100,7 @@ export default function OrgDatasetsNewClient() {
                 children: "Comece a publicar",
                 variant: "primary",
                 appearance: "outline",
-                onClick: () => router.push("/pages/admin/org/datasets/new?step=2"),
+                onClick: () => router.push(buildStepUrl(2)),
               }}
             />
           </div>
@@ -173,9 +176,14 @@ export default function OrgDatasetsNewClient() {
       {currentStep >= 2 && (
         <DatasetsAdminClient
           currentStep={currentStep}
-          datasetId={datasetId}
+          datasetId={createdDatasetId}
           onNextStep={() => router.push(buildStepUrl(currentStep + 1))}
           onPreviousStep={() => router.push(buildStepUrl(currentStep - 1))}
+          onDatasetCreated={(id) => {
+            setCreatedDatasetId(id);
+            router.push(buildStepUrl(currentStep + 1));
+          }}
+          onComplete={() => router.push(`${orgBase}/datasets`)}
         />
       )}
     </div>
