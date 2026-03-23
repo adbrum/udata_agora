@@ -190,7 +190,7 @@ export default function OrgDatasetsClient() {
                     <a href={`/pages/datasets/${dataset.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/me/datasets/edit?slug=${dataset.slug}`}>
+                    <a href={`/pages/admin/org/datasets/edit?slug=${dataset.slug}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
@@ -216,7 +216,7 @@ export default function OrgDatasetsClient() {
                   <Button
                     variant="primary"
                     appearance="outline"
-                    onClick={() => window.location.href = '/pages/admin/me/datasets/new'}
+                    onClick={() => window.location.href = '/pages/admin/org/datasets/new'}
                   >
                     Publique no portal
                   </Button>
