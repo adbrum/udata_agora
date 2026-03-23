@@ -7,6 +7,7 @@ import {
   Button,
   InputText,
   InputTextArea,
+  InputSelect,
   DropdownSection,
   DropdownOption,
   Icon,
@@ -18,6 +19,7 @@ import {
   createCommunityResource,
   uploadCommunityResourceFile,
   fetchDataset,
+  fetchMyDatasets,
   fetchResourceTypes,
 } from "@/services/api";
 import type { Dataset, CommunityResource, ResourceType } from "@/types/api";
@@ -57,20 +59,31 @@ export default function CommunityResourceFormClient({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createdResource, setCreatedResource] = useState<CommunityResource | null>(null);
 
+  // Dataset selection (when datasetId is not provided via URL)
+  const [myDatasets, setMyDatasets] = useState<Dataset[]>([]);
+  const [selectedDatasetId, setSelectedDatasetId] = useState(datasetId);
+
   // Data from API
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [resourceTypes, setResourceTypes] = useState<ResourceType[]>([]);
 
   useEffect(() => {
-    if (datasetId) {
-      fetchDataset(datasetId)
+    if (selectedDatasetId) {
+      fetchDataset(selectedDatasetId)
         .then(setDataset)
         .catch(() => console.error("Error loading dataset"));
+    } else {
+      setDataset(null);
     }
     fetchResourceTypes()
       .then(setResourceTypes)
       .catch(() => console.error("Error loading resource types"));
-  }, [datasetId]);
+    if (!datasetId) {
+      fetchMyDatasets(1, 50)
+        .then((res) => setMyDatasets(res.data || []))
+        .catch(() => console.error("Error loading datasets"));
+    }
+  }, [datasetId, selectedDatasetId]);
 
   const clearError = (key: string) => {
     setFormErrors((prev) => {
@@ -85,6 +98,11 @@ export default function CommunityResourceFormClient({
     if (!title.trim()) errors.title = true;
     if (!file && !resourceUrl.trim()) errors.resourceUrl = true;
     if (!selectedTypeRef.current) errors.type = true;
+    if (!selectedDatasetId) {
+      setFormErrors((prev) => ({ ...prev, dataset: true }));
+      setApiError("Selecione um conjunto de dados antes de continuar.");
+      return;
+    }
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -103,10 +121,10 @@ export default function CommunityResourceFormClient({
       const resource = await createCommunityResource({
         title: title.trim(),
         url: finalUrl,
-        filetype: file ? "file" : "remote",
+        filetype: "remote",
         type: selectedTypeRef.current || undefined,
         description: description.trim() || undefined,
-        dataset: datasetId,
+        dataset: selectedDatasetId,
         ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
           ? { organization: selectedProducerRef.current }
           : {}),
@@ -120,13 +138,16 @@ export default function CommunityResourceFormClient({
       onNextStep();
     } catch (err: unknown) {
       const error = err as { status?: number; data?: Record<string, unknown> };
-      console.error("Error creating community resource:", err, error?.data);
+      console.error("Error creating community resource:", JSON.stringify(err), error?.status);
       if (error?.status === 401) {
         setApiError("Sessão expirada. Faça login novamente.");
       } else {
-        const detail = error?.data
-          ? JSON.stringify(error.data)
-          : "Erro desconhecido";
+        const detail =
+          error?.data && Object.keys(error.data).length > 0
+            ? JSON.stringify(error.data)
+            : err instanceof Error
+              ? err.message
+              : "Erro desconhecido";
         setApiError(`Erro ao criar recurso comunitário: ${detail}`);
       }
     } finally {
@@ -408,7 +429,7 @@ export default function CommunityResourceFormClient({
 
                 {/* Associe um conjunto de dados */}
                 <h2 className="admin-page__section-title">
-                  Associe um conjunto de dados
+                  Associe um conjunto de dados {!datasetId && "*"}
                 </h2>
 
                 {dataset && (
@@ -487,19 +508,53 @@ export default function CommunityResourceFormClient({
                       }
                       blockedLink={true}
                     />
-                    <div className="flex justify-end mt-[8px]">
-                      <Button
-                        appearance="solid"
-                        variant="danger"
-                        hasIcon
-                        leadingIcon="agora-line-trash"
-                        leadingIconHover="agora-solid-trash"
-                        onClick={() => setDataset(null)}
-                      >
-                        Eliminar
-                      </Button>
-                    </div>
+                    {!datasetId && (
+                      <div className="flex justify-end mt-[8px]">
+                        <Button
+                          appearance="solid"
+                          variant="danger"
+                          hasIcon
+                          leadingIcon="agora-line-trash"
+                          leadingIconHover="agora-solid-trash"
+                          onClick={() => {
+                            setSelectedDatasetId("");
+                            setDataset(null);
+                            clearError("dataset");
+                          }}
+                        >
+                          Remover
+                        </Button>
+                      </div>
+                    )}
                   </div>
+                )}
+
+                {!datasetId && !dataset && (
+                  <InputSelect
+                    label="Pesquisar um conjunto de dados *"
+                    placeholder="Procurando um conjunto de dados..."
+                    id="community-resource-dataset-search"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
+                    hasError={!!formErrors.dataset}
+                    onChange={(options) => {
+                      if (options.length > 0) {
+                        setSelectedDatasetId(options[0].value);
+                        clearError("dataset");
+                      } else {
+                        setSelectedDatasetId("");
+                      }
+                    }}
+                  >
+                    <DropdownSection name="datasets">
+                      {myDatasets.map((d) => (
+                        <DropdownOption key={d.id} value={d.id}>
+                          {d.title}
+                        </DropdownOption>
+                      ))}
+                    </DropdownSection>
+                  </InputSelect>
                 )}
 
                 <div className="admin-page__actions flex justify-between gap-[18px]">
@@ -572,7 +627,7 @@ export default function CommunityResourceFormClient({
                       try {
                         const { deleteCommunityResource } = await import("@/services/api");
                         await deleteCommunityResource(createdResource.id);
-                        router.push("/pages/admin/community-resources");
+                        router.push("/pages/admin/me/community-resources");
                       } catch {
                         setApiError("Erro ao eliminar recurso.");
                       }
@@ -596,7 +651,7 @@ export default function CommunityResourceFormClient({
                     if (dataset) {
                       router.push(`/pages/datasets/${dataset.slug}`);
                     } else {
-                      router.push("/pages/admin/community-resources");
+                      router.push("/pages/admin/me/community-resources");
                     }
                   }}
                 >

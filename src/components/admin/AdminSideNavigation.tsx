@@ -46,7 +46,7 @@ const navGroups: NavGroup[] = [
       },
       {
         label: "Recursos comunitários",
-        href: "/pages/admin/community-resources",
+        href: "/pages/admin/me/community-resources",
         icon: "agora-line-user-group",
       },
       {

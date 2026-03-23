@@ -20,7 +20,6 @@ import {
 } from "@ama-pt/agora-design-system";
 import { fetchOrgDatasets } from "@/services/api";
 import { Dataset } from "@/types/api";
-import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 
 const formatDate = (dateStr: string) => {
@@ -28,23 +27,21 @@ const formatDate = (dateStr: string) => {
   return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
 };
 
-export default function OrgDatasetsClient() {
-  const { activeOrg, isLoading: isOrgLoading } = useActiveOrganization();
+interface OrgDatasetsClientProps {
+  orgId: string;
+}
 
+export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
-    if (!activeOrg) {
-      setIsLoading(false);
-      return;
-    }
     async function loadDatasets() {
       setIsLoading(true);
       try {
-        const response = await fetchOrgDatasets(activeOrg!.id, 1, 9999);
+        const response = await fetchOrgDatasets(orgId, 1, 9999);
         setDatasets(response.data || []);
       } catch (error) {
         console.error("Error loading org datasets:", error);
@@ -90,6 +87,7 @@ export default function OrgDatasetsClient() {
       </div>
     );
   }
+  }, [orgId]);
 
   return (
     <div className="admin-page">
@@ -133,7 +131,7 @@ export default function OrgDatasetsClient() {
             <DropdownOption value="deleted">Excluído</DropdownOption>
           </DropdownSection>
         </InputSelect>
-        <a href={`/api/1/organizations/${activeOrg.id}/catalog`} download>
+        <a href={`/api/1/organizations/${orgId}/catalog`} download>
           <Button
             variant="primary"
             appearance="outline"

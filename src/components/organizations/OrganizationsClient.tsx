@@ -32,8 +32,10 @@ interface OrganizationsClientProps {
 
 const SORT_OPTIONS: Record<string, string> = {
   relevancia: '',
-  alfabetica: 'name',
   recentes: '-last_modified',
+  antigos: 'last_modified',
+  subscritores: '-followers',
+  reutilizacoes: '-reuses',
 };
 
 function SortSelect({
@@ -56,8 +58,10 @@ function SortSelect({
           Ordenar por:
         </label>
         <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
-          {currentSortKey === 'alfabetica' ? 'Ordem alfabética'
-            : currentSortKey === 'recentes' ? 'Mais recentes'
+          {currentSortKey === 'recentes' ? 'Mais recente'
+            : currentSortKey === 'antigos' ? 'Mais antigo'
+            : currentSortKey === 'subscritores' ? 'Subscritores'
+            : currentSortKey === 'reutilizacoes' ? 'Reutilizações'
             : 'Relevância'}
         </div>
       </div>
@@ -80,11 +84,17 @@ function SortSelect({
         <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
           Relevância
         </DropdownOption>
-        <DropdownOption value="alfabetica" selected={currentSortKey === 'alfabetica'}>
-          Ordem alfabética
-        </DropdownOption>
         <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
-          Mais recentes
+          Mais recente
+        </DropdownOption>
+        <DropdownOption value="antigos" selected={currentSortKey === 'antigos'}>
+          Mais antigo
+        </DropdownOption>
+        <DropdownOption value="subscritores" selected={currentSortKey === 'subscritores'}>
+          Subscritores
+        </DropdownOption>
+        <DropdownOption value="reutilizacoes" selected={currentSortKey === 'reutilizacoes'}>
+          Reutilizações
         </DropdownOption>
       </DropdownSection>
     </InputSelect>

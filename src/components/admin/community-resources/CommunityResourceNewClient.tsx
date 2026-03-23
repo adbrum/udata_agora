@@ -31,7 +31,7 @@ export default function CommunityResourceNewClient() {
             { label: displayName || "...", url: "#" },
             {
               label: "Recursos comunitários",
-              url: "/pages/admin/community-resources",
+              url: "/pages/admin/me/community-resources",
             },
           ]}
         />
@@ -78,12 +78,12 @@ export default function CommunityResourceNewClient() {
         currentStep={currentStep}
         onNextStep={() =>
           router.push(
-            `/pages/admin/community-resources/new?dataset_id=${datasetId}&step=${currentStep + 1}`
+            `/pages/admin/me/community-resources/new?dataset_id=${datasetId}&step=${currentStep + 1}`
           )
         }
         onPreviousStep={() =>
           router.push(
-            `/pages/admin/community-resources/new?dataset_id=${datasetId}&step=${currentStep - 1}`
+            `/pages/admin/me/community-resources/new?dataset_id=${datasetId}&step=${currentStep - 1}`
           )
         }
       />
