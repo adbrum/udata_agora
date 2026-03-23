@@ -23,11 +23,10 @@ interface DatasetsClientProps {
 
 const SORT_OPTIONS: Record<string, string> = {
   relevancia: '',
-  reutilizacoes: '-reuses',
-  recentes: '-created',
-  visualizados: '-views',
+  criacao: '-created',
+  atualizacao: '-last_update',
   seguidores: '-followers',
-  atualizados: '-last_update',
+  reutilizacoes: '-reuses',
 };
 
 function SortSelect({
@@ -50,11 +49,10 @@ function SortSelect({
           Ordenar por :
         </label>
         <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
-          {currentSortKey === 'reutilizacoes' ? 'Número de reutilizações'
-            : currentSortKey === 'recentes' ? 'Mais recentes'
-            : currentSortKey === 'visualizados' ? 'Mais visualizados'
+          {currentSortKey === 'criacao' ? 'Data de criação'
+            : currentSortKey === 'atualizacao' ? 'Última atualização'
             : currentSortKey === 'seguidores' ? 'Número de seguidores'
-            : currentSortKey === 'atualizados' ? 'Última atualização'
+            : currentSortKey === 'reutilizacoes' ? 'Número de reutilizações'
             : 'Relevância'}
         </div>
       </div>
@@ -77,20 +75,17 @@ function SortSelect({
         <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
           Relevância
         </DropdownOption>
-        <DropdownOption value="reutilizacoes" selected={currentSortKey === 'reutilizacoes'}>
-          Número de reutilizações
+        <DropdownOption value="criacao" selected={currentSortKey === 'criacao'}>
+          Data de criação
         </DropdownOption>
-        <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
-          Mais recentes
-        </DropdownOption>
-        <DropdownOption value="visualizados" selected={currentSortKey === 'visualizados'}>
-          Mais visualizados
+        <DropdownOption value="atualizacao" selected={currentSortKey === 'atualizacao'}>
+          Última atualização
         </DropdownOption>
         <DropdownOption value="seguidores" selected={currentSortKey === 'seguidores'}>
           Número de seguidores
         </DropdownOption>
-        <DropdownOption value="atualizados" selected={currentSortKey === 'atualizados'}>
-          Última atualização
+        <DropdownOption value="reutilizacoes" selected={currentSortKey === 'reutilizacoes'}>
+          Número de reutilizações
         </DropdownOption>
       </DropdownSection>
     </InputSelect>
