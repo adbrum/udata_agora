@@ -34,6 +34,7 @@ import PageBanner from '@/components/PageBanner';
 const SORT_OPTIONS: Record<string, string> = {
   relevancia: '',
   recentes: '-created',
+  antigos: 'created',
   visualizados: '-views',
   seguidores: '-followers',
 };
@@ -75,11 +76,13 @@ function SortSelect({
         <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
           {currentSortKey === 'recentes'
             ? 'Mais recentes'
-            : currentSortKey === 'visualizados'
-              ? 'Mais visualizados'
-              : currentSortKey === 'seguidores'
-                ? 'Mais seguidos'
-                : 'Relevância'}
+            : currentSortKey === 'antigos'
+              ? 'Mais antigos'
+              : currentSortKey === 'visualizados'
+                ? 'Mais visualizados'
+                : currentSortKey === 'seguidores'
+                  ? 'Mais seguidos'
+                  : 'Relevância'}
         </div>
       </div>
     );
@@ -98,6 +101,9 @@ function SortSelect({
         </DropdownOption>
         <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
           Mais recentes
+        </DropdownOption>
+        <DropdownOption value="antigos" selected={currentSortKey === 'antigos'}>
+          Mais antigos
         </DropdownOption>
         <DropdownOption value="visualizados" selected={currentSortKey === 'visualizados'}>
           Mais visualizados
@@ -399,6 +405,7 @@ export default function ReusesClient({
   const sortDefault = (() => {
     const reverseMap: Record<string, string> = {
       '-created': 'recentes',
+      'created': 'antigos',
       '-views': 'visualizados',
       '-followers': 'seguidores',
     };
