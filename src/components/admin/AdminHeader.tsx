@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import {
   Header,
   GeneralBar,
@@ -9,19 +10,78 @@ import {
   AuthenticatedBodyLink,
   AuthenticatedFooter,
   AuthenticatedFooterAction,
+  Button,
+  usePopupContext,
 } from "@ama-pt/agora-design-system";
 import { useAuth } from "@/context/AuthContext";
 import { logout } from "@/services/api";
 
+function DeleteAccountPopupContent({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="flex flex-col gap-[16px]">
+      <p className="font-bold">Essa ação é irreversível.</p>
+      <p>
+        Todo o conteúdo publicado em seu nome permanecerá online, nas mesmas URLs, mas em forma
+        anónima, ou seja, sem ser vinculado a um produtor de dados.
+      </p>
+      <p>
+        Se você também quiser deletar o conteúdo publicado que você postou, primeiro apague o
+        conteúdo antes de excluir sua conta.
+      </p>
+      <div className="flex justify-end gap-16 pt-16">
+        <Button appearance="outline" variant="neutral" onClick={onClose}>
+          Cancelar
+        </Button>
+        <Button appearance="solid" variant="danger" onClick={onClose}>
+          Eliminar
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export function AdminHeader() {
   const { user, samlLogin } = useAuth();
+  const { show, hide } = usePopupContext();
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const initials = user
     ? `${(user.first_name || "")[0] || ""}${(user.last_name || "")[0] || ""}`.toUpperCase()
     : "";
 
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const btn = target.closest(".footer-action");
+      if (!btn) return;
+      const text = btn.textContent?.trim();
+      if (text === "Eliminar conta") {
+        // Close the Authenticated panel before opening the popup
+        const closeBtn = wrapper.querySelector<HTMLButtonElement>(
+          ".authenticated-header .close",
+        );
+        if (closeBtn) closeBtn.click();
+
+        setTimeout(() => {
+          show(<DeleteAccountPopupContent onClose={hide} />, {
+            title: "Tem a certeza que deseja eliminar esta conta?",
+            closeAriaLabel: "Fechar",
+            dimensions: "m",
+          });
+        }, 150);
+      }
+    };
+
+    wrapper.addEventListener("click", handleClick);
+    return () => wrapper.removeEventListener("click", handleClick);
+  }, [show, hide]);
+
   return (
     <div
+      ref={wrapperRef}
       className="admin-header"
       {...(user?.avatar_thumbnail
         ? { style: { "--admin-avatar-url": `url(${user.avatar_thumbnail})` } as React.CSSProperties }
@@ -59,7 +119,7 @@ export function AdminHeader() {
               >
                 <a href={`/pages/users/${user?.slug || ''}`}>O meu perfil</a>
               </AuthenticatedBodyLink>
-{/* As minhas definições e Notificações ocultos temporariamente */}
+              {/* As minhas definições e Notificações ocultos temporariamente */}
             </AuthenticatedBody>
             <AuthenticatedFooter>
               <AuthenticatedFooterAction
