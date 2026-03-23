@@ -129,13 +129,29 @@ export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
         <p>A carregar...</p>
       ) : datasets.length > 0 ? (
         <>
-          <Table>
+          <Table
+            paginationProps={{
+              itemsPerPageLabel: "Itens por página",
+              itemsPerPage: itemsPerPage,
+              totalItems: datasets.length,
+              availablePageSizes: [10, 20, 50],
+              currentPage: currentPage,
+              buttonDropdownAriaLabel: "Selecionar itens por página",
+              dropdownListAriaLabel: "Opções de itens por página",
+              prevButtonAriaLabel: "Página anterior",
+              nextButtonAriaLabel: "Próxima página",
+              onPageChange: (page: number) => handlePageChange(page),
+              onPageSizeChange: (size: number) => handleItemsPerPageChange(String(size)),
+            }}
+          >
             <TableHeader>
               <TableRow>
-                <TableHeaderCell sortType="string" sortOrder="descending">
+                <TableHeaderCell sortType="string" sortOrder="none">
                   Título do conjunto de dados
                 </TableHeaderCell>
-                <TableHeaderCell>Estado</TableHeaderCell>
+                <TableHeaderCell sortType="string" sortOrder="none">
+                  Estado
+                </TableHeaderCell>
                 <TableHeaderCell sortType="date" sortOrder="none">
                   Criado em
                 </TableHeaderCell>
@@ -187,42 +203,6 @@ export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
               ))}
             </TableBody>
           </Table>
-
-          <div className="flex items-center justify-between mt-[16px] py-[12px] border-t border-neutral-200">
-            <div className="flex items-center gap-[8px]">
-              <span className="text-sm text-neutral-600">Linhas por página</span>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => handleItemsPerPageChange(e.target.value)}
-                className="border border-neutral-300 rounded px-[8px] py-[4px] text-sm"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-[8px]">
-              <span className="text-sm text-neutral-600">
-                {(currentPage - 1) * itemsPerPage + 1}–{Math.min(currentPage * itemsPerPage, datasets.length)} de {datasets.length}
-              </span>
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="p-[4px] text-primary-600 disabled:text-neutral-300"
-                aria-label="Página anterior"
-              >
-                <Icon name="agora-line-arrow-left" className="w-[20px] h-[20px]" />
-              </button>
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-[4px] text-primary-600 disabled:text-neutral-300"
-                aria-label="Próxima página"
-              >
-                <Icon name="agora-line-arrow-right" className="w-[20px] h-[20px]" />
-              </button>
-            </div>
-          </div>
         </>
       ) : (
         <div className="datasets-page__body">
