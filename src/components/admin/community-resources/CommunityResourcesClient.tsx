@@ -121,47 +121,50 @@ export default function CommunityResourcesClient() {
                 Estado
               </TableHeaderCell>
               <TableHeaderCell sortType="string" sortOrder="none">
-                Conjunto de dados
+                Formato
               </TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell>Ações</TableHeaderCell>
+              <TableHeaderCell sortType="date" sortOrder="none">
+                Modificado em
+              </TableHeaderCell>
+              <TableHeaderCell>Ação</TableHeaderCell>
             </TableRow>
           </TableHeader>
           <TableBody>
             {resources.map((resource, index) => (
               <TableRow key={index}>
                 <TableCell headerLabel="Título">
-                  <span className="text-primary-600">{resource.title}</span>
+                  <span className="text-neutral-900">{resource.title}</span>
+                  {resource.dataset && (
+                    <>
+                      <br />
+                      <a
+                        href={`/pages/datasets/${resource.dataset.id}`}
+                        className="text-primary-600 underline text-sm"
+                      >
+                        {resource.dataset.title}
+                      </a>
+                    </>
+                  )}
                 </TableCell>
                 <TableCell headerLabel="Estado">
                   <Pill variant="success">Público</Pill>
                 </TableCell>
-                <TableCell headerLabel="Conjunto de dados">
-                  {resource.dataset ? (
-                    <a
-                      href={`/pages/datasets/${resource.dataset.id}`}
-                      className="text-primary-600 underline"
-                    >
-                      {resource.dataset.title}
-                    </a>
-                  ) : (
-                    "—"
-                  )}
+                <TableCell headerLabel="Formato">
+                  <Pill variant="neutral">{resource.format || "—"}</Pill>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(resource.created_at)}
                 </TableCell>
-                <TableCell headerLabel="Ações">
-                  <div className="flex gap-[8px]">
-                    <a href={resource.url} target="_blank" rel="noopener noreferrer">
-                      <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
-                    </a>
-                    <a href={`/pages/admin/me/community-resources/edit?id=${resource.id}`}>
-                      <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
-                    </a>
-                  </div>
+                <TableCell headerLabel="Modificado em">
+                  {formatDate(resource.last_modified)}
+                </TableCell>
+                <TableCell headerLabel="Ação">
+                  <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                    <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+                  </a>
                 </TableCell>
               </TableRow>
             ))}

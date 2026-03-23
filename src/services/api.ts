@@ -2744,7 +2744,7 @@ export async function fetchMyCommunityResources(
   pageSize: number = 20
 ): Promise<APIResponse<CommunityResource>> {
   try {
-    const res = await authFetch("/me/community_resources/", { cache: "no-store" });
+    const res = await authFetch("/me/org_community_resources/", { cache: "no-store" });
     if (!res.ok)
       throw new Error(`Failed to fetch my community resources: ${res.statusText}`);
 
