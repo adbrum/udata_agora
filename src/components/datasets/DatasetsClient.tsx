@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button, InputSearchBar, Icon, CardGeneral, CardLinks, InputSelect, DropdownSection, DropdownOption, Pill, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { DatasetsFilters } from '@/components/datasets/DatasetsFilters';
-import { APIResponse, Dataset, SiteMetrics } from '@/types/api';
+import { APIResponse, Dataset, DatasetFilters, SiteMetrics } from '@/types/api';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -18,49 +18,167 @@ interface DatasetsClientProps {
   initialData: APIResponse<Dataset>;
   currentPage: number;
   siteMetrics?: SiteMetrics;
+  initialFilters?: DatasetFilters;
+}
+
+const SORT_OPTIONS: Record<string, string> = {
+  relevancia: '',
+  reutilizacoes: '-reuses',
+  recentes: '-created',
+  visualizados: '-views',
+};
+
+function SortSelect({
+  currentSortKey,
+  onSortChange,
+}: {
+  currentSortKey: string;
+  onSortChange: (value: string) => void;
+}) {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="selectDataset">
+        <label className="text-s-regular text-neutral-700 mb-4 block">
+          Ordenar por :
+        </label>
+        <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
+          {currentSortKey === 'reutilizacoes' ? 'Número de reutilizações'
+            : currentSortKey === 'recentes' ? 'Mais recentes'
+            : currentSortKey === 'visualizados' ? 'Mais visualizados'
+            : 'Relevância'}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <InputSelect
+      label="Ordenar por :"
+      id="sort-datasets"
+      className="selectDataset"
+      onChange={(options) => {
+        const selected = options?.[0]?.value;
+        if (selected && selected !== currentSortKey) {
+          onSortChange(selected as string);
+        }
+      }}
+    >
+      <DropdownSection name="order">
+        <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
+          Relevância
+        </DropdownOption>
+        <DropdownOption value="reutilizacoes" selected={currentSortKey === 'reutilizacoes'}>
+          Número de reutilizações
+        </DropdownOption>
+        <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
+          Mais recentes
+        </DropdownOption>
+        <DropdownOption value="visualizados" selected={currentSortKey === 'visualizados'}>
+          Mais visualizados
+        </DropdownOption>
+      </DropdownSection>
+    </InputSelect>
+  );
 }
 
 export default function DatasetsClient({
   initialData,
   currentPage,
   siteMetrics,
+  initialFilters = {},
 }: DatasetsClientProps) {
 
   const router = useRouter();
-  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const { data: datasets, total, page_size } = initialData;
 
-  const currentQuery = searchParams.get('q') || '';
+  const currentQuery = initialFilters.q || '';
+  const currentSort = initialFilters.sort || '';
   const [searchQuery, setSearchQuery] = React.useState(currentQuery);
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const applySearch = React.useCallback((q: string) => {
-    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-    if (q.trim()) {
-      params.set('q', q.trim());
-    } else {
-      params.delete('q');
-    }
-    params.set('page', '1');
-    const search = params.toString();
-    router.replace(`/pages/datasets${search ? `?${search}` : ''}`, { scroll: false });
-  }, [router]);
+  const currentSortKey = Object.entries(SORT_OPTIONS).find(
+    ([, v]) => v === currentSort
+  )?.[0] || 'relevancia';
+
+  const buildUrl = React.useCallback(
+    (overrides: Record<string, string | null>) => {
+      const params = new URLSearchParams();
+      if (initialFilters.q) params.set('q', initialFilters.q);
+      if (initialFilters.sort) params.set('sort', initialFilters.sort);
+      if (initialFilters.tag) {
+        const tags = Array.isArray(initialFilters.tag) ? initialFilters.tag : [initialFilters.tag];
+        tags.forEach((t) => params.append('tag', t));
+      }
+      if (initialFilters.license) {
+        const licenses = Array.isArray(initialFilters.license) ? initialFilters.license : [initialFilters.license];
+        licenses.forEach((l) => params.append('license', l));
+      }
+      if (initialFilters.format) {
+        const formats = Array.isArray(initialFilters.format) ? initialFilters.format : [initialFilters.format];
+        formats.forEach((f) => params.append('format', f));
+      }
+      if (initialFilters.organization) {
+        const orgs = Array.isArray(initialFilters.organization) ? initialFilters.organization : [initialFilters.organization];
+        orgs.forEach((o) => params.append('organization', o));
+      }
+      if (initialFilters.badge) {
+        const badges = Array.isArray(initialFilters.badge) ? initialFilters.badge : [initialFilters.badge];
+        badges.forEach((b) => params.append('badge', b));
+      }
+      if (initialFilters.schema) params.set('schema', initialFilters.schema);
+      if (initialFilters.geozone) params.set('geozone', initialFilters.geozone);
+      if (initialFilters.granularity) params.set('granularity', initialFilters.granularity);
+      if (initialFilters.featured) params.set('featured', 'true');
+      for (const [key, value] of Object.entries(overrides)) {
+        if (value) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      }
+      params.set('page', '1');
+      const qs = params.toString();
+      return `/pages/datasets${qs ? `?${qs}` : ''}`;
+    },
+    [initialFilters]
+  );
 
   React.useEffect(() => {
     if (searchQuery === currentQuery) return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      applySearch(searchQuery);
+      router.replace(
+        buildUrl({ q: searchQuery.trim() || null }),
+        { scroll: false }
+      );
     }, 200);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [searchQuery, currentQuery, applySearch]);
+  }, [searchQuery, currentQuery, router, buildUrl]);
 
   const handleSearch = React.useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    applySearch(searchQuery);
-  }, [searchQuery, applySearch]);
+    router.replace(
+      buildUrl({ q: searchQuery.trim() || null }),
+      { scroll: false }
+    );
+  }, [searchQuery, router, buildUrl]);
+
+  const handleSort = React.useCallback(
+    (selectedKey: string) => {
+      const sortValue = SORT_OPTIONS[selectedKey] || null;
+      if (sortValue === (currentSort || null)) return;
+      router.replace(buildUrl({ sort: sortValue }), { scroll: false });
+    },
+    [router, buildUrl, currentSort]
+  );
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters dataset">
@@ -122,18 +240,10 @@ export default function DatasetsClient({
                     {total.toLocaleString('pt-PT')} resultados
                   </span>
                   <div className="w-full md:w-auto xl:col-span-6 ">
-                    <InputSelect
-                      label="Ordenar por :"
-                      id="sort-datasets"
-                      defaultValue="reutilizacoes"
-                      className="selectDataset"
-                    >
-                      <DropdownSection name="order">
-                        <DropdownOption value="reutilizacoes">Número de reutilizações</DropdownOption>
-                        <DropdownOption value="recentes">Mais recentes</DropdownOption>
-                        <DropdownOption value="visualizados">Mais visualizados</DropdownOption>
-                      </DropdownSection>
-                    </InputSelect>
+                    <SortSelect
+                      currentSortKey={currentSortKey}
+                      onSortChange={handleSort}
+                    />
                   </div>
                 </div>
                 <div className="divider-neutral-200 mt-[14px] mb-24" />

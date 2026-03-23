@@ -636,15 +636,6 @@ export default function ReusesClient({
                 {total.toLocaleString('pt-PT')} Resultados
               </span>
               <div className="w-full md:w-auto xl:col-span-5 flex items-end gap-16 justify-end">
-                {reuseTypes.length > 0 && (
-                  <div className="flex-grow max-w-[200px]">
-                    <TypeSelect
-                      currentType={initialFilters?.type || ''}
-                      reuseTypes={reuseTypes}
-                      onTypeChange={handleTypeFilter}
-                    />
-                  </div>
-                )}
                 {hasActiveFilters && (
                   <Button
                     variant="primary"

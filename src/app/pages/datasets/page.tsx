@@ -33,6 +33,7 @@ export default async function Page({
       initialData={initialData}
       currentPage={page}
       siteMetrics={siteInfo.metrics}
+      initialFilters={filters}
     />
   );
 }
