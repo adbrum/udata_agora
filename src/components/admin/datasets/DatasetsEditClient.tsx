@@ -85,7 +85,7 @@ function TransferDatasetPopupContent({
           Recomendamos que publique em nome de uma organização se se tratar de uma
           atividade profissional.
         </p>
-        <Button variant="primary">
+        <Button appearance="outline" variant="primary">
           Crie ou participe de uma organização
         </Button>
       </div>
@@ -107,8 +107,8 @@ function TransferDatasetPopupContent({
           appearance="solid"
           variant="primary"
           hasIcon
-          leadingIcon="agora-line-arrow-right-circle"
-          leadingIconHover="agora-solid-arrow-right-circle"
+          leadingIcon="agora-line-plane"
+          leadingIconHover="agora-solid-plane"
           onClick={onClose}
         >
           Conjunto de dados de transferência
