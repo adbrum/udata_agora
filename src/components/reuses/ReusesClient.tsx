@@ -33,9 +33,9 @@ import PageBanner from '@/components/PageBanner';
 
 const SORT_OPTIONS: Record<string, string> = {
   relevancia: '',
-  recentes: '-created',
-  visualizados: '-views',
-  seguidores: '-followers',
+  recentes: '-last_modified',
+  antigos: 'last_modified',
+  subscritores: '-followers',
 };
 
 function SortSelect({
@@ -74,11 +74,11 @@ function SortSelect({
         </label>
         <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
           {currentSortKey === 'recentes'
-            ? 'Mais recentes'
-            : currentSortKey === 'visualizados'
-              ? 'Mais visualizados'
-              : currentSortKey === 'seguidores'
-                ? 'Mais seguidos'
+            ? 'Mais recente'
+            : currentSortKey === 'antigos'
+              ? 'Mais antigo'
+              : currentSortKey === 'subscritores'
+                ? 'Número de seguidores'
                 : 'Relevância'}
         </div>
       </div>
@@ -97,13 +97,13 @@ function SortSelect({
           Relevância
         </DropdownOption>
         <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
-          Mais recentes
+          Mais recente
         </DropdownOption>
-        <DropdownOption value="visualizados" selected={currentSortKey === 'visualizados'}>
-          Mais visualizados
+        <DropdownOption value="antigos" selected={currentSortKey === 'antigos'}>
+          Mais antigo
         </DropdownOption>
-        <DropdownOption value="seguidores" selected={currentSortKey === 'seguidores'}>
-          Mais seguidos
+        <DropdownOption value="subscritores" selected={currentSortKey === 'subscritores'}>
+          Número de seguidores
         </DropdownOption>
       </DropdownSection>
     </InputSelect>
@@ -341,7 +341,7 @@ export default function ReusesClient({
       const type = overrides.type ?? initialFilters?.type;
       const tag = overrides.tag ?? initialFilters?.tag;
       const organization = overrides.organization ?? initialFilters?.organization;
-      const sort = overrides.sort ?? initialFilters?.sort;
+      const sort = 'sort' in overrides ? overrides.sort : initialFilters?.sort;
       const page = overrides.page ?? currentPage;
 
       if (q) params.set('q', q);
@@ -398,9 +398,9 @@ export default function ReusesClient({
 
   const sortDefault = (() => {
     const reverseMap: Record<string, string> = {
-      '-created': 'recentes',
-      '-views': 'visualizados',
-      '-followers': 'seguidores',
+      '-last_modified': 'recentes',
+      'last_modified': 'antigos',
+      '-followers': 'subscritores',
     };
     return reverseMap[initialFilters?.sort || ''] || 'relevancia';
   })();
