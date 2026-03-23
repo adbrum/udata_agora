@@ -15,7 +15,6 @@ import {
   InputDate,
   DropdownSection,
   DropdownOption,
-  ButtonUploader,
 } from "@ama-pt/agora-design-system";
 import {
   createDataset,
@@ -31,6 +30,7 @@ import {
 import { License, Frequency, Dataset, TagSuggestion } from "@/types/api";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
+import FileUploadModal from "@/components/admin/FileUploadModal";
 import { useAuth } from "@/context/AuthContext";
 import { getFrequencyLabel } from "@/utils/frequencyLabels";
 
@@ -899,46 +899,19 @@ export default function DatasetsAdminClient({
               />
 
               <div className="admin-page__form">
-                <ButtonUploader
-                  label="Ficheiros"
-                  inputLabel="Selecione ou arraste o ficheiro"
-                  selectedFilesLabel="ficheiros selecionados"
-                  removeFileButtonLabel="Remover ficheiro"
-                  replaceFileButtonLabel="Substituir ficheiro"
-                  onChange={(e) => {
-                    const files = (e.target as HTMLInputElement).files;
-                    if (files && files.length > 0) {
-                      setUploadedFiles(Array.from(files));
-                      setShowFileError(false);
-                    }
-                  }}
+                <FileUploadModal
+                  uploadedFiles={uploadedFiles}
+                  resourceUrl={resourceUrl}
                   hasError={showFileError}
-                  hasFeedback={showFileError}
-                  feedbackState="danger"
-                  feedbackText="Campo obrigatório"
+                  onFilesChange={(files) => {
+                    setUploadedFiles(files);
+                    if (files.length > 0) setShowFileError(false);
+                  }}
+                  onUrlChange={(url) => {
+                    setResourceUrl(url);
+                    if (url.trim().startsWith("https://")) setShowFileError(false);
+                  }}
                 />
-
-                <div className="flex items-center gap-4 my-4">
-                  <div className="flex-1 border-t border-neutral-300" />
-                  <span className="text-neutral-500 text-sm">ou</span>
-                  <div className="flex-1 border-t border-neutral-300" />
-                </div>
-
-                <div className="admin-page__fields-group">
-                  <h2 className="admin-page__section-title admin-page__section-title--no-top">Adicionar um link</h2>
-                  <InputText
-                    label="Link exato para o ficheiro"
-                    placeholder="https://"
-                    id="resource-url"
-                    value={resourceUrl}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setResourceUrl(e.target.value)
-                    }
-                    feedbackState="info"
-                    hasFeedback
-                    feedbackText="Insira um URL válido, começando com https://"
-                  />
-                </div>
 
                 <div className="admin-page__actions">
                   <Button
