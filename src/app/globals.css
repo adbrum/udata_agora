@@ -1293,6 +1293,7 @@ body:has(.admin-wrapper)>div>header.sticky {
   max-width: calc(100% - var(--admin-auxiliar-width) - var(--admin-auxiliar-gap));
   display: flex;
   flex-direction: column;
+  gap: 24px;
 }
 
 .admin-page__form {
@@ -1307,6 +1308,10 @@ body:has(.admin-wrapper)>div>header.sticky {
   line-height: 32px;
   color: var(--color-primary-900);
   margin-top: 32px !important;
+}
+
+.admin-page__section-title--no-top {
+  margin-top: 0 !important;
 }
 
 .admin-page__fields-group {

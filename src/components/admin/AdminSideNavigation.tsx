@@ -220,8 +220,13 @@ export function AdminSideNavigation() {
             }}
           />,
           ...visibleGroups.map((group) => {
-          const hasActiveChild = group.children.some((child) =>
-            pathname?.startsWith(child.href),
+          const getStaticHref = (href: string) =>
+            activeOrg ? href.replace(`/pages/admin/org/${activeOrg.id}`, "/pages/admin/org") : href;
+
+          const hasActiveChild = group.children.some(
+            (child) =>
+              pathname?.startsWith(child.href) ||
+              pathname?.startsWith(getStaticHref(child.href)),
           );
 
           return (
@@ -251,7 +256,11 @@ export function AdminSideNavigation() {
             >
               <ul className="admin-sidebar-nav__children">
                 {group.children.map((child) => {
-                  const isActive = pathname?.startsWith(child.href);
+                  const staticHref = activeOrg
+                    ? child.href.replace(`/pages/admin/org/${activeOrg.id}`, "/pages/admin/org")
+                    : child.href;
+                  const isActive =
+                    pathname?.startsWith(child.href) || pathname?.startsWith(staticHref);
                   return (
                     <li key={child.href}>
                       <Link

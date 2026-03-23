@@ -23,7 +23,7 @@ export default function OrgDatasetsNewClient() {
   const orgBase = activeOrg ? `/pages/admin/org/${activeOrg.id}` : "/pages/admin/org";
 
   const buildStepUrl = (step: number) => {
-    return `${orgBase}/datasets/new?step=${step}`;
+    return `/pages/admin/org/datasets/new?step=${step}`;
   };
 
   const totalSegments = 12;

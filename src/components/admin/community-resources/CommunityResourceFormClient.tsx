@@ -302,7 +302,7 @@ export default function CommunityResourceFormClient({
                   <div>
                     <ButtonUploader
                       label="Ficheiros"
-                      inputLabel="Arraste e solte ficheiros"
+                      inputLabel="Selecione ou arraste o ficheiro"
                       removeFileButtonLabel="Remover ficheiro"
                       replaceFileButtonLabel="Substituir ficheiro"
                       extensionsInstructions="Tamanho máximo: 420 MB."
@@ -321,7 +321,7 @@ export default function CommunityResourceFormClient({
                   </div>
 
                   <InputText
-                    label={file ? "Link exato para o arquivo" : "Link exato para o arquivo *"}
+                    label={file ? "Link exato para o ficheiro" : "Link exato para o ficheiro *"}
                     placeholder="https://..."
                     id="resource-url"
                     value={resourceUrl}
