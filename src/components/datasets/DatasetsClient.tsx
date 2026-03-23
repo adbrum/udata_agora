@@ -26,6 +26,8 @@ const SORT_OPTIONS: Record<string, string> = {
   reutilizacoes: '-reuses',
   recentes: '-created',
   visualizados: '-views',
+  seguidores: '-followers',
+  atualizados: '-last_update',
 };
 
 function SortSelect({
@@ -51,6 +53,8 @@ function SortSelect({
           {currentSortKey === 'reutilizacoes' ? 'Número de reutilizações'
             : currentSortKey === 'recentes' ? 'Mais recentes'
             : currentSortKey === 'visualizados' ? 'Mais visualizados'
+            : currentSortKey === 'seguidores' ? 'Número de seguidores'
+            : currentSortKey === 'atualizados' ? 'Última atualização'
             : 'Relevância'}
         </div>
       </div>
@@ -81,6 +85,12 @@ function SortSelect({
         </DropdownOption>
         <DropdownOption value="visualizados" selected={currentSortKey === 'visualizados'}>
           Mais visualizados
+        </DropdownOption>
+        <DropdownOption value="seguidores" selected={currentSortKey === 'seguidores'}>
+          Número de seguidores
+        </DropdownOption>
+        <DropdownOption value="atualizados" selected={currentSortKey === 'atualizados'}>
+          Última atualização
         </DropdownOption>
       </DropdownSection>
     </InputSelect>
