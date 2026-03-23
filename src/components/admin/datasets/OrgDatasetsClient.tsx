@@ -50,7 +50,7 @@ export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
       }
     }
     loadDatasets();
-  }, [activeOrg]);
+  }, [orgId]);
 
   const totalPages = Math.ceil(datasets.length / itemsPerPage);
 
@@ -69,25 +69,6 @@ export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
     setItemsPerPage(Number(value));
     setCurrentPage(1);
   };
-
-  if (isOrgLoading) return <p>A carregar...</p>;
-  if (!activeOrg) {
-    return (
-      <div className="admin-page">
-        <CardNoResults
-          className="datasets-page__empty"
-          position="center"
-          icon={
-            <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
-          }
-          title="Sem publicações"
-          description="Não pertence a nenhuma organização."
-          hasAnchor={false}
-        />
-      </div>
-    );
-  }
-  }, [orgId]);
 
   return (
     <div className="admin-page">
