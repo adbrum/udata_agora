@@ -108,10 +108,6 @@ body {
   border-radius: 8px;
 }
 
-.agora-btn:not(:focus) {
-  border-radius: 4px !important;
-}
-
 .admin-page .agora-accordion .accordion-body.accordion-body-block {
   padding: 32px !important;
 }
@@ -804,12 +800,6 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 .organizations-filters .agora-toggle .agora-toggle-icon-container img {
   width: 20px;
   height: 20px;
-}
-
-/* 5.11 Popup Dialog */
-.agora-dialog,
-.agora-dialog-backdrop {
-  z-index: 9999 !important;
 }
 
 /* ==========================================================================
