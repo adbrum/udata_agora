@@ -799,7 +799,8 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 }
 
 /* 5.11 Popup Dialog */
-.agora-dialog {
+.agora-dialog,
+.agora-dialog-backdrop {
   z-index: 9999 !important;
 }
 
