@@ -153,7 +153,7 @@ export default function CommunityResourcesClient() {
                   <Pill variant="success">Público</Pill>
                 </TableCell>
                 <TableCell headerLabel="Formato">
-                  <Pill variant="neutral">{resource.format || "—"}</Pill>
+                  {resource.format || "—"}
                 </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(resource.created_at)}
@@ -162,8 +162,8 @@ export default function CommunityResourcesClient() {
                   {formatDate(resource.last_modified)}
                 </TableCell>
                 <TableCell headerLabel="Ação">
-                  <a href={resource.url} target="_blank" rel="noopener noreferrer">
-                    <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+                  <a href={`/pages/admin/me/community-resources/edit?id=${resource.id}`}>
+                    <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                   </a>
                 </TableCell>
               </TableRow>

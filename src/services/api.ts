@@ -2833,6 +2833,18 @@ export async function createCommunityResource(
   return await res.json();
 }
 
+export async function fetchCommunityResource(
+  id: string
+): Promise<CommunityResource> {
+  const res = await fetch(`${API_BASE_URL}/datasets/community_resources/${id}/`, {
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch community resource: ${res.statusText}`);
+  }
+  return await res.json();
+}
+
 export async function updateCommunityResource(
   id: string,
   payload: CommunityResourceUpdatePayload
