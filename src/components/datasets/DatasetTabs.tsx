@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Tabs, Tab, TabHeader, TabBody, CardNoResults, CardLinks, Icon, StatusCard, Button, InputSearchBar, InputText, InputTextArea } from '@ama-pt/agora-design-system';
-import { Dataset, Discussion, Reuse, Resource } from '@/types/api';
-import { fetchDiscussions, fetchReuses, fetchCommunityResourcesByDataset } from '@/services/api';
+import { Dataset, Discussion, DiscussionCreatePayload, Reuse, Resource } from '@/types/api';
+import { fetchDiscussions, fetchReuses, fetchCommunityResourcesByDataset, createDiscussion } from '@/services/api';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { DatasetResourcesTable } from './DatasetResourcesTable';
@@ -22,8 +22,36 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
     const [showNewDiscussion, setShowNewDiscussion] = useState(false);
     const [newDiscTitle, setNewDiscTitle] = useState('');
     const [newDiscMessage, setNewDiscMessage] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [communityResources, setCommunityResources] = useState<Resource[]>([]);
     const [communityCount, setCommunityCount] = useState(0);
+
+    const handleCreateDiscussion = async () => {
+        if (!newDiscTitle.trim() || !newDiscMessage.trim()) return;
+        setIsSubmitting(true);
+        try {
+            const payload: DiscussionCreatePayload = {
+                title: newDiscTitle.trim(),
+                comment: newDiscMessage.trim(),
+                subject: {
+                    class: 'Dataset',
+                    id: dataset.id,
+                },
+            };
+            const created = await createDiscussion(payload);
+            if (created) {
+                setDiscussions((prev) => [created, ...prev]);
+                setDiscussionCount((prev) => prev + 1);
+                setNewDiscTitle('');
+                setNewDiscMessage('');
+                setShowNewDiscussion(false);
+            }
+        } catch (error) {
+            console.error('Error creating discussion:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     useEffect(() => {
         async function loadTabData() {
@@ -256,8 +284,10 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                         <Button
                                             variant="primary"
                                             appearance="solid"
+                                            onClick={handleCreateDiscussion}
+                                            disabled={isSubmitting || !newDiscTitle.trim() || !newDiscMessage.trim()}
                                         >
-                                            Enviar
+                                            {isSubmitting ? 'A enviar...' : 'Enviar'}
                                         </Button>
                                     </div>
                                 </div>

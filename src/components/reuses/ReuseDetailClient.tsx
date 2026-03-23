@@ -21,8 +21,8 @@ import {
   InputText,
   InputTextArea,
 } from '@ama-pt/agora-design-system';
-import { Reuse, Dataset, Discussion } from '@/types/api';
-import { fetchDataset, fetchReuse, fetchDiscussions } from '@/services/api';
+import { Reuse, Dataset, Discussion, DiscussionCreatePayload } from '@/types/api';
+import { fetchDataset, fetchReuse, fetchDiscussions, createDiscussion } from '@/services/api';
 
 import { format, formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -42,6 +42,34 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
   const [showNewDiscussion, setShowNewDiscussion] = useState(false);
   const [newDiscTitle, setNewDiscTitle] = useState('');
   const [newDiscMessage, setNewDiscMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleCreateDiscussion = async () => {
+    if (!reuse || !newDiscTitle.trim() || !newDiscMessage.trim()) return;
+    setIsSubmitting(true);
+    try {
+      const payload: DiscussionCreatePayload = {
+        title: newDiscTitle.trim(),
+        comment: newDiscMessage.trim(),
+        subject: {
+          class: 'Reuse',
+          id: reuse.id,
+        },
+      };
+      const created = await createDiscussion(payload);
+      if (created) {
+        setDiscussions((prev) => [created, ...prev]);
+        setDiscussionCount((prev) => prev + 1);
+        setNewDiscTitle('');
+        setNewDiscMessage('');
+        setShowNewDiscussion(false);
+      }
+    } catch (error) {
+      console.error('Error creating discussion:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     async function loadReuse() {
@@ -456,7 +484,14 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                         />
                       </div>
                       <div className="flex justify-end">
-                        <Button variant="primary" appearance="solid">Enviar</Button>
+                        <Button
+                          variant="primary"
+                          appearance="solid"
+                          onClick={handleCreateDiscussion}
+                          disabled={isSubmitting || !newDiscTitle.trim() || !newDiscMessage.trim()}
+                        >
+                          {isSubmitting ? 'A enviar...' : 'Enviar'}
+                        </Button>
                       </div>
                     </div>
                   )}
