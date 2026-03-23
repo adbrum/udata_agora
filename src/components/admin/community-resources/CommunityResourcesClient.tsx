@@ -63,7 +63,9 @@ export default function CommunityResourcesClient() {
       </div>
 
 
-      {!isLoading && resources.length > 0 ? (
+      {isLoading ? (
+        <p className="text-neutral-600">A carregar...</p>
+      ) : resources.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Linhas por página",

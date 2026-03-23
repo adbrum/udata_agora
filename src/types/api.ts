@@ -824,7 +824,8 @@ export interface CommunityResourceCreatePayload {
   title: string;
   description?: string;
   url: string;
-  filetype?: string;
+  filetype?: "file" | "remote";
+  type?: string;
   format?: string;
   dataset: string;
   organization?: string;

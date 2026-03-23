@@ -94,7 +94,7 @@ export default function CommunityResourceFormClient({
     setIsSubmitting(true);
 
     const finalUrl = file
-      ? "https://placeholder.local"
+      ? "https://example.com/placeholder"
       : resourceUrl.trim().match(/^https?:\/\//)
         ? resourceUrl.trim()
         : `https://${resourceUrl.trim()}`;
@@ -103,8 +103,9 @@ export default function CommunityResourceFormClient({
       const resource = await createCommunityResource({
         title: title.trim(),
         url: finalUrl,
+        filetype: file ? "file" : "remote",
+        type: selectedTypeRef.current || undefined,
         description: description.trim() || undefined,
-        filetype: selectedTypeRef.current || undefined,
         dataset: datasetId,
         ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
           ? { organization: selectedProducerRef.current }
@@ -320,7 +321,7 @@ export default function CommunityResourceFormClient({
                   </div>
 
                   <InputText
-                    label="Link exato para o arquivo *"
+                    label={file ? "Link exato para o arquivo" : "Link exato para o arquivo *"}
                     placeholder="https://..."
                     id="resource-url"
                     value={resourceUrl}
@@ -395,7 +396,7 @@ export default function CommunityResourceFormClient({
                   </div>
 
                   <InputText
-                    label="Adicione um link para o diagrama."
+                    label="Adicione um link para o diagrama"
                     placeholder="https://..."
                     id="resource-schema-url"
                     value={schemaUrl}
@@ -486,6 +487,18 @@ export default function CommunityResourceFormClient({
                       }
                       blockedLink={true}
                     />
+                    <div className="flex justify-end mt-[8px]">
+                      <Button
+                        appearance="outline"
+                        variant="danger"
+                        hasIcon
+                        leadingIcon="agora-line-trash"
+                        leadingIconHover="agora-solid-trash"
+                        onClick={() => setDataset(null)}
+                      >
+                        Eliminar
+                      </Button>
+                    </div>
                   </div>
                 )}
 
