@@ -67,6 +67,7 @@ import {
   UserSuggestion,
   UserUpdatePayload,
   OrgInvitation,
+  CatalogSchema,
   CommunityResource,
   CommunityResourceCreatePayload,
   CommunityResourceUpdatePayload,
@@ -1399,7 +1400,7 @@ export async function fetchFrequencies(): Promise<Frequency[]> {
   }
 }
 
-export async function fetchSchemas(): Promise<string[]> {
+export async function fetchSchemas(): Promise<CatalogSchema[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/datasets/schemas/`, { cache: "no-store" });
     if (!res.ok) throw new Error(`Failed to fetch schemas: ${res.statusText}`);
@@ -2846,6 +2847,24 @@ export async function deleteCommunityResource(id: string): Promise<void> {
     credentials: "include",
   });
   if (!res.ok) throw new Error(`Failed to delete community resource: ${res.statusText}`);
+}
+
+export async function uploadNewCommunityResource(
+  datasetId: string,
+  file: File
+): Promise<CommunityResource> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_AUTH_URL}/datasets/${datasetId}/upload/community/`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
 }
 
 export async function uploadCommunityResourceFile(

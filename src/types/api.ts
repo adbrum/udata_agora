@@ -614,6 +614,15 @@ export interface ResourceType {
   label: string;
 }
 
+export interface CatalogSchema {
+  name: string;
+  title: string;
+  description: string;
+  schema_url: string;
+  schema_type: string;
+  contact: string;
+}
+
 export interface Activity {
   actor: UserRef;
   organization: Organization | null;
@@ -829,6 +838,7 @@ export interface CommunityResourceCreatePayload {
   format?: string;
   dataset: string;
   organization?: string;
+  schema?: { name?: string; url?: string };
 }
 
 export interface CommunityResourceUpdatePayload {
@@ -836,8 +846,11 @@ export interface CommunityResourceUpdatePayload {
   description?: string;
   url?: string;
   filetype?: string;
+  type?: string;
   format?: string;
   dataset?: string;
+  organization?: string;
+  schema?: { name?: string; url?: string };
 }
 
 export interface HarvestJob {

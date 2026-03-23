@@ -16,11 +16,13 @@ import {
 } from "@ama-pt/agora-design-system";
 import {
   createCommunityResource,
-  uploadCommunityResourceFile,
+  uploadNewCommunityResource,
+  updateCommunityResource,
   fetchDataset,
   fetchResourceTypes,
+  fetchSchemas,
 } from "@/services/api";
-import type { Dataset, CommunityResource, ResourceType } from "@/types/api";
+import type { Dataset, CommunityResource, ResourceType, CatalogSchema } from "@/types/api";
 import { formatDistanceToNow } from "date-fns";
 import { pt } from "date-fns/locale";
 import { useAuth } from "@/context/AuthContext";
@@ -60,6 +62,7 @@ export default function CommunityResourceFormClient({
   // Data from API
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [resourceTypes, setResourceTypes] = useState<ResourceType[]>([]);
+  const [schemas, setSchemas] = useState<CatalogSchema[]>([]);
 
   useEffect(() => {
     if (datasetId) {
@@ -70,6 +73,9 @@ export default function CommunityResourceFormClient({
     fetchResourceTypes()
       .then(setResourceTypes)
       .catch(() => console.error("Error loading resource types"));
+    fetchSchemas()
+      .then(setSchemas)
+      .catch(() => console.error("Error loading schemas"));
   }, [datasetId]);
 
   const clearError = (key: string) => {
@@ -93,27 +99,46 @@ export default function CommunityResourceFormClient({
     setApiError(null);
     setIsSubmitting(true);
 
-    const finalUrl = file
-      ? "https://example.com/placeholder"
-      : resourceUrl.trim().match(/^https?:\/\//)
-        ? resourceUrl.trim()
-        : `https://${resourceUrl.trim()}`;
-
     try {
-      const resource = await createCommunityResource({
-        title: title.trim(),
-        url: finalUrl,
-        filetype: file ? "file" : "remote",
-        type: selectedTypeRef.current || undefined,
-        description: description.trim() || undefined,
-        dataset: datasetId,
-        ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
-          ? { organization: selectedProducerRef.current }
-          : {}),
-      });
+      let resource: CommunityResource;
+
+      const schemaPayload = selectedSchemaRef.current
+        ? { schema: { name: selectedSchemaRef.current } }
+        : schemaUrl.trim()
+          ? { schema: { url: schemaUrl.trim() } }
+          : {};
 
       if (file) {
-        await uploadCommunityResourceFile(resource.id, file);
+        // File upload: use the dedicated upload endpoint
+        resource = await uploadNewCommunityResource(datasetId, file);
+        // Update metadata (title, description, type, schema) after upload
+        await updateCommunityResource(resource.id, {
+          title: title.trim(),
+          description: description.trim() || undefined,
+          type: selectedTypeRef.current || undefined,
+          ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
+            ? { organization: selectedProducerRef.current }
+            : {}),
+          ...schemaPayload,
+        });
+      } else {
+        // Remote URL: use the remote community resource endpoint
+        const finalUrl = resourceUrl.trim().match(/^https?:\/\//)
+          ? resourceUrl.trim()
+          : `https://${resourceUrl.trim()}`;
+
+        resource = await createCommunityResource({
+          title: title.trim(),
+          url: finalUrl,
+          filetype: "remote",
+          type: selectedTypeRef.current || undefined,
+          description: description.trim() || undefined,
+          dataset: datasetId,
+          ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
+            ? { organization: selectedProducerRef.current }
+            : {}),
+          ...schemaPayload,
+        });
       }
 
       setCreatedResource(resource);
@@ -168,12 +193,9 @@ export default function CommunityResourceFormClient({
         <>
           Você pode escolher entre os seguintes tipos:
           <ul className="list-disc pl-16 mt-8">
-            <li>Ficheiros principais</li>
-            <li>Documentação</li>
-            <li>Atualizar</li>
-            <li>API</li>
-            <li>Código-fonte</li>
-            <li>Outro</li>
+            {resourceTypes.length > 0
+              ? resourceTypes.map((t) => <li key={t.id}>{t.label}</li>)
+              : <li>A carregar tipos...</li>}
           </ul>
         </>
       ),
@@ -232,8 +254,13 @@ export default function CommunityResourceFormClient({
   const schemaOptions = useMemo(() => (
     <DropdownSection name="schemas">
       <DropdownOption value="">Nenhum</DropdownOption>
+      {schemas.map((s) => (
+        <DropdownOption key={s.name} value={s.name}>
+          {s.title}
+        </DropdownOption>
+      ))}
     </DropdownSection>
-  ), []);
+  ), [schemas]);
 
   return (
     <>
