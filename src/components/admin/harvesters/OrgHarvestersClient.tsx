@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Breadcrumb,
   CardNoResults,
@@ -49,6 +49,8 @@ export default function OrgHarvestersClient() {
 
   const [harvesters, setHarvesters] = useState<HarvestSource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     if (!activeOrg) {
@@ -68,6 +70,12 @@ export default function OrgHarvestersClient() {
     }
     loadHarvesters();
   }, [activeOrg]);
+
+  const totalPages = Math.ceil(harvesters.length / itemsPerPage);
+  const paginatedHarvesters = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return harvesters.slice(start, start + itemsPerPage);
+  }, [harvesters, currentPage, itemsPerPage]);
 
   if (isOrgLoading) return <p>A carregar...</p>;
   if (!activeOrg) {
@@ -132,73 +140,89 @@ export default function OrgHarvestersClient() {
       {isLoading ? (
         <p>A carregar...</p>
       ) : harvesters.length > 0 ? (
-        <Table
-          paginationProps={{
-            itemsPerPageLabel: "Linhas por página",
-            itemsPerPage: 10,
-            totalItems: harvesters.length,
-            availablePageSizes: [5, 10, 20],
-            currentPage: 1,
-            buttonDropdownAriaLabel: "Selecionar linhas por página",
-            dropdownListAriaLabel: "Opções de linhas por página",
-            prevButtonAriaLabel: "Página anterior",
-            nextButtonAriaLabel: "Próxima página",
-          }}
-        >
-          <TableHeader>
-            <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
-                Nome
-              </TableHeaderCell>
-              <TableHeaderCell>Estatuto</TableHeaderCell>
-              <TableHeaderCell>Implementação</TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Criado em
-              </TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Última execução
-              </TableHeaderCell>
-              <TableHeaderCell>Ações</TableHeaderCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {harvesters.map((harvester, index) => (
-              <TableRow key={index}>
-                <TableCell headerLabel="Nome">
-                  <a
-                    href={`/pages/admin/org/harvesters/${harvester.id}`}
-                    className="text-primary-600 underline"
-                  >
-                    {harvester.name}
-                  </a>
-                </TableCell>
-                <TableCell headerLabel="Estatuto">
-                  <Pill variant={getStatusVariant(harvester)}>
-                    {getStatusLabel(harvester)}
-                  </Pill>
-                </TableCell>
-                <TableCell headerLabel="Implementação">
-                  {harvester.backend}
-                </TableCell>
-                <TableCell headerLabel="Criado em">
-                  {formatDate(harvester.created_at)}
-                </TableCell>
-                <TableCell headerLabel="Última execução">
-                  {harvester.last_job
-                    ? formatDate(harvester.last_job.started ?? harvester.last_job.ended ?? "")
-                    : "Ainda não"}
-                </TableCell>
-                <TableCell headerLabel="Ações">
-                  <div className="flex gap-[8px]">
-                    <a href={`/pages/admin/org/harvesters/${harvester.id}`}>
-                      <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
-                    </a>
-                  </div>
-                </TableCell>
+        <>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHeaderCell sortType="string" sortOrder="descending">
+                  Nome
+                </TableHeaderCell>
+                <TableHeaderCell>Estatuto</TableHeaderCell>
+                <TableHeaderCell>Implementação</TableHeaderCell>
+                <TableHeaderCell sortType="date" sortOrder="none">
+                  Criado em
+                </TableHeaderCell>
+                <TableHeaderCell sortType="date" sortOrder="none">
+                  Última execução
+                </TableHeaderCell>
+                <TableHeaderCell>Ações</TableHeaderCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {paginatedHarvesters.map((harvester, index) => (
+                <TableRow key={index}>
+                  <TableCell headerLabel="Nome">
+                    <a
+                      href={`/pages/admin/org/harvesters/${harvester.id}`}
+                      className="text-primary-600 underline"
+                    >
+                      {harvester.name}
+                    </a>
+                  </TableCell>
+                  <TableCell headerLabel="Estatuto">
+                    <Pill variant={getStatusVariant(harvester)}>
+                      {getStatusLabel(harvester)}
+                    </Pill>
+                  </TableCell>
+                  <TableCell headerLabel="Implementação">
+                    {harvester.backend}
+                  </TableCell>
+                  <TableCell headerLabel="Criado em">
+                    {formatDate(harvester.created_at)}
+                  </TableCell>
+                  <TableCell headerLabel="Última execução">
+                    {harvester.last_job
+                      ? formatDate(harvester.last_job.started ?? harvester.last_job.ended ?? "")
+                      : "Ainda não"}
+                  </TableCell>
+                  <TableCell headerLabel="Ações">
+                    <div className="flex gap-[8px]">
+                      <a href={`/pages/admin/org/harvesters/${harvester.id}`}>
+                        <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+                      </a>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          <div className="flex items-center justify-between mt-[16px] py-[12px] border-t border-neutral-200">
+            <div className="flex items-center gap-[8px]">
+              <span className="text-sm text-neutral-600">Linhas por página</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                className="border border-neutral-300 rounded px-[8px] py-[4px] text-sm"
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-[8px]">
+              <span className="text-sm text-neutral-600">
+                {(currentPage - 1) * itemsPerPage + 1}–{Math.min(currentPage * itemsPerPage, harvesters.length)} de {harvesters.length}
+              </span>
+              <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-[4px] text-primary-600 disabled:text-neutral-300" aria-label="Página anterior">
+                <Icon name="agora-line-arrow-left" className="w-[20px] h-[20px]" />
+              </button>
+              <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-[4px] text-primary-600 disabled:text-neutral-300" aria-label="Próxima página">
+                <Icon name="agora-line-arrow-right" className="w-[20px] h-[20px]" />
+              </button>
+            </div>
+          </div>
+        </>
       ) : (
         <div className="datasets-page__body">
           <div className="datasets-page__content">

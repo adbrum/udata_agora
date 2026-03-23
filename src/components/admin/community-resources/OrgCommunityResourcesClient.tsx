@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Breadcrumb,
   CardNoResults,
@@ -32,6 +32,8 @@ export default function OrgCommunityResourcesClient() {
 
   const [resources, setResources] = useState<CommunityResource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     if (!activeOrg) {
@@ -51,6 +53,12 @@ export default function OrgCommunityResourcesClient() {
     }
     loadResources();
   }, [activeOrg]);
+
+  const totalPages = Math.ceil(resources.length / itemsPerPage);
+  const paginatedResources = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return resources.slice(start, start + itemsPerPage);
+  }, [resources, currentPage, itemsPerPage]);
 
   if (isOrgLoading) return <p>A carregar...</p>;
   if (!activeOrg) {
@@ -118,66 +126,82 @@ export default function OrgCommunityResourcesClient() {
       {isLoading ? (
         <p>A carregar...</p>
       ) : resources.length > 0 ? (
-        <Table
-          paginationProps={{
-            itemsPerPageLabel: "Linhas por página",
-            itemsPerPage: 5,
-            totalItems: resources.length,
-            availablePageSizes: [5, 10, 20],
-            currentPage: 1,
-            buttonDropdownAriaLabel: "Selecionar linhas por página",
-            dropdownListAriaLabel: "Opções de linhas por página",
-            prevButtonAriaLabel: "Página anterior",
-            nextButtonAriaLabel: "Próxima página",
-          }}
-        >
-          <TableHeader>
-            <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
-                Título
-              </TableHeaderCell>
-              <TableHeaderCell>Estado</TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Criado em
-              </TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Modificado em
-              </TableHeaderCell>
-              <TableHeaderCell>Ações</TableHeaderCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {resources.map((resource, index) => (
-              <TableRow key={index}>
-                <TableCell headerLabel="Título">
-                  <span className="text-primary-600">{resource.title}</span>
-                </TableCell>
-                <TableCell headerLabel="Estado">
-                  <Pill variant="success">Público</Pill>
-                </TableCell>
-                <TableCell headerLabel="Criado em">
-                  {formatDate(resource.created_at)}
-                </TableCell>
-                <TableCell headerLabel="Modificado em">
-                  {formatDate(resource.last_modified)}
-                  <br />
-                  <span className="text-sm text-neutral-500">
-                    sobre{" "}
-                    <span className="text-success-600">●</span>{" "}
-                    {resource.owner
-                      ? `${resource.owner.first_name} ${resource.owner.last_name}`
-                      : "—"}
-                  </span>
-                </TableCell>
-                <TableCell headerLabel="Ações">
-                  <div className="flex gap-[8px]">
-                    <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
-                  </div>
-                </TableCell>
+        <>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHeaderCell sortType="string" sortOrder="descending">
+                  Título
+                </TableHeaderCell>
+                <TableHeaderCell>Estado</TableHeaderCell>
+                <TableHeaderCell sortType="date" sortOrder="none">
+                  Criado em
+                </TableHeaderCell>
+                <TableHeaderCell sortType="date" sortOrder="none">
+                  Modificado em
+                </TableHeaderCell>
+                <TableHeaderCell>Ações</TableHeaderCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {paginatedResources.map((resource, index) => (
+                <TableRow key={index}>
+                  <TableCell headerLabel="Título">
+                    <span className="text-primary-600">{resource.title}</span>
+                  </TableCell>
+                  <TableCell headerLabel="Estado">
+                    <Pill variant="success">Público</Pill>
+                  </TableCell>
+                  <TableCell headerLabel="Criado em">
+                    {formatDate(resource.created_at)}
+                  </TableCell>
+                  <TableCell headerLabel="Modificado em">
+                    {formatDate(resource.last_modified)}
+                    <br />
+                    <span className="text-sm text-neutral-500">
+                      sobre{" "}
+                      <span className="text-success-600">●</span>{" "}
+                      {resource.owner
+                        ? `${resource.owner.first_name} ${resource.owner.last_name}`
+                        : "—"}
+                    </span>
+                  </TableCell>
+                  <TableCell headerLabel="Ações">
+                    <div className="flex gap-[8px]">
+                      <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          <div className="flex items-center justify-between mt-[16px] py-[12px] border-t border-neutral-200">
+            <div className="flex items-center gap-[8px]">
+              <span className="text-sm text-neutral-600">Linhas por página</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                className="border border-neutral-300 rounded px-[8px] py-[4px] text-sm"
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-[8px]">
+              <span className="text-sm text-neutral-600">
+                {(currentPage - 1) * itemsPerPage + 1}–{Math.min(currentPage * itemsPerPage, resources.length)} de {resources.length}
+              </span>
+              <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-[4px] text-primary-600 disabled:text-neutral-300" aria-label="Página anterior">
+                <Icon name="agora-line-arrow-left" className="w-[20px] h-[20px]" />
+              </button>
+              <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-[4px] text-primary-600 disabled:text-neutral-300" aria-label="Próxima página">
+                <Icon name="agora-line-arrow-right" className="w-[20px] h-[20px]" />
+              </button>
+            </div>
+          </div>
+        </>
       ) : (
         <div className="datasets-page__body">
           <div className="datasets-page__content">
