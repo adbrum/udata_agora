@@ -2744,13 +2744,23 @@ export async function fetchMyCommunityResources(
   pageSize: number = 20
 ): Promise<APIResponse<CommunityResource>> {
   try {
-    const res = await fetch(
-      `${API_AUTH_URL}/me/community_resources/?page=${page}&page_size=${pageSize}`,
-      { cache: "no-store", credentials: "include" }
-    );
+    const res = await authFetch("/me/community_resources/", { cache: "no-store" });
     if (!res.ok)
       throw new Error(`Failed to fetch my community resources: ${res.statusText}`);
-    return await res.json();
+
+    const raw: CommunityResource[] = await res.json();
+    const total = raw.length;
+    const start = (page - 1) * pageSize;
+    const data = raw.slice(start, start + pageSize);
+
+    return {
+      data,
+      page,
+      page_size: pageSize,
+      total,
+      next_page: start + pageSize < total ? `${page + 1}` : null,
+      previous_page: page > 1 ? `${page - 1}` : null,
+    };
   } catch (error) {
     console.error("Error fetching my community resources:", error);
     return {

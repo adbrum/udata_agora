@@ -6,6 +6,10 @@ import {
   Breadcrumb,
   CardNoResults,
   Icon,
+  InputSelect,
+  InputSearchBar,
+  DropdownSection,
+  DropdownOption,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -54,7 +58,7 @@ export default function CommunityResourcesClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "Recursos comunitários", url: "/pages/admin/community-resources" },
+            { label: "Recursos comunitários", url: "/pages/admin/me/community-resources" },
           ]}
         />
       </div>
@@ -64,6 +68,33 @@ export default function CommunityResourcesClient() {
         <PublishDropdown />
       </div>
 
+      <p className="text-neutral-700 text-sm mb-[16px]">
+        {resources.length} resultados
+      </p>
+
+      <div className="flex items-end gap-[16px] mb-[24px]">
+        <div className="w-[60%]">
+          <InputSearchBar
+            hasVoiceActionButton={false}
+            label="Pesquisar"
+            placeholder="Pesquisar recursos comunitários"
+            aria-label="Pesquisar recursos comunitários"
+          />
+        </div>
+        <InputSelect
+          label=""
+          hideLabel
+          placeholder="Filtrar por estado"
+          id="filter-status"
+        >
+          <DropdownSection name="status">
+            <DropdownOption value="public">Público</DropdownOption>
+            <DropdownOption value="archived">Arquivo</DropdownOption>
+            <DropdownOption value="draft">Rascunho</DropdownOption>
+            <DropdownOption value="deleted">Excluído</DropdownOption>
+          </DropdownSection>
+        </InputSelect>
+      </div>
 
       {isLoading ? (
         <p className="text-neutral-600">A carregar...</p>
@@ -86,10 +117,12 @@ export default function CommunityResourcesClient() {
               <TableHeaderCell sortType="string" sortOrder="descending">
                 Título
               </TableHeaderCell>
-              <TableHeaderCell>Formato</TableHeaderCell>
-              <TableHeaderCell>Dataset</TableHeaderCell>
+              <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
                 Criado em
+              </TableHeaderCell>
+              <TableHeaderCell sortType="date" sortOrder="none">
+                Modificado em
               </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
@@ -98,28 +131,20 @@ export default function CommunityResourcesClient() {
             {resources.map((resource, index) => (
               <TableRow key={index}>
                 <TableCell headerLabel="Título">
-                  <span className="text-neutral-900">{resource.title}</span>
+                  <span className="text-primary-600">{resource.title}</span>
                 </TableCell>
-                <TableCell headerLabel="Formato">
-                  <Pill variant="neutral">{resource.format || "—"}</Pill>
-                </TableCell>
-                <TableCell headerLabel="Dataset">
-                  {resource.dataset ? (
-                    <a
-                      href={`/pages/datasets/${resource.dataset.id}`}
-                      className="text-primary-600 underline"
-                    >
-                      {resource.dataset.title}
-                    </a>
-                  ) : (
-                    "—"
-                  )}
+                <TableCell headerLabel="Estado">
+                  <Pill variant="success">Público</Pill>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(resource.created_at)}
+                </TableCell>
+                <TableCell headerLabel="Modificado em">
+                  {formatDate(resource.last_modified)}
                   <br />
                   <span className="text-sm text-neutral-500">
-                    por{" "}
+                    sobre{" "}
+                    <span className="text-success-600">●</span>{" "}
                     {resource.owner
                       ? `${resource.owner.first_name} ${resource.owner.last_name}`
                       : "—"}
@@ -143,7 +168,10 @@ export default function CommunityResourcesClient() {
               className="datasets-page__empty"
               position="center"
               icon={
-                <Icon name="agora-line-user-group" className="w-12 h-12 text-primary-500 icon-xl" />
+                <Icon
+                  name="agora-line-user-group"
+                  className="w-12 h-12 text-primary-500 icon-xl"
+                />
               }
               title="Sem publicações"
               description="Ainda não publicou um recurso comunitário."
@@ -153,7 +181,7 @@ export default function CommunityResourcesClient() {
                   <Button
                     variant="primary"
                     appearance="outline"
-                    onClick={() => router.push("/pages/admin/community-resources/new")}
+                    onClick={() => router.push("/pages/admin/me/community-resources/new")}
                   >
                     Publique no portal
                   </Button>

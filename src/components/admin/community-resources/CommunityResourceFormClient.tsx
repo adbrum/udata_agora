@@ -627,7 +627,7 @@ export default function CommunityResourceFormClient({
                       try {
                         const { deleteCommunityResource } = await import("@/services/api");
                         await deleteCommunityResource(createdResource.id);
-                        router.push("/pages/admin/community-resources");
+                        router.push("/pages/admin/me/community-resources");
                       } catch {
                         setApiError("Erro ao eliminar recurso.");
                       }
@@ -651,7 +651,7 @@ export default function CommunityResourceFormClient({
                     if (dataset) {
                       router.push(`/pages/datasets/${dataset.slug}`);
                     } else {
-                      router.push("/pages/admin/community-resources");
+                      router.push("/pages/admin/me/community-resources");
                     }
                   }}
                 >
