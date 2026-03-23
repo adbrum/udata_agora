@@ -30,10 +30,13 @@ import {
   Tab,
   TabHeader,
   TabBody,
+  usePopupContext,
 } from "@ama-pt/agora-design-system";
+import { ChangePasswordPopupContent } from "@/components/admin/profile/ChangePasswordPopupContent";
 
 export default function ProfileClient() {
   const router = useRouter();
+  const { show } = usePopupContext();
   const { displayName } = useCurrentUser();
   const { user, samlLogin, refresh } = useAuth();
 
@@ -203,11 +206,10 @@ export default function ProfileClient() {
 
       <div className="profile-card">
         <Avatar
-          avatarType={profile?.avatar_thumbnail ? "image" : "icon"}
+          avatarType={profile?.avatar_thumbnail ? "image" : "initials"}
           srcPath={
-            profile?.avatar_thumbnail
-              ? (profile.avatar_thumbnail as unknown as undefined)
-              : ("agora-line-user" as unknown as undefined)
+            (profile?.avatar_thumbnail ||
+              `${(profile?.first_name || "")[0] || ""}${(profile?.last_name || "")[0] || ""}`.toUpperCase()) as unknown as undefined
           }
           alt={`${profile?.first_name ?? ""} ${profile?.last_name ?? ""}`}
           className="profile-card__avatar"
@@ -440,6 +442,24 @@ export default function ProfileClient() {
                         readOnly
                       />
                     </div>
+                    {!samlLogin && (
+                      <Button
+                        appearance="outline"
+                        variant="neutral"
+                        hasIcon
+                        leadingIcon="agora-line-edit"
+                        leadingIconHover="agora-solid-edit"
+                        onClick={() =>
+                          show(<ChangePasswordPopupContent />, {
+                            title: "Altere a sua senha",
+                            closeAriaLabel: "Fechar",
+                            dimensions: "m",
+                          })
+                        }
+                      >
+                        Alterar senha
+                      </Button>
+                    )}
                   </div>
                 </div>
 

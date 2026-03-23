@@ -70,11 +70,12 @@ const navGroups: NavGroup[] = [
         href: "/pages/admin/org/datasets",
         icon: "agora-line-layers-menu",
       },
-      {
-        label: "API",
-        href: "/pages/admin/org/dataservices",
-        customIcon: "/Icons/reduce_white.svg",
-      },
+      // API oculta temporariamente
+      // {
+      //   label: "API",
+      //   href: "/pages/admin/org/dataservices",
+      //   customIcon: "/Icons/reduce_white.svg",
+      // },
       {
         label: "Reutilizações",
         href: "/pages/admin/org/reuses",
@@ -178,9 +179,8 @@ export function AdminSideNavigation() {
   const visibleGroups = useMemo(
     () =>
       navGroups.filter((group) => {
-        // Organização e Sistema ocultos temporariamente
+        // Sistema oculto temporariamente
         if (group.key === "system") return false;
-        if (group.key === "organization") return false;
         return true;
       }),
     [isAdmin, hasOrganization],
