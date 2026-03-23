@@ -114,15 +114,17 @@ export default function CommunityResourcesClient() {
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
+              <TableHeaderCell sortType="string" sortOrder="none">
                 Título
               </TableHeaderCell>
-              <TableHeaderCell>Estado</TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Criado em
+              <TableHeaderCell sortType="string" sortOrder="none">
+                Estado
+              </TableHeaderCell>
+              <TableHeaderCell sortType="string" sortOrder="none">
+                Conjunto de dados
               </TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
-                Modificado em
+                Criado em
               </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
@@ -136,24 +138,28 @@ export default function CommunityResourcesClient() {
                 <TableCell headerLabel="Estado">
                   <Pill variant="success">Público</Pill>
                 </TableCell>
+                <TableCell headerLabel="Conjunto de dados">
+                  {resource.dataset ? (
+                    <a
+                      href={`/pages/datasets/${resource.dataset.id}`}
+                      className="text-primary-600 underline"
+                    >
+                      {resource.dataset.title}
+                    </a>
+                  ) : (
+                    "—"
+                  )}
+                </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(resource.created_at)}
-                </TableCell>
-                <TableCell headerLabel="Modificado em">
-                  {formatDate(resource.last_modified)}
-                  <br />
-                  <span className="text-sm text-neutral-500">
-                    sobre{" "}
-                    <span className="text-success-600">●</span>{" "}
-                    {resource.owner
-                      ? `${resource.owner.first_name} ${resource.owner.last_name}`
-                      : "—"}
-                  </span>
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">
                     <a href={resource.url} target="_blank" rel="noopener noreferrer">
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+                    </a>
+                    <a href={`/pages/admin/me/community-resources/edit?id=${resource.id}`}>
+                      <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
                 </TableCell>
