@@ -1279,7 +1279,7 @@ body:has(.admin-wrapper)>div>header.sticky {
 }
 
 .admin-page {
-  --admin-auxiliar-width: 400px;
+  --admin-auxiliar-width: 360px;
   --admin-auxiliar-gap: 70px;
 }
 

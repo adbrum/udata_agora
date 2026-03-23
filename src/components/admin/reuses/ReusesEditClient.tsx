@@ -497,7 +497,7 @@ export default function ReusesEditClient() {
                       onClick={handleSaveMetadata}
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? "A guardar..." : "Guardar alterações"}
+                      {isSubmitting ? "A guardar..." : "Guardar"}
                     </Button>
                   </div>
 
@@ -879,7 +879,7 @@ export default function ReusesEditClient() {
                     }}
                     disabled={isSubmitting || (!selectedDataset && !datasetLinks.some((l) => l.url.trim()))}
                   >
-                    {isSubmitting ? "A guardar..." : "Guardar alterações"}
+                    {isSubmitting ? "A guardar..." : "Guardar"}
                   </Button>
                 </div>
                 </form>
@@ -933,7 +933,7 @@ export default function ReusesEditClient() {
                   </div>
 
                   {apiLinks.map((link, index) => (
-                    <div key={`api-${index}`} className="mt-[16px]">
+                    <div key={`api-${index}`}>
                       <InputText
                         label="Link para a API"
                         placeholder="https://..."
@@ -999,7 +999,7 @@ export default function ReusesEditClient() {
                     </Button>
                   </div>
 
-                  <div className="admin-page__actions flex justify-end gap-[18px] mt-[32px]">
+                  <div className="admin-page__actions flex justify-end gap-[18px]">
                     <Button
                       variant="primary"
                       onClick={async () => {
@@ -1035,7 +1035,7 @@ export default function ReusesEditClient() {
                       }}
                       disabled={isSubmitting || !apiLinks.some((l) => l.url.trim())}
                     >
-                      {isSubmitting ? "A guardar..." : "Para salvaguardar"}
+                      {isSubmitting ? "A guardar..." : "Guardar"}
                     </Button>
                   </div>
                 </form>
