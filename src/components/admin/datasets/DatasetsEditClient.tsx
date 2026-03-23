@@ -27,6 +27,7 @@ import {
   Tab,
   TabHeader,
   TabBody,
+  usePopupContext,
 } from "@ama-pt/agora-design-system";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -45,9 +46,104 @@ import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
 import { getFrequencyLabel } from "@/utils/frequencyLabels";
 
+function TransferDatasetPopupContent({
+  datasetTitle,
+  onClose,
+}: {
+  datasetTitle: string;
+  onClose: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-[16px]">
+      <p>
+        <Icon name="agora-line-document" className="inline w-4 h-4 mr-[4px]" />
+        <a href="#" className="text-primary-600 underline">
+          {datasetTitle}
+        </a>
+      </p>
+      <p>
+        <strong>Essa ação é irreversível.</strong>
+        Você não terá mais acesso para gerenciar esse conjunto de dados.
+      </p>
+
+      <div className="flex flex-col gap-[8px]">
+        <label className="text-primary-900 text-base font-medium leading-7">
+          Encontre uma organização ou usuário
+        </label>
+        <InputText
+          placeholder="Procurar..."
+          id="transfer-search"
+          label=""
+        />
+      </div>
+
+      <div className="admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center">
+        <h3 className="text-primary-900 text-lg font-bold leading-7">
+          Você não pertence a nenhuma organização.
+        </h3>
+        <p className="text-neutral-700 text-base leading-7">
+          Recomendamos que publique em nome de uma organização se se tratar de uma
+          atividade profissional.
+        </p>
+        <Button variant="primary">
+          Crie ou participe de uma organização
+        </Button>
+      </div>
+
+      <div className="flex flex-col gap-[8px]">
+        <label className="text-primary-900 text-base font-medium leading-7">
+          Comentário
+        </label>
+        <InputTextArea
+          placeholder=""
+          id="transfer-comment"
+          label=""
+          rows={3}
+        />
+      </div>
+
+      <div className="flex justify-end gap-16 pt-16">
+        <Button
+          appearance="solid"
+          variant="primary"
+          hasIcon
+          leadingIcon="agora-line-arrow-right-circle"
+          leadingIconHover="agora-solid-arrow-right-circle"
+          onClick={onClose}
+        >
+          Conjunto de dados de transferência
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function DeleteDatasetPopupContent({
+  onClose,
+  onConfirm,
+}: {
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-[16px]">
+      <p>Essa ação é irreversível.</p>
+      <div className="flex justify-end gap-16 pt-16">
+        <Button appearance="outline" variant="neutral" onClick={onClose}>
+          Cancelar
+        </Button>
+        <Button appearance="outline" variant="danger" onClick={onConfirm}>
+          Eliminar
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function DatasetsEditClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { show, hide } = usePopupContext();
   const datasetId = searchParams.get("id") || "";
   const slug = searchParams.get("slug") || datasetId;
 
@@ -302,14 +398,15 @@ export default function DatasetsEditClient() {
 
   const handleDeleteDataset = async () => {
     if (!dataset) return;
-    if (!confirm("Tem certeza que deseja eliminar este conjunto de dados?")) return;
     setIsSubmitting(true);
     try {
       await deleteDataset(dataset.id);
+      hide();
       router.push("/pages/admin/me/datasets");
     } catch (error) {
       console.error("Error deleting dataset:", error);
       setApiError("Erro ao eliminar o conjunto de dados.");
+      hide();
     } finally {
       setIsSubmitting(false);
     }
@@ -830,6 +927,19 @@ export default function DatasetsEditClient() {
                             hasIcon
                             trailingIcon="agora-line-arrow-right-circle"
                             trailingIconHover="agora-solid-arrow-right-circle"
+                            onClick={() => {
+                              show(
+                                <TransferDatasetPopupContent
+                                  datasetTitle={dataset.title}
+                                  onClose={hide}
+                                />,
+                                {
+                                  title: "Conjunto de dados de transferência",
+                                  closeAriaLabel: "Fechar",
+                                  dimensions: "m",
+                                },
+                              );
+                            }}
                           >
                             Transferir o conjunto de dados
                           </Button>
@@ -848,6 +958,10 @@ export default function DatasetsEditClient() {
                             hasIcon
                             trailingIcon="agora-line-arrow-right-circle"
                             trailingIconHover="agora-solid-arrow-right-circle"
+                            onClick={(e: React.MouseEvent) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
                           >
                             Arquivar o conjunto de dados
                           </Button>
@@ -866,7 +980,22 @@ export default function DatasetsEditClient() {
                             hasIcon
                             trailingIcon="agora-line-arrow-right-circle"
                             trailingIconHover="agora-solid-arrow-right-circle"
-                            onClick={handleDeleteDataset}
+                            onClick={(e: React.MouseEvent) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              show(
+                                <DeleteDatasetPopupContent
+                                  onClose={hide}
+                                  onConfirm={handleDeleteDataset}
+                                />,
+                                {
+                                  title:
+                                    "Tem a certeza que quer eliminar este conjunto de dados?",
+                                  closeAriaLabel: "Fechar",
+                                  dimensions: "m",
+                                },
+                              );
+                            }}
                             disabled={isSubmitting}
                           >
                             Exclua o conjunto de dados
