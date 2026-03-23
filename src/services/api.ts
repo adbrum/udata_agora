@@ -2498,6 +2498,28 @@ export async function requestEmailChange(
   return data;
 }
 
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string,
+  newPasswordConfirm: string,
+  csrfToken: string
+): Promise<{ message: string }> {
+  const body = new URLSearchParams({
+    password: currentPassword,
+    new_password: newPassword,
+    new_password_confirm: newPasswordConfirm,
+    csrf_token: csrfToken,
+  });
+  const res = await fetch("/change", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to change password");
+  return data;
+}
+
 export async function deleteAccount(): Promise<void> {
   const res = await fetch(`${API_AUTH_URL}/me/`, {
     method: "DELETE",
