@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
   CardNoResults,
@@ -26,6 +27,7 @@ const formatDate = (dateStr: string) => {
 
 export default function CommunityResourcesClient() {
   const { displayName } = useCurrentUser();
+  const router = useRouter();
 
   const [resources, setResources] = useState<CommunityResource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -151,6 +153,7 @@ export default function CommunityResourcesClient() {
                   <Button
                     variant="primary"
                     appearance="outline"
+                    onClick={() => router.push("/pages/admin/community-resources/new")}
                   >
                     Publique no portal
                   </Button>
