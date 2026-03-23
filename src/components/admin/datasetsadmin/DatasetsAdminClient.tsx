@@ -21,6 +21,7 @@ import {
   createDataset,
   updateDataset,
   uploadResource,
+  createResource,
   fetchLicenses,
   fetchFrequencies,
   fetchDataset,
@@ -72,6 +73,9 @@ export default function DatasetsAdminClient({
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactLink, setContactLink] = useState("");
+
+  // Step 3 state
+  const [resourceUrl, setResourceUrl] = useState("");
 
   // API state
   const [createdDataset, setCreatedDataset] = useState<Dataset | null>(null);
@@ -248,22 +252,47 @@ export default function DatasetsAdminClient({
   };
 
   const handleStep3Next = async () => {
-    if (uploadedFiles.length === 0) {
+    const hasFiles = uploadedFiles.length > 0;
+    const hasUrl = resourceUrl.trim().startsWith("https://");
+
+    if (!hasFiles && !hasUrl) {
       setShowFileError(true);
       return;
     }
-    if (!createdDataset) return;
+    if (!createdDataset) {
+      setApiError("Erro: o conjunto de dados não foi criado. Volte ao passo anterior e preencha o formulário.");
+      return;
+    }
 
     setApiError(null);
     setIsSubmitting(true);
     try {
-      for (const file of uploadedFiles) {
-        await uploadResource(createdDataset.id, file);
+      if (hasFiles) {
+        for (const file of uploadedFiles) {
+          await uploadResource(createdDataset.id, file);
+        }
+      }
+      if (hasUrl) {
+        await createResource(createdDataset.id, {
+          title: resourceUrl.trim(),
+          type: "main",
+          url: resourceUrl.trim(),
+          filetype: "remote",
+          format: "",
+        });
       }
       onNextStep();
     } catch (error) {
       console.error("Error uploading resources:", error);
-      setApiError("Erro ao carregar ficheiros. Tente novamente.");
+      const err = error as { status?: number; data?: Record<string, unknown> };
+      if (err.data && typeof err.data === "object") {
+        const messages = Object.entries(err.data)
+          .map(([key, val]) => `${key}: ${val}`)
+          .join(", ");
+        setApiError(`Erro ao carregar ficheiro: ${messages}`);
+      } else {
+        setApiError("Erro ao carregar ficheiro. Tente novamente.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -870,26 +899,44 @@ export default function DatasetsAdminClient({
               />
 
               <div className="admin-page__form">
-                <h2 className="admin-page__section-title">FICHEIROS</h2>
+                <ButtonUploader
+                  label="Ficheiros"
+                  inputLabel="Selecione ou arraste o ficheiro"
+                  selectedFilesLabel="ficheiros selecionados"
+                  removeFileButtonLabel="Remover ficheiro"
+                  replaceFileButtonLabel="Substituir ficheiro"
+                  onChange={(e) => {
+                    const files = (e.target as HTMLInputElement).files;
+                    if (files && files.length > 0) {
+                      setUploadedFiles(Array.from(files));
+                      setShowFileError(false);
+                    }
+                  }}
+                  hasError={showFileError}
+                  hasFeedback={showFileError}
+                  feedbackState="danger"
+                  feedbackText="Campo obrigatório"
+                />
 
-                <div className="admin-page__org-card flex flex-col items-center gap-[16px]">
-                  <ButtonUploader
-                    label="Ficheiros"
-                    inputLabel="Selecione ou arraste o ficheiro"
-                    selectedFilesLabel="ficheiros selecionados"
-                    removeFileButtonLabel="Remover ficheiro"
-                    replaceFileButtonLabel="Substituir ficheiro"
-                    onChange={(e) => {
-                      const files = (e.target as HTMLInputElement).files;
-                      if (files && files.length > 0) {
-                        setUploadedFiles(Array.from(files));
-                        setShowFileError(false);
-                      }
-                    }}
-                    hasError={showFileError}
-                    hasFeedback={showFileError}
-                    feedbackState="danger"
-                    feedbackText="Campo obrigatório"
+                <div className="flex items-center gap-4 my-4">
+                  <div className="flex-1 border-t border-neutral-300" />
+                  <span className="text-neutral-500 text-sm">ou</span>
+                  <div className="flex-1 border-t border-neutral-300" />
+                </div>
+
+                <div className="admin-page__fields-group">
+                  <h2 className="admin-page__section-title admin-page__section-title--no-top">Adicionar um link</h2>
+                  <InputText
+                    label="Link exato para o ficheiro"
+                    placeholder="https://"
+                    id="resource-url"
+                    value={resourceUrl}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setResourceUrl(e.target.value)
+                    }
+                    feedbackState="info"
+                    hasFeedback
+                    feedbackText="Insira um URL válido, começando com https://"
                   />
                 </div>
 

@@ -960,11 +960,11 @@ export default function DatasetsEditClient() {
                     Reordene os ficheiros
                   </Button>
                   <ButtonUploader
-                    label="Adicionar ficheiros"
+                    label="Ficheiros"
                     inputLabel="Selecione ou arraste o ficheiro"
                     selectedFilesLabel="ficheiros selecionados"
-                    removeFileButtonLabel="Remover"
-                    replaceFileButtonLabel="Substituir"
+                    removeFileButtonLabel="Remover ficheiro"
+                    replaceFileButtonLabel="Substituir ficheiro"
                     onChange={handleFileUpload}
                   />
                 </div>
