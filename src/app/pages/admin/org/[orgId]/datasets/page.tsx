@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description: "Gestão de conjuntos de dados da organização no portal dados.gov.",
 };
 
-export default function OrgDatasetsPage() {
-  return <OrgDatasetsClient />;
+export default async function OrgDatasetsPage({ params }: { params: Promise<{ orgId: string }> }) {
+  const { orgId } = await params;
+  return <OrgDatasetsClient orgId={orgId} />;
 }
