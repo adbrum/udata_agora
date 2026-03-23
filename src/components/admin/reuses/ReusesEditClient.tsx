@@ -526,7 +526,7 @@ export default function ReusesEditClient() {
                       type="warning"
                       description={
                         <>
-                          <strong>Reutilização de arquivos</strong>
+                          <strong>Reutilização de ficheiros</strong>
                           <br />
                           Um arquivo reutilizado não é mais indexado, mas permanece acessível aos usuários por meio de um link direto.
                           <br />

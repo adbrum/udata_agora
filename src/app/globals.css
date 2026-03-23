@@ -108,6 +108,14 @@ body {
   border-radius: 8px;
 }
 
+.agora-btn:not(:focus) {
+  border-radius: 4px !important;
+}
+
+.admin-page .agora-accordion .accordion-body.accordion-body-block {
+  padding: 32px !important;
+}
+
 /* ==========================================================================
    [03] HEADER & NAVIGATION
    ========================================================================== */
@@ -1427,7 +1435,7 @@ body:has(.admin-wrapper)>div>header.sticky {
 
 .admin-page__auxiliar-inner {
   background-color: var(--color-neutral-100);
-  padding: 64px;
+  padding: 32px;
   position: sticky;
   top: 80px;
 }

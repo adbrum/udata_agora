@@ -93,7 +93,7 @@ export default function OrgDatasetsClient() {
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
-        <div className="w-[60%]">
+        <div className="flex-1">
           <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome, código ou sigla da entidade"
@@ -113,6 +113,17 @@ export default function OrgDatasetsClient() {
             <DropdownOption value="deleted">Excluído</DropdownOption>
           </DropdownSection>
         </InputSelect>
+        <a href={`/api/1/organizations/${activeOrg.id}/catalog`} download>
+          <Button
+            variant="primary"
+            appearance="outline"
+            hasIcon
+            leadingIcon="agora-line-download"
+            leadingIconHover="agora-solid-download"
+          >
+            Catálogo
+          </Button>
+        </a>
       </div>
 
       {isLoading ? (

@@ -50,8 +50,8 @@ const formatDate = (dateStr: string) =>
   });
 
 const RESOURCE_TYPE_LABELS: Record<string, string> = {
-  main: "Arquivos principais",
-  file: "Arquivos principais",
+  main: "Ficheiros principais",
+  file: "Ficheiros principais",
   documentation: "Documentação",
 };
 

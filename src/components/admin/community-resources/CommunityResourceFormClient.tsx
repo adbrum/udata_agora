@@ -152,7 +152,7 @@ export default function CommunityResourceFormClient({
             <li>Dar um título muito longo dificultaria a manipulação do arquivo;</li>
             <li>
               fornecer um título que contenha acentos ou caracteres especiais (problemas de
-              interoperabilidade de arquivos);
+              interoperabilidade de ficheiros);
             </li>
             <li>
               Dar um título que seja demasiado técnico e derivado de nomenclaturas da indústria.
@@ -163,12 +163,12 @@ export default function CommunityResourceFormClient({
       hasError: !!formErrors.title,
     },
     {
-      title: "Publique os tipos de arquivos corretos.",
+      title: "Publique os tipos de ficheiros corretos.",
       content: (
         <>
           Você pode escolher entre os seguintes tipos:
           <ul className="list-disc pl-16 mt-8">
-            <li>Arquivos principais</li>
+            <li>Ficheiros principais</li>
             <li>Documentação</li>
             <li>Atualizar</li>
             <li>API</li>
@@ -302,7 +302,7 @@ export default function CommunityResourceFormClient({
                   <div>
                     <ButtonUploader
                       label="Ficheiros"
-                      inputLabel="Arraste e solte arquivos"
+                      inputLabel="Arraste e solte ficheiros"
                       removeFileButtonLabel="Remover ficheiro"
                       replaceFileButtonLabel="Substituir ficheiro"
                       extensionsInstructions="Tamanho máximo: 420 MB."
@@ -357,7 +357,7 @@ export default function CommunityResourceFormClient({
 
                   <IsolatedSelect
                     label="Tipo *"
-                    placeholder="Arquivos principais"
+                    placeholder="Ficheiros principais"
                     id="resource-type"
                     onChangeRef={selectedTypeRef}
                     hasError={!!formErrors.type}

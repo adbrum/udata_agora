@@ -436,7 +436,7 @@ export default function DatasetsEditClient() {
         >
           <span className="admin-edit-info__btn-content">
             <Icon name="agora-line-eye" className="w-[16px] h-[16px]" />
-            Ver página pública do conjunto de dados
+            Ver página pública
           </span>
         </Button>
       </div>

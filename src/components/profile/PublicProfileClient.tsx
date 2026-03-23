@@ -190,7 +190,7 @@ export default function PublicProfileClient() {
                 <TableHeaderCell sortType="string">
                   Título do conjunto de dados
                 </TableHeaderCell>
-                <TableHeaderCell>Arquivos</TableHeaderCell>
+                <TableHeaderCell>Ficheiros</TableHeaderCell>
                 <TableHeaderCell sortType="string">
                   Sigla da Entidade
                 </TableHeaderCell>
@@ -210,7 +210,7 @@ export default function PublicProfileClient() {
                   <TableCell headerLabel="Título">
                     {dataset.title}
                   </TableCell>
-                  <TableCell headerLabel="Arquivos">
+                  <TableCell headerLabel="Ficheiros">
                     {dataset.resources?.length || 0}
                   </TableCell>
                   <TableCell headerLabel="Sigla da Entidade">
