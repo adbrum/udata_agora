@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar, SidebarItem, Icon } from "@ama-pt/agora-design-system";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
 interface NavChild {
   label: string;
@@ -64,54 +65,7 @@ const navGroups: NavGroup[] = [
     key: "organization",
     label: "Organização",
     icon: "agora-line-user-group",
-    children: [
-      {
-        label: "Conjunto de dados",
-        href: "/pages/admin/org/datasets",
-        icon: "agora-line-layers-menu",
-      },
-      // API oculta temporariamente
-      // {
-      //   label: "API",
-      //   href: "/pages/admin/org/dataservices",
-      //   customIcon: "/Icons/reduce_white.svg",
-      // },
-      {
-        label: "Reutilizações",
-        href: "/pages/admin/org/reuses",
-        customIcon: "/Icons/bar_char_white.svg",
-      },
-      {
-        label: "Discussões",
-        href: "/pages/admin/org/discussions",
-        icon: "agora-line-chat",
-      },
-      {
-        label: "Membros",
-        href: "/pages/admin/org/members",
-        icon: "agora-line-user-group",
-      },
-      {
-        label: "Harvesters",
-        href: "/pages/admin/org/harvesters",
-        icon: "agora-line-document",
-      },
-      {
-        label: "Recursos comunitários",
-        href: "/pages/admin/org/community-resources",
-        icon: "agora-line-user-group",
-      },
-      {
-        label: "Perfil",
-        href: "/pages/admin/org/profile",
-        icon: "agora-line-user",
-      },
-      {
-        label: "Estatísticas",
-        href: "/pages/admin/org/statistics",
-        customIcon: "/Icons/graphic_circle.svg",
-      },
-    ],
+    children: [],
   },
   {
     key: "system",
@@ -175,16 +129,74 @@ const navGroups: NavGroup[] = [
 export function AdminSideNavigation() {
   const pathname = usePathname();
   const { isAdmin, hasOrganization } = useAuth();
+  const { activeOrg } = useActiveOrganization();
 
-  const visibleGroups = useMemo(
-    () =>
-      navGroups.filter((group) => {
+  const visibleGroups = useMemo(() => {
+    const orgBase = activeOrg ? `/pages/admin/org/${activeOrg.id}` : "/pages/admin/org";
+    return navGroups
+      .filter((group) => {
         // Sistema oculto temporariamente
         if (group.key === "system") return false;
         return true;
-      }),
-    [isAdmin, hasOrganization],
-  );
+      })
+      .map((group) => {
+        if (group.key === "organization") {
+          return {
+            ...group,
+            label: activeOrg?.name ?? "Organização",
+            children: [
+              {
+                label: "Conjunto de dados",
+                href: `${orgBase}/datasets`,
+                icon: "agora-line-layers-menu",
+              },
+              // API oculta temporariamente
+              // {
+              //   label: "API",
+              //   href: `${orgBase}/dataservices`,
+              //   customIcon: "/Icons/reduce_white.svg",
+              // },
+              {
+                label: "Reutilizações",
+                href: `${orgBase}/reuses`,
+                customIcon: "/Icons/bar_char_white.svg",
+              },
+              {
+                label: "Discussões",
+                href: `${orgBase}/discussions`,
+                icon: "agora-line-chat",
+              },
+              {
+                label: "Membros",
+                href: `${orgBase}/members`,
+                icon: "agora-line-user-group",
+              },
+              {
+                label: "Harvesters",
+                href: `${orgBase}/harvesters`,
+                icon: "agora-line-document",
+              },
+              {
+                label: "Recursos comunitários",
+                href: `${orgBase}/community-resources`,
+                icon: "agora-line-user-group",
+              },
+              {
+                label: "Perfil",
+                href: `${orgBase}/profile`,
+                icon: "agora-line-user",
+              },
+              {
+                label: "Estatísticas",
+                href: `${orgBase}/statistics`,
+                customIcon: "/Icons/graphic_circle.svg",
+              },
+            ],
+          };
+        }
+        return group;
+      });
+  }, [isAdmin, hasOrganization, activeOrg]);
 
   return (
     <nav className="admin-side-nav">

@@ -179,7 +179,7 @@ export default function OrgReusesClient() {
                     <a href={`/pages/reuses/${reuse.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/me/reuses/edit?slug=${reuse.slug}`}>
+                    <a href={`/pages/admin/org/reuses/edit?slug=${reuse.slug}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
@@ -205,7 +205,7 @@ export default function OrgReusesClient() {
                   <Button
                     variant="primary"
                     appearance="outline"
-                    onClick={() => window.location.href = '/pages/admin/me/reuses/new'}
+                    onClick={() => window.location.href = '/pages/admin/org/reuses/new'}
                   >
                     Publique no portal
                   </Button>
