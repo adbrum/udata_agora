@@ -243,7 +243,7 @@ export default function PostsNewClient() {
                 />
               </div>
 
-              <div className="admin-page__actions admin-page__actions--between">
+              <div className="admin-page__actions">
                 <Button
                   appearance="outline"
                   variant="neutral"

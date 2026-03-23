@@ -1,11 +1,21 @@
-import type { Metadata } from "next";
-import OrgStatisticsClient from "@/components/admin/statistics/OrgStatisticsClient";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Estatísticas - Organização - Admin - dados.gov",
-  description: "Estatísticas da organização no portal dados.gov.",
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
-export default function OrgStatisticsPage() {
-  return <OrgStatisticsClient />;
+export default function OrgStatisticsRedirect() {
+  const router = useRouter();
+  const { activeOrg, isLoading } = useActiveOrganization();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (activeOrg) {
+      router.replace(`/pages/admin/org/${activeOrg.id}/statistics`);
+    } else {
+      router.replace("/pages/admin");
+    }
+  }, [activeOrg, isLoading, router]);
+
+  return null;
 }

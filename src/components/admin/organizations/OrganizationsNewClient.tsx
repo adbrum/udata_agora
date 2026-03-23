@@ -304,7 +304,7 @@ export default function OrganizationsNewClient() {
                   />
                 </div>
 
-                <div className="admin-page__actions admin-page__actions--between">
+                <div className="admin-page__actions">
                   <Button
                     appearance="outline"
                     variant="neutral"
@@ -339,7 +339,7 @@ export default function OrganizationsNewClient() {
                 }
               />
 
-              <div className="admin-page__actions admin-page__actions--between">
+              <div className="admin-page__actions">
                 <Button
                   appearance="outline"
                   variant="neutral"

@@ -685,7 +685,7 @@ export default function ReusesFormClient({
                     {link.url.trim() && (
                       <div className="flex justify-end mt-[24px]">
                         <Button
-                          appearance="outline"
+                          appearance="solid"
                           variant="danger"
                           hasIcon
                           leadingIcon="agora-line-trash"

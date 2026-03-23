@@ -38,6 +38,8 @@ interface DatasetsAdminClientProps {
   datasetId?: string | null;
   onNextStep: () => void;
   onPreviousStep: () => void;
+  onDatasetCreated?: (datasetId: string) => void;
+  onComplete?: () => void;
 }
 
 export default function DatasetsAdminClient({
@@ -45,6 +47,8 @@ export default function DatasetsAdminClient({
   datasetId,
   onNextStep,
   onPreviousStep,
+  onDatasetCreated,
+  onComplete,
 }: DatasetsAdminClientProps) {
   const router = useRouter();
   const { user } = useAuth();
@@ -221,9 +225,13 @@ export default function DatasetsAdminClient({
 
       const dataset = await createDataset(payload);
       setCreatedDataset(dataset);
-      router.push(
-        `/pages/admin/me/datasets/new?step=${currentStep + 1}&datasetId=${dataset.id}`,
-      );
+      if (onDatasetCreated) {
+        onDatasetCreated(dataset.id);
+      } else {
+        router.push(
+          `/pages/admin/me/datasets/new?step=${currentStep + 1}&datasetId=${dataset.id}`,
+        );
+      }
     } catch (error: unknown) {
       const err = error as { status?: number; data?: Record<string, unknown> };
       if (err.data && typeof err.data === "object") {
@@ -267,7 +275,8 @@ export default function DatasetsAdminClient({
     setIsSubmitting(true);
     try {
       await updateDataset(createdDataset.id, { private: false });
-      router.push("/pages/admin/me/datasets");
+      if (onComplete) onComplete();
+      else router.push("/pages/admin/me/datasets");
     } catch (error) {
       console.error("Error publishing dataset:", error);
       setApiError("Erro ao publicar o conjunto de dados. Tente novamente.");
@@ -277,7 +286,8 @@ export default function DatasetsAdminClient({
   };
 
   const handleSaveDraft = () => {
-    router.push("/pages/admin/me/datasets");
+    if (onComplete) onComplete();
+    else router.push("/pages/admin/me/datasets");
   };
 
   const auxiliarItemsStep2 = [
@@ -501,21 +511,23 @@ export default function DatasetsAdminClient({
                 </IsolatedSelect>
               </div>
 
-              <div className="admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center mt-[24px]">
-                <h3 className="text-primary-900 text-lg font-bold leading-7">
-                  Você não pertence a nenhuma organização.
-                </h3>
-                <p className="text-neutral-700 text-base leading-7">
-                  Recomendamos que publique em nome de uma organização se se tratar de uma
-                  atividade profissional.
-                </p>
-                <Button
-                  variant="primary"
-                  onClick={() => router.push("/pages/admin/organizations/new")}
-                >
-                  Crie ou participe de uma organização
-                </Button>
-              </div>
+              {(!user?.organizations || user.organizations.length === 0) && (
+                <div className="admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center mt-[24px]">
+                  <h3 className="text-primary-900 text-lg font-bold leading-7">
+                    Você não pertence a nenhuma organização.
+                  </h3>
+                  <p className="text-neutral-700 text-base leading-7">
+                    Recomendamos que publique em nome de uma organização se se tratar de uma
+                    atividade profissional.
+                  </p>
+                  <Button
+                    variant="primary"
+                    onClick={() => router.push("/pages/admin/organizations/new")}
+                  >
+                    Crie ou participe de uma organização
+                  </Button>
+                </div>
+              )}
 
 
 
@@ -881,7 +893,7 @@ export default function DatasetsAdminClient({
                   />
                 </div>
 
-                <div className="admin-page__actions admin-page__actions--between">
+                <div className="admin-page__actions">
                   <Button
                     appearance="outline"
                     variant="neutral"

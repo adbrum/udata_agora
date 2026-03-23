@@ -1,11 +1,21 @@
-import type { Metadata } from "next";
-import OrgHarvestersClient from "@/components/admin/harvesters/OrgHarvestersClient";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Harvesters - Organização - Admin - dados.gov",
-  description: "Gestão de harvesters da organização no portal dados.gov.",
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
-export default function OrgHarvestersPage() {
-  return <OrgHarvestersClient />;
+export default function OrgHarvestersRedirect() {
+  const router = useRouter();
+  const { activeOrg, isLoading } = useActiveOrganization();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (activeOrg) {
+      router.replace(`/pages/admin/org/${activeOrg.id}/harvesters`);
+    } else {
+      router.replace("/pages/admin");
+    }
+  }, [activeOrg, isLoading, router]);
+
+  return null;
 }

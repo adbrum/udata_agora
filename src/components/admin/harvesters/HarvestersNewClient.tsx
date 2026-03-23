@@ -466,7 +466,7 @@ export default function HarvestersNewClient() {
                 0 itens
               </p>
 
-              <div className="admin-page__actions admin-page__actions--between">
+              <div className="admin-page__actions">
                 <Button
                   appearance="outline"
                   variant="neutral"
@@ -503,7 +503,7 @@ export default function HarvestersNewClient() {
                 }
               />
 
-              <div className="admin-page__actions admin-page__actions--between">
+              <div className="admin-page__actions">
                 <Button
                   appearance="outline"
                   variant="neutral"

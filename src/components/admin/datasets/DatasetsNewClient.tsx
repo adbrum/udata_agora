@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -18,12 +18,10 @@ export default function DatasetsNewClient() {
   const { displayName } = useCurrentUser();
   const totalSteps = 4;
   const currentStep = Number(searchParams.get("step")) || 1;
-  const datasetId = searchParams.get("datasetId");
+  const [createdDatasetId, setCreatedDatasetId] = useState<string | null>(null);
 
   const buildStepUrl = (step: number) => {
-    const params = new URLSearchParams({ step: String(step) });
-    if (datasetId) params.set("datasetId", datasetId);
-    return `/pages/admin/me/datasets/new?${params.toString()}`;
+    return `/pages/admin/me/datasets/new?step=${step}`;
   };
   const totalSegments = 12;
   const displayStep = currentStep;
@@ -68,10 +66,9 @@ export default function DatasetsNewClient() {
           {Array.from({ length: totalSegments }).map((_, i) => (
             <div
               key={i}
-              className={`admin-page__stepper-segment ${i < filledSegments
-                  ? "admin-page__stepper-segment--filled"
-                  : ""
-                }`}
+              className={`admin-page__stepper-segment ${
+                i < filledSegments ? "admin-page__stepper-segment--filled" : ""
+              }`}
             />
           ))}
           <div className="admin-page__stepper-mark admin-page__stepper-mark--end" />
@@ -176,9 +173,14 @@ export default function DatasetsNewClient() {
       {currentStep >= 2 && (
         <DatasetsAdminClient
           currentStep={currentStep}
-          datasetId={datasetId}
+          datasetId={createdDatasetId}
           onNextStep={() => router.push(buildStepUrl(currentStep + 1))}
           onPreviousStep={() => router.push(buildStepUrl(currentStep - 1))}
+          onDatasetCreated={(id) => {
+            setCreatedDatasetId(id);
+            router.push(buildStepUrl(currentStep + 1));
+          }}
+          onComplete={() => router.push("/pages/admin/me/datasets")}
         />
       )}
     </div>

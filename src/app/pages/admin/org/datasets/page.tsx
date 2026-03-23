@@ -1,11 +1,21 @@
-import type { Metadata } from "next";
-import OrgDatasetsClient from "@/components/admin/datasets/OrgDatasetsClient";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Conjunto de dados - Organização - Admin - dados.gov",
-  description: "Gestão de conjuntos de dados da organização no portal dados.gov.",
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
-export default function OrgDatasetsPage() {
-  return <OrgDatasetsClient />;
+export default function OrgDatasetsRedirect() {
+  const router = useRouter();
+  const { activeOrg, isLoading } = useActiveOrganization();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (activeOrg) {
+      router.replace(`/pages/admin/org/${activeOrg.id}/datasets`);
+    } else {
+      router.replace("/pages/admin");
+    }
+  }, [activeOrg, isLoading, router]);
+
+  return null;
 }

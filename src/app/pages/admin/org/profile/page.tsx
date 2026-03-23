@@ -1,11 +1,21 @@
-import type { Metadata } from "next";
-import OrgProfileClient from "@/components/admin/profile/OrgProfileClient";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Perfil - Organização - Admin - dados.gov",
-  description: "Edição do perfil da organização no portal dados.gov.",
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
-export default function OrgProfilePage() {
-  return <OrgProfileClient />;
+export default function OrgProfileRedirect() {
+  const router = useRouter();
+  const { activeOrg, isLoading } = useActiveOrganization();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (activeOrg) {
+      router.replace(`/pages/admin/org/${activeOrg.id}/profile`);
+    } else {
+      router.replace("/pages/admin");
+    }
+  }, [activeOrg, isLoading, router]);
+
+  return null;
 }

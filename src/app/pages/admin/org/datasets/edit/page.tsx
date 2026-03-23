@@ -1,11 +1,25 @@
-import type { Metadata } from "next";
-import DatasetsEditClient from "@/components/admin/datasets/DatasetsEditClient";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Editar conjunto de dados - Organização - Admin - dados.gov",
-  description: "Editar conjunto de dados da organização no portal dados.gov.",
-};
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
-export default function OrgDatasetsEditPage() {
-  return <DatasetsEditClient />;
+export default function OrgDatasetsEditRedirect() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { activeOrg, isLoading } = useActiveOrganization();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (activeOrg) {
+      const params = searchParams.toString();
+      router.replace(
+        `/pages/admin/org/${activeOrg.id}/datasets/edit${params ? `?${params}` : ""}`,
+      );
+    } else {
+      router.replace("/pages/admin");
+    }
+  }, [activeOrg, isLoading, router, searchParams]);
+
+  return null;
 }

@@ -1,11 +1,16 @@
-import type { Metadata } from "next";
-import OrgDatasetsNewClient from "@/components/admin/datasets/OrgDatasetsNewClient";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Publique em dados.gov - Organização - Admin - dados.gov",
-  description: "Escolha como publicar os dados da organização no portal dados.gov.",
-};
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function OrgDatasetsNewPage() {
-  return <OrgDatasetsNewClient />;
+export default function OrgDatasetsNewRedirect() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const params = searchParams.toString();
+    router.replace(`/pages/admin/org/datasets/new${params ? `?${params}` : ""}`);
+  }, [router, searchParams]);
+
+  return null;
 }
