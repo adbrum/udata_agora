@@ -286,6 +286,7 @@ export default function MembersClient() {
         </p>
         <Button
           variant="primary"
+          appearance="outline"
           hasIcon={true}
           leadingIcon="agora-line-plus-circle"
           leadingIconHover="agora-solid-plus-circle"
@@ -307,10 +308,27 @@ export default function MembersClient() {
         </Button>
       </div>
 
-      <Table>
+      <Table
+        paginationProps={{
+          itemsPerPageLabel: "Itens por página",
+          itemsPerPage: itemsPerPage,
+          totalItems: members.length,
+          availablePageSizes: [10, 20, 50],
+          currentPage: currentPage,
+          buttonDropdownAriaLabel: "Selecionar itens por página",
+          dropdownListAriaLabel: "Opções de itens por página",
+          prevButtonAriaLabel: "Página anterior",
+          nextButtonAriaLabel: "Próxima página",
+          onPageChange: (page: number) => setCurrentPage(page),
+          onPageSizeChange: (size: number) => {
+            setItemsPerPage(size);
+            setCurrentPage(1);
+          },
+        }}
+      >
         <TableHeader>
           <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="descending">
+            <TableHeaderCell sortType="string" sortOrder="none">
               Membros
             </TableHeaderCell>
             <TableHeaderCell>Estatuto</TableHeaderCell>
@@ -384,7 +402,7 @@ export default function MembersClient() {
                     title="Remover membro"
                   >
                     <Icon
-                      name="agora-line-delete"
+                      name="agora-line-trash"
                       className="w-[20px] h-[20px] text-danger-600 cursor-pointer"
                     />
                   </button>
@@ -395,33 +413,6 @@ export default function MembersClient() {
         </TableBody>
       </Table>
 
-      {members.length > 0 && (
-        <div className="flex items-center justify-between mt-[16px] py-[12px] border-t border-neutral-200">
-          <div className="flex items-center gap-[8px]">
-            <span className="text-sm text-neutral-600">Linhas por página</span>
-            <select
-              value={itemsPerPage}
-              onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-              className="border border-neutral-300 rounded px-[8px] py-[4px] text-sm"
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-          </div>
-          <div className="flex items-center gap-[8px]">
-            <span className="text-sm text-neutral-600">
-              {(currentPage - 1) * itemsPerPage + 1}–{Math.min(currentPage * itemsPerPage, members.length)} de {members.length}
-            </span>
-            <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-[4px] text-primary-600 disabled:text-neutral-300" aria-label="Página anterior">
-              <Icon name="agora-line-arrow-left" className="w-[20px] h-[20px]" />
-            </button>
-            <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-[4px] text-primary-600 disabled:text-neutral-300" aria-label="Próxima página">
-              <Icon name="agora-line-arrow-right" className="w-[20px] h-[20px]" />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
