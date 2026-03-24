@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import DiscussionsClient from "@/components/admin/discussions/DiscussionsClient";
+import OrgDiscussionsClient from "@/components/admin/discussions/OrgDiscussionsClient";
 
 export const metadata: Metadata = {
-  title: "Discussões - Admin - dados.gov",
-  description: "Gestão de discussões no portal dados.gov.",
+  title: "Discussões - Organização - Admin - dados.gov",
+  description: "Gestão de discussões da organização no portal dados.gov.",
 };
 
-export default function DiscussionsPage() {
-  return <DiscussionsClient />;
+export default async function OrgDiscussionsPage({
+  params,
+}: {
+  params: Promise<{ orgId: string }>;
+}) {
+  const { orgId } = await params;
+  return <OrgDiscussionsClient orgId={orgId} />;
 }

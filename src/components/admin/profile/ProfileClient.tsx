@@ -21,6 +21,7 @@ import {
   Avatar,
   Breadcrumb,
   Button,
+  CardNoResults,
   Icon,
   InputText,
   InputTextArea,
@@ -235,6 +236,8 @@ export default function ProfileClient() {
           <div className="absolute top-[32px] right-[32px]">
             <Button
               variant="primary"
+              appearance="outline"
+              className="bg-white"
               hasIcon
               leadingIcon="agora-line-eye"
               leadingIconHover="agora-solid-eye"
@@ -485,9 +488,19 @@ export default function ProfileClient() {
                 {isLoadingActivities ? (
                   <p className="text-neutral-900 text-base">A carregar atividades...</p>
                 ) : activities.length === 0 ? (
-                  <p className="text-neutral-900 text-base">
-                    Nenhuma atividade registada.
-                  </p>
+                  <CardNoResults
+                    className="datasets-page__empty"
+                    position="center"
+                    icon={
+                      <Icon
+                        name="agora-line-edit"
+                        className="w-12 h-12 text-primary-500 icon-xl"
+                      />
+                    }
+                    title="Sem atividades"
+                    description="Nenhuma atividade registada."
+                    hasAnchor={false}
+                  />
                 ) : (
                   <div className="space-y-32">
                     {Object.entries(groupActivitiesByMonth(activities)).map(

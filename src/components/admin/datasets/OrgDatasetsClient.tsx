@@ -156,7 +156,7 @@ export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
                   Criado em
                 </TableHeaderCell>
                 <TableHeaderCell sortType="date" sortOrder="none">
-                  Modificado em
+                  Última modificação
                 </TableHeaderCell>
                 <TableHeaderCell>Ações</TableHeaderCell>
               </TableRow>
@@ -180,14 +180,25 @@ export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
                   <TableCell headerLabel="Criado em">
                     {formatDate(dataset.created_at)}
                   </TableCell>
-                  <TableCell headerLabel="Modificado em">
-                    {formatDate(dataset.last_modified)}
-                    <br />
-                    <span className="text-sm text-neutral-500">
-                      sobre{" "}
-                      <span className="text-success-600">●</span>{" "}
-                      {dataset.organization?.name ?? "—"}
-                    </span>
+                  <TableCell headerLabel="Última modificação">
+                    <div>
+                      <div>{formatDate(dataset.last_modified)}</div>
+                      {dataset.owner ? (
+                        <a
+                          href={`/pages/users/${dataset.owner.slug}`}
+                          className="text-primary-600 text-xs underline"
+                        >
+                          {dataset.owner.first_name} {dataset.owner.last_name}
+                        </a>
+                      ) : dataset.organization ? (
+                        <a
+                          href={`/pages/organizations/${dataset.organization.slug}`}
+                          className="text-primary-600 text-xs underline"
+                        >
+                          {dataset.organization.name}
+                        </a>
+                      ) : null}
+                    </div>
                   </TableCell>
                   <TableCell headerLabel="Ações">
                     <div className="flex gap-[8px]">
