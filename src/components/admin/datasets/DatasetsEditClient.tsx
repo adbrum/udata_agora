@@ -85,9 +85,13 @@ function TransferDatasetPopupContent({
           Recomendamos que publique em nome de uma organização se se tratar de uma
           atividade profissional.
         </p>
-        <Button appearance="outline" variant="primary">
-          Crie ou participe de uma organização
-        </Button>
+        <Link
+          href="/pages/admin/me/organizations"
+          className="inline-flex items-center text-primary-500 text-base hover:underline"
+        >
+          <span className="mr-[5px]">Crie ou participe de uma organização</span>
+          <Icon name="agora-line-arrow-right-circle" className="w-5 h-5" />
+        </Link>
       </div>
 
       <div className="flex flex-col gap-[8px]">
@@ -132,7 +136,7 @@ function DeleteDatasetPopupContent({
         <Button appearance="outline" variant="neutral" onClick={onClose}>
           Cancelar
         </Button>
-        <Button appearance="outline" variant="danger" onClick={onConfirm}>
+        <Button variant="danger" onClick={onConfirm} hasIcon leadingIcon="agora-line-trash" leadingIconHover="agora-solid-trash">
           Eliminar
         </Button>
       </div>

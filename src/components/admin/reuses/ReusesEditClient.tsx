@@ -79,9 +79,13 @@ function TransferReusePopupContent({
           Recomendamos que você poste sob o nome de uma organização se for uma
           atividade profissional.
         </p>
-        <Button appearance="outline" variant="primary">
-          Crie ou entre para uma organização
-        </Button>
+        <Link
+          href="/pages/admin/me/organizations"
+          className="inline-flex items-center text-primary-500 text-base hover:underline"
+        >
+          <span className="mr-2">Crie ou entre para uma organização</span>
+          <Icon name="agora-line-arrow-right-circle" className="w-5 h-5" />
+        </Link>
       </div>
 
       <div className="flex flex-col gap-[8px]">
@@ -126,7 +130,7 @@ function DeleteReusePopupContent({
         <Button appearance="outline" variant="neutral" onClick={onClose}>
           Cancelar
         </Button>
-        <Button appearance="outline" variant="danger" onClick={onConfirm}>
+        <Button variant="danger" onClick={onConfirm} hasIcon leadingIcon="agora-line-trash" leadingIconHover="agora-solid-trash">
           Eliminar
         </Button>
       </div>
