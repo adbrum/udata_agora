@@ -1044,6 +1044,7 @@ body:has(.admin-wrapper)>div>header.sticky {
 
 .admin-sidebar-nav.agora-sidebar .agora-sidebar-item .agora-btn-link-neutral.agora-sidebar-button-item {
   padding: 16px !important;
+  border-left: 3px solid transparent !important;
 }
 
 .admin-sidebar-nav__group-label {
@@ -1061,7 +1062,7 @@ body:has(.admin-wrapper)>div>header.sticky {
 .admin-sidebar-nav .agora-sidebar-item > button:hover,
 .admin-sidebar-nav .agora-sidebar-item .agora-btn-link-neutral:hover,
 .admin-side-nav .agora-sidebar .agora-sidebar-item .agora-btn-link-neutral:hover {
-  border-left: 3px solid var(--color-white) !important;
+  border-left: 3px solid transparent !important;
   background-color: #0338a2 !important;
   text-decoration: none !important;
 }
@@ -1095,6 +1096,7 @@ body:has(.admin-wrapper)>div>header.sticky {
   font-size: 16px;
   line-height: 24px;
   transition: background-color 0.2s;
+  border-left: 3px solid transparent;
 }
 
 .admin-sidebar-nav__child-item:hover {
