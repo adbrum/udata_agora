@@ -31,33 +31,27 @@ const navGroups: NavGroup[] = [
       {
         label: "Conjunto de dados",
         href: "/pages/admin/me/datasets",
-        icon: "agora-line-layers-menu",
       },
       // API oculta temporariamente
       // {
       //   label: "API",
       //   href: "/pages/admin/me/dataservices",
-      //   customIcon: "/Icons/reduce_white.svg",
       // },
       {
         label: "Reutilizações",
         href: "/pages/admin/me/reuses",
-        customIcon: "/Icons/bar_char_white.svg",
       },
       {
         label: "Recursos comunitários",
         href: "/pages/admin/me/community-resources",
-        icon: "agora-line-user-group",
       },
       {
         label: "Perfil",
         href: "/pages/admin/profile",
-        icon: "agora-line-user",
       },
       {
         label: "Estatísticas",
         href: "/pages/admin/statistics",
-        customIcon: "/Icons/graphic_circle.svg",
       },
     ],
   },
@@ -135,42 +129,34 @@ export function AdminSideNavigation() {
     {
       label: "Conjunto de dados",
       href: `${orgBase}/datasets`,
-      icon: "agora-line-layers-menu",
     },
     {
       label: "Reutilizações",
       href: `${orgBase}/reuses`,
-      customIcon: "/Icons/bar_char_white.svg",
     },
     {
       label: "Discussões",
       href: `${orgBase}/discussions`,
-      icon: "agora-line-chat",
     },
     {
       label: "Membros",
       href: `${orgBase}/members`,
-      icon: "agora-line-user-group",
     },
     {
       label: "Harvesters",
       href: `${orgBase}/harvesters`,
-      icon: "agora-line-document",
     },
     {
       label: "Recursos comunitários",
       href: `${orgBase}/community-resources`,
-      icon: "agora-line-user-group",
     },
     {
       label: "Perfil",
       href: `${orgBase}/profile`,
-      icon: "agora-line-user",
     },
     {
       label: "Estatísticas",
       href: `${orgBase}/statistics`,
-      customIcon: "/Icons/graphic_circle.svg",
     },
   ];
 
