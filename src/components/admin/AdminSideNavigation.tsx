@@ -176,8 +176,8 @@ export function AdminSideNavigation() {
 
   const visibleGroups = useMemo(() => {
     const baseGroups = navGroups.filter((group) => {
-      if (group.key === "system") return false;
       if (group.key === "organization") return false;
+      if (group.key === "system") return false;
       return true;
     });
 
