@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Breadcrumb } from "@ama-pt/agora-design-system";
+import { Breadcrumb, Button, Icon } from "@ama-pt/agora-design-system";
 import CommunityResourceFormClient from "@/components/admin/community-resources/CommunityResourceFormClient";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import PublishDropdown from "@/components/admin/PublishDropdown";
@@ -16,6 +16,8 @@ export default function CommunityResourceNewClient() {
   const currentStep = Number(searchParams.get("step")) || 1;
   const totalSegments = 12;
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
+
+  const [publicPageUrl, setPublicPageUrl] = useState<string | null>(null);
 
   const stepTitles: Record<number, string> = {
     1: "Descreva o recurso da sua comunidade.",
@@ -37,6 +39,21 @@ export default function CommunityResourceNewClient() {
         />
       </div>
 
+      {currentStep === 2 && publicPageUrl && (
+        <div className="flex justify-end mb-16">
+          <Button
+            appearance="outline"
+            variant="primary"
+            hasIcon
+            leadingIcon="agora-line-eye"
+            leadingIconHover="agora-solid-eye"
+            onClick={() => router.push(publicPageUrl)}
+          >
+            Veja a página pública
+          </Button>
+        </div>
+      )}
+
       <div className="admin-page__header">
         <h1 className="admin-page__title">Formulário de inscrição</h1>
         <PublishDropdown />
@@ -45,7 +62,7 @@ export default function CommunityResourceNewClient() {
       {/* Step indicator */}
       <div className="admin-page__step-header">
         <p className="admin-page__step-text">
-          <span className="text-primary-600 font-bold">Etapa {currentStep} de {totalSteps} -</span>
+          <span className="text-primary-600 font-bold">Etapa {currentStep} de {totalSteps} - </span>
           <span className="text-primary-900 font-bold">
             {stepTitles[currentStep]}
           </span>
@@ -76,6 +93,7 @@ export default function CommunityResourceNewClient() {
       <CommunityResourceFormClient
         datasetId={datasetId}
         currentStep={currentStep}
+        onPublicPageReady={(url) => setPublicPageUrl(url)}
         onNextStep={() =>
           router.push(
             `/pages/admin/me/community-resources/new?dataset_id=${datasetId}&step=${currentStep + 1}`
