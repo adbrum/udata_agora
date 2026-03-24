@@ -860,11 +860,20 @@ export interface CommunityResourceUpdatePayload {
 
 export interface HarvestJob {
   id: string;
-  status: "pending" | "started" | "done" | "failed";
+  status: "pending" | "initializing" | "initialized" | "processing" | "done" | "done-errors" | "failed";
+  created: string | null;
   started: string | null;
   ended: string | null;
-  errors: number;
-  items: number;
+  errors: Record<string, unknown>[];
+  items: Record<string, unknown>[];
+  source: string;
+}
+
+export interface HarvestSourceValidation {
+  state: "pending" | "accepted" | "refused";
+  by: UserRef | null;
+  on: string | null;
+  comment: string | null;
 }
 
 export interface HarvestSource {
@@ -880,6 +889,7 @@ export interface HarvestSource {
   features: Record<string, boolean>;
   active: boolean;
   autoarchive: boolean;
+  validation: HarvestSourceValidation | null;
   created_at: string;
   last_modified: string;
   last_job: HarvestJob | null;
