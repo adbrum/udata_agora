@@ -83,7 +83,7 @@ function TransferReusePopupContent({
           href="/pages/admin/me/organizations"
           className="inline-flex items-center text-primary-500 text-base hover:underline"
         >
-          <span className="mr-2">Crie ou entre para uma organização</span>
+          <span className="mr-[5px]">Crie ou participe de uma organização</span>
           <Icon name="agora-line-arrow-right-circle" className="w-5 h-5" />
         </Link>
       </div>
@@ -747,7 +747,7 @@ export default function ReusesEditClient() {
                     {associatedDatasets.map((dataset) => (
                       <CardLinks
                         key={dataset.id}
-                        onClick={() => {}}
+                        onClick={() => { }}
                         className="cursor-pointer text-neutral-900"
                         variant="transparent"
                         image={{
@@ -815,199 +815,199 @@ export default function ReusesEditClient() {
                 )}
 
                 <form className="admin-page__form">
-                {selectedDataset && (
-                  <div className="agora-card-links-datasets-px0 mt-[16px]">
-                    <CardLinks
-                      onClick={() => {}}
-                      className="cursor-pointer text-neutral-900"
-                      variant="transparent"
-                      image={{
-                        src: selectedDataset.organization?.logo || "/images/placeholders/organization.png",
-                        alt: selectedDataset.organization?.name || "Organização sem logo",
-                      }}
-                      category={selectedDataset.organization?.name}
-                      title={selectedDataset.title}
-                      description={
-                        <div className="flex flex-col gap-12">
-                          <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
-                            {selectedDataset.description}
-                          </p>
-                          <div className="flex flex-wrap gap-8 items-center mt-[8px]">
-                            <span className="text-sm font-medium text-neutral-900">
-                              Metadados: {selectedDataset.quality?.score != null ? Math.round(selectedDataset.quality.score * 100) : 0}%
-                            </span>
+                  {selectedDataset && (
+                    <div className="agora-card-links-datasets-px0 mt-[16px]">
+                      <CardLinks
+                        onClick={() => { }}
+                        className="cursor-pointer text-neutral-900"
+                        variant="transparent"
+                        image={{
+                          src: selectedDataset.organization?.logo || "/images/placeholders/organization.png",
+                          alt: selectedDataset.organization?.name || "Organização sem logo",
+                        }}
+                        category={selectedDataset.organization?.name}
+                        title={selectedDataset.title}
+                        description={
+                          <div className="flex flex-col gap-12">
+                            <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                              {selectedDataset.description}
+                            </p>
+                            <div className="flex flex-wrap gap-8 items-center mt-[8px]">
+                              <span className="text-sm font-medium text-neutral-900">
+                                Metadados: {selectedDataset.quality?.score != null ? Math.round(selectedDataset.quality.score * 100) : 0}%
+                              </span>
+                            </div>
+                            <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
+                              <div className="flex items-center gap-8" title="Visualizações">
+                                <Icon name="agora-line-eye" className="" aria-hidden="true" />
+                                <span>{selectedDataset.metrics?.views || 0}</span>
+                              </div>
+                              <div className="flex items-center gap-8" title="Downloads">
+                                <Icon name="agora-line-download" className="" aria-hidden="true" />
+                                <span>{selectedDataset.metrics?.resources_downloads || 0}</span>
+                              </div>
+                              <div className="flex items-center gap-8" title="Reutilizações">
+                                <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
+                                <span>{selectedDataset.metrics?.reuses || 0}</span>
+                              </div>
+                              <div className="flex items-center gap-8" title="Favoritos">
+                                <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
+                                <span>{selectedDataset.metrics?.followers || 0}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
-                            <div className="flex items-center gap-8" title="Visualizações">
-                              <Icon name="agora-line-eye" className="" aria-hidden="true" />
-                              <span>{selectedDataset.metrics?.views || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-8" title="Downloads">
-                              <Icon name="agora-line-download" className="" aria-hidden="true" />
-                              <span>{selectedDataset.metrics?.resources_downloads || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-8" title="Reutilizações">
-                              <img src="/Icons/bar_chart.svg" className="" alt="" aria-hidden="true" />
-                              <span>{selectedDataset.metrics?.reuses || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-8" title="Favoritos">
-                              <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
-                              <span>{selectedDataset.metrics?.followers || 0}</span>
-                            </div>
-                          </div>
-                        </div>
-                      }
-                      date={
-                        <span className="font-[300]">
-                          {`Atualizado há ${formatDistanceToNow(new Date(selectedDataset.last_modified), { locale: pt }).replace("aproximadamente ", "").replace("quase ", "").replace("menos de ", "").replace("cerca de ", "")}`}
-                        </span>
-                      }
-                      mainLink={
-                        <Link href={`/pages/datasets/${selectedDataset.slug}`}>
-                          <span className="underline">{selectedDataset.title}</span>
-                        </Link>
-                      }
-                      blockedLink={true}
-                    />
-                  </div>
-                )}
-
-                <InputSelect
-                  label="Pesquisar um conjunto de dados"
-                  placeholder="Procurando um conjunto de dados..."
-                  id="edit-dataset-search"
-                  searchable
-                  searchInputPlaceholder="Escreva para pesquisar..."
-                  searchNoResultsText="Nenhum resultado encontrado"
-                  onChange={(options) => {
-                    if (options.length > 0) {
-                      const found = myDatasets.find((d) => d.id === options[0].value);
-                      setSelectedDataset(found || null);
-                    } else {
-                      setSelectedDataset(null);
-                    }
-                  }}
-                >
-                  <DropdownSection name="datasets">
-                    {myDatasets.map((d) => (
-                      <DropdownOption key={d.id} value={d.id}>
-                        {d.title}
-                      </DropdownOption>
-                    ))}
-                  </DropdownSection>
-                </InputSelect>
-
-                <div className="admin-page__divider-or">
-                  <span className="admin-page__divider-or-text">ou</span>
-                </div>
-
-                {datasetLinks.map((link, index) => (
-                  <div key={`dataset-${index}`}>
-                    <InputText
-                      label="Link para o conjunto de dados"
-                      placeholder="Insira o URL aqui"
-                      id={`edit-dataset-url-${index}`}
-                      value={link.url}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        const newLinks = [...datasetLinks];
-                        newLinks[index] = { url: e.target.value };
-                        setDatasetLinks(newLinks);
-                        if (e.target.value.trim()) {
-                          setDatasetLinkErrors((prev) => {
-                            const next = { ...prev };
-                            delete next[index];
-                            return next;
-                          });
                         }
-                      }}
-                      hasError={!!datasetLinkErrors[index]}
-                      hasFeedback={!!datasetLinkErrors[index]}
-                      feedbackState="danger"
-                      errorFeedbackText={datasetLinkErrors[index]}
-                    />
-                    {link.url.trim() && (
-                      <div className="flex justify-end mt-[24px]">
-                        <Button
-                          appearance="solid"
-                          variant="danger"
-                          hasIcon
-                          leadingIcon="agora-line-trash"
-                          leadingIconHover="agora-solid-trash"
-                          onClick={() => {
-                            const newLinks = datasetLinks.filter((_, i) => i !== index);
-                            setDatasetLinks(newLinks.length > 0 ? newLinks : [{ url: "" }]);
-                          }}
-                        >
-                          Eliminar
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-                <div className="flex justify-end">
-                  <Button
-                    appearance="outline"
-                    variant="primary"
-                    hasIcon
-                    leadingIcon="agora-line-plus-circle"
-                    leadingIconHover="agora-solid-plus-circle"
-                    onClick={() => {
-                      const lastIndex = datasetLinks.length - 1;
-                      if (!datasetLinks[lastIndex].url.trim()) {
-                        setDatasetLinkErrors((prev) => ({
-                          ...prev,
-                          [lastIndex]: "Campo obrigatório",
-                        }));
-                        return;
-                      }
-                      setDatasetLinks([...datasetLinks, { url: "" }]);
-                    }}
-                  >
-                    Adicionar
-                  </Button>
-                </div>
-
-                <div className="admin-page__actions flex justify-end gap-[18px]">
-                  <Button
-                    variant="primary"
-                    onClick={async () => {
-                      if (!reuse) return;
-                      const errors: Record<number, string> = {};
-                      datasetLinks.forEach((link, index) => {
-                        if (!link.url.trim() && datasetLinks.length > 1) {
-                          errors[index] = "Campo obrigatório";
+                        date={
+                          <span className="font-[300]">
+                            {`Atualizado há ${formatDistanceToNow(new Date(selectedDataset.last_modified), { locale: pt }).replace("aproximadamente ", "").replace("quase ", "").replace("menos de ", "").replace("cerca de ", "")}`}
+                          </span>
                         }
-                      });
-                      if (Object.keys(errors).length > 0) {
-                        setDatasetLinkErrors(errors);
-                        return;
-                      }
-                      setDatasetLinkErrors({});
-                      setIsSubmitting(true);
-                      setApiError(null);
-                      try {
-                        for (const link of datasetLinks) {
-                          if (link.url.trim()) {
-                            await linkDatasetToReuse(reuse.id, link.url.trim());
-                          }
+                        mainLink={
+                          <Link href={`/pages/datasets/${selectedDataset.slug}`}>
+                            <span className="underline">{selectedDataset.title}</span>
+                          </Link>
                         }
-                        const updated = await fetchReuse(reuseId);
-                        setReuse(updated);
-                        setDatasetLinks([{ url: "" }]);
+                        blockedLink={true}
+                      />
+                    </div>
+                  )}
+
+                  <InputSelect
+                    label="Pesquisar um conjunto de dados"
+                    placeholder="Procurando um conjunto de dados..."
+                    id="edit-dataset-search"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
+                    onChange={(options) => {
+                      if (options.length > 0) {
+                        const found = myDatasets.find((d) => d.id === options[0].value);
+                        setSelectedDataset(found || null);
+                      } else {
                         setSelectedDataset(null);
-                        setApiSuccess("Conjuntos de dados associados com sucesso.");
-                      } catch {
-                        setApiError("Erro ao associar conjuntos de dados.");
-                      } finally {
-                        setIsSubmitting(false);
                       }
                     }}
-                    disabled={isSubmitting || (!selectedDataset && !datasetLinks.some((l) => l.url.trim()))}
                   >
-                    {isSubmitting ? "A guardar..." : "Guardar"}
-                  </Button>
-                </div>
+                    <DropdownSection name="datasets">
+                      {myDatasets.map((d) => (
+                        <DropdownOption key={d.id} value={d.id}>
+                          {d.title}
+                        </DropdownOption>
+                      ))}
+                    </DropdownSection>
+                  </InputSelect>
+
+                  <div className="admin-page__divider-or">
+                    <span className="admin-page__divider-or-text">ou</span>
+                  </div>
+
+                  {datasetLinks.map((link, index) => (
+                    <div key={`dataset-${index}`}>
+                      <InputText
+                        label="Link para o conjunto de dados"
+                        placeholder="Insira o URL aqui"
+                        id={`edit-dataset-url-${index}`}
+                        value={link.url}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          const newLinks = [...datasetLinks];
+                          newLinks[index] = { url: e.target.value };
+                          setDatasetLinks(newLinks);
+                          if (e.target.value.trim()) {
+                            setDatasetLinkErrors((prev) => {
+                              const next = { ...prev };
+                              delete next[index];
+                              return next;
+                            });
+                          }
+                        }}
+                        hasError={!!datasetLinkErrors[index]}
+                        hasFeedback={!!datasetLinkErrors[index]}
+                        feedbackState="danger"
+                        errorFeedbackText={datasetLinkErrors[index]}
+                      />
+                      {link.url.trim() && (
+                        <div className="flex justify-end mt-[24px]">
+                          <Button
+                            appearance="solid"
+                            variant="danger"
+                            hasIcon
+                            leadingIcon="agora-line-trash"
+                            leadingIconHover="agora-solid-trash"
+                            onClick={() => {
+                              const newLinks = datasetLinks.filter((_, i) => i !== index);
+                              setDatasetLinks(newLinks.length > 0 ? newLinks : [{ url: "" }]);
+                            }}
+                          >
+                            Eliminar
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  <div className="flex justify-end">
+                    <Button
+                      appearance="outline"
+                      variant="primary"
+                      hasIcon
+                      leadingIcon="agora-line-plus-circle"
+                      leadingIconHover="agora-solid-plus-circle"
+                      onClick={() => {
+                        const lastIndex = datasetLinks.length - 1;
+                        if (!datasetLinks[lastIndex].url.trim()) {
+                          setDatasetLinkErrors((prev) => ({
+                            ...prev,
+                            [lastIndex]: "Campo obrigatório",
+                          }));
+                          return;
+                        }
+                        setDatasetLinks([...datasetLinks, { url: "" }]);
+                      }}
+                    >
+                      Adicionar
+                    </Button>
+                  </div>
+
+                  <div className="admin-page__actions flex justify-end gap-[18px]">
+                    <Button
+                      variant="primary"
+                      onClick={async () => {
+                        if (!reuse) return;
+                        const errors: Record<number, string> = {};
+                        datasetLinks.forEach((link, index) => {
+                          if (!link.url.trim() && datasetLinks.length > 1) {
+                            errors[index] = "Campo obrigatório";
+                          }
+                        });
+                        if (Object.keys(errors).length > 0) {
+                          setDatasetLinkErrors(errors);
+                          return;
+                        }
+                        setDatasetLinkErrors({});
+                        setIsSubmitting(true);
+                        setApiError(null);
+                        try {
+                          for (const link of datasetLinks) {
+                            if (link.url.trim()) {
+                              await linkDatasetToReuse(reuse.id, link.url.trim());
+                            }
+                          }
+                          const updated = await fetchReuse(reuseId);
+                          setReuse(updated);
+                          setDatasetLinks([{ url: "" }]);
+                          setSelectedDataset(null);
+                          setApiSuccess("Conjuntos de dados associados com sucesso.");
+                        } catch {
+                          setApiError("Erro ao associar conjuntos de dados.");
+                        } finally {
+                          setIsSubmitting(false);
+                        }
+                      }}
+                      disabled={isSubmitting || (!selectedDataset && !datasetLinks.some((l) => l.url.trim()))}
+                    >
+                      {isSubmitting ? "A guardar..." : "Guardar"}
+                    </Button>
+                  </div>
                 </form>
               </div>
             </div>
