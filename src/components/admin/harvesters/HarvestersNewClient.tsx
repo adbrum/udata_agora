@@ -20,6 +20,11 @@ import { useAuth } from "@/context/AuthContext";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
+import { createHarvester, previewHarvestSource } from "@/services/api";
+import {
+  HarvestSourceCreatePayload,
+  HarvestPreviewJob,
+} from "@/types/api";
 
 export default function HarvestersNewClient() {
   const { user } = useAuth();
@@ -31,6 +36,7 @@ export default function HarvestersNewClient() {
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
   const [harvesterName, setHarvesterName] = useState("");
+  const [harvesterDescription, setHarvesterDescription] = useState("");
   const [harvesterUrl, setHarvesterUrl] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [isEnabled, setIsEnabled] = useState(true);
@@ -38,6 +44,12 @@ export default function HarvestersNewClient() {
   const [filters, setFilters] = useState<
     { mode: string; type: string; value: string }[]
   >([]);
+
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [previewJob, setPreviewJob] = useState<HarvestPreviewJob | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   const selectedProducerRef = useRef("");
   const selectedTypeRef = useRef("");
@@ -78,9 +90,14 @@ export default function HarvestersNewClient() {
     () => (
       <DropdownSection name="types">
         <DropdownOption value="dcat">DCAT</DropdownOption>
+        <DropdownOption value="csw-dcat">CSW-DCAT</DropdownOption>
+        <DropdownOption value="csw-iso-19139">CSW-ISO-19139</DropdownOption>
         <DropdownOption value="ckan">CKAN</DropdownOption>
-        <DropdownOption value="csw">CSW</DropdownOption>
-        <DropdownOption value="ods">ODS</DropdownOption>
+        <DropdownOption value="ckanpt">CKAN PT</DropdownOption>
+        <DropdownOption value="dkan">DKAN</DropdownOption>
+        <DropdownOption value="cswudata">CSW</DropdownOption>
+        <DropdownOption value="odspt">OpenDataSoft PT</DropdownOption>
+        <DropdownOption value="ogc">OGC</DropdownOption>
       </DropdownSection>
     ),
     [],
@@ -130,7 +147,51 @@ export default function HarvestersNewClient() {
     }
   };
 
-  const handleStep1Next = () => {
+  const buildPayload = (): HarvestSourceCreatePayload => {
+    const producer = selectedProducerRef.current;
+    const backend = selectedTypeRef.current || "dcat";
+    console.log("[harvester] buildPayload:", { name: harvesterName, url: harvesterUrl, backend, producer, typeRef: selectedTypeRef.current });
+    return {
+      name: harvesterName,
+      url: harvesterUrl,
+      backend,
+      active: isEnabled,
+      autoarchive: isAutoArchive,
+      ...(harvesterDescription.trim() && {
+        description: harvesterDescription,
+      }),
+      ...(producer && producer !== "user" && { organization: producer }),
+      ...(filters.length > 0 && {
+        filters: filters
+          .filter((f) => f.value.trim())
+          .map((f) => ({
+            key: f.type,
+            value: f.value,
+            type: f.mode,
+          })),
+      }),
+    };
+  };
+
+  const handleCreate = async () => {
+    if (isCreating) return;
+    setIsCreating(true);
+    setCreateError(null);
+    try {
+      await createHarvester(buildPayload());
+      router.push("/pages/admin/harvesters/new?step=3");
+    } catch (err: unknown) {
+      const error = err as { data?: { message?: string }; message?: string };
+      setCreateError(
+        error?.data?.message || error?.message || "Erro ao criar o harvester."
+      );
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleStep1Next = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
     const errors: Record<string, boolean> = {};
     if (!harvesterName.trim()) errors.harvesterName = true;
     if (!harvesterUrl.trim()) errors.harvesterUrl = true;
@@ -139,7 +200,24 @@ export default function HarvestersNewClient() {
       return;
     }
     setFormErrors({});
+
+    setIsPreviewing(true);
+    setPreviewError(null);
+    setPreviewJob(null);
     router.push("/pages/admin/harvesters/new?step=2");
+
+    try {
+      const payload = buildPayload();
+      const job = await previewHarvestSource(payload);
+      setPreviewJob(job);
+    } catch (err: unknown) {
+      const error = err as { data?: { message?: string }; message?: string };
+      setPreviewError(
+        error?.data?.message || error?.message || "Erro ao pré-visualizar o harvester."
+      );
+    } finally {
+      setIsPreviewing(false);
+    }
   };
 
   const stepTitles: Record<number, string> = {
@@ -284,6 +362,10 @@ export default function HarvestersNewClient() {
                     placeholder=""
                     id="harvester-description"
                     rows={6}
+                    value={harvesterDescription}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                      setHarvesterDescription(e.target.value)
+                    }
                   />
 
                   <InputText
@@ -418,25 +500,100 @@ export default function HarvestersNewClient() {
           {/* Step 2: Visualize */}
           {currentStep === 2 && (
             <div className="admin-page__form">
+              {isPreviewing && (
+                <StatusCard
+                  type="info"
+                  description={
+                    <>
+                      <strong>A pré-visualizar o harvester...</strong>
+                      <br />
+                      Por favor aguarde enquanto o harvester é testado.
+                    </>
+                  }
+                />
+              )}
+
               <div className="flex flex-col gap-[8px] mb-[24px]">
                 <p className="text-neutral-700 text-sm flex items-center gap-[6px]">
                   <Icon name="agora-line-calendar" className="w-[16px] h-[16px]" />
-                  Iniciado em: 15 de março de 2026 às 17h13
+                  Iniciado em:{" "}
+                  {previewJob?.started
+                    ? new Date(previewJob.started).toLocaleString("pt-PT", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : isPreviewing
+                      ? "..."
+                      : "—"}
                 </p>
                 <p className="text-neutral-700 text-sm flex items-center gap-[6px]">
                   <Icon name="agora-line-calendar" className="w-[16px] h-[16px]" />
-                  Terminado em: 15 de março de 2026 às 17:13
+                  Terminado em:{" "}
+                  {previewJob?.ended
+                    ? new Date(previewJob.ended).toLocaleString("pt-PT", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : isPreviewing
+                      ? "..."
+                      : "—"}
                 </p>
                 <p className="text-neutral-700 text-sm">
-                  Status : <Pill variant="danger">Erro</Pill>
+                  Status :{" "}
+                  {previewJob ? (
+                    <Pill
+                      variant={
+                        previewJob.status === "done"
+                          ? "success"
+                          : previewJob.status === "failed" ||
+                              previewJob.status === "done-errors"
+                            ? "danger"
+                            : "neutral"
+                      }
+                    >
+                      {previewJob.status === "done"
+                        ? "Concluído"
+                        : previewJob.status === "failed"
+                          ? "Erro"
+                          : previewJob.status === "done-errors"
+                            ? "Concluído com erros"
+                            : previewJob.status === "processing"
+                              ? "Em processamento"
+                              : "Pendente"}
+                    </Pill>
+                  ) : isPreviewing ? (
+                    "..."
+                  ) : (
+                    "—"
+                  )}
                 </p>
                 <p className="text-neutral-700 text-sm flex items-center gap-[12px]">
                   Elementos:
-                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-check" className="w-[16px] h-[16px]" /> 0</span>
-                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-alert-triangle" className="w-[16px] h-[16px]" /> 0</span>
-                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-info-mark" className="w-[16px] h-[16px]" /> 0</span>
-                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-x" className="w-[16px] h-[16px]" /> 0</span>
-                  (0 no total)
+                  <span className="flex items-center gap-[4px]">
+                    <Icon name="agora-line-check" className="w-[16px] h-[16px]" />{" "}
+                    {previewJob?.items.filter((i) => i.status === "done").length ?? 0}
+                  </span>
+                  <span className="flex items-center gap-[4px]">
+                    <Icon name="agora-line-alert-triangle" className="w-[16px] h-[16px]" />{" "}
+                    {previewJob?.items.filter((i) => i.status === "failed").length ?? 0}
+                  </span>
+                  <span className="flex items-center gap-[4px]">
+                    <Icon name="agora-line-info-mark" className="w-[16px] h-[16px]" />{" "}
+                    {previewJob?.items.filter((i) => i.status === "skipped").length ?? 0}
+                  </span>
+                  <span className="flex items-center gap-[4px]">
+                    <Icon name="agora-line-x" className="w-[16px] h-[16px]" />{" "}
+                    {previewJob?.items.filter(
+                      (i) => i.status === "pending" || i.status === "started"
+                    ).length ?? 0}
+                  </span>
+                  ({previewJob?.items.length ?? 0} no total)
                 </p>
               </div>
 
@@ -446,24 +603,43 @@ export default function HarvestersNewClient() {
                   <>
                     <strong>O seu harvester foi criado</strong>
                     <br />
-                    O harvester está a aguardar aprovação. Será notificado após aprovação (ou recusa).
+                    O harvester está a aguardar aprovação. Será notificado após
+                    aprovação (ou recusa).
                   </>
                 }
               />
 
               <h2 className="admin-page__section-title">Erros</h2>
 
-              <StatusCard
-                type="danger"
-                description={
-                  <>
-                    <strong>ERRO</strong> Tipo MIME não suportado: &quot;text/html&quot;
-                  </>
-                }
-              />
+              {previewJob && previewJob.errors.length > 0 ? (
+                previewJob.errors.map((error, index) => (
+                  <StatusCard
+                    key={index}
+                    type="danger"
+                    description={
+                      <>
+                        <strong>ERRO</strong> {error.message}
+                      </>
+                    }
+                  />
+                ))
+              ) : previewError ? (
+                <StatusCard
+                  type="danger"
+                  description={
+                    <>
+                      <strong>ERRO</strong> {previewError}
+                    </>
+                  }
+                />
+              ) : !isPreviewing ? (
+                <p className="text-neutral-700 text-sm">
+                  Nenhum erro encontrado.
+                </p>
+              ) : null}
 
               <p className="text-neutral-700 text-sm font-semibold uppercase mt-[24px]">
-                0 itens
+                {previewJob?.items.length ?? 0} itens
               </p>
 
               <div className="admin-page__actions">
@@ -492,16 +668,32 @@ export default function HarvestersNewClient() {
           {/* Step 3: Finalizar */}
           {currentStep === 3 && (
             <div className="admin-page__form">
-              <StatusCard
-                type="success"
-                description={
-                  <>
-                    <strong>O seu harvester foi criado!</strong>
-                    <br />
-                    Agora pode gerir o seu harvester.
-                  </>
-                }
-              />
+              {createError && (
+                <StatusCard
+                  type="danger"
+                  description={
+                    <>
+                      <strong>Erro ao criar o harvester</strong>
+                      <br />
+                      {createError}
+                    </>
+                  }
+                />
+              )}
+
+              {!createError && (
+                <StatusCard
+                  type="info"
+                  description={
+                    <>
+                      <strong>Pronto para criar o harvester</strong>
+                      <br />
+                      Clique em &quot;Guardar&quot; para finalizar a criação do
+                      harvester.
+                    </>
+                  }
+                />
+              )}
 
               <div className="admin-page__actions">
                 <Button
@@ -515,11 +707,10 @@ export default function HarvestersNewClient() {
                 </Button>
                 <Button
                   variant="primary"
-                  onClick={() =>
-                    router.push("/pages/admin/system/harvesters")
-                  }
+                  onClick={handleCreate}
+                  disabled={isCreating}
                 >
-                  Guardar
+                  {isCreating ? "A guardar..." : "Guardar"}
                 </Button>
               </div>
             </div>

@@ -858,6 +858,17 @@ export interface CommunityResourceUpdatePayload {
   dataset?: string;
 }
 
+export interface HarvestError {
+  message: string;
+  details: string | null;
+}
+
+export interface HarvestItem {
+  remote_id: string;
+  status: "pending" | "started" | "done" | "failed" | "skipped" | "archived";
+  errors: HarvestError[];
+}
+
 export interface HarvestJob {
   id: string;
   status: "pending" | "initializing" | "initialized" | "processing" | "done" | "done-errors" | "failed";
@@ -874,6 +885,24 @@ export interface HarvestSourceValidation {
   by: UserRef | null;
   on: string | null;
   comment: string | null;
+}
+
+export interface HarvestPreviewJob {
+  id: string;
+  status:
+    | "pending"
+    | "initializing"
+    | "initialized"
+    | "processing"
+    | "done"
+    | "done-errors"
+    | "failed";
+  created: string;
+  started: string | null;
+  ended: string | null;
+  errors: HarvestError[];
+  items: HarvestItem[];
+  source: string;
 }
 
 export interface HarvestSource {

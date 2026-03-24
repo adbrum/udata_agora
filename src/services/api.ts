@@ -72,6 +72,7 @@ import {
   CommunityResourceCreatePayload,
   CommunityResourceUpdatePayload,
   HarvestJob,
+  HarvestPreviewJob,
   HarvestSource,
   HarvestSourceCreatePayload,
   HarvestSourceUpdatePayload,
@@ -3065,6 +3066,22 @@ export async function validateHarvestSource(
     credentials: "include",
   });
   if (!res.ok) throw new Error(`Failed to validate harvest source: ${res.statusText}`);
+  return await res.json();
+}
+
+export async function previewHarvestSource(
+  payload: HarvestSourceCreatePayload
+): Promise<HarvestPreviewJob> {
+  const res = await fetch(`${API_AUTH_URL}/harvest/source/preview/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
   return await res.json();
 }
 
