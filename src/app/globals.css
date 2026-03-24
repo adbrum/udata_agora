@@ -1141,6 +1141,11 @@ body:has(.admin-wrapper)>div>header.sticky {
   max-width: 696px;
 }
 
+.admin-page .admin-search-wrapper {
+  width: 100%;
+  max-width: 654px;
+}
+
 /* Datasets page empty state */
 .datasets-page__body {
   display: flex;

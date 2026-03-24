@@ -56,6 +56,7 @@ export default function PublishDropdown({ darkMode = false }: PublishDropdownPro
         trailingIcon={showDropdown ? "agora-line-chevron-up" : "agora-line-chevron-down"}
         trailingIconHover={showDropdown ? "agora-solid-chevron-up" : "agora-solid-chevron-down"}
         className="px-24 py-16 h-auto relative z-10"
+        style={{ borderRadius: "4px" }}
         onClick={() => setShowDropdown((v) => !v)}
       >
         <span className="text-lg font-medium">

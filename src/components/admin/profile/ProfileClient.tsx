@@ -592,6 +592,46 @@ export default function ProfileClient() {
               </div>
             </TabBody>
           </Tab>
+          <Tab>
+            <TabHeader>Subscrições</TabHeader>
+            <TabBody>
+              <div className="mt-[24px]">
+                <CardNoResults
+                  className="datasets-page__empty"
+                  position="center"
+                  icon={
+                    <Icon
+                      name="agora-line-bell"
+                      className="w-12 h-12 text-primary-500 icon-xl"
+                    />
+                  }
+                  title="Sem subscrições"
+                  description="Ainda não subscreveu nenhum conteúdo."
+                  hasAnchor={false}
+                />
+              </div>
+            </TabBody>
+          </Tab>
+          <Tab>
+            <TabHeader>Acompanhamentos</TabHeader>
+            <TabBody>
+              <div className="mt-[24px]">
+                <CardNoResults
+                  className="datasets-page__empty"
+                  position="center"
+                  icon={
+                    <Icon
+                      name="agora-line-star"
+                      className="w-12 h-12 text-primary-500 icon-xl"
+                    />
+                  }
+                  title="Sem acompanhamentos"
+                  description="Ainda não acompanha nenhum conteúdo."
+                  hasAnchor={false}
+                />
+              </div>
+            </TabBody>
+          </Tab>
         </Tabs>
       </div>
     </div>
