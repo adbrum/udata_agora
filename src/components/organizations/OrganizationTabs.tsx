@@ -258,7 +258,9 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                           }
                           date={
                             <span className="font-[300]">
-                              {`Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })}`}
+                              {dataset.last_modified && !isNaN(new Date(dataset.last_modified).getTime())
+                                ? `Atualizado há ${formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })}`
+                                : "Data indisponível"}
                             </span>
                           }
                           mainLink={
@@ -363,7 +365,9 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                           }
                           date={
                             <span className="font-[300]">
-                              {`Atualizado há ${formatDistanceToNow(new Date(ds.last_modified), { locale: pt })}`}
+                              {ds.last_modified && !isNaN(new Date(ds.last_modified).getTime())
+                                ? `Atualizado há ${formatDistanceToNow(new Date(ds.last_modified), { locale: pt })}`
+                                : "Data indisponível"}
                             </span>
                           }
                           mainLink={

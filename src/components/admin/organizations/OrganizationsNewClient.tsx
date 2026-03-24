@@ -16,7 +16,7 @@ import {
   Accordion,
   AccordionGroup,
 } from "@ama-pt/agora-design-system";
-import { suggestOrganizations } from "@/services/api";
+import { suggestOrganizations, createOrganization, uploadOrgLogo } from "@/services/api";
 import type { OrganizationSuggestion } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 import AuxiliarList from "@/components/admin/AuxiliarList";
@@ -30,7 +30,11 @@ export default function OrganizationsNewClient() {
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
   const [orgName, setOrgName] = useState("");
+  const [orgAcronym, setOrgAcronym] = useState("");
   const [orgDescription, setOrgDescription] = useState("");
+  const [orgWebsite, setOrgWebsite] = useState("");
+  const [orgLogo, setOrgLogo] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [orgSuggestions, setOrgSuggestions] = useState<OrganizationSuggestion[]>([]);
 
@@ -48,7 +52,7 @@ export default function OrganizationsNewClient() {
     }
   };
 
-  const handleCreateOrg = () => {
+  const handleCreateOrg = async () => {
     const errors: Record<string, boolean> = {};
     if (!orgName.trim()) errors.orgName = true;
     if (!orgDescription.trim()) errors.orgDescription = true;
@@ -57,7 +61,24 @@ export default function OrganizationsNewClient() {
       return;
     }
     setFormErrors({});
-    router.push("/pages/admin/system/organizations");
+    setIsSubmitting(true);
+    try {
+      const org = await createOrganization({
+        name: orgName.trim(),
+        acronym: orgAcronym.trim() || undefined,
+        description: orgDescription.trim(),
+        url: orgWebsite.trim() || undefined,
+      });
+      if (orgLogo) {
+        await uploadOrgLogo(org.id, orgLogo);
+      }
+      router.push(`/pages/organizations/${org.slug}`);
+    } catch (error) {
+      const err = error as { status?: number; data?: unknown };
+      console.error("Erro ao criar organização:", err.status, JSON.stringify(err.data));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const stepTitles: Record<number, string> = {
@@ -193,6 +214,15 @@ export default function OrganizationsNewClient() {
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
                   searchNoResultsText="Nenhum resultado encontrado"
+                  onChange={(options: { value?: string }[]) => {
+                    const selectedId = options?.[0]?.value;
+                    if (selectedId) {
+                      const org = orgSuggestions.find((o) => o.id === selectedId);
+                      if (org) {
+                        router.push(`/pages/organizations/${org.slug}`);
+                      }
+                    }
+                  }}
                 >
                   <DropdownSection name="organizations">
                     {orgSuggestions.map((org) => (
@@ -264,6 +294,10 @@ export default function OrganizationsNewClient() {
                     label="Sigla"
                     placeholder="Insira a sigla aqui"
                     id="org-acronym"
+                    value={orgAcronym}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setOrgAcronym(e.target.value)
+                    }
                   />
 
                   <InputTextArea
@@ -286,6 +320,10 @@ export default function OrganizationsNewClient() {
                     label="Site da Internet"
                     placeholder="Insira o URL aqui"
                     id="org-website"
+                    value={orgWebsite}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setOrgWebsite(e.target.value)
+                    }
                   />
                 </div>
 
@@ -301,6 +339,10 @@ export default function OrganizationsNewClient() {
                     accept=".jpg,.jpeg,.png"
                     maxSize={4194304}
                     maxCount={1}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const file = e.target.files?.[0] || null;
+                      setOrgLogo(file);
+                    }}
                   />
                 </div>
 
@@ -317,6 +359,7 @@ export default function OrganizationsNewClient() {
                   <Button
                     variant="primary"
                     onClick={handleCreateOrg}
+                    disabled={isSubmitting}
                   >
                     Criar a organização
                   </Button>

@@ -462,7 +462,7 @@ export const Header = () => {
                 iconHover: "agora-solid-buildings",
                 title: "Nova Organização",
                 description: "Entidades",
-                href: "#",
+                href: "/pages/admin/organizations/new?step=1",
               },
               {
                 iconDefault: "agora-line-help-support",

@@ -60,21 +60,18 @@ function AddMemberPopupContent({ orgId, onMemberAdded }: AddMemberPopupProps) {
   const [selectedUserId, setSelectedUserId] = useState("");
   const [selectedRole, setSelectedRole] = useState("editor");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    if (searchQuery.length < 2) {
-      setSuggestions([]);
-      return;
+    async function loadUsers() {
+      try {
+        const results = await suggestUsers("");
+        setSuggestions(results);
+      } catch (error) {
+        console.error("Error loading users:", error);
+      }
     }
-
-    const timeout = setTimeout(async () => {
-      const results = await suggestUsers(searchQuery);
-      setSuggestions(results);
-    }, 300);
-
-    return () => clearTimeout(timeout);
-  }, [searchQuery]);
+    loadUsers();
+  }, []);
 
   const handleAdd = async () => {
     if (!selectedUserId) return;
@@ -93,19 +90,22 @@ function AddMemberPopupContent({ orgId, onMemberAdded }: AddMemberPopupProps) {
   return (
     <div className="flex flex-col gap-[24px]">
       <InputSelect
+        key={suggestions.length}
         label="Utilizador"
         placeholder="Pesquisar um utilizador"
         id="member-user"
         searchable
         searchInputPlaceholder="Escreva para pesquisar..."
         searchNoResultsText="Nenhum resultado encontrado"
-        onSearchChange={(value: string) => setSearchQuery(value)}
-        onChange={(value: string) => setSelectedUserId(value)}
+        onChange={(options: { value?: string }[]) => {
+          const id = options?.[0]?.value || "";
+          setSelectedUserId(id);
+        }}
       >
         <DropdownSection name="users">
           {suggestions.map((user) => (
             <DropdownOption key={user.id} value={user.id}>
-              {user.first_name} {user.last_name}
+              {`${user.first_name} ${user.last_name}`}
             </DropdownOption>
           ))}
         </DropdownSection>
@@ -116,7 +116,9 @@ function AddMemberPopupContent({ orgId, onMemberAdded }: AddMemberPopupProps) {
         placeholder="Selecionar uma opção"
         id="member-role"
         defaultValue="editor"
-        onChange={(value: string) => setSelectedRole(value)}
+        onChange={(options: { value?: string }[]) =>
+          setSelectedRole(options?.[0]?.value || "editor")
+        }
       >
         <DropdownSection name="roles">
           <DropdownOption value="admin">Administrador</DropdownOption>
@@ -234,7 +236,9 @@ function EditRolePopupContent({
         placeholder="Selecionar uma opção"
         id="edit-member-role"
         defaultValue={member.role}
-        onChange={(value: string) => setSelectedRole(value)}
+        onChange={(options: { value?: string }[]) =>
+          setSelectedRole(options?.[0]?.value || "editor")
+        }
       >
         <DropdownSection name="roles">
           <DropdownOption value="admin">Administrador</DropdownOption>
