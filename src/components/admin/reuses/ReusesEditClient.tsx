@@ -21,6 +21,7 @@ import {
   Tab,
   TabHeader,
   TabBody,
+  usePopupContext,
 } from "@ama-pt/agora-design-system";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -39,9 +40,104 @@ import { Reuse, ReuseType, ReuseTopic, Dataset } from "@/types/api";
 import { formatDistanceToNow } from "date-fns";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 
+function TransferReusePopupContent({
+  reuseTitle,
+  onClose,
+}: {
+  reuseTitle: string;
+  onClose: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-[16px]">
+      <p>
+        <Icon name="agora-line-document" className="inline w-4 h-4 mr-[4px]" />
+        <a href="#" className="text-primary-600 underline">
+          {reuseTitle}
+        </a>
+      </p>
+      <p>
+        <strong>Essa ação é irreversível.</strong>
+        Você não terá mais acesso para gerenciar esse conjunto de dados.
+      </p>
+
+      <div className="flex flex-col gap-[8px]">
+        <label className="text-primary-900 text-base font-medium leading-7">
+          Encontre uma organização ou usuário
+        </label>
+        <InputText
+          placeholder="Procurar..."
+          id="transfer-reuse-search"
+          label=""
+        />
+      </div>
+
+      <div className="admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center">
+        <h3 className="text-primary-900 text-lg font-bold leading-7">
+          Você não pertence a nenhuma organização
+        </h3>
+        <p className="text-neutral-700 text-base leading-7">
+          Recomendamos que você poste sob o nome de uma organização se for uma
+          atividade profissional.
+        </p>
+        <Button appearance="outline" variant="primary">
+          Crie ou entre para uma organização
+        </Button>
+      </div>
+
+      <div className="flex flex-col gap-[8px]">
+        <label className="text-primary-900 text-base font-medium leading-7">
+          Comentário
+        </label>
+        <InputTextArea
+          placeholder=""
+          id="transfer-reuse-comment"
+          label=""
+          rows={3}
+        />
+      </div>
+
+      <div className="flex justify-end gap-16 pt-16">
+        <Button
+          appearance="solid"
+          variant="primary"
+          hasIcon
+          leadingIcon="agora-line-plane"
+          leadingIconHover="agora-solid-plane"
+          onClick={onClose}
+        >
+          Transferir essa reutilização
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function DeleteReusePopupContent({
+  onClose,
+  onConfirm,
+}: {
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-[16px]">
+      <p>Essa ação não pode ser desfeita.</p>
+      <div className="flex justify-end gap-16 pt-16">
+        <Button appearance="outline" variant="neutral" onClick={onClose}>
+          Cancelar
+        </Button>
+        <Button appearance="outline" variant="danger" onClick={onConfirm}>
+          Eliminar
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function ReusesEditClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { show, hide } = usePopupContext();
   const reuseId = searchParams.get("id") || searchParams.get("slug") || "";
 
   const [reuse, setReuse] = useState<Reuse | null>(null);
@@ -171,7 +267,7 @@ export default function ReusesEditClient() {
 
   const handleDeleteReuse = async () => {
     if (!reuse) return;
-    if (!confirm("Tem certeza que deseja eliminar esta reutilização?")) return;
+    hide();
     setIsSubmitting(true);
     try {
       await deleteReuse(reuse.id);
@@ -516,6 +612,19 @@ export default function ReusesEditClient() {
                             hasIcon
                             trailingIcon="agora-line-arrow-right-circle"
                             trailingIconHover="agora-solid-arrow-right-circle"
+                            onClick={() => {
+                              show(
+                                <TransferReusePopupContent
+                                  reuseTitle={reuse.title}
+                                  onClose={hide}
+                                />,
+                                {
+                                  title: "Transferir essa reutilização",
+                                  closeAriaLabel: "Fechar",
+                                  dimensions: "m",
+                                },
+                              );
+                            }}
                           >
                             Transferir
                           </Button>
@@ -556,7 +665,20 @@ export default function ReusesEditClient() {
                             hasIcon
                             trailingIcon="agora-line-arrow-right-circle"
                             trailingIconHover="agora-solid-arrow-right-circle"
-                            onClick={handleDeleteReuse}
+                            onClick={() => {
+                              show(
+                                <DeleteReusePopupContent
+                                  onClose={hide}
+                                  onConfirm={handleDeleteReuse}
+                                />,
+                                {
+                                  title:
+                                    "Tem a certeza que quer eliminar esta reutilização?",
+                                  closeAriaLabel: "Fechar",
+                                  dimensions: "m",
+                                },
+                              );
+                            }}
                             disabled={isSubmitting}
                           >
                             Eliminar
