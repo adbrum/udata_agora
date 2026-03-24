@@ -92,7 +92,7 @@ export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
-        <div className="flex-1">
+        <div className="admin-search-wrapper">
           <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome, código ou sigla da entidade"
