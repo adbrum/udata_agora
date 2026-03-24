@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import {
   Breadcrumb,
   Button,
@@ -57,27 +57,34 @@ interface AddMemberPopupProps {
 function AddMemberPopupContent({ orgId, onMemberAdded }: AddMemberPopupProps) {
   const { hide } = usePopupContext();
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState("");
-  const [selectedRole, setSelectedRole] = useState("editor");
+  const [memberIds, setMemberIds] = useState<string[]>([]);
+  const selectedUserIdRef = useRef("");
+  const selectedRoleRef = useRef("editor");
+  const [canSubmit, setCanSubmit] = useState(false);
+  const [alreadyMember, setAlreadyMember] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    async function loadUsers() {
+    async function loadData() {
       try {
-        const results = await suggestUsers("");
-        setSuggestions(results);
+        const [users, org] = await Promise.all([
+          suggestUsers(""),
+          fetchOrganization(orgId),
+        ]);
+        setSuggestions(users);
+        setMemberIds((org.members || []).map((m: OrganizationMember) => m.user.id));
       } catch (error) {
         console.error("Error loading users:", error);
       }
     }
-    loadUsers();
-  }, []);
+    loadData();
+  }, [orgId]);
 
   const handleAdd = async () => {
-    if (!selectedUserId) return;
+    if (!selectedUserIdRef.current) return;
     setIsSubmitting(true);
     try {
-      await addMember(orgId, selectedUserId, selectedRole);
+      await addMember(orgId, selectedUserIdRef.current, selectedRoleRef.current);
       onMemberAdded();
       hide();
     } catch (error) {
@@ -97,9 +104,16 @@ function AddMemberPopupContent({ orgId, onMemberAdded }: AddMemberPopupProps) {
         searchable
         searchInputPlaceholder="Escreva para pesquisar..."
         searchNoResultsText="Nenhum resultado encontrado"
+        hasError={alreadyMember}
+        hasFeedback={alreadyMember}
+        feedbackState="danger"
+        errorFeedbackText="Utilizador já está associado a esta organização"
         onChange={(options: { value?: string }[]) => {
-          const id = options?.[0]?.value || "";
-          setSelectedUserId(id);
+          const userId = options?.[0]?.value || "";
+          selectedUserIdRef.current = userId;
+          const isMember = userId ? memberIds.includes(userId) : false;
+          setAlreadyMember(isMember);
+          setCanSubmit(!!userId && !isMember);
         }}
       >
         <DropdownSection name="users">
@@ -116,9 +130,9 @@ function AddMemberPopupContent({ orgId, onMemberAdded }: AddMemberPopupProps) {
         placeholder="Selecionar uma opção"
         id="member-role"
         defaultValue="editor"
-        onChange={(options: { value?: string }[]) =>
-          setSelectedRole(options?.[0]?.value || "editor")
-        }
+        onChange={(options: { value?: string }[]) => {
+          selectedRoleRef.current = options?.[0]?.value || "editor";
+        }}
       >
         <DropdownSection name="roles">
           <DropdownOption value="admin">Administrador</DropdownOption>
@@ -133,7 +147,7 @@ function AddMemberPopupContent({ orgId, onMemberAdded }: AddMemberPopupProps) {
         <Button
           variant="primary"
           onClick={handleAdd}
-          disabled={!selectedUserId || isSubmitting}
+          disabled={!canSubmit || isSubmitting}
         >
           {isSubmitting ? "A adicionar..." : "Adicionar à organização"}
         </Button>
