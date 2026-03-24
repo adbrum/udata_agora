@@ -140,6 +140,54 @@ function AddMemberPopupContent({ orgId, onMemberAdded }: AddMemberPopupProps) {
   );
 }
 
+interface RemoveMemberPopupProps {
+  orgId: string;
+  member: OrganizationMember;
+  onMemberRemoved: () => void;
+}
+
+function RemoveMemberPopupContent({
+  orgId,
+  member,
+  onMemberRemoved,
+}: RemoveMemberPopupProps) {
+  const { hide } = usePopupContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleRemove = async () => {
+    setIsSubmitting(true);
+    try {
+      await removeMember(orgId, member.user.id);
+      onMemberRemoved();
+      hide();
+    } catch (error) {
+      console.error("Error removing member:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-[24px]">
+      <p className="text-neutral-700">
+        Tem a certeza que deseja eliminar este membro?
+      </p>
+      <div className="flex gap-[16px]">
+        <Button appearance="outline" variant="neutral" onClick={() => hide()}>
+          Cancelar
+        </Button>
+        <Button
+          variant="danger"
+          onClick={handleRemove}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "A eliminar..." : "Eliminar"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 interface EditRolePopupProps {
   orgId: string;
   member: OrganizationMember;
@@ -239,18 +287,19 @@ export default function MembersClient() {
     loadMembers();
   }, [activeOrg, loadMembers]);
 
-  const handleRemoveMember = async (member: OrganizationMember) => {
-    const confirmed = window.confirm(
-      `Tem a certeza que deseja remover ${member.user.first_name} ${member.user.last_name} da organização?`
+  const handleRemoveMember = (member: OrganizationMember) => {
+    show(
+      <RemoveMemberPopupContent
+        orgId={activeOrg!.id}
+        member={member}
+        onMemberRemoved={loadMembers}
+      />,
+      {
+        title: "Eliminar membro",
+        closeAriaLabel: "Fechar",
+        dimensions: "m",
+      }
     );
-    if (!confirmed) return;
-
-    try {
-      await removeMember(activeOrg!.id, member.user.id);
-      await loadMembers();
-    } catch (error) {
-      console.error("Error removing member:", error);
-    }
   };
 
   const totalPages = Math.ceil(members.length / itemsPerPage);
