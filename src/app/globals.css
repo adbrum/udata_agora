@@ -1054,9 +1054,16 @@ body:has(.admin-wrapper)>div>header.sticky {
 }
 
 .admin-sidebar-nav__group-label--active {
-  text-decoration: underline;
-  text-underline-offset: 4px;
   font-weight: 700;
+}
+
+.admin-sidebar-nav .agora-sidebar-item > .agora-sidebar-button-item:hover,
+.admin-sidebar-nav .agora-sidebar-item > button:hover,
+.admin-sidebar-nav .agora-sidebar-item .agora-btn-link-neutral:hover,
+.admin-side-nav .agora-sidebar .agora-sidebar-item .agora-btn-link-neutral:hover {
+  border-left: 3px solid var(--color-white) !important;
+  background-color: #0338a2 !important;
+  text-decoration: none !important;
 }
 
 .admin-sidebar-nav__group-icon {
@@ -1091,8 +1098,8 @@ body:has(.admin-wrapper)>div>header.sticky {
 }
 
 .admin-sidebar-nav__child-item:hover {
-  background-color: #021C51;
-  border-left: none;
+  background-color: #0338a2;
+  border-left: 3px solid var(--color-white);
 }
 
 .admin-sidebar-nav__child-item--active {
