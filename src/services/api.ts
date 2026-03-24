@@ -2966,7 +2966,7 @@ export async function fetchHarvesters(
 
 export async function fetchHarvester(id: string): Promise<HarvestSource | null> {
   try {
-    const res = await fetch(`${API_AUTH_URL}/harvest/sources/${id}/`, {
+    const res = await fetch(`${API_AUTH_URL}/harvest/source/${id}/`, {
       cache: "no-store",
       credentials: "include",
     });
@@ -3039,7 +3039,7 @@ export async function fetchHarvestJobs(
 ): Promise<APIResponse<HarvestJob>> {
   try {
     const res = await fetch(
-      `${API_AUTH_URL}/harvest/sources/${sourceId}/jobs/?page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/harvest/source/${sourceId}/jobs/?page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok) throw new Error(`Failed to fetch harvest jobs: ${res.statusText}`);
