@@ -14,6 +14,7 @@ import {
   StatusCard,
   ButtonUploader,
   CardLinks,
+  CardGeneral,
 } from "@ama-pt/agora-design-system";
 import {
   createCommunityResource,
@@ -598,44 +599,47 @@ export default function CommunityResourceFormClient({
               />
 
               {createdResource && (
-                <div className="mt-[24px] border border-neutral-200 rounded-4 p-24 flex items-start justify-between">
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-8">
-                      <Icon name="agora-line-file" className="w-[20px] h-[20px]" />
-                      <span className="font-bold text-neutral-900">
-                        {createdResource.title}
-                      </span>
-                    </div>
-                    <p className="text-sm text-neutral-700">
-                      Atualizado hoje
-                      {createdResource.format
-                        ? ` — ${createdResource.format.toUpperCase()}`
-                        : ""}
-                    </p>
-                    {createdResource.url && (
-                      <p className="text-sm text-neutral-700 flex items-center gap-4">
-                        <Icon name="agora-line-map-pin" className="w-[16px] h-[16px]" />
-                        Localização: {new URL(createdResource.url).hostname}
-                      </p>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    className="border border-neutral-300 rounded-4 p-8 hover:bg-neutral-100"
-                    title="Eliminar recurso"
-                    onClick={async () => {
-                      try {
-                        const { deleteCommunityResource } = await import("@/services/api");
-                        await deleteCommunityResource(createdResource.id);
-                        router.push("/pages/admin/me/community-resources");
-                      } catch {
-                        setApiError("Erro ao eliminar recurso.");
-                      }
+                <>
+                  <CardGeneral
+                    variant="white-outline"
+                    isCardHorizontal
+                    isBlockedLink
+                    iconDefault="agora-line-file"
+                    iconHover="agora-solid-file"
+                    titleText={createdResource.title}
+                    descriptionText={
+                      createdResource.url
+                        ? `Localização: ${(() => { try { return new URL(createdResource.url).hostname; } catch { return createdResource.url; } })()}`
+                        : ""
+                    }
+                    anchor={{
+                      href: dataset
+                        ? `/pages/datasets/${dataset.slug}`
+                        : "/pages/admin/me/community-resources",
+                      children: "",
                     }}
-                  >
-                    <Icon name="agora-line-trash" className="w-[20px] h-[20px]" />
-                  </button>
-                </div>
+                  />
+                  <div className="flex justify-end mt-[8px]">
+                    <Button
+                      appearance="solid"
+                      variant="danger"
+                      hasIcon
+                      leadingIcon="agora-line-trash"
+                      leadingIconHover="agora-solid-trash"
+                      onClick={async () => {
+                        try {
+                          const { deleteCommunityResource } = await import("@/services/api");
+                          await deleteCommunityResource(createdResource.id);
+                          router.push("/pages/admin/me/community-resources");
+                        } catch {
+                          setApiError("Erro ao eliminar recurso.");
+                        }
+                      }}
+                    >
+                      Eliminar
+                    </Button>
+                  </div>
+                </>
               )}
 
               {apiError && (
