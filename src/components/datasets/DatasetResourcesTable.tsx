@@ -831,10 +831,8 @@ const ResourceCard: React.FC<{
 export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({ resources }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const principalFiles = resources.filter(
-    (r) => !r.type || r.type === "main" || r.type === "file"
-  );
   const documentationFiles = resources.filter((r) => r.type === "documentation");
+  const principalFiles = resources.filter((r) => r.type !== "documentation");
 
   const handleToggle = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
