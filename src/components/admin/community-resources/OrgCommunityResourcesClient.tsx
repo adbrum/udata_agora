@@ -68,9 +68,11 @@ export default function OrgCommunityResourcesClient() {
           className="datasets-page__empty"
           position="center"
           icon={
-            <Icon name="agora-line-buildings" className="datasets-page__empty-icon" />
+            <Icon name="agora-line-buildings" className="w-12 h-12 text-primary-500 icon-xl" />
           }
+          title="Sem organizações"
           description="Não pertence a nenhuma organização."
+          hasAnchor={false}
         />
       </div>
     );
@@ -210,11 +212,13 @@ export default function OrgCommunityResourcesClient() {
               position="center"
               icon={
                 <Icon
-                  name="agora-line-user-group"
-                  className="datasets-page__empty-icon"
+                  name="agora-line-buildings"
+                  className="w-12 h-12 text-primary-500 icon-xl"
                 />
               }
+              title="Sem recursos comunitários"
               description="A organização ainda não tem recursos comunitários."
+              hasAnchor={false}
             />
           </div>
         </div>

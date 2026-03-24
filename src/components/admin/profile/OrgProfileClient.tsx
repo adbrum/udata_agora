@@ -88,9 +88,11 @@ export default function OrgProfileClient() {
           className="datasets-page__empty"
           position="center"
           icon={
-            <Icon name="agora-line-buildings" className="datasets-page__empty-icon" />
+            <Icon name="agora-line-buildings" className="w-12 h-12 text-primary-500 icon-xl" />
           }
+          title="Sem organizações"
           description="Não pertence a nenhuma organização."
+          hasAnchor={false}
         />
       </div>
     );

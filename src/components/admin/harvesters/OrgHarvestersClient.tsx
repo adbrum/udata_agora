@@ -85,9 +85,11 @@ export default function OrgHarvestersClient() {
           className="datasets-page__empty"
           position="center"
           icon={
-            <Icon name="agora-line-buildings" className="datasets-page__empty-icon" />
+            <Icon name="agora-line-buildings" className="w-12 h-12 text-primary-500 icon-xl" />
           }
+          title="Sem organizações"
           description="Não pertence a nenhuma organização."
+          hasAnchor={false}
         />
       </div>
     );
@@ -230,13 +232,11 @@ export default function OrgHarvestersClient() {
               className="datasets-page__empty"
               position="center"
               icon={
-                <Icon name="agora-line-document" className="datasets-page__empty-icon" />
+                <Icon name="agora-line-buildings" className="w-12 h-12 text-primary-500 icon-xl" />
               }
+              title="Sem harvesters"
               description="A organização ainda não tem harvesters."
-              hasAnchor
-              valueAnchor="Criar harvester"
-              anchorHref="/pages/admin/harvesters/new"
-              anchorTarget="_self"
+              hasAnchor={false}
             />
           </div>
         </div>
