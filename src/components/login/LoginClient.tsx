@@ -29,14 +29,39 @@ export default function LoginClient() {
 
   const samlEnabled = process.env.NEXT_PUBLIC_SAML_ENABLED === "true";
 
+  const submitSamlForm = async (endpoint: string) => {
+    try {
+      const res = await fetch(endpoint);
+      const data = await res.json();
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = data.action;
+
+      const samlInput = document.createElement("input");
+      samlInput.type = "hidden";
+      samlInput.name = "SAMLRequest";
+      samlInput.value = data.SAMLRequest;
+      form.appendChild(samlInput);
+
+      const relayInput = document.createElement("input");
+      relayInput.type = "hidden";
+      relayInput.name = "RelayState";
+      relayInput.value = data.RelayState;
+      form.appendChild(relayInput);
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch (e) {
+      console.error("SAML login error:", e);
+    }
+  };
+
   const handleSamlLogin = () => {
-    // Full-page redirect required for SAML 2.0 HTTP-POST/Redirect binding
-    window.location.href = "/saml/login";
+    submitSamlForm("/saml/login");
   };
 
   const handleEidasLogin = () => {
-    // Full-page redirect required for eIDAS SAML flow
-    window.location.href = "/saml/eidas/login";
+    submitSamlForm("/saml/eidas/login");
   };
 
   const breadcrumbItems = [
