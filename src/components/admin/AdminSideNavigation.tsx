@@ -170,7 +170,7 @@ export function AdminSideNavigation() {
     const orgGroups: NavGroup[] = organizations.map((org) => ({
       key: "organization" as const,
       label: org.name,
-      icon: "agora-line-user-group",
+      icon: "agora-line-buildings",
       children: orgChildren(`/pages/admin/org/${org.id}`),
     }));
 
