@@ -828,6 +828,9 @@ export interface CommunityResource {
   url: string;
   filetype: string | null;
   format: string | null;
+  filesize: number | null;
+  mime: string | null;
+  checksum: { type: string; value: string } | null;
   dataset: DatasetRef | null;
   organization: Organization | null;
   owner: UserRef | null;

@@ -14,7 +14,6 @@ import {
   StatusCard,
   ButtonUploader,
   CardLinks,
-  CardGeneral,
 } from "@ama-pt/agora-design-system";
 import {
   createCommunityResource,
@@ -35,6 +34,7 @@ interface CommunityResourceFormClientProps {
   currentStep: number;
   onNextStep: () => void;
   onPreviousStep: () => void;
+  onPublicPageReady?: (url: string) => void;
 }
 
 export default function CommunityResourceFormClient({
@@ -42,6 +42,7 @@ export default function CommunityResourceFormClient({
   currentStep,
   onNextStep,
   onPreviousStep,
+  onPublicPageReady,
 }: CommunityResourceFormClientProps) {
   const router = useRouter();
   const { user } = useAuth();
@@ -136,6 +137,10 @@ export default function CommunityResourceFormClient({
       }
 
       setCreatedResource(resource);
+      const url = dataset
+        ? `/pages/datasets/${dataset.slug}`
+        : "/pages/admin/me/community-resources";
+      onPublicPageReady?.(url);
       onNextStep();
     } catch (err: unknown) {
       const error = err as { status?: number; data?: Record<string, unknown> };
@@ -600,24 +605,53 @@ export default function CommunityResourceFormClient({
 
               {createdResource && (
                 <>
-                  <CardGeneral
-                    variant="white-outline"
-                    isCardHorizontal
-                    isBlockedLink
-                    iconDefault="agora-line-file"
-                    iconHover="agora-solid-file"
-                    titleText={createdResource.title}
-                    descriptionText={
-                      createdResource.url
-                        ? `Localização: ${(() => { try { return new URL(createdResource.url).hostname; } catch { return createdResource.url; } })()}`
-                        : ""
+                  <CardLinks
+                    onClick={() => {}}
+                    className="cursor-pointer text-neutral-900"
+                    variant="transparent"
+                    category={
+                      createdResource.format
+                        ? createdResource.format.toUpperCase()
+                        : "Recurso"
                     }
-                    anchor={{
-                      href: dataset
-                        ? `/pages/datasets/${dataset.slug}`
-                        : "/pages/admin/me/community-resources",
-                      children: "",
-                    }}
+                    title={
+                      <div className="underline text-xl-bold">
+                        {createdResource.title}
+                      </div>
+                    }
+                    description={
+                      <div className="flex flex-col gap-4 mt-[8px] pb-[32px]">
+                        <p className="text-sm text-neutral-900">
+                          Atualizado hoje
+                          {createdResource.format
+                            ? ` –  ${createdResource.format.toUpperCase()}`
+                            : ""}
+                          {createdResource.filesize
+                            ? ` (${createdResource.filesize >= 1048576
+                                ? (createdResource.filesize / 1048576).toFixed(1).replace(".", ",") + " MB"
+                                : createdResource.filesize >= 1024
+                                  ? (createdResource.filesize / 1024).toFixed(1).replace(".", ",") + " KB"
+                                  : createdResource.filesize + " B"})`
+                            : ""}
+                        </p>
+                        {createdResource.url && (
+                          <p className="flex items-center gap-8 text-sm text-neutral-900 mt-8">
+                            <Icon name="agora-line-map-pin" className="w-[16px] h-[16px]" />
+                            Localização: {(() => { try { return new URL(createdResource.url).hostname; } catch { return createdResource.url; } })()}
+                          </p>
+                        )}
+                        {createdResource.checksum && (
+                          <p className="flex items-center gap-8 text-sm text-neutral-900 mt-8">
+                            <Icon name="agora-line-code" className="w-[16px] h-[16px]" />
+                            Soma de verificação: {createdResource.checksum.value}
+                          </p>
+                        )}
+                      </div>
+                    }
+                    date={
+                      <span className="font-[300]">Atualizado hoje</span>
+                    }
+                    blockedLink={true}
                   />
                   <div className="flex justify-end mt-[8px]">
                     <Button
@@ -648,20 +682,6 @@ export default function CommunityResourceFormClient({
                 </div>
               )}
 
-              <div className="admin-page__actions flex justify-end gap-[18px] mt-[32px]">
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    if (dataset) {
-                      router.push(`/pages/datasets/${dataset.slug}`);
-                    } else {
-                      router.push("/pages/admin/me/community-resources");
-                    }
-                  }}
-                >
-                  Veja a página pública
-                </Button>
-              </div>
             </>
           )}
         </div>
