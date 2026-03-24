@@ -806,6 +806,21 @@ export interface FollowResponse {
   followers: number;
 }
 
+export interface UserFollowing {
+  id: string;
+  follower: UserRef;
+  following: {
+    id: string;
+    class: string;
+    name?: string;
+    title?: string;
+    slug?: string;
+    avatar_thumbnail?: string | null;
+    image_thumbnail?: string | null;
+  };
+  since: string;
+}
+
 export interface CommunityResource {
   id: string;
   title: string;

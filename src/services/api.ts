@@ -15,6 +15,7 @@ import {
   Follow,
   FollowableEntityType,
   FollowResponse,
+  UserFollowing,
   FormatSuggestion,
   Frequency,
   GlobalSearchSuggestion,
@@ -2352,6 +2353,55 @@ export async function fetchFollowers(
     return await res.json();
   } catch (error) {
     console.error("Error fetching followers:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchUserFollowers(
+  userId: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Follow>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/users/${userId}/followers/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch user followers: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching user followers:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
+export async function fetchMyFollowing(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<UserFollowing>> {
+  try {
+    const res = await fetch(
+      `${API_AUTH_URL}/me/following/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch following: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching following:", error);
     return {
       data: [],
       page: 1,
