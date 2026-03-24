@@ -2719,10 +2719,10 @@ export async function fetchUserRoles(): Promise<UserRole[]> {
   }
 }
 
-export async function suggestUsers(query: string): Promise<UserSuggestion[]> {
+export async function suggestUsers(query: string, size: number = 20): Promise<UserSuggestion[]> {
   try {
     const res = await fetch(
-      `${API_AUTH_URL}/users/suggest/?q=${encodeURIComponent(query)}`,
+      `${API_AUTH_URL}/users/suggest/?q=${encodeURIComponent(query)}&size=${size}`,
       { cache: "no-store", credentials: "include" }
     );
 
