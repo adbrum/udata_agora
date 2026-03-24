@@ -366,7 +366,7 @@ export default function HarvestersNewClient() {
                             leadingIcon="agora-line-trash"
                             leadingIconHover="agora-solid-trash"
                             onClick={() => removeFilter(index)}
-                            aria-label="Excluir filtro"
+                            aria-label="Eliminar filtro"
                           >
                             {" "}
                           </Button>

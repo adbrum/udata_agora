@@ -208,7 +208,7 @@ export default function CommunityResourceEditClient() {
               <ButtonUploader
                 label="Substitua o ficheiro"
                 inputLabel="Arraste e solte ficheiros"
-                removeFileButtonLabel="Remover ficheiro"
+                removeFileButtonLabel="Eliminar ficheiro"
                 replaceFileButtonLabel="Substituir ficheiro"
                 extensionsInstructions="Tamanho máximo: 420 MB."
                 maxSize={440401920}
@@ -306,26 +306,26 @@ export default function CommunityResourceEditClient() {
               </Button>
             </div>
 
-            {/* Excluir o recurso */}
+            {/* Eliminar o recurso */}
             <div className="dataset-edit-danger-actions">
               <StatusCard
                 type="danger"
                 description={
                   <>
-                    <strong>Excluir o recurso</strong>
+                    <strong>Eliminar o recurso</strong>
                     <br />
                     Atenção, esta ação não pode ser cancelada.
                     <br />
                     <Button
                       appearance="link"
-                      variant="primary"
+                      variant="danger"
                       hasIcon
-                      trailingIcon="agora-line-arrow-right-circle"
-                      trailingIconHover="agora-solid-arrow-right-circle"
+                      leadingIcon="agora-line-trash"
+                      leadingIconHover="agora-solid-trash"
                       onClick={handleDelete}
                       disabled={isSubmitting}
                     >
-                      Exclua o recurso comunitário
+                      Eliminar o recurso comunitário
                     </Button>
                   </>
                 }

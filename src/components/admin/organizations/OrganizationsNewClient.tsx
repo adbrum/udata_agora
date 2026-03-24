@@ -333,7 +333,7 @@ export default function OrganizationsNewClient() {
                   <ButtonUploader
                     label="Ficheiros"
                     inputLabel="Selecione ou arraste o ficheiro"
-                    removeFileButtonLabel="Remover ficheiro"
+                    removeFileButtonLabel="Eliminar ficheiro"
                     replaceFileButtonLabel="Substituir ficheiro"
                     extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
                     accept=".jpg,.jpeg,.png"

@@ -466,7 +466,7 @@ export default function MembersClient() {
                   </button>
                   <button
                     onClick={() => handleRemoveMember(member)}
-                    title="Remover membro"
+                    title="Eliminar membro"
                   >
                     <Icon
                       name="agora-line-trash"

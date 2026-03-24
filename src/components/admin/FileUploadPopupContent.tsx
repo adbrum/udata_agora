@@ -29,7 +29,7 @@ export default function FileUploadPopupContent({
         label="Ficheiros"
         inputLabel="Selecione ou arraste o ficheiro"
         selectedFilesLabel="ficheiros selecionados"
-        removeFileButtonLabel="Remover ficheiro"
+        removeFileButtonLabel="Eliminar ficheiro"
         replaceFileButtonLabel="Substituir ficheiro"
         onChange={(e) => {
           const files = (e.target as HTMLInputElement).files;

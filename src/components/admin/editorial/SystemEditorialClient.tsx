@@ -82,7 +82,7 @@ function FeaturedList<T extends { id: string; title: string }>({
               type="button"
               onClick={() => onRemove(item.id)}
               className="p-[4px] rounded hover:bg-red-100 text-red-600"
-              title="Remover"
+              title="Eliminar"
             >
               <Icon name="agora-line-trash" className="w-[16px] h-[16px]" />
             </button>

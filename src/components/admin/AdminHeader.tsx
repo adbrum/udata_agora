@@ -25,14 +25,14 @@ function DeleteAccountPopupContent({ onClose }: { onClose: () => void }) {
         anónima, ou seja, sem ser vinculado a um produtor de dados.
       </p>
       <p>
-        Se você também quiser deletar o conteúdo publicado que você postou, primeiro apague o
-        conteúdo antes de excluir sua conta.
+        Se também quiser eliminar o conteúdo publicado que postou, primeiro apague o
+        conteúdo antes de eliminar a sua conta.
       </p>
       <div className="flex justify-end gap-16 pt-16">
         <Button appearance="outline" variant="neutral" onClick={onClose}>
           Cancelar
         </Button>
-        <Button appearance="solid" variant="danger" onClick={onClose}>
+        <Button appearance="solid" variant="danger" onClick={onClose} hasIcon leadingIcon="agora-line-trash" leadingIconHover="agora-solid-trash">
           Eliminar
         </Button>
       </div>

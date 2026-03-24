@@ -324,7 +324,7 @@ export default function CommunityResourceFormClient({
                     <ButtonUploader
                       label="Ficheiros"
                       inputLabel="Selecione ou arraste o ficheiro"
-                      removeFileButtonLabel="Remover ficheiro"
+                      removeFileButtonLabel="Eliminar ficheiro"
                       replaceFileButtonLabel="Substituir ficheiro"
                       extensionsInstructions="Tamanho máximo: 420 MB."
                       maxSize={440401920}
@@ -522,7 +522,7 @@ export default function CommunityResourceFormClient({
                             clearError("dataset");
                           }}
                         >
-                          Remover
+                          Eliminar
                         </Button>
                       </div>
                     )}

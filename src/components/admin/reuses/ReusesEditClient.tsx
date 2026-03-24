@@ -565,7 +565,7 @@ export default function ReusesEditClient() {
                         <ButtonUploader
                           label="Ficheiros"
                           inputLabel="Selecione ou arraste o ficheiro"
-                          removeFileButtonLabel="Remover ficheiro"
+                          removeFileButtonLabel="Eliminar ficheiro"
                           replaceFileButtonLabel="Substituir ficheiro"
                           extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
                           accept=".jpg,.jpeg,.png"
@@ -659,16 +659,16 @@ export default function ReusesEditClient() {
                       type="danger"
                       description={
                         <>
-                          <strong>Remova esta reutilização.</strong>
+                          <strong>Eliminar esta reutilização.</strong>
                           <br />
                           Atenção, esta ação não pode ser cancelada.
                           <br />
                           <Button
                             appearance="link"
-                            variant="primary"
+                            variant="danger"
                             hasIcon
-                            trailingIcon="agora-line-arrow-right-circle"
-                            trailingIconHover="agora-solid-arrow-right-circle"
+                            leadingIcon="agora-line-trash"
+                            leadingIconHover="agora-solid-trash"
                             onClick={() => {
                               show(
                                 <DeleteReusePopupContent

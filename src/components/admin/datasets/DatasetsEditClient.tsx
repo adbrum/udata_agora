@@ -982,10 +982,10 @@ export default function DatasetsEditClient() {
                           <br />
                           <Button
                             appearance="link"
-                            variant="primary"
+                            variant="danger"
                             hasIcon
-                            trailingIcon="agora-line-arrow-right-circle"
-                            trailingIconHover="agora-solid-arrow-right-circle"
+                            leadingIcon="agora-line-trash"
+                            leadingIconHover="agora-solid-trash"
                             onClick={(e: React.MouseEvent) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -1004,7 +1004,7 @@ export default function DatasetsEditClient() {
                             }}
                             disabled={isSubmitting}
                           >
-                            Exclua o conjunto de dados
+                            Eliminar o conjunto de dados
                           </Button>
                         </>
                       }
@@ -1091,7 +1091,7 @@ export default function DatasetsEditClient() {
                   label="Ficheiros"
                   inputLabel="Selecione ou arraste o ficheiro"
                   selectedFilesLabel="ficheiros selecionados"
-                  removeFileButtonLabel="Remover ficheiro"
+                  removeFileButtonLabel="Eliminar ficheiro"
                   replaceFileButtonLabel="Substituir ficheiro"
                   onChange={handleFileUpload}
                 />
