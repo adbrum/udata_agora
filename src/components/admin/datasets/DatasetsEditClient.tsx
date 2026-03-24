@@ -524,18 +524,20 @@ export default function DatasetsEditClient() {
         />
       </div>
 
-      <div className="admin-page__header">
+      <div className="admin-page__header" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+        <div className="flex justify-end w-full">
+          <Button
+            variant="primary"
+            appearance="outline"
+            onClick={() => window.open(`/pages/datasets/${dataset.slug}`, "_blank")}
+          >
+            <span className="admin-edit-info__btn-content">
+              <Icon name="agora-line-eye" className="w-[16px] h-[16px]" />
+              Ver página pública
+            </span>
+          </Button>
+        </div>
         <h1 className="admin-page__title">{dataset.title}</h1>
-        <Button
-          variant="primary"
-          appearance="outline"
-          onClick={() => window.open(`/pages/datasets/${dataset.slug}`, "_blank")}
-        >
-          <span className="admin-edit-info__btn-content">
-            <Icon name="agora-line-eye" className="w-[16px] h-[16px]" />
-            Ver página pública
-          </span>
-        </Button>
       </div>
 
       {apiError && <StatusCard type="danger" description={apiError} />}
@@ -1080,31 +1082,30 @@ export default function DatasetsEditClient() {
           <TabHeader>Ficheiros ({dataset.resources.length})</TabHeader>
           <TabBody>
             <div className="mt-[24px]">
-              <div className="flex justify-between items-center mb-[16px]">
-                <h2 className="font-medium text-neutral-900 text-base">
-                  {dataset.resources.length} {dataset.resources.length === 1 ? "FICHEIRO" : "FICHEIROS"}
-                </h2>
-                <div className="flex flex-col gap-[16px]">
-                  <Button appearance="outline" variant="primary">
-                    Reordene os ficheiros
-                  </Button>
-                  <ButtonUploader
-                    label="Ficheiros"
-                    inputLabel="Selecione ou arraste o ficheiro"
-                    selectedFilesLabel="ficheiros selecionados"
-                    removeFileButtonLabel="Remover ficheiro"
-                    replaceFileButtonLabel="Substituir ficheiro"
-                    onChange={handleFileUpload}
-                  />
-                </div>
+              <div className="flex items-end gap-[16px] mb-[16px]">
+                <ButtonUploader
+                  label="Ficheiros"
+                  inputLabel="Selecione ou arraste o ficheiro"
+                  selectedFilesLabel="ficheiros selecionados"
+                  removeFileButtonLabel="Remover ficheiro"
+                  replaceFileButtonLabel="Substituir ficheiro"
+                  onChange={handleFileUpload}
+                />
+                <Button appearance="outline" variant="primary" className="mb-[32px]">
+                  Reordene os ficheiros
+                </Button>
               </div>
+
+              <h2 className="font-medium text-neutral-900 text-base mb-[16px]">
+                {dataset.resources.length} {dataset.resources.length === 1 ? "FICHEIRO" : "FICHEIROS"}
+              </h2>
 
               {dataset.resources.length > 0 && (
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHeaderCell>Nome do ficheiro</TableHeaderCell>
-                      <TableHeaderCell>Status</TableHeaderCell>
+                      <TableHeaderCell>Estado</TableHeaderCell>
                       <TableHeaderCell>Tipo</TableHeaderCell>
                       <TableHeaderCell>Formato</TableHeaderCell>
                       <TableHeaderCell>Criado em</TableHeaderCell>
@@ -1118,7 +1119,7 @@ export default function DatasetsEditClient() {
                         <TableCell headerLabel="Nome do ficheiro">
                           {resource.title}
                         </TableCell>
-                        <TableCell headerLabel="Status">
+                        <TableCell headerLabel="Estado">
                           <Pill variant="success">DISPONÍVEL</Pill>
                         </TableCell>
                         <TableCell headerLabel="Tipo">

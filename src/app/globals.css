@@ -1138,6 +1138,7 @@ body:has(.admin-wrapper)>div>header.sticky {
   font-weight: 700;
   line-height: 48px;
   color: var(--color-brand-blue-secondary);
+  max-width: 696px;
 }
 
 /* Datasets page empty state */

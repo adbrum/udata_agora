@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Button, Icon, Breadcrumb, Pill, ProgressBar } from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
 import { fetchDataset, followEntity, unfollowEntity } from '@/services/api';
+import { useAuth } from '@/context/AuthContext';
+import { useActiveOrganization } from '@/hooks/useActiveOrganization';
 
 import { DatasetTabs } from '@/components/datasets/DatasetTabs';
 
@@ -53,6 +55,8 @@ function getQualityMissing(quality?: Dataset['quality']): string[] {
 }
 
 export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) {
+  const { user, isAdmin } = useAuth();
+  const { organizations } = useActiveOrganization();
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -136,7 +140,45 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
           >
             {isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
           </Button>
+          {(isAdmin ||
+            (user && dataset.owner?.id === user.id) ||
+            (dataset.organization &&
+              organizations.some((org) => org.id === dataset.organization?.id))) && (
+            <Link href={`/pages/admin/me/datasets/edit?id=${dataset.id}`}>
+              <Button
+                variant="primary"
+                hasIcon={true}
+                leadingIcon="agora-line-edit"
+                leadingIconHover="agora-solid-edit"
+              >
+                Editar
+              </Button>
+            </Link>
+          )}
         </div>
+
+        {/* Produtor */}
+        {(dataset.owner || dataset.organization) && (
+          <p className="admin-edit-info__activity mb-[24px]">
+            <Icon name="agora-line-user" className="admin-edit-info__clock-icon" />
+            {" Produtor: "}
+            {dataset.owner ? (
+              <Link
+                href={`/pages/users/${dataset.owner.slug}`}
+                className="text-primary-600 underline"
+              >
+                {dataset.owner.first_name} {dataset.owner.last_name}
+              </Link>
+            ) : dataset.organization ? (
+              <Link
+                href={`/pages/organizations/${dataset.organization.slug}`}
+                className="text-primary-600 underline"
+              >
+                {dataset.organization.name}
+              </Link>
+            ) : null}
+          </p>
+        )}
 
         <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mb-[24px]">
           {/* Main Content Column */}
@@ -151,45 +193,19 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
             <div className="prose max-w-none text-neutral-700 text-lg leading-relaxed mb-12">
               <p className="text-neutral-900 text-m-light mb-[24px]">{dataset.description}</p>
             </div>
+
           </div>
 
           {/* Sidebar */}
           <div className="xl:col-span-6">
             <div className="flex flex-col h-fit">
-              {/* Organization Info */}
-              {/* Produtor e Licença */}
-              <div className="bg-[#F2F6FF] rounded-4 p-32 mb-16">
-                <div className="mb-16">
-                  <h3 className="text-m-semibold text-neutral-900 mb-8">Produtor</h3>
-                  {dataset.owner ? (
-                    <Link
-                      href={`/pages/users/${dataset.owner.slug}`}
-                      className="text-primary-600 hover:underline text-sm flex items-center gap-8"
-                    >
-                      {dataset.owner.avatar_thumbnail && (
-                        <img
-                          src={dataset.owner.avatar_thumbnail}
-                          alt={`${dataset.owner.first_name} ${dataset.owner.last_name}`}
-                          className="w-[24px] h-[24px] rounded-full"
-                        />
-                      )}
-                      {dataset.owner.first_name} {dataset.owner.last_name}
-                    </Link>
-                  ) : (
-                    <span className="text-neutral-900 text-sm">Desconhecido</span>
-                  )}
-                  <p className="text-neutral-900 text-xs mt-8">
-                    Este conjunto de dados foi publicado por iniciativa e sob a responsabilidade de{' '}
-                    {dataset.owner ? `${dataset.owner.first_name} ${dataset.owner.last_name}` : 'Desconhecido'}.
-                  </p>
+              {/* Licença */}
+              {dataset.license && (
+                <div className="bg-[#F2F6FF] rounded-4 p-32 mb-16">
+                  <h3 className="text-m-semibold text-neutral-900 mb-8">Licença</h3>
+                  <span className="text-primary-600 text-sm">{dataset.license}</span>
                 </div>
-                {dataset.license && (
-                  <div>
-                    <h3 className="text-m-semibold text-neutral-900 mb-8">Licença</h3>
-                    <span className="text-primary-600 text-sm">{dataset.license}</span>
-                  </div>
-                )}
-              </div>
+              )}
 
               <div className="flex flex-col gap-16 bg-[#F2F6FF] rounded-4 p-32 mb-16">
                 {dataset.organization?.logo ? (

@@ -146,68 +146,74 @@ export default function OrgProfileClient() {
         </div>
       )}
 
-      <div className="admin-page__form mt-[32px]">
-        <h2 className="admin-page__section-title">EDITAR ORGANIZAÇÃO</h2>
+      <div className="admin-page__body">
+        <div className="admin-page__form-area">
+          <div className="admin-page__form">
+            <h2 className="admin-page__section-title">EDITAR ORGANIZAÇÃO</h2>
 
-        <div className="admin-page__fields-group">
-          <InputText
-            label="Nome *"
-            placeholder="Insira o nome aqui"
-            id="org-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-
-          <InputText
-            label="Sigla"
-            placeholder="Insira a sigla aqui"
-            id="org-acronym"
-            value={acronym}
-            onChange={(e) => setAcronym(e.target.value)}
-          />
-
-          <InputTextArea
-            label="Descrição"
-            placeholder="Insira a descrição aqui"
-            id="org-description"
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-
-          <InputText
-            label="Website"
-            placeholder="Insira o URL aqui"
-            id="org-url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-
-          <div>
-            <span className="text-primary-900 text-base font-medium leading-7">
-              Logotipo
-            </span>
-            <div className="mt-2">
-              <ButtonUploader
-                label="Ficheiros"
-                inputLabel="Selecione ou arraste o ficheiro"
-                removeFileButtonLabel="Remover ficheiro"
-                replaceFileButtonLabel="Substituir ficheiro"
-                extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
-                accept=".jpg,.jpeg,.png"
-                maxSize={4194304}
-                maxCount={1}
-                onChange={handleLogoUpload}
+            <div className="admin-page__fields-group">
+              <InputText
+                label="Nome *"
+                placeholder="Insira o nome aqui"
+                id="org-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
+
+              <InputText
+                label="Sigla"
+                placeholder="Insira a sigla aqui"
+                id="org-acronym"
+                value={acronym}
+                onChange={(e) => setAcronym(e.target.value)}
+              />
+
+              <InputTextArea
+                label="Descrição"
+                placeholder="Insira a descrição aqui"
+                id="org-description"
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+
+              <InputText
+                label="Website"
+                placeholder="Insira o URL aqui"
+                id="org-url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+              />
+
+              <div>
+                <span className="text-primary-900 text-base font-medium leading-7">
+                  Logotipo
+                </span>
+                <div className="mt-2">
+                  <ButtonUploader
+                    label="Ficheiros"
+                    inputLabel="Selecione ou arraste o ficheiro"
+                    removeFileButtonLabel="Remover ficheiro"
+                    replaceFileButtonLabel="Substituir ficheiro"
+                    extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                    accept=".jpg,.jpeg,.png"
+                    maxSize={4194304}
+                    maxCount={1}
+                    onChange={handleLogoUpload}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end mt-[16px]">
+                <Button variant="primary" onClick={handleSave} disabled={isSaving}>
+                  {isSaving ? "A guardar..." : "Guardar"}
+                </Button>
+              </div>
             </div>
           </div>
-
-          <div className="flex justify-end mt-[16px]">
-            <Button variant="primary" onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "A guardar..." : "Guardar"}
-            </Button>
-          </div>
         </div>
+
+        <aside className="admin-page__auxiliar" />
       </div>
     </div>
   );
