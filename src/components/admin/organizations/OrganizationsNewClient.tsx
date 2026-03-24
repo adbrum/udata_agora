@@ -203,8 +203,8 @@ export default function OrganizationsNewClient() {
                   </DropdownSection>
                 </InputSelect>
 
-                <div className="flex items-center justify-center gap-[16px] mt-[16px]">
-                  <span className="text-neutral-500">ou</span>
+                <div className="admin-page__divider-or">
+                  <span className="admin-page__divider-or-text">ou</span>
                 </div>
 
                 <div className="flex justify-center mt-[16px]">

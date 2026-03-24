@@ -61,9 +61,9 @@ export default function OrgDataservicesClient() {
           className="datasets-page__empty"
           position="center"
           icon={
-            <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
+            <Icon name="agora-line-buildings" className="w-12 h-12 text-primary-500 icon-xl" />
           }
-          title="Sem publicações"
+          title="Sem organizações"
           description="Não pertence a nenhuma organização."
           hasAnchor={false}
         />

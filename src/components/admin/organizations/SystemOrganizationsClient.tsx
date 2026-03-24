@@ -145,7 +145,7 @@ export default function SystemOrganizationsClient() {
       >
         <TableHeader>
           <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="descending">
+            <TableHeaderCell sortType="string" sortOrder="none">
               Nome
             </TableHeaderCell>
             <TableHeaderCell sortType="date" sortOrder="none">
