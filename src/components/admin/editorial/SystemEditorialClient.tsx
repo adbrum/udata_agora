@@ -4,7 +4,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Breadcrumb,
   Button,
+  CardNoResults,
   Icon,
+  InputSearchBar,
   Tabs,
   Tab,
   TabHeader,
@@ -37,9 +39,15 @@ function FeaturedList<T extends { id: string; title: string }>({
 }: FeaturedListProps<T>) {
   if (items.length === 0) {
     return (
-      <p className="text-neutral-600 text-sm py-[16px]">
-        Nenhum item destacado. Use a pesquisa acima para adicionar.
-      </p>
+      <CardNoResults
+        position="center"
+        icon={
+          <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
+        }
+        title="Sem itens destacados"
+        description="Use a pesquisa acima para adicionar."
+        hasAnchor={false}
+      />
     );
   }
 
@@ -154,19 +162,16 @@ function Autocomplete<S extends { id: string; title: string }>({
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="flex items-center gap-[8px] border border-neutral-300 rounded-[8px] px-[12px] py-[8px] bg-white focus-within:border-primary-500">
-        <Icon name="agora-line-search" className="w-[16px] h-[16px] text-neutral-400" />
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => handleSearch(e.target.value)}
-          onFocus={() => results.length > 0 && setIsOpen(true)}
+      <div className="admin-search-wrapper">
+        <InputSearchBar
+          hasVoiceActionButton={false}
+          label="Pesquisar"
           placeholder={placeholder}
-          className="flex-1 text-sm outline-none bg-transparent"
+          aria-label={placeholder}
+          value={query}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
+          onFocus={() => results.length > 0 && setIsOpen(true)}
         />
-        {isSearching && (
-          <span className="text-xs text-neutral-400">A pesquisar...</span>
-        )}
       </div>
       {isOpen && results.length > 0 && (
         <ul className="absolute z-10 w-full mt-[4px] bg-white border border-neutral-200 rounded-[8px] shadow-lg max-h-[240px] overflow-y-auto">
@@ -420,9 +425,6 @@ export default function SystemEditorialClient() {
           <TabBody>
             <div className="flex flex-col gap-[16px] py-[16px]">
               <div>
-                <label className="text-sm font-medium text-neutral-700 mb-[8px] block">
-                  Pesquisar conjuntos de dados para adicionar
-                </label>
                 <Autocomplete<DatasetSuggestion>
                   placeholder="Pesquisar conjuntos de dados..."
                   onSearch={(q) => suggestDatasets(q, 8)}
@@ -449,7 +451,7 @@ export default function SystemEditorialClient() {
                   disabled={!datasetsChanged || isSavingDatasets}
                   onClick={handleSaveDatasets}
                 >
-                  {isSavingDatasets ? "A guardar..." : "Guardar alterações"}
+                  {isSavingDatasets ? "A guardar..." : "Guardar"}
                 </Button>
               </div>
             </div>
@@ -460,9 +462,6 @@ export default function SystemEditorialClient() {
           <TabBody>
             <div className="flex flex-col gap-[16px] py-[16px]">
               <div>
-                <label className="text-sm font-medium text-neutral-700 mb-[8px] block">
-                  Pesquisar reutilizações para adicionar
-                </label>
                 <Autocomplete<ReuseSuggestion>
                   placeholder="Pesquisar reutilizações..."
                   onSearch={(q) => suggestReuses(q, 8)}
@@ -489,7 +488,7 @@ export default function SystemEditorialClient() {
                   disabled={!reusesChanged || isSavingReuses}
                   onClick={handleSaveReuses}
                 >
-                  {isSavingReuses ? "A guardar..." : "Guardar alterações"}
+                  {isSavingReuses ? "A guardar..." : "Guardar"}
                 </Button>
               </div>
             </div>

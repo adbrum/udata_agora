@@ -137,10 +137,20 @@ export default function OrgProfileClient() {
                   {org.acronym}
                 </p>
               )}
-              <p className="text-neutral-700 text-sm">
-                {org.metrics.members} membros · {org.metrics.datasets} conjuntos de dados
-                · {org.metrics.reuses} reutilizações
-              </p>
+              <div className="flex items-center gap-[16px] text-neutral-700 text-sm">
+                <span className="flex items-center gap-[4px]">
+                  <Icon name="agora-line-user-group" className="w-[16px] h-[16px]" />
+                  {org.metrics.members} membros
+                </span>
+                <span className="flex items-center gap-[4px]">
+                  <Icon name="agora-line-layers-menu" className="w-[16px] h-[16px]" />
+                  {org.metrics.datasets} conjuntos de dados
+                </span>
+                <span className="flex items-center gap-[4px]">
+                  <img src="/Icons/bar_chart.svg" className="w-[16px] h-[16px]" alt="" aria-hidden="true" />
+                  {org.metrics.reuses} reutilizações
+                </span>
+              </div>
             </div>
           </div>
         </div>
