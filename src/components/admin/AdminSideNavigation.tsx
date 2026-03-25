@@ -95,10 +95,11 @@ const navGroups: NavGroup[] = [
         label: "Recursos comunitários",
         href: "/pages/admin/system/community-resources",
       },
-      {
-        label: "Temas",
-        href: "/pages/admin/system/topics",
-      },
+      // Temas oculto temporariamente
+      // {
+      //   label: "Temas",
+      //   href: "/pages/admin/system/topics",
+      // },
       {
         label: "Artigos",
         href: "/pages/admin/system/posts",
