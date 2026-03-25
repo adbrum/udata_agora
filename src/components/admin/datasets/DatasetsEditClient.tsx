@@ -618,6 +618,7 @@ export default function DatasetsEditClient() {
         onTabActivation={(index: number) => {
           setApiError(null);
           setApiSuccess(null);
+          if (index === 3) loadActivities();
         }}
       >
         {/* Metadata Tab */}
@@ -1172,6 +1173,67 @@ export default function DatasetsEditClient() {
                 description="Ainda não existem discussões neste conjunto de dados."
                 hasAnchor={false}
               />
+            </div>
+          </TabBody>
+        </Tab>
+
+        {/* Activities Tab */}
+        <Tab>
+          <TabHeader>Atividades</TabHeader>
+          <TabBody>
+            <div className="mt-[24px]">
+              {activitiesLoading && (
+                <p className="text-neutral-700 text-sm">A carregar...</p>
+              )}
+              {activitiesLoaded && activities.length === 0 && (
+                <CardNoResults
+                  position="center"
+                  icon={
+                    <Icon name="agora-line-time" className="w-12 h-12 text-primary-500 icon-xl" />
+                  }
+                  title="Sem atividades"
+                  description="Ainda não existem atividades registadas neste conjunto de dados."
+                  hasAnchor={false}
+                />
+              )}
+              {activitiesLoaded && activities.length > 0 && (
+                <>
+                  <h2 className="font-medium text-neutral-900 text-base mb-[16px]">
+                    {activities.length} ATIVIDADES
+                  </h2>
+                  <div className="flex flex-col gap-[12px]">
+                    {activities.map((activity, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-[12px] p-[12px] bg-neutral-50 rounded-lg"
+                      >
+                        <Icon name={activity.icon || "agora-line-time"} className="w-[20px] h-[20px] text-primary-500 mt-[2px]" />
+                        <div>
+                          <p className="text-sm text-neutral-900">
+                            <a
+                              href={`/pages/admin/users/${activity.actor?.id}`}
+                              className="text-primary-600 underline"
+                            >
+                              {activity.actor?.first_name} {activity.actor?.last_name}
+                            </a>
+                            {" "}
+                            {activity.label}
+                          </p>
+                          <p className="text-xs text-neutral-600 mt-[4px]">
+                            {new Date(activity.created_at).toLocaleDateString("pt-PT", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </TabBody>
         </Tab>
