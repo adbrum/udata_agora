@@ -14,6 +14,7 @@ import {
   DropdownOption,
   StatusCard,
   Pill,
+  Switch,
   CardNoResults,
   CardLinks,
   ButtonUploader,
@@ -35,8 +36,9 @@ import {
   fetchMyDatasets,
   linkDatasetToReuse,
   linkDataserviceToReuse,
+  fetchActivity,
 } from "@/services/api";
-import { Reuse, ReuseType, ReuseTopic, Dataset } from "@/types/api";
+import { Reuse, ReuseType, ReuseTopic, Dataset, Activity } from "@/types/api";
 import { formatDistanceToNow } from "date-fns";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 
@@ -155,6 +157,7 @@ export default function ReusesEditClient() {
   const [selectedTopic, setSelectedTopic] = useState("");
 
   // API state
+  const [featured, setFeatured] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [apiSuccess, setApiSuccess] = useState<string | null>(null);
@@ -163,6 +166,13 @@ export default function ReusesEditClient() {
   // Dropdown data
   const [reuseTypes, setReuseTypes] = useState<ReuseType[]>([]);
   const [reuseTopics, setReuseTopics] = useState<ReuseTopic[]>([]);
+
+  // Activities tab state
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [isLoadingActivities, setIsLoadingActivities] = useState(true);
+  const [activityPage, setActivityPage] = useState(1);
+  const [activityTotal, setActivityTotal] = useState(0);
+  const activityPageSize = 20;
 
   // Datasets tab state
   const [myDatasets, setMyDatasets] = useState<Dataset[]>([]);
@@ -188,6 +198,7 @@ export default function ReusesEditClient() {
         setDescription(r.description);
         setSelectedType(r.type || "");
         setSelectedTopic(r.topic || "");
+        setFeatured(r.featured || false);
         setReuseTypes(types);
         setReuseTopics(topics);
         setMyDatasets(datasetsRes.data || []);
@@ -218,6 +229,35 @@ export default function ReusesEditClient() {
     }
     loadAssociatedDatasets();
   }, [reuse]);
+
+  useEffect(() => {
+    if (!reuseId) return;
+    async function loadActivities() {
+      setIsLoadingActivities(true);
+      try {
+        const response = await fetchActivity(reuseId!, activityPage, activityPageSize);
+        setActivities(response.data || []);
+        setActivityTotal(response.total || 0);
+      } catch (error) {
+        console.error("Error loading activities:", error);
+      } finally {
+        setIsLoadingActivities(false);
+      }
+    }
+    loadActivities();
+  }, [reuseId, activityPage]);
+
+  const totalActivityPages = Math.ceil(activityTotal / activityPageSize);
+
+  const groupActivitiesByMonth = (acts: Activity[]) => {
+    const groups: Record<string, Activity[]> = {};
+    acts.forEach((act) => {
+      const key = format(new Date(act.created_at), "MMMM 'de' yyyy", { locale: pt });
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(act);
+    });
+    return groups;
+  };
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -327,7 +367,7 @@ export default function ReusesEditClient() {
         >
           <span className="admin-edit-info__btn-content">
             <Icon name="agora-line-eye" className="w-[16px] h-[16px]" />
-            Ver página pública da reutilização
+            Ver página pública
           </span>
         </Button>
       </div>
@@ -387,7 +427,7 @@ export default function ReusesEditClient() {
               <div className="admin-page__form-area">
                 <div className="dataset-edit-visibility-banner">
                   <StatusCard
-                    type="info"
+                    type="warning"
                     description={
                       <>
                         Modificar a visibilidade da reutilização
@@ -399,7 +439,7 @@ export default function ReusesEditClient() {
                     }
                   />
                   <div>
-                    <Button
+                    {/* <Button
                       variant="primary"
                       appearance="outline"
                       onClick={async () => {
@@ -420,7 +460,7 @@ export default function ReusesEditClient() {
                       disabled={isSubmitting}
                     >
                       {reuse.private ? "Publicar reutilização" : "Salvar como rascunho"}
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
 
@@ -428,9 +468,18 @@ export default function ReusesEditClient() {
                   className="admin-page__form"
                   onSubmit={(e) => e.preventDefault()}
                 >
-                  <p className="text-neutral-900 text-base leading-7 pt-32">
+                  <p className="text-neutral-900 text-base leading-7">
                     Os campos marcados com um asterisco ( * ) são obrigatórios.
                   </p>
+
+                  <h2 className="admin-page__section-title">Destaque</h2>
+                  <div className="admin-page__fields-group">
+                    <Switch
+                      label="Destaque"
+                      checked={featured}
+                      onChange={() => setFeatured((v) => !v)}
+                    />
+                  </div>
 
                   <h2 className="admin-page__section-title">Descrição</h2>
                   <div className="admin-page__fields-group">
@@ -476,26 +525,6 @@ export default function ReusesEditClient() {
                     >
                       <DropdownSection name="types">
                         {reuseTypes.map((t) => (
-                          <DropdownOption key={t.id} value={t.id}>
-                            {t.label}
-                          </DropdownOption>
-                        ))}
-                      </DropdownSection>
-                    </InputSelect>
-                    <InputSelect
-                      label="Tema"
-                      placeholder="Pesquise um tópico..."
-                      id="edit-topic"
-                      searchable
-                      searchInputPlaceholder="Escreva para pesquisar..."
-                      searchNoResultsText="Nenhum resultado encontrado"
-                      defaultValue={selectedTopic}
-                      onChange={(options) => {
-                        if (options.length > 0) setSelectedTopic(options[0].value as string);
-                      }}
-                    >
-                      <DropdownSection name="topics">
-                        {reuseTopics.map((t) => (
                           <DropdownOption key={t.id} value={t.id}>
                             {t.label}
                           </DropdownOption>
@@ -714,7 +743,7 @@ export default function ReusesEditClient() {
                       {
                         title: "Qual link preencher?",
                         content:
-                          "Insira o link para a página onde o conteúdo reutilizado está visível. Dê preferência ao link para o próprio conteúdo reutilizado, e não para a página inicial.",
+                          "Insira o link para a página onde a reutilização é visível. Aponte para a reutilização em si, e não para uma página inicial. Certifique-se de que a ligação esteja estável ao longo do tempo.",
                         hasError: !!formErrors.url,
                       },
                       {
@@ -723,10 +752,34 @@ export default function ReusesEditClient() {
                           "Indique o tipo em que deve ser classificada a reutilização (API, aplicação, artigo de imprensa, visualização, etc.).",
                       },
                       {
-                        title: "Escreva uma boa descrição",
+                        title: "Descreva sua reutilização",
                         content:
-                          "A descrição da sua reutilização permite que os utilizadores compreendam o conteúdo e o objetivo do projeto.",
+                          "Você pode preencher o método de criação da reutilização, o que a reutilização permite que você faça, mostre ou diga mais sobre si mesmo e o contexto dessa reutilização. É melhor manter um tom neutro: se a reutilização parecer muito uma mensagem promocional, podemos removê-la.",
                         hasError: !!formErrors.description,
+                      },
+                      {
+                        title: "Adicionar palavras-chave",
+                        content: (
+                          <>
+                            <p>
+                              As palavras-chave aparecem na página de destino e melhoram o
+                              posicionamento nos mecanismos de pesquisa. Para cada palavra-chave,
+                              pode obter uma lista de reutilizações para as quais essa
+                              palavra-chave também foi atribuída.
+                            </p>
+                            <p className="font-bold mt-3">Sugestões automáticas</p>
+                            <p className="mt-2">
+                              Com base no conteúdo que reutiliza, podem ser sugeridas
+                              palavras-chave automaticamente. Pode aceitá-las, modificá-las ou
+                              excluí-las.
+                            </p>
+                          </>
+                        ),
+                      },
+                      {
+                        title: "Escolha uma imagem",
+                        content:
+                          'Se a sua reutilização assumir a forma de uma representação gráfica, pode fornecer uma pré-visualização usando uma imagem ou captura de ecrã. Esta imagem aparecerá na secção "Reutilizações" da página do conjunto de dados associado.',
                       },
                     ]}
                   />
@@ -1187,6 +1240,102 @@ export default function ReusesEditClient() {
                 description="Ainda não existem discussões nesta reutilização."
                 hasAnchor={false}
               />
+            </div>
+          </TabBody>
+        </Tab>
+
+        {/* Activities Tab */}
+        <Tab>
+          <TabHeader>Atividades</TabHeader>
+          <TabBody>
+            <div className="mt-[24px]">
+              {isLoadingActivities ? (
+                <p className="text-neutral-900 text-base">A carregar atividades...</p>
+              ) : activities.length === 0 ? (
+                <CardNoResults
+                  position="center"
+                  icon={
+                    <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
+                  }
+                  title="Sem atividades"
+                  description="Nenhuma atividade registada nesta reutilização."
+                  hasAnchor={false}
+                />
+              ) : (
+                <div className="space-y-32">
+                  {Object.entries(groupActivitiesByMonth(activities)).map(([month, acts]) => (
+                    <div key={month}>
+                      <h3 className="text-neutral-900 text-sm font-medium mb-16">{month}</h3>
+                      <div className="relative border-l-2 border-neutral-200 ml-4">
+                        {acts.map((act, idx) => (
+                          <div key={idx} className="flex items-start gap-16 pb-16 ml-16 relative">
+                            <div className="absolute -left-[25px] top-1 w-8 h-8 rounded-full bg-neutral-300" />
+                            <div className="flex-1 flex items-start justify-between">
+                              <div>
+                                <span className="text-sm">
+                                  <Icon
+                                    name="agora-line-user"
+                                    className="w-4 h-4 inline text-primary-600 mr-4"
+                                  />
+                                  <span className="text-primary-600 font-medium">
+                                    {act.actor.first_name} {act.actor.last_name}
+                                  </span>
+                                  {" ► "}
+                                  <span className="text-neutral-900">{act.label}</span>
+                                </span>
+                                {act.related_to_url && (
+                                  <div>
+                                    <a
+                                      href={act.related_to_url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-primary-600 text-sm underline"
+                                    >
+                                      {act.related_to}
+                                      <Icon
+                                        name="agora-line-external-link"
+                                        className="w-3 h-3 inline ml-4"
+                                      />
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                              <span className="text-neutral-900 text-sm whitespace-nowrap ml-16">
+                                {format(new Date(act.created_at), "d 'de' MMMM 'de' yyyy", {
+                                  locale: pt,
+                                })}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  {totalActivityPages > 1 && (
+                    <div className="flex items-center justify-center gap-8 mt-32">
+                      <Button
+                        variant="primary"
+                        appearance="outline"
+                        onClick={() => setActivityPage((p) => Math.max(1, p - 1))}
+                        disabled={activityPage === 1}
+                      >
+                        Anterior
+                      </Button>
+                      <span className="text-neutral-900 text-sm">
+                        Página {activityPage} de {totalActivityPages}
+                      </span>
+                      <Button
+                        variant="primary"
+                        appearance="outline"
+                        onClick={() => setActivityPage((p) => Math.min(totalActivityPages, p + 1))}
+                        disabled={activityPage === totalActivityPages}
+                      >
+                        Seguinte
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </TabBody>
         </Tab>
