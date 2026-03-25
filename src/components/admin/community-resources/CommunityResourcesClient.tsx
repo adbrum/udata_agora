@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -29,19 +29,28 @@ const formatDate = (dateStr: string) => {
   return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
 };
 
+type SortOrder = "none" | "ascending" | "descending";
+type SortField = "title" | "format" | "created_at" | "last_modified";
+
 export default function CommunityResourcesClient() {
   const { displayName } = useCurrentUser();
   const router = useRouter();
 
-  const [resources, setResources] = useState<CommunityResource[]>([]);
+  const [allResources, setAllResources] = useState<CommunityResource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>("none");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => {
     async function loadResources() {
       setIsLoading(true);
       try {
         const response = await fetchMyCommunityResources(1, 9999);
-        setResources(response.data || []);
+        setAllResources(response.data || []);
       } catch (error) {
         console.error("Error loading community resources:", error);
       } finally {
@@ -50,6 +59,79 @@ export default function CommunityResourcesClient() {
     }
     loadResources();
   }, []);
+
+  const filteredResources = useMemo(() => {
+    let result = allResources;
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(
+        (r) =>
+          r.title.toLowerCase().includes(q) ||
+          (r.format && r.format.toLowerCase().includes(q))
+      );
+    }
+
+    if (statusFilter) {
+      result = result.filter((r) => {
+        switch (statusFilter) {
+          case "public":
+            return !r.archived && !r.deleted;
+          case "archived":
+            return !!r.archived;
+          case "deleted":
+            return !!r.deleted;
+          case "draft":
+            return false;
+          default:
+            return true;
+        }
+      });
+    }
+
+    return result;
+  }, [allResources, searchQuery, statusFilter]);
+
+  const sortedResources = useMemo(() => {
+    if (sortOrder === "none") return filteredResources;
+
+    return [...filteredResources].sort((a, b) => {
+      let cmp = 0;
+      switch (sortField) {
+        case "title":
+          cmp = (a.title || "").localeCompare(b.title || "");
+          break;
+        case "format":
+          cmp = (a.format || "").localeCompare(b.format || "");
+          break;
+        case "created_at":
+          cmp =
+            new Date(a.created_at).getTime() -
+            new Date(b.created_at).getTime();
+          break;
+        case "last_modified":
+          cmp =
+            new Date(a.last_modified).getTime() -
+            new Date(b.last_modified).getTime();
+          break;
+      }
+      return sortOrder === "descending" ? -cmp : cmp;
+    });
+  }, [filteredResources, sortField, sortOrder]);
+
+  const totalItems = sortedResources.length;
+  const start = (currentPage - 1) * pageSize;
+  const resources = sortedResources.slice(start, start + pageSize);
+
+  const handleSort = (field: SortField) => (newOrder: SortOrder) => {
+    setSortField(field);
+    setSortOrder(newOrder);
+    setCurrentPage(1);
+  };
+
+  const getSortOrder = (field: SortField): SortOrder => {
+    return sortField === field ? sortOrder : "none";
+  };
 
   return (
     <div className="admin-page">
@@ -69,7 +151,7 @@ export default function CommunityResourcesClient() {
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {resources.length} resultados
+        {isLoading ? "A carregar..." : `${totalItems} resultados`}
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
@@ -79,6 +161,10 @@ export default function CommunityResourcesClient() {
             label="Pesquisar"
             placeholder="Pesquisar recursos comunitários"
             aria-label="Pesquisar recursos comunitários"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
           />
         </div>
         <InputSelect
@@ -86,6 +172,12 @@ export default function CommunityResourcesClient() {
           hideLabel
           placeholder="Filtrar por estado"
           id="filter-status"
+          onChange={(options) => {
+            setStatusFilter(
+              options.length > 0 ? (options[0].value as string) : ""
+            );
+            setCurrentPage(1);
+          }}
         >
           <DropdownSection name="status">
             <DropdownOption value="public">Público</DropdownOption>
@@ -96,45 +188,62 @@ export default function CommunityResourcesClient() {
         </InputSelect>
       </div>
 
-      {isLoading ? (
-        <p className="text-neutral-600">A carregar...</p>
-      ) : resources.length > 0 ? (
+      {!isLoading && resources.length > 0 ? (
         <Table
           paginationProps={{
-            itemsPerPageLabel: "Linhas por página",
-            itemsPerPage: 5,
-            totalItems: resources.length,
+            itemsPerPageLabel: "Itens por página",
+            itemsPerPage: pageSize,
+            totalItems: totalItems,
             availablePageSizes: [5, 10, 20],
-            currentPage: 1,
-            buttonDropdownAriaLabel: "Selecionar linhas por página",
-            dropdownListAriaLabel: "Opções de linhas por página",
+            currentPage: currentPage,
+            buttonDropdownAriaLabel: "Selecionar itens por página",
+            dropdownListAriaLabel: "Opções de itens por página",
             prevButtonAriaLabel: "Página anterior",
             nextButtonAriaLabel: "Próxima página",
+            onPageChange: (page: number) => setCurrentPage(page),
+            onPageSizeChange: (size: number) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            },
           }}
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="none">
+              <TableHeaderCell
+                sortType="string"
+                sortOrder={getSortOrder("title")}
+                onSortChange={handleSort("title")}
+              >
                 Título
               </TableHeaderCell>
-              <TableHeaderCell sortType="string" sortOrder="none">
-                Estado
-              </TableHeaderCell>
-              <TableHeaderCell sortType="string" sortOrder="none">
+              <TableHeaderCell>Estado</TableHeaderCell>
+              <TableHeaderCell
+                sortType="string"
+                sortOrder={getSortOrder("format")}
+                onSortChange={handleSort("format")}
+              >
                 Formato
               </TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
+              <TableHeaderCell
+                sortType="date"
+                sortOrder={getSortOrder("created_at")}
+                onSortChange={handleSort("created_at")}
+              >
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
+              <TableHeaderCell
+                sortType="date"
+                sortOrder={getSortOrder("last_modified")}
+                onSortChange={handleSort("last_modified")}
+              >
                 Modificado em
               </TableHeaderCell>
               <TableHeaderCell>Ação</TableHeaderCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {resources.map((resource, index) => (
-              <TableRow key={index}>
+            {resources.map((resource) => (
+              <TableRow key={resource.id}>
                 <TableCell headerLabel="Título">
                   <span className="text-neutral-900">{resource.title}</span>
                   {resource.dataset && (

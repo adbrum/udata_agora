@@ -30,7 +30,7 @@ const mockUsers: MockUser[] = [
     name: "Alexandre Bulté",
     slug: "alexandre-bulte",
     email: "user237@example.com",
-    createdAt: "15 de janeiro de 2026",
+    createdAt: "2026-01-15",
     datasets: 0,
     reuses: 0,
   },
@@ -38,7 +38,7 @@ const mockUsers: MockUser[] = [
     name: "APAGADO APAGADO",
     slug: "apagado-apagado",
     email: "user236@example.com",
-    createdAt: "15 de janeiro de 2026",
+    createdAt: "2026-01-15",
     datasets: 0,
     reuses: 0,
   },
@@ -46,7 +46,7 @@ const mockUsers: MockUser[] = [
     name: "Erin King",
     slug: "erin-king",
     email: "user235@example.com",
-    createdAt: "15 de janeiro de 2026",
+    createdAt: "2026-01-15",
     datasets: 0,
     reuses: 0,
   },
@@ -54,11 +54,20 @@ const mockUsers: MockUser[] = [
     name: "Miryad Ali",
     slug: "miryad-ali",
     email: "user234@example.com",
-    createdAt: "15 de janeiro de 2026",
+    createdAt: "2026-01-15",
     datasets: 0,
     reuses: 0,
   },
 ];
+
+const formatDate = (dateStr: string) => {
+  try {
+    const d = new Date(dateStr);
+    return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+  } catch {
+    return dateStr;
+  }
+};
 
 export default function SystemUsersClient() {
   const users = mockUsers;
@@ -122,7 +131,7 @@ export default function SystemUsersClient() {
       >
         <TableHeader>
           <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="descending">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Nome
             </TableHeaderCell>
             <TableHeaderCell sortType="date" sortOrder="none">
@@ -148,13 +157,13 @@ export default function SystemUsersClient() {
                   >
                     {user.name}
                   </a>
-                  <div className="text-sm text-neutral-500 flex items-center gap-[4px]">
+                  <div className="text-sm text-neutral-900 flex items-center gap-[4px]">
                     <Icon name="agora-line-mail" className="w-[14px] h-[14px]" />
                     {user.email}
                   </div>
                 </div>
               </TableCell>
-              <TableCell headerLabel="Criado em">{user.createdAt}</TableCell>
+              <TableCell headerLabel="Criado em">{formatDate(user.createdAt)}</TableCell>
               <TableCell headerLabel="Conjuntos de dados">{user.datasets}</TableCell>
               <TableCell headerLabel="Reutilizações">{user.reuses}</TableCell>
               <TableCell headerLabel="Ações">
