@@ -64,57 +64,48 @@ const navGroups: NavGroup[] = [
   {
     key: "system",
     label: "Sistema",
-    icon: "agora-line-settings",
+    icon: "agora-line-shield",
     children: [
       {
         label: "Conjunto de dados",
         href: "/pages/admin/system/datasets",
-        icon: "agora-line-layers-menu",
       },
-      {
-        label: "API",
-        href: "/pages/admin/system/dataservices",
-        customIcon: "/Icons/reduce_white.svg",
-      },
+      // API oculta temporariamente
+      // {
+      //   label: "API",
+      //   href: "/pages/admin/system/dataservices",
+      // },
       {
         label: "Reutilizações",
         href: "/pages/admin/system/reuses",
-        customIcon: "/Icons/bar_char_white.svg",
       },
       {
         label: "Organizações",
         href: "/pages/admin/system/organizations",
-        icon: "agora-line-buildings",
       },
       {
         label: "Utilizadores",
         href: "/pages/admin/system/users",
-        icon: "agora-line-user-group",
       },
       {
         label: "Harvesters",
         href: "/pages/admin/system/harvesters",
-        icon: "agora-line-document",
       },
       {
         label: "Recursos comunitários",
         href: "/pages/admin/system/community-resources",
-        icon: "agora-line-user-group",
       },
       {
         label: "Temas",
         href: "/pages/admin/system/topics",
-        icon: "agora-line-bookmark-card",
       },
       {
         label: "Artigos",
         href: "/pages/admin/system/posts",
-        icon: "agora-line-document",
       },
       {
         label: "Editorial",
         href: "/pages/admin/system/editorial",
-        icon: "agora-line-edit",
       },
     ],
   },
@@ -166,10 +157,8 @@ export function AdminSideNavigation() {
   ];
 
   const visibleGroups = useMemo(() => {
-    const baseGroups = navGroups.filter((group) => {
-      if (group.key === "organization") return false;
-      if (group.key === "system") return false;
-      return true;
+    const profileGroups = navGroups.filter((group) => {
+      return group.key !== "organization" && group.key !== "system";
     });
 
     const orgGroups: NavGroup[] = organizations.map((org) => ({
@@ -178,7 +167,11 @@ export function AdminSideNavigation() {
       children: orgChildren(`/pages/admin/org/${org.id}`),
     }));
 
-    return [...baseGroups, ...orgGroups];
+    const systemGroups = isAdmin
+      ? navGroups.filter((group) => group.key === "system")
+      : [];
+
+    return [...profileGroups, ...orgGroups, ...systemGroups];
   }, [isAdmin, hasOrganization, organizations]);
 
   return (
