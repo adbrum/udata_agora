@@ -80,11 +80,13 @@ export default function HarvestersNewClient() {
   const producerOptions = useMemo(
     () => (
       <DropdownSection name="identity">
-        {(user?.organizations || []).map((org) => (
-          <DropdownOption key={org.id} value={org.id}>
-            {org.name}
-          </DropdownOption>
-        ))}
+        <>
+          {(user?.organizations || []).map((org) => (
+            <DropdownOption key={org.id} value={org.id}>
+              {org.name}
+            </DropdownOption>
+          ))}
+        </>
       </DropdownSection>
     ),
     [user],

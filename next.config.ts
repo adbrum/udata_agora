@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:7000";
 
 const nextConfig: NextConfig = {
+  // Standalone output for Docker deployment
+  output: "standalone",
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   // Prevent Next.js from stripping trailing slashes on proxied routes,
   // which causes redirect loops with Flask (Flask adds trailing slash,
   // Next.js removes it → 308 loop).

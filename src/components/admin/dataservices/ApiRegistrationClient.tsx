@@ -252,11 +252,13 @@ export default function ApiRegistrationClient({
                         ? `${user.first_name} ${user.last_name}`
                         : "Eu próprio"}
                     </DropdownOption>
-                    {(user?.organizations || []).map((org) => (
-                      <DropdownOption key={org.id} value={org.id}>
-                        {org.name}
-                      </DropdownOption>
-                    ))}
+                    <>
+                      {(user?.organizations || []).map((org) => (
+                        <DropdownOption key={org.id} value={org.id}>
+                          {org.name}
+                        </DropdownOption>
+                      ))}
+                    </>
                   </DropdownSection>
                 </InputSelect>
 
