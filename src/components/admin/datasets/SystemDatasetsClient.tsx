@@ -16,6 +16,7 @@ import {
   TableRow,
   TableCell,
   Button,
+  ProgressBar,
 } from "@ama-pt/agora-design-system";
 import StatusDot from "@/components/admin/StatusDot";
 import { fetchAdminDatasets, fetchDatasets } from "@/services/api";
@@ -25,6 +26,25 @@ import PublishDropdown from "@/components/admin/PublishDropdown";
 
 type SortOrder = "none" | "ascending" | "descending";
 type SortField = "title" | "created_at" | "last_modified" | "resources";
+
+const QUALITY_CRITERIA: [keyof NonNullable<Dataset["quality"]>, string][] = [
+  ["dataset_description_quality", "Descrição"],
+  ["has_resources", "Recursos"],
+  ["license", "Licença"],
+  ["has_open_format", "Formato aberto"],
+  ["all_resources_available", "Recursos disponíveis"],
+  ["resources_documentation", "Documentação"],
+  ["update_frequency", "Frequência de atualização"],
+  ["temporal_coverage", "Cobertura temporal"],
+  ["spatial", "Cobertura espacial"],
+];
+
+function calculateQualityScore(quality?: Dataset["quality"]): number {
+  if (!quality) return 0;
+  if (quality.score > 0) return Math.round(quality.score * 100);
+  const met = QUALITY_CRITERIA.filter(([key]) => quality[key] === true).length;
+  return Math.round((met / QUALITY_CRITERIA.length) * 100);
+}
 
 const SORT_FIELD_MAP: Record<SortField, string | null> = {
   title: "title",
@@ -40,8 +60,8 @@ export default function SystemDatasetsClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortField, setSortField] = useState<SortField>("last_modified");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("descending");
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>("none");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -49,7 +69,7 @@ export default function SystemDatasetsClient() {
   const loadDatasets = useCallback(async () => {
     setIsLoading(true);
     try {
-      const apiSort = SORT_FIELD_MAP[sortField];
+      const apiSort = sortField ? SORT_FIELD_MAP[sortField] : null;
       const sortParam =
         sortOrder === "none" || !apiSort
           ? undefined
@@ -88,7 +108,7 @@ export default function SystemDatasetsClient() {
   };
 
   const handleSort = (field: SortField) => (newOrder: SortOrder) => {
-    setSortField(field);
+    setSortField(newOrder === "none" ? null : field);
     setSortOrder(newOrder);
     setCurrentPage(1);
   };
@@ -205,17 +225,17 @@ export default function SystemDatasetsClient() {
               <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell
                 sortType="numeric"
-                sortOrder={getSortOrder("last_modified")}
-                onSortChange={handleSort("last_modified")}
-              >
-                Última modificação
-              </TableHeaderCell>
-              <TableHeaderCell
-                sortType="numeric"
                 sortOrder={getSortOrder("created_at")}
                 onSortChange={handleSort("created_at")}
               >
                 Criado em
+              </TableHeaderCell>
+              <TableHeaderCell
+                sortType="numeric"
+                sortOrder={getSortOrder("last_modified")}
+                onSortChange={handleSort("last_modified")}
+              >
+                Última modificação
               </TableHeaderCell>
               <TableHeaderCell
                 sortType="numeric"
@@ -224,6 +244,7 @@ export default function SystemDatasetsClient() {
               >
                 Ficheiros
               </TableHeaderCell>
+              <TableHeaderCell>Pontuação</TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
@@ -243,21 +264,39 @@ export default function SystemDatasetsClient() {
                     {dataset.private ? "Rascunho" : "Público"}
                   </StatusDot>
                 </TableCell>
-                <TableCell headerLabel="Última modificação">
-                  {formatDate(dataset.last_modified)}
-                </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(dataset.created_at)}
                 </TableCell>
+                <TableCell headerLabel="Última modificação">
+                  {formatDate(dataset.last_modified)}
+                </TableCell>
                 <TableCell headerLabel="Ficheiros">
                   {dataset.resources?.length || 0}
+                </TableCell>
+                <TableCell headerLabel="Pontuação">
+                  <div
+                    className={
+                      calculateQualityScore(dataset.quality) <= 45
+                        ? "quality-progress-warning"
+                        : ""
+                    }
+                  >
+                    <ProgressBar
+                      value={calculateQualityScore(dataset.quality)}
+                      max={100}
+                      hidePercentageValue={true}
+                    />
+                  </div>
+                  <span className="text-xs text-neutral-700">
+                    {calculateQualityScore(dataset.quality)}%
+                  </span>
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">
                     <a href={`/pages/datasets/${dataset.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/datasets/edit?slug=${dataset.slug}`}>
+                    <a href={`/pages/admin/datasets/edit?id=${dataset.id}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
