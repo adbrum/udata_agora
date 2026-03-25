@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { backendFetch } from "../backend-fetch";
 
 export async function POST(request: NextRequest) {
-  console.log("[/login] POST received");
   const body = await request.text();
   const contentType = request.headers.get("content-type") || "application/x-www-form-urlencoded";
-  console.log("[/login] forwarding to backend...");
 
   let backendResponse: Response;
   try {
@@ -18,9 +16,7 @@ export async function POST(request: NextRequest) {
       body,
       redirect: "manual",
     });
-    console.log("[/login] backend responded:", backendResponse.status);
-  } catch (error) {
-    console.error("[/login] backend fetch failed:", error);
+  } catch {
     return NextResponse.json({ message: "Backend unavailable" }, { status: 502 });
   }
 

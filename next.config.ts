@@ -8,8 +8,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Allow importing undici (Node.js built-in) in server-side route handlers
-  serverExternalPackages: ["undici"],
   // Prevent Next.js from stripping trailing slashes on proxied routes,
   // which causes redirect loops with Flask (Flask adds trailing slash,
   // Next.js removes it → 308 loop).
