@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Breadcrumb,
   CardNoResults,
@@ -18,7 +18,7 @@ import {
   Button,
 } from "@ama-pt/agora-design-system";
 import StatusDot from "@/components/admin/StatusDot";
-import { fetchDatasets } from "@/services/api";
+import { fetchAdminDatasets, fetchDatasets } from "@/services/api";
 import { Dataset } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 
@@ -26,9 +26,17 @@ import PublishDropdown from "@/components/admin/PublishDropdown";
 type SortOrder = "none" | "ascending" | "descending";
 type SortField = "title" | "created_at" | "last_modified" | "resources";
 
+const SORT_FIELD_MAP: Record<SortField, string | null> = {
+  title: "title",
+  created_at: "created",
+  last_modified: "last_update",
+  resources: null,
+};
+
 export default function SystemDatasetsClient() {
 
-  const [allDatasets, setAllDatasets] = useState<Dataset[]>([]);
+  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -36,81 +44,48 @@ export default function SystemDatasetsClient() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("descending");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadDatasets = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const apiSort = SORT_FIELD_MAP[sortField];
+      const sortParam =
+        sortOrder === "none" || !apiSort
+          ? undefined
+          : `${sortOrder === "descending" ? "-" : ""}${apiSort}`;
+
+      const filters = {
+        q: searchQuery.trim() || undefined,
+        sort: sortParam,
+      };
+
+      // Try authenticated request first (returns all datasets for sysadmin),
+      // fall back to public request if auth fails
+      let response = await fetchAdminDatasets(currentPage, pageSize, filters);
+      if (response.total === 0 && !searchQuery.trim()) {
+        response = await fetchDatasets(currentPage, pageSize, filters);
+      }
+      setDatasets(response.data || []);
+      setTotalItems(response.total || 0);
+    } catch (error) {
+      console.error("Error loading datasets:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, pageSize, searchQuery, sortField, sortOrder]);
 
   useEffect(() => {
-    async function loadDatasets() {
-      setIsLoading(true);
-      try {
-        const response = await fetchDatasets(1, 9999);
-        setAllDatasets(response.data || []);
-      } catch (error) {
-        console.error("Error loading datasets:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
     loadDatasets();
-  }, []);
+  }, [loadDatasets]);
 
-  const filteredDatasets = useMemo(() => {
-    let result = allDatasets;
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.trim().toLowerCase();
-      result = result.filter(
-        (d) =>
-          d.title.toLowerCase().includes(q) ||
-          (d.acronym && d.acronym.toLowerCase().includes(q)) ||
-          d.slug.toLowerCase().includes(q)
-      );
-    }
-
-    if (statusFilter) {
-      result = result.filter((d) => {
-        switch (statusFilter) {
-          case "public":
-            return !d.private && !d.archived && !d.deleted;
-          case "draft":
-            return !!d.private;
-          case "archived":
-            return !!d.archived;
-          case "deleted":
-            return !!d.deleted;
-          default:
-            return true;
-        }
-      });
-    }
-
-    return result;
-  }, [allDatasets, searchQuery, statusFilter]);
-
-  const sortedDatasets = useMemo(() => {
-    if (sortOrder === "none") return filteredDatasets;
-
-    return [...filteredDatasets].sort((a, b) => {
-      let cmp = 0;
-      switch (sortField) {
-        case "title":
-          cmp = (a.title || "").localeCompare(b.title || "");
-          break;
-        case "created_at":
-          cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-          break;
-        case "last_modified":
-          cmp = new Date(a.last_modified).getTime() - new Date(b.last_modified).getTime();
-          break;
-        case "resources":
-          cmp = (a.resources?.length || 0) - (b.resources?.length || 0);
-          break;
-      }
-      return sortOrder === "descending" ? -cmp : cmp;
-    });
-  }, [filteredDatasets, sortField, sortOrder]);
-
-  const totalItems = sortedDatasets.length;
-  const start = (currentPage - 1) * pageSize;
-  const datasets = sortedDatasets.slice(start, start + pageSize);
+  const handleSearch = (value: string) => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setSearchQuery(value);
+      setCurrentPage(1);
+    }, 400);
+  };
 
   const handleSort = (field: SortField) => (newOrder: SortOrder) => {
     setSortField(field);
@@ -121,6 +96,24 @@ export default function SystemDatasetsClient() {
   const getSortOrder = (field: SortField): SortOrder => {
     return sortField === field ? sortOrder : "none";
   };
+
+  const filteredDatasets = useMemo(() => {
+    if (!statusFilter) return datasets;
+    return datasets.filter((d) => {
+      switch (statusFilter) {
+        case "public":
+          return !d.private && !d.archived && !d.deleted;
+        case "draft":
+          return !!d.private;
+        case "archived":
+          return !!d.archived;
+        case "deleted":
+          return !!d.deleted;
+        default:
+          return true;
+      }
+    });
+  }, [datasets, statusFilter]);
 
   const formatDate = (dateStr: string) => {
     try {
@@ -159,8 +152,7 @@ export default function SystemDatasetsClient() {
             placeholder="Pesquise o nome, código ou sigla da entidade"
             aria-label="Pesquisar conjuntos de dados"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
+              handleSearch(e.target.value);
             }}
           />
         </div>
@@ -171,7 +163,6 @@ export default function SystemDatasetsClient() {
           id="filter-status"
           onChange={(options) => {
             setStatusFilter(options.length > 0 ? (options[0].value as string) : "");
-            setCurrentPage(1);
           }}
         >
           <DropdownSection name="status">
@@ -183,7 +174,7 @@ export default function SystemDatasetsClient() {
         </InputSelect>
       </div>
 
-      {!isLoading && datasets.length > 0 ? (
+      {!isLoading && filteredDatasets.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Itens por página",
@@ -205,7 +196,7 @@ export default function SystemDatasetsClient() {
           <TableHeader>
             <TableRow>
               <TableHeaderCell
-                sortType="date"
+                sortType="numeric"
                 sortOrder={getSortOrder("title")}
                 onSortChange={handleSort("title")}
               >
@@ -213,21 +204,21 @@ export default function SystemDatasetsClient() {
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell
-                sortType="date"
-                sortOrder={getSortOrder("created_at")}
-                onSortChange={handleSort("created_at")}
-              >
-                Criado em
-              </TableHeaderCell>
-              <TableHeaderCell
-                sortType="date"
+                sortType="numeric"
                 sortOrder={getSortOrder("last_modified")}
                 onSortChange={handleSort("last_modified")}
               >
                 Última modificação
               </TableHeaderCell>
               <TableHeaderCell
-                sortType="date"
+                sortType="numeric"
+                sortOrder={getSortOrder("created_at")}
+                onSortChange={handleSort("created_at")}
+              >
+                Criado em
+              </TableHeaderCell>
+              <TableHeaderCell
+                sortType="numeric"
                 sortOrder={getSortOrder("resources")}
                 onSortChange={handleSort("resources")}
               >
@@ -237,7 +228,7 @@ export default function SystemDatasetsClient() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {datasets.map((dataset) => (
+            {filteredDatasets.map((dataset) => (
               <TableRow key={dataset.id}>
                 <TableCell headerLabel="Título">
                   <a
@@ -252,11 +243,11 @@ export default function SystemDatasetsClient() {
                     {dataset.private ? "Rascunho" : "Público"}
                   </StatusDot>
                 </TableCell>
-                <TableCell headerLabel="Criado em">
-                  {formatDate(dataset.created_at)}
-                </TableCell>
                 <TableCell headerLabel="Última modificação">
                   {formatDate(dataset.last_modified)}
+                </TableCell>
+                <TableCell headerLabel="Criado em">
+                  {formatDate(dataset.created_at)}
                 </TableCell>
                 <TableCell headerLabel="Ficheiros">
                   {dataset.resources?.length || 0}

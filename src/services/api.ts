@@ -356,6 +356,68 @@ export async function fetchDatasets(
   }
 }
 
+/**
+ * Fetch datasets with authentication (for admin pages).
+ * Sends cookies so the backend recognizes the sysadmin and returns all datasets
+ * (including private, archived, deleted).
+ */
+export async function fetchAdminDatasets(
+  page: number = 1,
+  pageSize: number = 20,
+  filters?: DatasetFilters
+): Promise<APIResponse<Dataset>> {
+  try {
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("page_size", String(pageSize));
+
+    if (filters) {
+      if (filters.q) params.set("q", filters.q);
+      if (filters.schema) params.set("schema", filters.schema);
+      if (filters.geozone) params.set("geozone", filters.geozone);
+      if (filters.granularity) params.set("granularity", filters.granularity);
+      if (filters.sort) params.set("sort", filters.sort);
+      if (filters.featured !== undefined) params.set("featured", String(filters.featured));
+
+      const arrayParams: [string, string | string[] | undefined][] = [
+        ["tag", filters.tag],
+        ["license", filters.license],
+        ["format", filters.format],
+        ["badge", filters.badge],
+        ["organization", filters.organization],
+      ];
+      for (const [key, value] of arrayParams) {
+        if (!value) continue;
+        if (Array.isArray(value)) {
+          value.forEach((v) => params.append(key, v));
+        } else {
+          params.set(key, value);
+        }
+      }
+    }
+
+    const res = await authFetch(`/datasets/?${params.toString()}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch datasets: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching datasets:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
+  }
+}
+
 export async function fetchDataset(slug: string): Promise<Dataset> {
   try {
     const res = await fetch(`${API_AUTH_URL}/datasets/${slug}/`, {
