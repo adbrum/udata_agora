@@ -148,7 +148,7 @@ export default function OrgCommunityResourcesClient() {
           >
             <TableHeader>
               <TableRow>
-                <TableHeaderCell sortType="string" sortOrder="none">
+                <TableHeaderCell sortType="date" sortOrder="none">
                   Título
                 </TableHeaderCell>
                 <TableHeaderCell>Estado</TableHeaderCell>

@@ -100,19 +100,19 @@ export default function StatisticsClient() {
                 <TableHeader>
                   <TableRow>
                     <TableHeaderCell>TÍTULO DO CONJUNTO DE DADOS</TableHeaderCell>
-                    <TableHeaderCell sortType="numeric" sortOrder="none">
+                    <TableHeaderCell sortType="date" sortOrder="none">
                       <Icon name="agora-line-chat" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
-                    <TableHeaderCell sortType="numeric" sortOrder="none">
+                    <TableHeaderCell sortType="date" sortOrder="none">
                       <Icon name="agora-line-eye" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
-                    <TableHeaderCell sortType="numeric" sortOrder="none">
+                    <TableHeaderCell sortType="date" sortOrder="none">
                       <Icon name="agora-line-download" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
-                    <TableHeaderCell sortType="numeric" sortOrder="none">
+                    <TableHeaderCell sortType="date" sortOrder="none">
                       <img src="/Icons/bar_chart.svg" alt="Reutilizações" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
-                    <TableHeaderCell sortType="numeric" sortOrder="none">
+                    <TableHeaderCell sortType="date" sortOrder="none">
                       <Icon name="agora-line-star" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
                     <TableHeaderCell>{""}</TableHeaderCell>

@@ -137,10 +137,10 @@ export default function SystemUsersClient() {
             <TableHeaderCell sortType="date" sortOrder="none">
               Criado em
             </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Conjuntos de dados
             </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Reutilizações
             </TableHeaderCell>
             <TableHeaderCell>Ações</TableHeaderCell>

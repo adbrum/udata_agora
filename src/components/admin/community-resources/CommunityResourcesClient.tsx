@@ -210,7 +210,7 @@ export default function CommunityResourcesClient() {
           <TableHeader>
             <TableRow>
               <TableHeaderCell
-                sortType="string"
+                sortType="date"
                 sortOrder={getSortOrder("title")}
                 onSortChange={handleSort("title")}
               >
@@ -218,7 +218,7 @@ export default function CommunityResourcesClient() {
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell
-                sortType="string"
+                sortType="date"
                 sortOrder={getSortOrder("format")}
                 onSortChange={handleSort("format")}
               >

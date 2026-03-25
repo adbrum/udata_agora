@@ -102,7 +102,7 @@ export default function DiscussionsClient() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHeaderCell sortType="string" sortOrder="descending">
+                <TableHeaderCell sortType="date" sortOrder="none">
                   Título
                 </TableHeaderCell>
                 <TableHeaderCell>Autor</TableHeaderCell>

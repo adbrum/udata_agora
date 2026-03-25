@@ -110,14 +110,14 @@ export default function ReusesClient() {
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="none">
+              <TableHeaderCell sortType="date" sortOrder="none">
                 Título da reutilização
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell sortType="numeric" sortOrder="none">
+              <TableHeaderCell sortType="date" sortOrder="none">
                 Conjuntos de dados
               </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>

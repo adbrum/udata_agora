@@ -108,14 +108,14 @@ export default function SystemReusesClient() {
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
+              <TableHeaderCell sortType="date" sortOrder="none">
                 Título da reutilização
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell sortType="numeric" sortOrder="descending">
+              <TableHeaderCell sortType="date" sortOrder="none">
                 Conjuntos de dados
               </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>

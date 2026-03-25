@@ -28,60 +28,69 @@ const mockTopics: MockTopic[] = [
   {
     name: "Justiça",
     slug: "justica",
-    createdAt: "15 de março de 2026",
+    createdAt: "2026-03-15",
     datasets: 0,
     reuses: 0,
   },
   {
     name: "Defesa e Segurança",
     slug: "defesa-e-seguranca",
-    createdAt: "15 de março de 2026",
+    createdAt: "2026-03-15",
     datasets: 0,
     reuses: 0,
   },
   {
     name: "Turismo, Cultura e Esporte",
     slug: "turismo-cultura-e-esporte",
-    createdAt: "15 de março de 2026",
+    createdAt: "2026-03-15",
     datasets: 0,
     reuses: 0,
   },
   {
     name: "Transportes e Infraestruturas",
     slug: "transportes-e-infraestruturas",
-    createdAt: "15 de março de 2026",
+    createdAt: "2026-03-15",
     datasets: 0,
     reuses: 0,
   },
   {
     name: "Saúde",
     slug: "saude",
-    createdAt: "15 de março de 2026",
+    createdAt: "2026-03-15",
     datasets: 0,
     reuses: 0,
   },
   {
     name: "Governo e Administração Pública",
     slug: "governo-e-administracao-publica",
-    createdAt: "15 de março de 2026",
+    createdAt: "2026-03-15",
     datasets: 0,
     reuses: 0,
   },
   {
     name: "População e Sociedade",
     slug: "populacao-e-sociedade",
-    createdAt: "15 de março de 2026",
+    createdAt: "2026-03-15",
     datasets: 0,
     reuses: 0,
   },
   {
     name: "Educação, Ciência e Tecnologia",
     slug: "educacao-ciencia-e-tecnologia",
-    createdAt: "15 de março de 2026",
+    createdAt: "2026-03-15",
     datasets: 0,
     reuses: 0,
   },
 ];
+
+const formatDate = (dateStr: string) => {
+  try {
+    const d = new Date(dateStr);
+    return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+  } catch {
+    return dateStr;
+  }
+};
 
 export default function SystemTopicsClient() {
   const topics = mockTopics;
@@ -144,16 +153,16 @@ export default function SystemTopicsClient() {
       >
         <TableHeader>
           <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="descending">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Nome
             </TableHeaderCell>
             <TableHeaderCell sortType="date" sortOrder="none">
               Criado em
             </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Conjuntos de dados
             </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Reutilizar
             </TableHeaderCell>
           </TableRow>
@@ -169,7 +178,7 @@ export default function SystemTopicsClient() {
                   {topic.name}
                 </a>
               </TableCell>
-              <TableCell headerLabel="Criado em">{topic.createdAt}</TableCell>
+              <TableCell headerLabel="Criado em">{formatDate(topic.createdAt)}</TableCell>
               <TableCell headerLabel="Conjuntos de dados">
                 {topic.datasets}
               </TableCell>

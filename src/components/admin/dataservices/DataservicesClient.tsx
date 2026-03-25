@@ -120,7 +120,7 @@ export default function DataservicesClient() {
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
+              <TableHeaderCell sortType="date" sortOrder="none">
                 Título da API
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
