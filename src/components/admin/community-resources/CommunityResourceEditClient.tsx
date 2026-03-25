@@ -325,7 +325,7 @@ export default function CommunityResourceEditClient() {
                       onClick={handleDelete}
                       disabled={isSubmitting}
                     >
-                      Exclua o recurso comunitário
+                      Elimine o recurso comunitário
                     </Button>
                   </>
                 }

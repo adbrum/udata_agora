@@ -15,9 +15,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
   Button,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchMyReuses } from "@/services/api";
 import { Reuse } from "@/types/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -136,9 +136,9 @@ export default function ReusesClient() {
                 </TableCell>
                 <TableCell headerLabel="Estado">
                   {reuse.private ? (
-                    <Pill variant="warning">Rascunho</Pill>
+                    <StatusDot variant="warning">Rascunho</StatusDot>
                   ) : (
-                    <Pill variant="success">Público</Pill>
+                    <StatusDot variant="success">Público</StatusDot>
                   )}
                 </TableCell>
                 <TableCell headerLabel="Criado em">

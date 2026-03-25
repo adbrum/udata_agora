@@ -15,8 +15,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 
 interface MockArticle {
@@ -191,9 +191,9 @@ export default function SystemPostsClient() {
                 </a>
               </TableCell>
               <TableCell headerLabel="Status">
-                <Pill variant={article.statusVariant}>
+                <StatusDot variant={article.statusVariant}>
                   {article.status.toUpperCase()}
-                </Pill>
+                </StatusDot>
               </TableCell>
               <TableCell headerLabel="Criado em">{article.createdAt}</TableCell>
               <TableCell headerLabel="Atualizado em">

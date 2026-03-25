@@ -14,8 +14,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 import { fetchHarvesters } from "@/services/api";
 import type { HarvestSource } from "@/types/api";
@@ -57,6 +57,8 @@ function getStatus(source: HarvestSource) {
 export default function SystemHarvestersClient() {
   const [harvesters, setHarvesters] = useState<HarvestSource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     async function load() {
@@ -119,19 +121,24 @@ export default function SystemHarvestersClient() {
       <Table
         paginationProps={{
           itemsPerPageLabel: "Linhas por página",
-          itemsPerPage: 10,
+          itemsPerPage,
           totalItems: harvesters.length,
           availablePageSizes: [5, 10, 20],
-          currentPage: 1,
+          currentPage,
           buttonDropdownAriaLabel: "Selecionar linhas por página",
           dropdownListAriaLabel: "Opções de linhas por página",
           prevButtonAriaLabel: "Página anterior",
           nextButtonAriaLabel: "Próxima página",
+          onPageChange: (page: number) => setCurrentPage(page),
+          onItemsPerPageChange: (size: number) => {
+            setItemsPerPage(size);
+            setCurrentPage(1);
+          },
         }}
       >
         <TableHeader>
           <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="descending">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Nome
             </TableHeaderCell>
             <TableHeaderCell>Estatuto</TableHeaderCell>
@@ -149,7 +156,9 @@ export default function SystemHarvestersClient() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {harvesters.map((harvester) => {
+          {harvesters
+            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+            .map((harvester) => {
             const status = getStatus(harvester);
             return (
               <TableRow key={harvester.id}>
@@ -162,7 +171,7 @@ export default function SystemHarvestersClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estatuto">
-                  <Pill variant={status.variant}>{status.label}</Pill>
+                  <StatusDot variant={status.variant}>{status.label}</StatusDot>
                 </TableCell>
                 <TableCell headerLabel="Implementação">
                   {harvester.backend}

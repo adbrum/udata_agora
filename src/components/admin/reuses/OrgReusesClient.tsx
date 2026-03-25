@@ -15,9 +15,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
   Button,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchOrgReuses } from "@/services/api";
 import { Reuse } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
@@ -173,7 +173,7 @@ export default function OrgReusesClient() {
                     </a>
                   </TableCell>
                   <TableCell headerLabel="Estado">
-                    <Pill variant="success">Público</Pill>
+                    <StatusDot variant="success">Público</StatusDot>
                   </TableCell>
                   <TableCell headerLabel="Criado em">
                     {formatDate(reuse.created_at)}

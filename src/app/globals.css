@@ -1321,6 +1321,14 @@ body:has(.admin-wrapper)>div>header.sticky {
   --admin-auxiliar-gap: 70px;
 }
 
+.admin-page .agora-pill .children-wrapper {
+  font-weight: 700 !important;
+}
+
+.admin-page td .agora-pill .children-wrapper {
+  font-weight: 400 !important;
+}
+
 .admin-page__body {
   display: flex;
   gap: var(--admin-auxiliar-gap);
@@ -1519,7 +1527,7 @@ body:has(.admin-wrapper)>div>header.sticky {
   padding: 0 16px 16px 56px;
   font-size: 14px;
   line-height: 22px;
-  color: var(--color-neutral-700);
+  color: var(--color-neutral-900);
 }
 
 .auxiliar-list__icon {

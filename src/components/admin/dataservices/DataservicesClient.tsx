@@ -15,9 +15,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
   Button,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchMyDataservices } from "@/services/api";
 import { Dataservice } from "@/types/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -145,9 +145,9 @@ export default function DataservicesClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant={getStatusVariant(api)}>
+                  <StatusDot variant={getStatusVariant(api)}>
                     {getStatusLabel(api)}
-                  </Pill>
+                  </StatusDot>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(api.created_at)}

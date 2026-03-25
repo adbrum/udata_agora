@@ -14,9 +14,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
   usePopupContext,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import {
   fetchOrganization,
   addMember,
@@ -433,9 +433,9 @@ export default function MembersClient() {
                 </div>
               </TableCell>
               <TableCell headerLabel="Estatuto">
-                <Pill variant={rolePillVariant(member.role)}>
+                <StatusDot variant={rolePillVariant(member.role)}>
                   {roleLabels[member.role] || member.role.toUpperCase()}
-                </Pill>
+                </StatusDot>
               </TableCell>
               <TableCell headerLabel="Membro desde">
                 {formatDate(member.since)}
