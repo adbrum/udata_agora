@@ -25,6 +25,9 @@ ARG NEXT_PUBLIC_SENTRY_DSN=
 ARG NEXT_PUBLIC_MATOMO_HOST=
 ARG NEXT_PUBLIC_MATOMO_SITE_ID=1
 
+# BACKEND_URL is used by next.config.ts rewrites (server-side only)
+ARG BACKEND_URL=http://host.docker.internal:7000
+
 RUN npm run build
 
 # --- Production stage ---

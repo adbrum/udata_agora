@@ -30,9 +30,32 @@ export default function LoginClient() {
   const samlEnabled = process.env.NEXT_PUBLIC_SAML_ENABLED === "true";
 
   const submitSamlForm = async (endpoint: string) => {
+    setIsLoading(true);
+    setError(null);
     try {
       const res = await fetch(endpoint);
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("SAML login failed:", res.status, text);
+        setError(`Erro ao iniciar autenticação (${res.status}). Tente novamente.`);
+        return;
+      }
+
+      const contentType = res.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        const text = await res.text();
+        console.error("SAML login: unexpected response type:", contentType, text.substring(0, 500));
+        setError("Erro ao iniciar autenticação. O servidor não respondeu corretamente.");
+        return;
+      }
+
       const data = await res.json();
+      if (!data.action || !data.SAMLRequest) {
+        console.error("SAML login: missing fields in response:", data);
+        setError("Erro ao iniciar autenticação. Resposta incompleta do servidor.");
+        return;
+      }
+
       const form = document.createElement("form");
       form.method = "POST";
       form.action = data.action;
@@ -53,6 +76,9 @@ export default function LoginClient() {
       form.submit();
     } catch (e) {
       console.error("SAML login error:", e);
+      setError("Não foi possível contactar o servidor de autenticação. Verifique a sua ligação.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
