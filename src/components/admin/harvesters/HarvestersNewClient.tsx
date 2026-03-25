@@ -80,9 +80,6 @@ export default function HarvestersNewClient() {
   const producerOptions = useMemo(
     () => (
       <DropdownSection name="identity">
-        <DropdownOption value="user">
-          {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
-        </DropdownOption>
         {(user?.organizations || []).map((org) => (
           <DropdownOption key={org.id} value={org.id}>
             {org.name}
@@ -202,6 +199,8 @@ export default function HarvestersNewClient() {
   const handleStep1Next = async (e?: React.MouseEvent) => {
     e?.preventDefault();
     const errors: Record<string, boolean> = {};
+    if (!selectedProducerRef.current || selectedProducerRef.current === "user")
+      errors.harvesterProducer = true;
     if (!harvesterName.trim()) errors.harvesterName = true;
     if (!harvesterUrl.trim()) errors.harvesterUrl = true;
     if (Object.keys(errors).length > 0) {
@@ -367,6 +366,9 @@ export default function HarvestersNewClient() {
                     placeholder="Para pesquisar..."
                     id="harvester-producer"
                     onChangeRef={selectedProducerRef}
+                    onChangeCallback={() => clearError("harvesterProducer")}
+                    hasError={!!formErrors.harvesterProducer}
+                    errorFeedbackText="Selecione uma organização"
                   >
                     {producerOptions}
                   </IsolatedSelect>

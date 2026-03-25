@@ -3092,7 +3092,7 @@ export async function fetchOrgHarvesters(
 ): Promise<APIResponse<HarvestSource>> {
   try {
     const res = await fetch(
-      `${API_AUTH_URL}/harvest/sources/?organization=${org}&page=${page}&page_size=${pageSize}`,
+      `${API_AUTH_URL}/harvest/sources/?owner=${org}&page=${page}&page_size=${pageSize}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok)

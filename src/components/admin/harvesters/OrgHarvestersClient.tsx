@@ -82,7 +82,6 @@ export default function OrgHarvestersClient() {
     loadHarvesters();
   }, [orgId]);
 
-  const totalPages = Math.ceil(harvesters.length / itemsPerPage);
   const paginatedHarvesters = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return harvesters.slice(start, start + itemsPerPage);
@@ -154,13 +153,30 @@ export default function OrgHarvestersClient() {
         <p>A carregar...</p>
       ) : harvesters.length > 0 ? (
         <>
-          <Table>
+          <Table
+            paginationProps={{
+              itemsPerPageLabel: "Linhas por página",
+              itemsPerPage,
+              totalItems: harvesters.length,
+              availablePageSizes: [5, 10, 20],
+              currentPage,
+              buttonDropdownAriaLabel: "Selecionar linhas por página",
+              dropdownListAriaLabel: "Opções de linhas por página",
+              prevButtonAriaLabel: "Página anterior",
+              nextButtonAriaLabel: "Próxima página",
+              onPageChange: (page: number) => setCurrentPage(page),
+              onItemsPerPageChange: (size: number) => {
+                setItemsPerPage(size);
+                setCurrentPage(1);
+              },
+            }}
+          >
             <TableHeader>
               <TableRow>
-                <TableHeaderCell sortType="string" sortOrder="descending">
+                <TableHeaderCell sortType="date" sortOrder="none">
                   Nome
                 </TableHeaderCell>
-                <TableHeaderCell>Estatuto</TableHeaderCell>
+                <TableHeaderCell>Estado</TableHeaderCell>
                 <TableHeaderCell>Implementação</TableHeaderCell>
                 <TableHeaderCell sortType="date" sortOrder="none">
                   Criado em
@@ -168,6 +184,8 @@ export default function OrgHarvestersClient() {
                 <TableHeaderCell sortType="date" sortOrder="none">
                   Última execução
                 </TableHeaderCell>
+                <TableHeaderCell>Conjuntos de dados</TableHeaderCell>
+                <TableHeaderCell>API</TableHeaderCell>
                 <TableHeaderCell>Ações</TableHeaderCell>
               </TableRow>
             </TableHeader>
@@ -182,7 +200,7 @@ export default function OrgHarvestersClient() {
                       {harvester.name}
                     </a>
                   </TableCell>
-                  <TableCell headerLabel="Estatuto">
+                  <TableCell headerLabel="Estado">
                     <StatusDot variant={getStatusVariant(harvester)}>
                       {getStatusLabel(harvester)}
                     </StatusDot>
@@ -198,43 +216,21 @@ export default function OrgHarvestersClient() {
                       ? formatDate(harvester.last_job.started ?? harvester.last_job.ended ?? "")
                       : "Ainda não"}
                   </TableCell>
+                  <TableCell headerLabel="Conjuntos de dados">
+                    {harvester.last_job?.items?.length ?? 0}
+                  </TableCell>
+                  <TableCell headerLabel="API">
+                    {harvester.backend}
+                  </TableCell>
                   <TableCell headerLabel="Ações">
-                    <div className="flex gap-[8px]">
-                      <a href={`/pages/admin/org/harvesters/${harvester.id}`}>
-                        <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
-                      </a>
-                    </div>
+                    <a href={`/pages/admin/harvesters/${harvester.id}`}>
+                      <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
+                    </a>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-
-          <div className="flex items-center justify-between mt-[16px] py-[12px] border-t border-neutral-200">
-            <div className="flex items-center gap-[8px]">
-              <span className="text-sm text-neutral-600">Linhas por página</span>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                className="border border-neutral-300 rounded px-[8px] py-[4px] text-sm"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-[8px]">
-              <span className="text-sm text-neutral-600">
-                {(currentPage - 1) * itemsPerPage + 1}–{Math.min(currentPage * itemsPerPage, harvesters.length)} de {harvesters.length}
-              </span>
-              <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-[4px] text-primary-600 disabled:text-neutral-300" aria-label="Página anterior">
-                <Icon name="agora-line-arrow-left" className="w-[20px] h-[20px]" />
-              </button>
-              <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-[4px] text-primary-600 disabled:text-neutral-300" aria-label="Próxima página">
-                <Icon name="agora-line-arrow-right" className="w-[20px] h-[20px]" />
-              </button>
-            </div>
-          </div>
         </>
       ) : (
         <div className="datasets-page__body">
