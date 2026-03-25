@@ -1,20 +1,15 @@
-import { fetchLatestDatasets, fetchLatestReuses, fetchPosts, fetchSiteInfo } from "@/services/api";
+import { fetchHomepageData } from "@/services/api";
 import HomeClient from "@/components/home/HomeClient";
 
 export default async function Home() {
-  const [siteInfo, datasetsRes, reusesRes, postsRes] = await Promise.all([
-    fetchSiteInfo(),
-    fetchLatestDatasets(3),
-    fetchLatestReuses(3),
-    fetchPosts(1, 3),
-  ]);
+  const data = await fetchHomepageData();
 
   return (
     <HomeClient
-      siteInfo={siteInfo}
-      latestDatasets={datasetsRes.data || []}
-      latestReuses={reusesRes.data || []}
-      posts={postsRes.data || []}
+      siteMetrics={data.site_metrics}
+      latestDatasets={data.latest_datasets}
+      latestReuses={data.latest_reuses}
+      posts={data.latest_posts}
     />
   );
 }

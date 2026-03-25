@@ -466,6 +466,13 @@ export interface SiteInfo {
   metrics: SiteMetrics;
 }
 
+export interface HomepageData {
+  site_metrics: SiteMetrics;
+  latest_datasets: Dataset[];
+  latest_reuses: Reuse[];
+  latest_posts: Post[];
+}
+
 export interface SiteConfigUpdatePayload {
   title?: string;
   [key: string]: unknown;

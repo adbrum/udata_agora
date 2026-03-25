@@ -76,6 +76,7 @@ import {
   HarvestSource,
   HarvestSourceCreatePayload,
   HarvestSourceUpdatePayload,
+  HomepageData,
 } from "@/types/api";
 
 // Server-side (Node.js) needs absolute URLs; client-side uses relative URLs via Next.js proxy
@@ -1204,6 +1205,28 @@ export async function fetchPosts(
       total: 0,
       next_page: null,
       previous_page: null,
+    };
+  }
+}
+
+export async function fetchHomepageData(): Promise<HomepageData> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/site/home/`, {
+      next: { revalidate: 60 },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch homepage data: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching homepage data:", error);
+    return {
+      site_metrics: { datasets: 0, organizations: 0, reuses: 0, users: 0 },
+      latest_datasets: [],
+      latest_reuses: [],
+      latest_posts: [],
     };
   }
 }

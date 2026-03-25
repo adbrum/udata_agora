@@ -10,7 +10,7 @@ import {
 } from "@ama-pt/agora-design-system";
 import Link from "next/link";
 import SearchDropdown from "@/components/search/SearchDropdown";
-import { Dataset, Post, Reuse, SiteInfo } from "@/types/api";
+import { Dataset, Post, Reuse, SiteMetrics } from "@/types/api";
 import { formatDistanceToNow, format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { useAuth } from "@/context/AuthContext";
@@ -35,13 +35,13 @@ function formatStatNumber(value: number): { number: string; suffix: string } {
 }
 
 interface HomeClientProps {
-  siteInfo: SiteInfo;
+  siteMetrics: SiteMetrics;
   latestDatasets: Dataset[];
   latestReuses: Reuse[];
   posts: Post[];
 }
 
-export default function HomeClient({ siteInfo, latestDatasets, latestReuses, posts }: HomeClientProps) {
+export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, posts }: HomeClientProps) {
   const router = useRouter();
   const { user } = useAuth();
   const [showPublishDropdown, setShowPublishDropdown] = useState(false);
@@ -59,7 +59,7 @@ export default function HomeClient({ siteInfo, latestDatasets, latestReuses, pos
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPublishDropdown]);
 
-  const stats = siteInfo?.metrics;
+  const stats = siteMetrics;
 
   return (
     <main className="flex-grow">
