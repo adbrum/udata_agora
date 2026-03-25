@@ -28,10 +28,13 @@ const formatDate = (dateStr: string) => {
   return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
 };
 
+const PAGE_SIZE = 7;
+
 export default function SystemReusesClient() {
 
   const [reuses, setReuses] = useState<Reuse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     async function loadReuses() {
@@ -96,10 +99,11 @@ export default function SystemReusesClient() {
         <Table
           paginationProps={{
             itemsPerPageLabel: "Linhas por página",
-            itemsPerPage: 5,
+            itemsPerPage: PAGE_SIZE,
             totalItems: reuses.length,
-            availablePageSizes: [5, 10, 20],
-            currentPage: 1,
+            availablePageSizes: [7, 14, 21],
+            currentPage: currentPage,
+            onPageChange: (page: number) => setCurrentPage(page),
             buttonDropdownAriaLabel: "Selecionar linhas por página",
             dropdownListAriaLabel: "Opções de linhas por página",
             prevButtonAriaLabel: "Página anterior",
@@ -122,7 +126,7 @@ export default function SystemReusesClient() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {reuses.map((reuse, index) => (
+            {reuses.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((reuse, index) => (
               <TableRow key={index}>
                 <TableCell headerLabel="Título">
                   <a
@@ -137,14 +141,6 @@ export default function SystemReusesClient() {
                 </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(reuse.created_at)}
-                  <br />
-                  <span className="text-sm text-neutral-500">
-                    sobre{" "}
-                    <span className="text-success-600">●</span>{" "}
-                    {reuse.owner
-                      ? `${reuse.owner.first_name} ${reuse.owner.last_name}`
-                      : "—"}
-                  </span>
                 </TableCell>
                 <TableCell headerLabel="Conjuntos de dados">
                   {reuse.datasets?.length ?? 0}
@@ -154,7 +150,7 @@ export default function SystemReusesClient() {
                     <a href={`/pages/reuses/${reuse.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/reuses/edit?slug=${reuse.slug}`}>
+                    <a href={`/pages/admin/reuses/edit?id=${reuse.id}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
