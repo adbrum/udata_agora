@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_BASE?.replace("/api/1", "") || "http://127.0.0.1:7000";
+import { backendFetch } from "../backend-fetch";
 
 export async function GET(request: NextRequest) {
   const cookies = request.headers.get("cookie") || "";
   console.log("[/me] cookies:", cookies ? cookies.substring(0, 100) : "(none)");
 
-  const url = `${BACKEND_URL}/api/1/me/`;
-  console.log("[/me] fetching:", url);
+  const path = "/api/1/me/";
+  console.log("[/me] fetching:", path);
 
-  const backendResponse = await fetch(url, {
+  const backendResponse = await backendFetch(path, {
     headers: {
       Cookie: cookies,
       Accept: "application/json",

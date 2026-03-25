@@ -225,11 +225,13 @@ export default function OrganizationsNewClient() {
                   }}
                 >
                   <DropdownSection name="organizations">
-                    {orgSuggestions.map((org) => (
-                      <DropdownOption key={org.id} value={org.id}>
-                        {org.name}
-                      </DropdownOption>
-                    ))}
+                    <>
+                      {orgSuggestions.map((org) => (
+                        <DropdownOption key={org.id} value={org.id}>
+                          {org.name}
+                        </DropdownOption>
+                      ))}
+                    </>
                   </DropdownSection>
                 </InputSelect>
 

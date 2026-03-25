@@ -1,21 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_BASE?.replace("/api/1", "") || "http://127.0.0.1:7000";
+import { backendFetch } from "../backend-fetch";
 
 export async function POST(request: NextRequest) {
+  console.log("[/login] POST received");
   const body = await request.text();
   const contentType = request.headers.get("content-type") || "application/x-www-form-urlencoded";
+  console.log("[/login] forwarding to backend...");
 
-  const backendResponse = await fetch(`${BACKEND_URL}/login/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": contentType,
-      Cookie: request.headers.get("cookie") || "",
-    },
-    body,
-    redirect: "manual",
-  });
+  let backendResponse: Response;
+  try {
+    backendResponse = await backendFetch("/login/", {
+      method: "POST",
+      headers: {
+        "Content-Type": contentType,
+        Cookie: request.headers.get("cookie") || "",
+      },
+      body,
+      redirect: "manual",
+    });
+    console.log("[/login] backend responded:", backendResponse.status);
+  } catch (error) {
+    console.error("[/login] backend fetch failed:", error);
+    return NextResponse.json({ message: "Backend unavailable" }, { status: 502 });
+  }
 
   const responseHeaders = new Headers();
 
@@ -37,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     // Check if this is a legacy user that needs CMD migration
     try {
-      const checkResponse = await fetch(`${BACKEND_URL}/saml/migration/check`, {
+      const checkResponse = await backendFetch("/saml/migration/check", {
         headers: { Cookie: allCookies },
       });
 
@@ -46,7 +53,7 @@ export async function POST(request: NextRequest) {
 
         if (checkData.needs_migration) {
           // Log the user out — they must migrate via CMD first
-          await fetch(`${BACKEND_URL}/logout/`, {
+          await backendFetch("/logout/", {
             headers: { Cookie: allCookies },
             redirect: "manual",
           });

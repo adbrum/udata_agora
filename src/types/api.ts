@@ -836,6 +836,8 @@ export interface CommunityResource {
   owner: UserRef | null;
   created_at: string;
   last_modified: string;
+  archived: boolean;
+  deleted: boolean;
 }
 
 export interface CommunityResourceCreatePayload {
@@ -871,7 +873,7 @@ export interface HarvestItem {
 
 export interface HarvestJob {
   id: string;
-  status: "pending" | "initializing" | "initialized" | "processing" | "done" | "done-errors" | "failed";
+  status: "pending" | "initializing" | "initialized" | "started" | "processing" | "done" | "done-errors" | "failed";
   created: string | null;
   started: string | null;
   ended: string | null;

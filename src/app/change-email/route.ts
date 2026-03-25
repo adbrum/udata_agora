@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_BASE?.replace("/api/1", "") || "http://127.0.0.1:7000";
+import { backendFetch } from "../backend-fetch";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
   const contentType =
     request.headers.get("content-type") || "application/x-www-form-urlencoded";
 
-  const backendResponse = await fetch(`${BACKEND_URL}/change-email`, {
+  const backendResponse = await backendFetch("/change-email", {
     method: "POST",
     headers: {
       "Content-Type": contentType,
