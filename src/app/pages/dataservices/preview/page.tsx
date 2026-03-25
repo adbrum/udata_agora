@@ -18,7 +18,7 @@ function DataservicePreviewContent() {
           <Breadcrumb
             items={[
               { label: "Home", url: "/" },
-              { label: "API", url: "/pages/admin/me/dataservices" },
+              { label: "API", url: "/pages/admin/dataservices" },
               { label: title, url: "#" },
             ]}
           />

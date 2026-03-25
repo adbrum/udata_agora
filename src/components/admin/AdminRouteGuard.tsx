@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
-const ADMIN_DEFAULT_ROUTE = "/pages/admin/me/datasets";
+const ADMIN_DEFAULT_ROUTE = "/pages/admin/datasets";
 const LOGIN_ROUTE = "/pages/login";
 
 export function AdminRouteGuard({ children }: { children: React.ReactNode }) {

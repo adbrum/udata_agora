@@ -80,7 +80,7 @@ function TransferReusePopupContent({
           atividade profissional.
         </p>
         <Link
-          href="/pages/admin/me/organizations"
+          href="/pages/admin/organizations"
           className="inline-flex items-center text-primary-500 text-base hover:underline"
         >
           <span className="mr-[5px]">Crie ou participe de uma organização</span>
@@ -275,7 +275,7 @@ export default function ReusesEditClient() {
     setIsSubmitting(true);
     try {
       await deleteReuse(reuse.id);
-      router.push("/pages/admin/me/reuses");
+      router.push("/pages/admin/reuses");
     } catch (error) {
       console.error("Error deleting reuse:", error);
       setApiError("Erro ao eliminar a reutilização.");
@@ -298,7 +298,7 @@ export default function ReusesEditClient() {
         <StatusCard type="danger" description="Reutilização não encontrada." />
         <Button
           variant="primary"
-          onClick={() => router.push("/pages/admin/me/reuses")}
+          onClick={() => router.push("/pages/admin/reuses")}
         >
           Voltar
         </Button>
@@ -312,7 +312,7 @@ export default function ReusesEditClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Reutilizações", url: "/pages/admin/me/reuses" },
+            { label: "Reutilizações", url: "/pages/admin/reuses" },
             { label: reuse.title, url: "#" },
           ]}
         />

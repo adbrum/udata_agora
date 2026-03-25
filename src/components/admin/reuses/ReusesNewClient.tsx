@@ -29,7 +29,7 @@ export default function ReusesNewClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "Reutilizações", url: "/pages/admin/me/reuses" },
+            { label: "Reutilizações", url: "/pages/admin/reuses" },
           ]}
         />
       </div>
@@ -73,10 +73,10 @@ export default function ReusesNewClient() {
       <ReusesFormClient
         currentStep={currentStep}
         onNextStep={() =>
-          router.push(`/pages/admin/me/reuses/new?step=${currentStep + 1}`)
+          router.push(`/pages/admin/reuses/new?step=${currentStep + 1}`)
         }
         onPreviousStep={() =>
-          router.push(`/pages/admin/me/reuses/new?step=${currentStep - 1}`)
+          router.push(`/pages/admin/reuses/new?step=${currentStep - 1}`)
         }
       />
     </div>

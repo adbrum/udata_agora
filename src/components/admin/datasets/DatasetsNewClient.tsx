@@ -21,7 +21,7 @@ export default function DatasetsNewClient() {
   const [createdDatasetId, setCreatedDatasetId] = useState<string | null>(null);
 
   const buildStepUrl = (step: number) => {
-    return `/pages/admin/me/datasets/new?step=${step}`;
+    return `/pages/admin/datasets/new?step=${step}`;
   };
   const totalSegments = 12;
   const displayStep = currentStep;
@@ -34,7 +34,7 @@ export default function DatasetsNewClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "Conjuntos de dados", url: "/pages/admin/me/datasets" },
+            { label: "Conjuntos de dados", url: "/pages/admin/datasets" },
           ]}
         />
       </div>
@@ -97,7 +97,7 @@ export default function DatasetsNewClient() {
                 children: "Comece a publicar",
                 variant: "primary",
                 appearance: "outline",
-                onClick: () => router.push("/pages/admin/me/datasets/new?step=2"),
+                onClick: () => router.push("/pages/admin/datasets/new?step=2"),
               }}
             />
           </div>
@@ -180,7 +180,7 @@ export default function DatasetsNewClient() {
             setCreatedDatasetId(id);
             router.push(buildStepUrl(currentStep + 1));
           }}
-          onComplete={() => router.push("/pages/admin/me/datasets")}
+          onComplete={() => router.push("/pages/admin/datasets")}
         />
       )}
     </div>

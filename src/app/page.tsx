@@ -163,8 +163,8 @@ export default function Home() {
                       {showPublishDropdown && (
                         <div className="publish-custom-dropdown">
                           {[
-                            { icon: "agora-line-layers-menu", label: "Um conjunto de dados", href: "/pages/admin/me/datasets/new" },
-                            { icon: null, customIcon: "/Icons/bar_chart.svg", label: "Uma reutilização", href: "/pages/admin/me/reuses/new" },
+                            { icon: "agora-line-layers-menu", label: "Um conjunto de dados", href: "/pages/admin/datasets/new" },
+                            { icon: null, customIcon: "/Icons/bar_chart.svg", label: "Uma reutilização", href: "/pages/admin/reuses/new" },
                             { icon: "agora-line-award", label: "Um harvester", href: "/pages/admin/harvesters/new" },
                             { icon: "agora-line-buildings", label: "Uma organização", href: "/pages/admin/organizations/new" },
                           ].map((item, index) => (

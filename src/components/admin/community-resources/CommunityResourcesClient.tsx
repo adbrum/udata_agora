@@ -140,7 +140,7 @@ export default function CommunityResourcesClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "Recursos comunitários", url: "/pages/admin/me/community-resources" },
+            { label: "Recursos comunitários", url: "/pages/admin/community-resources" },
           ]}
         />
       </div>
@@ -271,7 +271,7 @@ export default function CommunityResourcesClient() {
                   {formatDate(resource.last_modified)}
                 </TableCell>
                 <TableCell headerLabel="Ação">
-                  <a href={`/pages/admin/me/community-resources/edit?id=${resource.id}`}>
+                  <a href={`/pages/admin/community-resources/edit?id=${resource.id}`}>
                     <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                   </a>
                 </TableCell>
@@ -299,7 +299,7 @@ export default function CommunityResourcesClient() {
                   <Button
                     variant="primary"
                     appearance="outline"
-                    onClick={() => router.push("/pages/admin/me/community-resources/new")}
+                    onClick={() => router.push("/pages/admin/community-resources/new")}
                   >
                     Publique no portal
                   </Button>

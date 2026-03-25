@@ -67,7 +67,7 @@ export default function DataservicesClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "API", url: "/pages/admin/me/dataservices" },
+            { label: "API", url: "/pages/admin/dataservices" },
           ]}
         />
       </div>

@@ -144,7 +144,7 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
             (user && dataset.owner?.id === user.id) ||
             (dataset.organization &&
               organizations.some((org) => org.id === dataset.organization?.id))) && (
-            <Link href={`/pages/admin/me/datasets/edit?id=${dataset.id}`}>
+            <Link href={`/pages/admin/datasets/edit?id=${dataset.id}`}>
               <Button
                 variant="primary"
                 hasIcon={true}

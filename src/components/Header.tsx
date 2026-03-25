@@ -448,14 +448,14 @@ export const Header = () => {
                 iconHover: "agora-solid-layers-menu",
                 title: "Novo Conjunto de Dados",
                 description: "Pesquisar e explorar dados",
-                href: "/pages/admin/me/datasets/new",
+                href: "/pages/admin/datasets/new",
               },
               {
                 iconDefault: "/Icons/bar_char_white.svg",
                 iconHover: "/Icons/bar_char_white.svg",
                 title: "Nova Reutilização",
                 description: "Casos de uso",
-                href: "/pages/admin/me/reuses/new",
+                href: "/pages/admin/reuses/new",
               },
               {
                 iconDefault: "agora-line-buildings",
@@ -659,7 +659,7 @@ export const Header = () => {
         <span className="agora-link-wrapper agora-link-wrapper-link-neutral full-width inline-flex items-center justify-center min-h-[44px] min-w-[44px] py-8 custom-header-link-wrapper panel-menu-link-wrapper">
           <Link
             className="link-with-icon"
-            href="/pages/admin/me/datasets"
+            href="/pages/admin/datasets"
           >
             <div className="icon-wrapper leading">
               <Icon name="agora-line-hardware-settings" dimensions="s" />

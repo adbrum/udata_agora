@@ -117,7 +117,7 @@ export default function CommunityResourceEditClient() {
   const handleDelete = async () => {
     try {
       await deleteCommunityResource(resourceId);
-      router.push("/pages/admin/me/community-resources");
+      router.push("/pages/admin/community-resources");
     } catch {
       setApiError("Erro ao eliminar recurso comunitário.");
     }
@@ -170,7 +170,7 @@ export default function CommunityResourceEditClient() {
             { label: displayName || "...", url: "#" },
             {
               label: "Recursos comunitários",
-              url: "/pages/admin/me/community-resources",
+              url: "/pages/admin/community-resources",
             },
             { label: "Editar", url: "#" },
           ]}
@@ -293,7 +293,7 @@ export default function CommunityResourceEditClient() {
               <Button
                 variant="primary"
                 appearance="outline"
-                onClick={() => router.push("/pages/admin/me/community-resources")}
+                onClick={() => router.push("/pages/admin/community-resources")}
               >
                 Cancelar
               </Button>

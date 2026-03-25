@@ -266,7 +266,7 @@ export default function SystemDatasetsClient() {
                     <a href={`/pages/datasets/${dataset.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/me/datasets/edit?slug=${dataset.slug}`}>
+                    <a href={`/pages/admin/datasets/edit?slug=${dataset.slug}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
@@ -285,19 +285,8 @@ export default function SystemDatasetsClient() {
                 <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
               }
               title="Sem publicações"
-              description="Ainda não publicou um conjunto de dados."
+              description="Nenhum conjunto de dados encontrado."
               hasAnchor={false}
-              extraDescription={
-                <div className="mt-24">
-                  <Button
-                    variant="primary"
-                    appearance="outline"
-                    onClick={() => window.location.href = '/pages/admin/me/datasets/new'}
-                  >
-                    Publique no portal
-                  </Button>
-                </div>
-              }
             />
           </div>
         </div>

@@ -159,7 +159,7 @@ export default function DatasetsClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "Conjuntos de dados", url: "/pages/admin/me/datasets" },
+            { label: "Conjuntos de dados", url: "/pages/admin/datasets" },
           ]}
         />
       </div>
@@ -316,7 +316,7 @@ export default function DatasetsClient() {
                     <a href={`/pages/datasets/${dataset.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/me/datasets/edit?id=${dataset.id}`}>
+                    <a href={`/pages/admin/datasets/edit?id=${dataset.id}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
@@ -342,7 +342,7 @@ export default function DatasetsClient() {
                   <Button
                     variant="primary"
                     appearance="outline"
-                    onClick={() => window.location.href = '/pages/admin/me/datasets/new'}
+                    onClick={() => window.location.href = '/pages/admin/datasets/new'}
                   >
                     Publique no portal
                   </Button>
