@@ -212,7 +212,7 @@ export default function SystemOrganizationsClient() {
                   <a href={`/pages/organizations/${org.slug}`}>
                     <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                   </a>
-                  <a href={`/pages/admin/system/organizations/edit?slug=${org.slug}`}>
+                  <a href={`/pages/admin/org/${org.id}/profile`}>
                     <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                   </a>
                 </div>
