@@ -20,6 +20,7 @@ import {
   TableRow,
   TableCell,
   Pill,
+  Switch,
   RadioButton,
   ButtonUploader,
   CardNoResults,
@@ -164,6 +165,7 @@ export default function DatasetsEditClient() {
   const selectedFrequencyRef = useRef("");
   const [temporalStart, setTemporalStart] = useState("");
   const [temporalEnd, setTemporalEnd] = useState("");
+  const [featured, setFeatured] = useState(false);
   const [accessType, setAccessType] = useState("open");
 
   // Refs for IsolatedSelect (avoid setState during render cycle)
@@ -204,6 +206,7 @@ export default function DatasetsEditClient() {
         setAcronym(ds.acronym || "");
         setDescription(ds.description);
         setShortDescription(ds.description_short || "");
+        setFeatured(ds.featured || false);
         selectedLicenseRef.current = ds.license || "";
         selectedFrequencyRef.current = ds.frequency || "";
         if (ds.temporal_coverage) {
@@ -378,6 +381,7 @@ export default function DatasetsEditClient() {
         description: description.trim(),
         description_short: shortDescription.trim() || undefined,
         acronym: acronym.trim() || undefined,
+        featured,
         license: selectedLicenseRef.current || undefined,
         frequency: selectedFrequencyRef.current || undefined,
         temporal_coverage: temporalStart
@@ -665,11 +669,23 @@ export default function DatasetsEditClient() {
                   className="admin-page__form"
                   onSubmit={(e) => e.preventDefault()}
                 >
-                  <p className="text-neutral-900 text-base leading-7 pt-32">
+                  <p className="text-neutral-900 text-base leading-7">
                     Os campos marcados com um asterisco ( * ) são obrigatórios.
                   </p>
 
-                  <h2 className="admin-page__section-title">Descrição</h2>
+                  <div>
+                    <h2 className="admin-page__section-title admin-page__section-title--no-top">APRESENTOU</h2>
+                    <Switch
+                      id="edit-featured"
+                      label="Destaque"
+                      checked={featured}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setFeatured(e.target.checked)
+                      }
+                    />
+                  </div>
+
+                  <h2 className="admin-page__section-title admin-page__section-title--no-top">Descrição</h2>
                   <div className="admin-page__fields-group">
                     <InputText
                       label="Título*"
@@ -709,16 +725,6 @@ export default function DatasetsEditClient() {
                       feedbackState="danger"
                       feedbackText="Campo obrigatório"
                       errorFeedbackText="Campo obrigatório"
-                    />
-                    <InputTextArea
-                      label="Descrição resumida"
-                      placeholder="Insira a descrição aqui"
-                      id="edit-short-description"
-                      rows={3}
-                      value={shortDescription}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        setShortDescription(e.target.value)
-                      }
                     />
                     <div className="flex items-center justify-between">
                       <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
@@ -848,7 +854,7 @@ export default function DatasetsEditClient() {
                       {frequencyOptions}
                     </IsolatedSelect>
 
-                    <div className="flex gap-[18px]">
+                    <div className="flex gap-[18px] [&>*]:flex-1">
                       <InputDate
                         label="Cobertura temporal (Data de início)"
                         id="edit-date-start"
