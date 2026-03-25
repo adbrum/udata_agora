@@ -1300,11 +1300,11 @@ body:has(.admin-wrapper)>div>header.sticky {
   --admin-auxiliar-gap: 70px;
 }
 
-.admin-page .agora-pill .children-wrapper {
+.admin-page [class*="agora-pill"] .children-wrapper {
   font-weight: 700 !important;
 }
 
-.admin-page td .agora-pill .children-wrapper {
+.admin-page td [class*="agora-pill"] .children-wrapper {
   font-weight: 400 !important;
 }
 
