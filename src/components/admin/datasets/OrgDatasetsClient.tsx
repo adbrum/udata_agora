@@ -15,9 +15,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
   Button,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchOrgDatasets } from "@/services/api";
 import { Dataset } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
@@ -173,9 +173,9 @@ export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
                     </a>
                   </TableCell>
                   <TableCell headerLabel="Estado">
-                    <Pill variant={dataset.private ? "warning" : "success"}>
+                    <StatusDot variant={dataset.private ? "warning" : "success"}>
                       {dataset.private ? "Rascunho" : "Público"}
-                    </Pill>
+                    </StatusDot>
                   </TableCell>
                   <TableCell headerLabel="Criado em">
                     {formatDate(dataset.created_at)}

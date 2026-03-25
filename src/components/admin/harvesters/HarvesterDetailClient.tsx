@@ -18,12 +18,14 @@ import {
   TableRow,
   TableCell,
   Pill,
+  CardNoResults,
   InputText,
   InputTextArea,
   DropdownSection,
   DropdownOption,
   Switch,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
@@ -244,7 +246,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
           <Icon name="agora-line-globe" className="w-[16px] h-[16px]" />
           <span>
             <strong>URL:</strong>{" "}
-            <code className="text-xs">{source.url}</code>
+            <code className="text-xs" title={source.url}>{source.url.length > 100 ? `${source.url.slice(0, 100)}...` : source.url}</code>
           </span>
         </div>
         <div className="flex items-center gap-8">
@@ -264,7 +266,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
 
       {/* Validation pending banner */}
       {validationState === "pending" && (
-        <div className="bg-neutral-100 rounded p-[24px] flex flex-col gap-8 mb-[24px]">
+        <div className="bg-neutral-100 rounded p-[24px] flex flex-col gap-8 mb-[24px]" style={{ maxWidth: "calc(100% - var(--admin-auxiliar-width) - var(--admin-auxiliar-gap))" }}>
           <p className="text-sm font-bold text-neutral-900">
             O seu harvester foi criado e está a aguardar validação da equipa de administração da plataforma.
           </p>
@@ -281,16 +283,22 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
       {/* Tabs */}
       <Tabs>
         <Tab>
-          <TabHeader>Empregos</TabHeader>
+          <TabHeader>Trabalhos</TabHeader>
           <TabBody>
             {jobs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-[64px]">
-                <Icon name="agora-line-settings" className="w-[80px] h-[80px] text-primary-300 mb-[24px]" />
-                <p className="text-neutral-700 text-lg mb-[16px]">
-                  Sem emprego no momento.
-                </p>
-                <Button variant="primary" appearance="outline">Aceda às configurações.</Button>
-              </div>
+              <CardNoResults
+                icon={<Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />}
+                title="Sem trabalhos no momento"
+                position="center"
+                hasAnchor={false}
+                extraDescription={
+                  <div className="mt-24">
+                    <Button variant="primary" appearance="outline">
+                      Aceda às configurações
+                    </Button>
+                  </div>
+                }
+              />
             ) : (
               <Table
                 paginationProps={{
@@ -322,7 +330,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                         <span className="text-xs">{job.id}</span>
                       </TableCell>
                       <TableCell headerLabel="Estado">
-                        <Pill
+                        <StatusDot
                           variant={
                             job.status === "done"
                               ? "success"
@@ -332,7 +340,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                           }
                         >
                           {job.status}
-                        </Pill>
+                        </StatusDot>
                       </TableCell>
                       <TableCell headerLabel="Início">
                         {job.started
@@ -526,7 +534,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                     type="danger"
                     description={
                       <>
-                        Atenção, esta ação não pode ser corrigida.
+                        <strong>Atenção, esta ação não pode ser corrigida.</strong>
                         <br />
                         <Button
                           appearance="link"
@@ -535,7 +543,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                           trailingIcon="agora-line-arrow-right-circle"
                           trailingIconHover="agora-solid-arrow-right-circle"
                         >
-                          Exclua o harvester
+                          Elimine o harvester
                         </Button>
                       </>
                     }

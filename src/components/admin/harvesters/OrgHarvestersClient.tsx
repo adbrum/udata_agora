@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useParams } from "next/navigation";
 import {
   Breadcrumb,
   CardNoResults,
@@ -15,8 +16,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchOrgHarvesters } from "@/services/api";
 import { HarvestSource } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
@@ -45,7 +46,11 @@ const getStatusVariant = (source: HarvestSource) => {
 };
 
 export default function OrgHarvestersClient() {
-  const { activeOrg, isLoading: isOrgLoading } = useActiveOrganization();
+  const params = useParams();
+  const orgIdFromUrl = params?.orgId as string | undefined;
+  const { activeOrg, isLoading: isOrgLoading, selectOrganization } = useActiveOrganization();
+
+  const orgId = orgIdFromUrl || activeOrg?.id;
 
   const [harvesters, setHarvesters] = useState<HarvestSource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,14 +58,20 @@ export default function OrgHarvestersClient() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
-    if (!activeOrg) {
+    if (orgIdFromUrl && activeOrg?.id !== orgIdFromUrl) {
+      selectOrganization(orgIdFromUrl);
+    }
+  }, [orgIdFromUrl, activeOrg?.id, selectOrganization]);
+
+  useEffect(() => {
+    if (!orgId) {
       setIsLoading(false);
       return;
     }
     async function loadHarvesters() {
       setIsLoading(true);
       try {
-        const response = await fetchOrgHarvesters(activeOrg!.id, 1, 9999);
+        const response = await fetchOrgHarvesters(orgId!, 1, 9999);
         setHarvesters(response.data || []);
       } catch (error) {
         console.error("Error loading org harvesters:", error);
@@ -69,7 +80,7 @@ export default function OrgHarvestersClient() {
       }
     }
     loadHarvesters();
-  }, [activeOrg]);
+  }, [orgId]);
 
   const totalPages = Math.ceil(harvesters.length / itemsPerPage);
   const paginatedHarvesters = useMemo(() => {
@@ -78,7 +89,7 @@ export default function OrgHarvestersClient() {
   }, [harvesters, currentPage, itemsPerPage]);
 
   if (isOrgLoading) return <p>A carregar...</p>;
-  if (!activeOrg) {
+  if (!orgId) {
     return (
       <div className="admin-page">
         <CardNoResults
@@ -172,9 +183,9 @@ export default function OrgHarvestersClient() {
                     </a>
                   </TableCell>
                   <TableCell headerLabel="Estatuto">
-                    <Pill variant={getStatusVariant(harvester)}>
+                    <StatusDot variant={getStatusVariant(harvester)}>
                       {getStatusLabel(harvester)}
-                    </Pill>
+                    </StatusDot>
                   </TableCell>
                   <TableCell headerLabel="Implementação">
                     {harvester.backend}

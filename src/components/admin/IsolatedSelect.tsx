@@ -30,6 +30,7 @@ interface IsolatedSelectProps {
   searchable?: boolean;
   searchInputPlaceholder?: string;
   searchNoResultsText?: string;
+  onChangeCallback?: (value: string) => void;
   children:
     | ReactElement<DropdownSectionProps>
     | ReactElement<DropdownSectionProps>[];
@@ -47,6 +48,7 @@ const IsolatedSelect = React.memo(function IsolatedSelect({
   searchable,
   searchInputPlaceholder,
   searchNoResultsText,
+  onChangeCallback,
   children,
 }: IsolatedSelectProps) {
   return (
@@ -60,7 +62,9 @@ const IsolatedSelect = React.memo(function IsolatedSelect({
       searchInputPlaceholder={searchInputPlaceholder}
       searchNoResultsText={searchNoResultsText}
       onChange={(options) => {
-        onChangeRef.current = options.map((o) => o.value as string).join(",");
+        const value = options.map((o) => o.value as string).join(",");
+        onChangeRef.current = value;
+        onChangeCallback?.(value);
       }}
       hasError={hasError}
       hasFeedback={hasError}

@@ -641,7 +641,7 @@ export default function ReusesEditClient() {
                         <>
                           <strong>Reutilização de ficheiros</strong>
                           <br />
-                          Um arquivo reutilizado não é mais indexado, mas permanece acessível aos usuários por meio de um link direto.
+                          Um arquivo reutilizado não é mais indexado, mas permanece acessível aos utilizadores por meio de um link direto.
                           <br />
                           <Button
                             appearance="link"

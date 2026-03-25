@@ -11,8 +11,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchOrgDiscussions } from "@/services/api";
 import { Discussion } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
@@ -144,9 +144,9 @@ export default function OrgDiscussionsClient({ orgId }: OrgDiscussionsClientProp
                   </TableCell>
                   <TableCell headerLabel="Estado">
                     {discussion.closed ? (
-                      <Pill variant="success">FECHADA</Pill>
+                      <StatusDot variant="success">FECHADA</StatusDot>
                     ) : (
-                      <Pill variant="informative">ABERTA</Pill>
+                      <StatusDot variant="informative">ABERTA</StatusDot>
                     )}
                   </TableCell>
                   <TableCell headerLabel="Data">

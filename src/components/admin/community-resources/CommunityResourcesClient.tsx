@@ -16,9 +16,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
   Button,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchMyCommunityResources } from "@/services/api";
 import { CommunityResource } from "@/types/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -150,7 +150,7 @@ export default function CommunityResourcesClient() {
                   )}
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant="success">Público</Pill>
+                  <StatusDot variant="success">Público</StatusDot>
                 </TableCell>
                 <TableCell headerLabel="Formato">
                   {resource.format || "—"}

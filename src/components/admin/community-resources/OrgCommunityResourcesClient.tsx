@@ -15,8 +15,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchOrgCommunityResources } from "@/services/api";
 import { CommunityResource } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
@@ -168,7 +168,7 @@ export default function OrgCommunityResourcesClient() {
                     <span className="text-primary-600">{resource.title}</span>
                   </TableCell>
                   <TableCell headerLabel="Estado">
-                    <Pill variant="success">Público</Pill>
+                    <StatusDot variant="success">Público</StatusDot>
                   </TableCell>
                   <TableCell headerLabel="Criado em">
                     {formatDate(resource.created_at)}

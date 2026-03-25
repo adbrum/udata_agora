@@ -11,8 +11,6 @@ import {
   InputTextArea,
   Icon,
   StatusCard,
-  Accordion,
-  AccordionGroup,
   Switch,
   Pill,
 } from "@ama-pt/agora-design-system";
@@ -44,12 +42,21 @@ export default function HarvestersNewClient() {
   const [filters, setFilters] = useState<
     { mode: string; type: string; value: string }[]
   >([]);
+  const [selectedType, setSelectedType] = useState("");
+  const [isGeoDcat, setIsGeoDcat] = useState(false);
+  const [showRemoteUrlPrefix, setShowRemoteUrlPrefix] = useState(false);
+  const [remoteUrlPrefix, setRemoteUrlPrefix] = useState("");
 
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [previewJob, setPreviewJob] = useState<HarvestPreviewJob | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const createdHarvesterId =
+    searchParams.get("id") ||
+    (typeof window !== "undefined"
+      ? sessionStorage.getItem("createdHarvesterId")
+      : null);
 
   const selectedProducerRef = useRef("");
   const selectedTypeRef = useRef("");
@@ -97,6 +104,7 @@ export default function HarvestersNewClient() {
         <DropdownOption value="dkan">DKAN</DropdownOption>
         <DropdownOption value="cswudata">CSW</DropdownOption>
         <DropdownOption value="odspt">OpenDataSoft PT</DropdownOption>
+        <DropdownOption value="maaf">MAAF</DropdownOption>
         <DropdownOption value="ogc">OGC</DropdownOption>
       </DropdownSection>
     ),
@@ -178,8 +186,9 @@ export default function HarvestersNewClient() {
     setIsCreating(true);
     setCreateError(null);
     try {
-      await createHarvester(buildPayload());
-      router.push("/pages/admin/harvesters/new?step=3");
+      const created = await createHarvester(buildPayload());
+      sessionStorage.setItem("createdHarvesterId", created.id);
+      router.push(`/pages/admin/harvesters/new?step=3&id=${created.id}`);
     } catch (err: unknown) {
       const error = err as { data?: { message?: string }; message?: string };
       setCreateError(
@@ -227,6 +236,30 @@ export default function HarvestersNewClient() {
   };
 
   const auxiliarItems = [
+    {
+      title: "Escolha a organização para a qual deseja implementar um coletor de lixo.",
+      content: (
+        <>
+          <p>
+            A criação de um coletor de dados deve ser feita em nome de uma
+            organização e requer direitos de administrador. Selecione uma
+            organização da qual você seja administrador.
+          </p>
+          <p className="mt-[8px]">
+            Se a sua organização ainda não existe, primeiro você precisa{" "}
+            <a
+              href="/pages/admin/organizations/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-600 underline"
+            >
+              criá-la aqui ↗
+            </a>
+            .
+          </p>
+        </>
+      ),
+    },
     {
       title: "Escolha um nome",
       content:
@@ -330,7 +363,7 @@ export default function HarvestersNewClient() {
 
                 <div className="admin-page__fields-group">
                   <IsolatedSelect
-                    label="Verifique a identidade que deseja usar para publicar *"
+                    label="Selecione a sua organização *"
                     placeholder="Para pesquisar..."
                     id="harvester-producer"
                     onChangeRef={selectedProducerRef}
@@ -397,89 +430,214 @@ export default function HarvestersNewClient() {
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
                     onChangeRef={selectedTypeRef}
+                    onChangeCallback={(value) => {
+                      setSelectedType(value);
+                      setShowRemoteUrlPrefix(false);
+                      setRemoteUrlPrefix("");
+                      setIsGeoDcat(false);
+                      setFilters([]);
+                    }}
                   >
                     {typeOptions}
                   </IsolatedSelect>
 
-                  <div>
-                    <p className="text-primary-900 text-base font-medium leading-7">
-                      Filtros
-                    </p>
+                  {/* CKAN / CKANPT: Filtros */}
+                  {(selectedType === "ckan" || selectedType === "ckanpt") && (
+                    <div>
+                      <p className="text-primary-900 text-base font-medium leading-7">
+                        Filtros
+                      </p>
 
-                    {filters.map((filter, index) => (
-                      <div key={index} className={`mt-[8px] pb-[16px] mb-[8px] ${index < filters.length - 1 ? "border-b border-neutral-200" : ""}`}>
-                        <div className="flex items-center gap-[8px]">
-                          <IsolatedSelect
-                            label=""
-                            hideLabel
-                            placeholder="Incluir"
-                            id={`filter-mode-${index}`}
-                            onChangeRef={getFilterModeRef(index)}
-                          >
-                            {filterModeOptions}
-                          </IsolatedSelect>
-                          <IsolatedSelect
-                            label=""
-                            hideLabel
-                            placeholder="Organização"
-                            id={`filter-type-${index}`}
-                            onChangeRef={getFilterTypeRef(index)}
-                          >
-                            {filterTypeSelectOptions}
-                          </IsolatedSelect>
-                        </div>
-                        <div className="flex items-center gap-[8px] mt-[8px]">
-                          <div className="flex-1">
-                            <InputText
+                      {filters.map((filter, index) => (
+                        <div key={index} className={`mt-[8px] pb-[16px] mb-[8px] ${index < filters.length - 1 ? "border-b border-neutral-200" : ""}`}>
+                          <div className="flex items-center gap-[8px]">
+                            <IsolatedSelect
                               label=""
                               hideLabel
-                              placeholder=""
-                              id={`filter-value-${index}`}
-                              value={filter.value}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                updateFilter(index, "value", e.target.value)
-                              }
-                            />
+                              placeholder="Incluir"
+                              id={`filter-mode-${index}`}
+                              onChangeRef={getFilterModeRef(index)}
+                            >
+                              {filterModeOptions}
+                            </IsolatedSelect>
+                            <IsolatedSelect
+                              label=""
+                              hideLabel
+                              placeholder="Organização"
+                              id={`filter-type-${index}`}
+                              onChangeRef={getFilterTypeRef(index)}
+                            >
+                              {filterTypeSelectOptions}
+                            </IsolatedSelect>
                           </div>
+                          <div className="flex items-center gap-[8px] mt-[8px]">
+                            <div className="flex-1">
+                              <InputText
+                                label=""
+                                hideLabel
+                                placeholder=""
+                                id={`filter-value-${index}`}
+                                value={filter.value}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                  updateFilter(index, "value", e.target.value)
+                                }
+                              />
+                            </div>
+                            <Button
+                              variant="danger"
+                              hasIcon
+                              iconOnly
+                              leadingIcon="agora-line-trash"
+                              leadingIconHover="agora-solid-trash"
+                              onClick={() => removeFilter(index)}
+                              aria-label="Excluir filtro"
+                            >
+                              {" "}
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+
+                      <Button
+                        appearance="link"
+                        variant="primary"
+                        hasIcon
+                        leadingIcon="agora-line-plus-circle"
+                        leadingIconHover="agora-solid-plus-circle"
+                        onClick={addFilter}
+                      >
+                        Adicionar um filtro
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* CSW-DCAT: GeoDCAT-AP switch + remote URL prefix toggle */}
+                  {selectedType === "csw-dcat" && (
+                    <>
+                      <Switch
+                        label="GeoDCAT-AP"
+                        checked={isGeoDcat}
+                        onChange={() => setIsGeoDcat((v) => !v)}
+                      />
+
+                      {!showRemoteUrlPrefix ? (
+                        <div className="flex justify-start">
                           <Button
-                            variant="danger"
+                            appearance="link"
+                            variant="primary"
                             hasIcon
-                            iconOnly
-                            leadingIcon="agora-line-trash"
-                            leadingIconHover="agora-solid-trash"
-                            onClick={() => removeFilter(index)}
-                            aria-label="Excluir filtro"
+                            leadingIcon="agora-line-plus-circle"
+                            leadingIconHover="agora-solid-plus-circle"
+                            onClick={() => setShowRemoteUrlPrefix(true)}
                           >
-                            {" "}
+                            Configurar prefixo de URL remoto
                           </Button>
                         </div>
-                      </div>
-                    ))}
+                      ) : (
+                        <div>
+                          <p className="text-primary-900 text-base font-medium leading-7">
+                            Prefixo de URL remoto
+                          </p>
+                          <div className="flex items-center gap-[8px] mt-[8px]">
+                            <div className="flex-1">
+                              <InputText
+                                label=""
+                                hideLabel
+                                placeholder=""
+                                id="remote-url-prefix"
+                                value={remoteUrlPrefix}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                  setRemoteUrlPrefix(e.target.value)
+                                }
+                              />
+                            </div>
+                            <Button
+                              appearance="outline"
+                              variant="neutral"
+                              hasIcon
+                              leadingIcon="agora-line-trash"
+                              leadingIconHover="agora-solid-trash"
+                              onClick={() => {
+                                setShowRemoteUrlPrefix(false);
+                                setRemoteUrlPrefix("");
+                              }}
+                            >
+                              EXCLUIR
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
 
-                    <Button
-                      appearance="link"
-                      variant="primary"
-                      hasIcon
-                      leadingIcon="agora-line-plus-circle"
-                      leadingIconHover="agora-solid-plus-circle"
-                      onClick={addFilter}
-                    >
-                      Adicionar um filtro
-                    </Button>
-                  </div>
+                  {/* CSW-ISO-19139: remote URL prefix toggle */}
+                  {selectedType === "csw-iso-19139" && (
+                    <>
+                      {!showRemoteUrlPrefix ? (
+                        <div className="flex justify-start">
+                          <Button
+                            appearance="link"
+                            variant="primary"
+                            hasIcon
+                            leadingIcon="agora-line-plus-circle"
+                            leadingIconHover="agora-solid-plus-circle"
+                            onClick={() => setShowRemoteUrlPrefix(true)}
+                          >
+                            Configurar prefixo de URL remoto
+                          </Button>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="text-primary-900 text-base font-medium leading-7">
+                            Prefixo de URL remoto
+                          </p>
+                          <div className="flex items-center gap-[8px] mt-[8px]">
+                            <div className="flex-1">
+                              <InputText
+                                label=""
+                                hideLabel
+                                placeholder=""
+                                id="remote-url-prefix"
+                                value={remoteUrlPrefix}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                  setRemoteUrlPrefix(e.target.value)
+                                }
+                              />
+                            </div>
+                            <Button
+                              appearance="outline"
+                              variant="neutral"
+                              hasIcon
+                              leadingIcon="agora-line-trash"
+                              leadingIconHover="agora-solid-trash"
+                              onClick={() => {
+                                setShowRemoteUrlPrefix(false);
+                                setRemoteUrlPrefix("");
+                              }}
+                            >
+                              EXCLUIR
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
 
-                  <div className="flex gap-[48px]">
-                    <Switch
-                      label="Ativado"
-                      checked={isEnabled}
-                      onChange={() => setIsEnabled((v) => !v)}
-                    />
-                    <Switch
-                      label="Arquivamento automático"
-                      checked={isAutoArchive}
-                      onChange={() => setIsAutoArchive((v) => !v)}
-                    />
-                  </div>
+                  {/* Switches: only when a type is selected */}
+                  {selectedType && (
+                    <div className="flex gap-[48px]">
+                      <Switch
+                        label="Ativado"
+                        checked={isEnabled}
+                        onChange={() => setIsEnabled((v) => !v)}
+                      />
+                      <Switch
+                        label="Arquivamento automático"
+                        checked={isAutoArchive}
+                        onChange={() => setIsAutoArchive((v) => !v)}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="admin-page__actions">
@@ -514,7 +672,7 @@ export default function HarvestersNewClient() {
               )}
 
               <div className="flex flex-col gap-[8px] mb-[24px]">
-                <p className="text-neutral-700 text-sm flex items-center gap-[6px]">
+                <p className="text-neutral-900 text-sm flex items-center gap-[6px]">
                   <Icon name="agora-line-calendar" className="w-[16px] h-[16px]" />
                   Iniciado em:{" "}
                   {previewJob?.started
@@ -529,7 +687,7 @@ export default function HarvestersNewClient() {
                       ? "..."
                       : "—"}
                 </p>
-                <p className="text-neutral-700 text-sm flex items-center gap-[6px]">
+                <p className="text-neutral-900 text-sm flex items-center gap-[6px]">
                   <Icon name="agora-line-calendar" className="w-[16px] h-[16px]" />
                   Terminado em:{" "}
                   {previewJob?.ended
@@ -544,20 +702,22 @@ export default function HarvestersNewClient() {
                       ? "..."
                       : "—"}
                 </p>
-                <p className="text-neutral-700 text-sm">
-                  Status :{" "}
-                  {previewJob ? (
-                    <Pill
-                      variant={
-                        previewJob.status === "done"
+                <p className="text-neutral-900 text-sm flex items-center gap-[6px]">
+                  Estado:{" "}
+                  <Pill
+                    variant={
+                      previewJob
+                        ? previewJob.status === "done"
                           ? "success"
                           : previewJob.status === "failed" ||
                               previewJob.status === "done-errors"
                             ? "danger"
                             : "neutral"
-                      }
-                    >
-                      {previewJob.status === "done"
+                        : "neutral"
+                    }
+                  >
+                    {previewJob
+                      ? previewJob.status === "done"
                         ? "Concluído"
                         : previewJob.status === "failed"
                           ? "Erro"
@@ -565,15 +725,13 @@ export default function HarvestersNewClient() {
                             ? "Concluído com erros"
                             : previewJob.status === "processing"
                               ? "Em processamento"
-                              : "Pendente"}
-                    </Pill>
-                  ) : isPreviewing ? (
-                    "..."
-                  ) : (
-                    "—"
-                  )}
+                              : "Pendente"
+                      : isPreviewing
+                        ? "Em processamento"
+                        : "Pendente"}
+                  </Pill>
                 </p>
-                <p className="text-neutral-700 text-sm flex items-center gap-[12px]">
+                <p className="text-neutral-900 text-sm flex items-center gap-[12px]">
                   Elementos:
                   <span className="flex items-center gap-[4px]">
                     <Icon name="agora-line-check" className="w-[16px] h-[16px]" />{" "}
@@ -596,18 +754,6 @@ export default function HarvestersNewClient() {
                   ({previewJob?.items.length ?? 0} no total)
                 </p>
               </div>
-
-              <StatusCard
-                type="success"
-                description={
-                  <>
-                    <strong>O seu harvester foi criado</strong>
-                    <br />
-                    O harvester está a aguardar aprovação. Será notificado após
-                    aprovação (ou recusa).
-                  </>
-                }
-              />
 
               <h2 className="admin-page__section-title">Erros</h2>
 
@@ -657,9 +803,13 @@ export default function HarvestersNewClient() {
                 </Button>
                 <Button
                   variant="primary"
-                  onClick={() => router.push("/pages/admin/system/harvesters")}
+                  hasIcon
+                  trailingIcon="agora-line-arrow-right-circle"
+                  trailingIconHover="agora-solid-arrow-right-circle"
+                  onClick={handleCreate}
+                  disabled={isCreating}
                 >
-                  Ver em administração
+                  {isCreating ? "A criar..." : "Seguinte"}
                 </Button>
               </div>
             </div>
@@ -683,34 +833,60 @@ export default function HarvestersNewClient() {
 
               {!createError && (
                 <StatusCard
-                  type="info"
+                  type="warning"
                   description={
                     <>
-                      <strong>Pronto para criar o harvester</strong>
+                      <strong>
+                        Seu harvester foi criado e está a aguardar validação pela
+                        equipa de administração.
+                      </strong>
                       <br />
-                      Clique em &quot;Guardar&quot; para finalizar a criação do
-                      harvester.
+                      Informe-nos através do formulário de contato abaixo se
+                      deseja que validemos seu harvester. Você será notificado da
+                      aprovação (ou rejeição).
                     </>
                   }
                 />
               )}
+
+              <div className="flex justify-start mt-[16px]">
+                <Button
+                  appearance="link"
+                  variant="primary"
+                  hasIcon
+                  trailingIcon="agora-line-external-link"
+                  trailingIconHover="agora-solid-external-link"
+                  onClick={() =>
+                    window.open("https://dados.gov.pt/pt/contact", "_blank")
+                  }
+                >
+                  Dê-nos o seu feedback sobre o processo de publicação.
+                </Button>
+              </div>
 
               <div className="admin-page__actions">
                 <Button
                   appearance="outline"
                   variant="neutral"
                   onClick={() =>
-                    router.push("/pages/admin/harvesters/new?step=2")
+                    router.push(
+                      createdHarvesterId
+                        ? `/pages/admin/harvesters/${createdHarvesterId}`
+                        : "/pages/admin/system/harvesters"
+                    )
                   }
                 >
-                  Anterior
+                  Vá até a administração
                 </Button>
                 <Button
-                  variant="primary"
-                  onClick={handleCreate}
-                  disabled={isCreating}
+                  appearance="outline"
+                  variant="neutral"
+                  hasIcon
+                  trailingIcon="agora-line-external-link"
+                  trailingIconHover="agora-solid-external-link"
+                  onClick={() => router.push("/pages/support")}
                 >
-                  {isCreating ? "A guardar..." : "Guardar"}
+                  Validação da solicitação
                 </Button>
               </div>
             </div>

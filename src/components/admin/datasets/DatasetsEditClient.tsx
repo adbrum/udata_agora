@@ -42,6 +42,7 @@ import {
   fetchActivity,
 } from "@/services/api";
 import { Dataset, License, Frequency, Activity, Resource } from "@/types/api";
+import StatusDot from "@/components/admin/StatusDot";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
 import { getFrequencyLabel } from "@/utils/frequencyLabels";
@@ -925,7 +926,7 @@ export default function DatasetsEditClient() {
                       type="info"
                       description={
                         <>
-                          Atenção, esta ação não pode ser corrigida.
+                          <strong>Atenção, esta ação não pode ser corrigida.</strong>
                           <br />
                           <Button
                             appearance="link"
@@ -956,7 +957,7 @@ export default function DatasetsEditClient() {
                       type="warning"
                       description={
                         <>
-                          Um conjunto de dados arquivado não está mais indexado, mas permanece acessível aos usuários por meio de um link direto.
+                          <strong>Um conjunto de dados arquivado não está mais indexado, mas permanece acessível aos utilizadores por meio de um link direto.</strong>
                           <br />
                           <Button
                             appearance="link"
@@ -978,7 +979,7 @@ export default function DatasetsEditClient() {
                       type="danger"
                       description={
                         <>
-                          Atenção, esta ação não pode ser corrigida.
+                          <strong>Atenção, esta ação não pode ser corrigida.</strong>
                           <br />
                           <Button
                             appearance="link"
@@ -1004,7 +1005,7 @@ export default function DatasetsEditClient() {
                             }}
                             disabled={isSubmitting}
                           >
-                            Exclua o conjunto de dados
+                            Elimine o conjunto de dados
                           </Button>
                         </>
                       }
@@ -1124,7 +1125,7 @@ export default function DatasetsEditClient() {
                           {resource.title}
                         </TableCell>
                         <TableCell headerLabel="Estado">
-                          <Pill variant="success">DISPONÍVEL</Pill>
+                          <StatusDot variant="success">DISPONÍVEL</StatusDot>
                         </TableCell>
                         <TableCell headerLabel="Tipo">
                           {resource.type === "main" ? "Ficheiros principais" : resource.type || "-"}

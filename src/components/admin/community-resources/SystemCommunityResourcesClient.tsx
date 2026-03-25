@@ -13,8 +13,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 
 interface MockCommunityResource {
@@ -215,7 +215,7 @@ export default function SystemCommunityResourcesClient() {
                 </div>
               </TableCell>
               <TableCell headerLabel="Status">
-                <Pill variant="warning">{resource.status}</Pill>
+                <StatusDot variant="warning">{resource.status}</StatusDot>
               </TableCell>
               <TableCell headerLabel="Formatar">
                 <a href="#" className="text-primary-600 underline">
