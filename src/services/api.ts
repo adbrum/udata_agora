@@ -2854,7 +2854,7 @@ export async function fetchCommunityResourcesByDataset(
   datasetId: string,
   page: number = 1,
   pageSize: number = 20
-): Promise<{ data: Resource[]; total: number }> {
+): Promise<{ data: CommunityResource[]; total: number }> {
   try {
     const res = await fetch(
       `${API_BASE_URL}/datasets/community_resources/?dataset=${datasetId}&page=${page}&page_size=${pageSize}`,

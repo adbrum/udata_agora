@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Tabs, Tab, TabHeader, TabBody, CardNoResults, CardLinks, Icon, StatusCard, Button, InputSearchBar, InputText, InputTextArea } from '@ama-pt/agora-design-system';
-import { Dataset, Discussion, DiscussionCreatePayload, Reuse, Resource } from '@/types/api';
+import { Dataset, Discussion, DiscussionCreatePayload, Reuse, CommunityResource } from '@/types/api';
 import { fetchDiscussions, fetchReuses, fetchCommunityResourcesByDataset, createDiscussion } from '@/services/api';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -23,7 +23,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
     const [newDiscTitle, setNewDiscTitle] = useState('');
     const [newDiscMessage, setNewDiscMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [communityResources, setCommunityResources] = useState<Resource[]>([]);
+    const [communityResources, setCommunityResources] = useState<CommunityResource[]>([]);
     const [communityCount, setCommunityCount] = useState(0);
 
     const handleCreateDiscussion = async () => {
@@ -414,7 +414,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                         </Button>
                                     </Link>
                                 </div>
-                                <DatasetResourcesTable resources={communityResources} />
+                                <DatasetResourcesTable resources={[]} communityResources={communityResources} />
                             </div>
                         )
                     )}
