@@ -149,7 +149,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
               </h2>
               <div className="prose max-w-none text-neutral-900">
                 {organization.description ? (
-                  <p className="text-m-light leading-relaxed whitespace-pre-line">
+                  <p className="text-m-light leading-relaxed whitespace-pre-line text-neutral-900">
                     {organization.description}
                   </p>
                 ) : (
