@@ -17,7 +17,7 @@ import {
   TabHeader,
   TabBody,
 } from "@ama-pt/agora-design-system";
-import { Resource } from "@/types/api";
+import { Resource, CommunityResource } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
 
@@ -31,6 +31,7 @@ function downloadUrl(resource: Resource): string {
 
 interface DatasetResourcesTableProps {
   resources: Resource[];
+  communityResources?: CommunityResource[];
 }
 
 const formatBytes = (bytes?: number) => {
@@ -750,7 +751,10 @@ const ResourceCard: React.FC<{
   resource: Resource;
   isExpanded: boolean;
   onToggle: () => void;
-}> = ({ resource, isExpanded, onToggle }) => {
+  authorName?: string;
+  authorUrl?: string;
+  isOrganization?: boolean;
+}> = ({ resource, isExpanded, onToggle, authorName, authorUrl, isOrganization }) => {
   return (
     <div className="bg-white flex flex-col mx-[136px] mt-16">
       <div className="flex flex-col gap-16 p-32">
@@ -783,6 +787,26 @@ const ResourceCard: React.FC<{
         <p className="text-base text-neutral-900">
           Atualizado em {formatDate(resource.created_at)}
         </p>
+        {authorName && (
+          <p className="text-sm text-neutral-700">
+            Por{" "}
+            {authorUrl ? (
+              <a href={authorUrl} className="text-primary-600 hover:underline inline-flex items-center gap-4">
+                {isOrganization && (
+                  <Icon name="agora-line-building" className="w-4 h-4" />
+                )}
+                {authorName}
+              </a>
+            ) : (
+              <span className="inline-flex items-center gap-4">
+                {isOrganization && (
+                  <Icon name="agora-line-building" className="w-4 h-4" />
+                )}
+                {authorName}
+              </span>
+            )}
+          </p>
+        )}
         <div className="flex items-center">
           <a
             href={downloadUrl(resource)}
@@ -828,7 +852,10 @@ const ResourceCard: React.FC<{
   );
 };
 
-export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({ resources }) => {
+export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({
+  resources,
+  communityResources,
+}) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const documentationFiles = resources.filter((r) => r.type === "documentation");
@@ -836,6 +863,25 @@ export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({ re
 
   const handleToggle = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
+  };
+
+  const getAuthorInfo = (cr: CommunityResource) => {
+    if (cr.organization) {
+      return {
+        name: cr.organization.name,
+        url: `/pages/organizations/${cr.organization.slug || cr.organization.id}`,
+        isOrg: true,
+      };
+    }
+    if (cr.owner) {
+      const fullName = `${cr.owner.first_name} ${cr.owner.last_name}`.trim();
+      return {
+        name: fullName || cr.owner.slug,
+        url: `/pages/users/${cr.owner.slug || cr.owner.id}`,
+        isOrg: false,
+      };
+    }
+    return null;
   };
 
   return (
@@ -874,6 +920,25 @@ export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({ re
               />
             ))}
           </div>
+        </div>
+      )}
+
+      {communityResources && communityResources.length > 0 && (
+        <div className="flex flex-col">
+          {communityResources.map((cr) => {
+            const author = getAuthorInfo(cr);
+            return (
+              <ResourceCard
+                key={cr.id}
+                resource={cr as unknown as Resource}
+                isExpanded={expandedId === cr.id}
+                onToggle={() => handleToggle(cr.id)}
+                authorName={author?.name}
+                authorUrl={author?.url}
+                isOrganization={author?.isOrg}
+              />
+            );
+          })}
         </div>
       )}
     </div>
