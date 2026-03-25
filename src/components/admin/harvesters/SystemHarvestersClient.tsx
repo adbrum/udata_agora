@@ -141,7 +141,7 @@ export default function SystemHarvestersClient() {
             <TableHeaderCell sortType="date" sortOrder="none">
               Nome
             </TableHeaderCell>
-            <TableHeaderCell>Estatuto</TableHeaderCell>
+            <TableHeaderCell>Estado</TableHeaderCell>
             <TableHeaderCell>Implementação</TableHeaderCell>
             <TableHeaderCell sortType="date" sortOrder="none">
               Criado em
@@ -149,7 +149,7 @@ export default function SystemHarvestersClient() {
             <TableHeaderCell sortType="date" sortOrder="none">
               Última execução
             </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Items
             </TableHeaderCell>
             <TableHeaderCell>Ações</TableHeaderCell>
@@ -170,22 +170,18 @@ export default function SystemHarvestersClient() {
                     {harvester.name}
                   </a>
                 </TableCell>
-                <TableCell headerLabel="Estatuto">
+                <TableCell headerLabel="Estado">
                   <StatusDot variant={status.variant}>{status.label}</StatusDot>
                 </TableCell>
                 <TableCell headerLabel="Implementação">
                   {harvester.backend}
                 </TableCell>
                 <TableCell headerLabel="Criado em">
-                  {format(new Date(harvester.created_at), "d 'de' MMMM 'de' yyyy", {
-                    locale: pt,
-                  })}
+                  {format(new Date(harvester.created_at), "dd/MM/yyyy")}
                 </TableCell>
                 <TableCell headerLabel="Última execução">
                   {harvester.last_job?.ended
-                    ? format(new Date(harvester.last_job.ended), "d 'de' MMMM 'de' yyyy", {
-                        locale: pt,
-                      })
+                    ? format(new Date(harvester.last_job.ended), "dd/MM/yyyy")
                     : "Ainda não"}
                 </TableCell>
                 <TableCell headerLabel="Items">

@@ -34,16 +34,16 @@ const mockArticles: MockArticle[] = [
     slug: "nome-artigo-1",
     status: "Rascunho",
     statusVariant: "warning",
-    createdAt: "16 de janeiro de 2026",
-    updatedAt: "16 de janeiro de 2026",
+    createdAt: "2026-01-16",
+    updatedAt: "2026-01-16",
   },
   {
     title: "Nome Artigo",
     slug: "nome-artigo-2",
     status: "Rascunho",
     statusVariant: "warning",
-    createdAt: "16 de janeiro de 2026",
-    updatedAt: "16 de janeiro de 2026",
+    createdAt: "2026-01-16",
+    updatedAt: "2026-01-16",
   },
   {
     title:
@@ -51,8 +51,8 @@ const mockArticles: MockArticle[] = [
     slug: "municipios-reforcam-competencias",
     status: "Publicado em 5 de novembro de 2025",
     statusVariant: "success",
-    createdAt: "5 de novembro de 2025",
-    updatedAt: "28 de novembro de 2025",
+    createdAt: "2025-11-05",
+    updatedAt: "2025-11-28",
   },
   {
     title:
@@ -60,8 +60,8 @@ const mockArticles: MockArticle[] = [
     slug: "ama-ip-da-lugar-arte-ip-publicado",
     status: "Publicado em 31 de outubro de 2025",
     statusVariant: "success",
-    createdAt: "31 de outubro de 2025",
-    updatedAt: "31 de outubro de 2025",
+    createdAt: "2025-10-31",
+    updatedAt: "2025-10-31",
   },
   {
     title:
@@ -69,8 +69,8 @@ const mockArticles: MockArticle[] = [
     slug: "ama-ip-da-lugar-arte-ip-rascunho",
     status: "Rascunho",
     statusVariant: "warning",
-    createdAt: "31 de outubro de 2025",
-    updatedAt: "31 de outubro de 2025",
+    createdAt: "2025-10-31",
+    updatedAt: "2025-10-31",
   },
   {
     title:
@@ -78,8 +78,8 @@ const mockArticles: MockArticle[] = [
     slug: "ama-promove-workshop",
     status: "Publicado em 14 de julho de 2025",
     statusVariant: "success",
-    createdAt: "14 de julho de 2025",
-    updatedAt: "17 de outubro de 2025",
+    createdAt: "2025-07-14",
+    updatedAt: "2025-10-17",
   },
   {
     title:
@@ -87,10 +87,19 @@ const mockArticles: MockArticle[] = [
     slug: "e-redes-reforca-compromisso",
     status: "Publicado em 8 de maio de 2025",
     statusVariant: "success",
-    createdAt: "8 de maio de 2025",
-    updatedAt: "8 de maio de 2025",
+    createdAt: "2025-05-08",
+    updatedAt: "2025-05-08",
   },
 ];
+
+const formatDate = (dateStr: string) => {
+  try {
+    const d = new Date(dateStr);
+    return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+  } catch {
+    return dateStr;
+  }
+};
 
 export default function SystemPostsClient() {
   const router = useRouter();
@@ -166,10 +175,10 @@ export default function SystemPostsClient() {
       >
         <TableHeader>
           <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="descending">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Título
             </TableHeaderCell>
-            <TableHeaderCell>Status</TableHeaderCell>
+            <TableHeaderCell>Estado</TableHeaderCell>
             <TableHeaderCell sortType="date" sortOrder="none">
               Criado em
             </TableHeaderCell>
@@ -195,9 +204,9 @@ export default function SystemPostsClient() {
                   {article.status.toUpperCase()}
                 </StatusDot>
               </TableCell>
-              <TableCell headerLabel="Criado em">{article.createdAt}</TableCell>
+              <TableCell headerLabel="Criado em">{formatDate(article.createdAt)}</TableCell>
               <TableCell headerLabel="Atualizado em">
-                {article.updatedAt}
+                {formatDate(article.updatedAt)}
               </TableCell>
               <TableCell headerLabel="Ação">
                 <div className="flex gap-[8px]">

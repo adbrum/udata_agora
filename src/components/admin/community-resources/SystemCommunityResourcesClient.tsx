@@ -28,6 +28,15 @@ interface MockCommunityResource {
   modifiedAt: string;
 }
 
+const formatDate = (dateStr: string) => {
+  try {
+    const d = new Date(dateStr);
+    return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+  } catch {
+    return dateStr;
+  }
+};
+
 const mockResources: MockCommunityResource[] = [
   {
     title: "valeurs-foncieres-2019-2023.parquet",
@@ -36,8 +45,8 @@ const mockResources: MockCommunityResource[] = [
     datasetSlug: "demandes-valeurs-foncieres",
     status: "Ainda não verificado",
     format: "parquet",
-    createdAt: "25 de julho de 2024",
-    modifiedAt: "25 de julho de 2024",
+    createdAt: "2024-07-25",
+    modifiedAt: "2024-07-25",
   },
   {
     title: "Sirene : Fichier StockEtablissement du 01 Juillet 2024 au format parquet",
@@ -46,8 +55,8 @@ const mockResources: MockCommunityResource[] = [
     datasetSlug: "base-sirene",
     status: "Ainda não verificado",
     format: "parquet",
-    createdAt: "17 de julho de 2024",
-    modifiedAt: "17 de julho de 2024",
+    createdAt: "2024-07-17",
+    modifiedAt: "2024-07-17",
   },
   {
     title: "Sirene : Fichier StockUniteLegale du 01 Juillet 2024 au format parquet",
@@ -56,8 +65,8 @@ const mockResources: MockCommunityResource[] = [
     datasetSlug: "base-sirene",
     status: "Ainda não verificado",
     format: "parquet",
-    createdAt: "17 de julho de 2024",
-    modifiedAt: "17 de julho de 2024",
+    createdAt: "2024-07-17",
+    modifiedAt: "2024-07-17",
   },
   {
     title: "Sirene : Fichier StockUniteLegale du 01 Decembre 2023 au format parquet",
@@ -66,8 +75,8 @@ const mockResources: MockCommunityResource[] = [
     datasetSlug: "base-sirene",
     status: "Ainda não verificado",
     format: "parquet",
-    createdAt: "14 de dezembro de 2023",
-    modifiedAt: "15 de dezembro de 2023",
+    createdAt: "2023-12-14",
+    modifiedAt: "2023-12-15",
   },
   {
     title: "Sirene : Fichier StockEtablissement du 01 Decembre 2023 au format parquet",
@@ -76,8 +85,8 @@ const mockResources: MockCommunityResource[] = [
     datasetSlug: "base-sirene",
     status: "Ainda não verificado",
     format: "parquet",
-    createdAt: "14 de dezembro de 2023",
-    modifiedAt: "15 de dezembro de 2023",
+    createdAt: "2023-12-14",
+    modifiedAt: "2023-12-15",
   },
   {
     title: "listagem-de-projetos-prr-por-distribuicao-geografica-20230615.xlsx",
@@ -86,8 +95,8 @@ const mockResources: MockCommunityResource[] = [
     datasetSlug: "de",
     status: "Ainda não verificado",
     format: "xlsx",
-    createdAt: "16 de junho de 2023",
-    modifiedAt: "16 de junho de 2023",
+    createdAt: "2023-06-16",
+    modifiedAt: "2023-06-16",
   },
   {
     title: "prr-listagem-de-contratualizacao-20230615.xlsx",
@@ -96,8 +105,8 @@ const mockResources: MockCommunityResource[] = [
     datasetSlug: "de",
     status: "Ainda não verificado",
     format: "xlsx",
-    createdAt: "16 de junho de 2023",
-    modifiedAt: "16 de junho de 2023",
+    createdAt: "2023-06-16",
+    modifiedAt: "2023-06-16",
   },
   {
     title: "listagem-de-entidades-prr-20230615.xlsx",
@@ -106,8 +115,8 @@ const mockResources: MockCommunityResource[] = [
     datasetSlug: "de",
     status: "Ainda não verificado",
     format: "xlsx",
-    createdAt: "16 de junho de 2023",
-    modifiedAt: "16 de junho de 2023",
+    createdAt: "2023-06-16",
+    modifiedAt: "2023-06-16",
   },
   {
     title: "listagem-de-contratos-do-prr-20230615.xlsx",
@@ -116,8 +125,8 @@ const mockResources: MockCommunityResource[] = [
     datasetSlug: "de",
     status: "Ainda não verificado",
     format: "xlsx",
-    createdAt: "16 de junho de 2023",
-    modifiedAt: "16 de junho de 2023",
+    createdAt: "2023-06-16",
+    modifiedAt: "2023-06-16",
   },
 ];
 
@@ -186,10 +195,10 @@ export default function SystemCommunityResourcesClient() {
       >
         <TableHeader>
           <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="descending">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Título do recurso
             </TableHeaderCell>
-            <TableHeaderCell>Status</TableHeaderCell>
+            <TableHeaderCell>Estado</TableHeaderCell>
             <TableHeaderCell>Formatar</TableHeaderCell>
             <TableHeaderCell sortType="date" sortOrder="none">
               Criado em
@@ -208,8 +217,7 @@ export default function SystemCommunityResourcesClient() {
                   <a href="#" className="text-primary-600 underline">
                     {resource.title}
                   </a>
-                  <div className="text-sm text-neutral-500 flex items-center gap-[4px]">
-                    <Icon name="agora-line-link" className="w-[14px] h-[14px]" />
+                  <div className="text-sm text-neutral-900">
                     {resource.dataset}
                   </div>
                 </div>
@@ -222,9 +230,9 @@ export default function SystemCommunityResourcesClient() {
                   {resource.format}
                 </a>
               </TableCell>
-              <TableCell headerLabel="Criado em">{resource.createdAt}</TableCell>
+              <TableCell headerLabel="Criado em">{formatDate(resource.createdAt)}</TableCell>
               <TableCell headerLabel="Modificado em">
-                {resource.modifiedAt}
+                {formatDate(resource.modifiedAt)}
               </TableCell>
               <TableCell headerLabel="Ação">
                 <a href="#">

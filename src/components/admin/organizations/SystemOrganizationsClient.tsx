@@ -30,7 +30,7 @@ const mockOrganizations: MockOrganization[] = [
   {
     name: "SOBRANA",
     slug: "sobrana",
-    createdAt: "15 de janeiro de 2026",
+    createdAt: "2026-01-15",
     datasets: 0,
     api: 0,
     reuses: 1,
@@ -39,7 +39,7 @@ const mockOrganizations: MockOrganization[] = [
   {
     name: "dados.gov",
     slug: "data-gouv-fr",
-    createdAt: "15 de janeiro de 2026",
+    createdAt: "2026-01-15",
     datasets: 1,
     api: 1,
     reuses: 0,
@@ -48,7 +48,7 @@ const mockOrganizations: MockOrganization[] = [
   {
     name: "L'Apporteur d'Immo",
     slug: "lapporteur-dimmo",
-    createdAt: "15 de janeiro de 2026",
+    createdAt: "2026-01-15",
     datasets: 0,
     api: 0,
     reuses: 1,
@@ -57,7 +57,7 @@ const mockOrganizations: MockOrganization[] = [
   {
     name: "iudo",
     slug: "iudo",
-    createdAt: "15 de janeiro de 2026",
+    createdAt: "2026-01-15",
     datasets: 0,
     api: 0,
     reuses: 1,
@@ -66,7 +66,7 @@ const mockOrganizations: MockOrganization[] = [
   {
     name: "2803 MEDIA",
     slug: "2803-media",
-    createdAt: "15 de janeiro de 2026",
+    createdAt: "2026-01-15",
     datasets: 0,
     api: 0,
     reuses: 1,
@@ -75,13 +75,22 @@ const mockOrganizations: MockOrganization[] = [
   {
     name: "CasaGoCo",
     slug: "casagoco",
-    createdAt: "15 de janeiro de 2026",
+    createdAt: "2026-01-15",
     datasets: 0,
     api: 0,
     reuses: 1,
     members: 0,
   },
 ];
+
+const formatDate = (dateStr: string) => {
+  try {
+    const d = new Date(dateStr);
+    return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+  } catch {
+    return dateStr;
+  }
+};
 
 export default function SystemOrganizationsClient() {
   const organizations = mockOrganizations;
@@ -145,22 +154,22 @@ export default function SystemOrganizationsClient() {
       >
         <TableHeader>
           <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="none">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Nome
             </TableHeaderCell>
             <TableHeaderCell sortType="date" sortOrder="none">
               Criado em
             </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Conjuntos de dados
             </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
+            <TableHeaderCell sortType="date" sortOrder="none">
               API
             </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Reutilizações
             </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Membros
             </TableHeaderCell>
             <TableHeaderCell>Ações</TableHeaderCell>
@@ -177,7 +186,7 @@ export default function SystemOrganizationsClient() {
                   {org.name}
                 </a>
               </TableCell>
-              <TableCell headerLabel="Criado em">{org.createdAt}</TableCell>
+              <TableCell headerLabel="Criado em">{formatDate(org.createdAt)}</TableCell>
               <TableCell headerLabel="Conjuntos de dados">
                 <a href="#" className="text-primary-600 underline">
                   {org.datasets}

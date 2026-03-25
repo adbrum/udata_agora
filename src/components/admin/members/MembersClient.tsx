@@ -395,7 +395,7 @@ export default function MembersClient() {
       >
         <TableHeader>
           <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="none">
+            <TableHeaderCell sortType="date" sortOrder="none">
               Membros
             </TableHeaderCell>
             <TableHeaderCell>Estatuto</TableHeaderCell>

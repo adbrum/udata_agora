@@ -146,10 +146,10 @@ export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
           >
             <TableHeader>
               <TableRow>
-                <TableHeaderCell sortType="string" sortOrder="none">
+                <TableHeaderCell sortType="date" sortOrder="none">
                   Título do conjunto de dados
                 </TableHeaderCell>
-                <TableHeaderCell sortType="string" sortOrder="none">
+                <TableHeaderCell sortType="date" sortOrder="none">
                   Estado
                 </TableHeaderCell>
                 <TableHeaderCell sortType="date" sortOrder="none">

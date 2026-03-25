@@ -205,7 +205,7 @@ export default function SystemDatasetsClient() {
           <TableHeader>
             <TableRow>
               <TableHeaderCell
-                sortType="string"
+                sortType="date"
                 sortOrder={getSortOrder("title")}
                 onSortChange={handleSort("title")}
               >
@@ -227,7 +227,7 @@ export default function SystemDatasetsClient() {
                 Última modificação
               </TableHeaderCell>
               <TableHeaderCell
-                sortType="numeric"
+                sortType="date"
                 sortOrder={getSortOrder("resources")}
                 onSortChange={handleSort("resources")}
               >

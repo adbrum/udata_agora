@@ -200,7 +200,7 @@ export default function PostsNewClient() {
 
                 <div>
                   <span className="text-primary-900 text-base font-medium leading-7">
-                    Cobertor *
+                    Cobertura *
                   </span>
                   <div className="mt-2">
                     <ButtonUploader
