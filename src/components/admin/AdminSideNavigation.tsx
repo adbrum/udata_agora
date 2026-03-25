@@ -120,6 +120,11 @@ const navGroups: NavGroup[] = [
   },
 ];
 
+function toSentenceCase(str: string): string {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 export function AdminSideNavigation() {
   const pathname = usePathname();
   const { isAdmin, hasOrganization } = useAuth();
@@ -170,7 +175,6 @@ export function AdminSideNavigation() {
     const orgGroups: NavGroup[] = organizations.map((org) => ({
       key: "organization" as const,
       label: org.name,
-      icon: "agora-line-buildings",
       children: orgChildren(`/pages/admin/org/${org.id}`),
     }));
 
@@ -218,7 +222,7 @@ export function AdminSideNavigation() {
                         className="admin-sidebar-nav__group-icon"
                       />
                     )}
-                    {group.label}
+                    <span className="admin-sidebar-nav__group-label-text">{toSentenceCase(group.label)}</span>
                   </span>
                 ),
                 hasIcon: true,
