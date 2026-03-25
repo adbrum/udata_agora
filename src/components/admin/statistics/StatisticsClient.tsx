@@ -237,7 +237,7 @@ export default function StatisticsClient() {
                     <Button
                       variant="primary"
                       appearance="outline"
-                      onClick={() => window.location.href = '/pages/admin/me/reuses/new'}
+                      onClick={() => window.location.href = '/pages/admin/reuses/new'}
                     >
                       Publique no portal
                     </Button>

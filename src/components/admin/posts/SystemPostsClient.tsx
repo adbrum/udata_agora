@@ -118,9 +118,7 @@ export default function SystemPostsClient() {
 
       <div className="admin-page__header">
         <h1 className="admin-page__title">Artigos</h1>
-        <div className="flex items-center gap-[16px]">
-          <PublishDropdown />
-        </div>
+        <PublishDropdown />
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">

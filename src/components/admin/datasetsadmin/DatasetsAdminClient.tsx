@@ -233,7 +233,7 @@ export default function DatasetsAdminClient({
         onDatasetCreated(dataset.id);
       } else {
         router.push(
-          `/pages/admin/me/datasets/new?step=${currentStep + 1}&datasetId=${dataset.id}`,
+          `/pages/admin/datasets/new?step=${currentStep + 1}&datasetId=${dataset.id}`,
         );
       }
     } catch (error: unknown) {
@@ -305,7 +305,7 @@ export default function DatasetsAdminClient({
     try {
       await updateDataset(createdDataset.id, { private: false });
       if (onComplete) onComplete();
-      else router.push("/pages/admin/me/datasets");
+      else router.push("/pages/admin/datasets");
     } catch (error) {
       console.error("Error publishing dataset:", error);
       setApiError("Erro ao publicar o conjunto de dados. Tente novamente.");
@@ -316,7 +316,7 @@ export default function DatasetsAdminClient({
 
   const handleSaveDraft = () => {
     if (onComplete) onComplete();
-    else router.push("/pages/admin/me/datasets");
+    else router.push("/pages/admin/datasets");
   };
 
   const auxiliarItemsStep2 = [

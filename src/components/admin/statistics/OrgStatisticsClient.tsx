@@ -187,7 +187,7 @@ export default function OrgStatisticsClient() {
                     <Button
                       variant="primary"
                       appearance="outline"
-                      onClick={() => window.location.href = "/pages/admin/me/datasets/new"}
+                      onClick={() => window.location.href = "/pages/admin/datasets/new"}
                     >
                       Publique no portal
                     </Button>
@@ -233,7 +233,7 @@ export default function OrgStatisticsClient() {
                     <Button
                       variant="primary"
                       appearance="outline"
-                      onClick={() => window.location.href = "/pages/admin/me/dataservices/new"}
+                      onClick={() => window.location.href = "/pages/admin/dataservices/new"}
                     >
                       Publique no portal
                     </Button>
@@ -270,7 +270,7 @@ export default function OrgStatisticsClient() {
                     <Button
                       variant="primary"
                       appearance="outline"
-                      onClick={() => window.location.href = "/pages/admin/me/reuses/new"}
+                      onClick={() => window.location.href = "/pages/admin/reuses/new"}
                     >
                       Publique no portal
                     </Button>

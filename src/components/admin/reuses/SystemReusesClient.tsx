@@ -154,7 +154,7 @@ export default function SystemReusesClient() {
                     <a href={`/pages/reuses/${reuse.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/me/reuses/edit?slug=${reuse.slug}`}>
+                    <a href={`/pages/admin/reuses/edit?slug=${reuse.slug}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
@@ -173,19 +173,8 @@ export default function SystemReusesClient() {
                 <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
               }
               title="Sem publicações"
-              description="Ainda não publicou uma reutilização."
+              description="Nenhuma reutilização encontrada."
               hasAnchor={false}
-              extraDescription={
-                <div className="mt-24">
-                  <Button
-                    variant="primary"
-                    appearance="outline"
-                    onClick={() => window.location.href = '/pages/admin/me/reuses/new'}
-                  >
-                    Publique no portal
-                  </Button>
-                </div>
-              }
             />
           </div>
         </div>

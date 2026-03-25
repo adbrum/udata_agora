@@ -185,19 +185,8 @@ export default function SystemDataservicesClient() {
                 <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
               }
               title="Sem publicações"
-              description="Ainda não publicou uma API."
+              description="Nenhuma API encontrada."
               hasAnchor={false}
-              extraDescription={
-                <div className="mt-24">
-                  <Button
-                    variant="primary"
-                    appearance="outline"
-                    onClick={() => window.location.href = '/pages/admin/dataservices/new'}
-                  >
-                    Publique no portal
-                  </Button>
-                </div>
-              }
             />
           </div>
         </div>

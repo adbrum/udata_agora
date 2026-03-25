@@ -16,9 +16,9 @@ import {
   TableCell,
 } from "@ama-pt/agora-design-system";
 import StatusDot from "@/components/admin/StatusDot";
-import PublishDropdown from "@/components/admin/PublishDropdown";
 import { fetchHarvesters } from "@/services/api";
 import type { HarvestSource } from "@/types/api";
+import PublishDropdown from "@/components/admin/PublishDropdown";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 
