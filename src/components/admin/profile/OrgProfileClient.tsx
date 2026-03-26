@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import {
   Avatar,
   Breadcrumb,
@@ -16,7 +17,11 @@ import { Organization } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
 export default function OrgProfileClient() {
+  const params = useParams();
+  const routeOrgId = params?.orgId as string | undefined;
   const { activeOrg, isLoading: isOrgLoading } = useActiveOrganization();
+
+  const orgId = routeOrgId || activeOrg?.id;
 
   const [org, setOrg] = useState<Organization | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,14 +32,14 @@ export default function OrgProfileClient() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (!activeOrg) {
+    if (!orgId) {
       setIsLoading(false);
       return;
     }
     async function loadOrg() {
       setIsLoading(true);
       try {
-        const data = await fetchOrganization(activeOrg!.id);
+        const data = await fetchOrganization(orgId!);
         if (data) {
           setOrg(data);
           setName(data.name);
@@ -49,7 +54,7 @@ export default function OrgProfileClient() {
       }
     }
     loadOrg();
-  }, [activeOrg]);
+  }, [orgId]);
 
   const handleSave = async () => {
     if (!org) return;
@@ -81,7 +86,7 @@ export default function OrgProfileClient() {
   };
 
   if (isOrgLoading || isLoading) return <p>A carregar...</p>;
-  if (!activeOrg) {
+  if (!orgId) {
     return (
       <div className="admin-page">
         <CardNoResults

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 import {
   Breadcrumb,
   Button,
@@ -142,9 +142,10 @@ function DeleteReusePopupContent({
 
 export default function ReusesEditClient() {
   const searchParams = useSearchParams();
+  const params = useParams();
   const router = useRouter();
   const { show, hide } = usePopupContext();
-  const reuseId = searchParams.get("id") || searchParams.get("slug") || "";
+  const reuseId = (params?.reuseId as string) || searchParams.get("id") || searchParams.get("slug") || "";
 
   const [reuse, setReuse] = useState<Reuse | null>(null);
   const [isLoading, setIsLoading] = useState(true);

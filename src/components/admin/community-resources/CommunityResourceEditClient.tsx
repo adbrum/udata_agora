@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 import {
   Breadcrumb,
   Button,
@@ -27,9 +27,10 @@ import IsolatedSelect from "@/components/admin/IsolatedSelect";
 
 export default function CommunityResourceEditClient() {
   const searchParams = useSearchParams();
+  const params = useParams();
   const router = useRouter();
   const { displayName } = useCurrentUser();
-  const resourceId = searchParams.get("id") || "";
+  const resourceId = (params?.resourceId as string) || searchParams.get("id") || "";
 
   const [resource, setResource] = useState<CommunityResource | null>(null);
   const [isLoading, setIsLoading] = useState(true);

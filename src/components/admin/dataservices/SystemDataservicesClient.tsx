@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Breadcrumb,
   CardNoResults,
@@ -15,13 +15,11 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Button,
 } from "@ama-pt/agora-design-system";
 import StatusDot from "@/components/admin/StatusDot";
 import { fetchDataservices } from "@/services/api";
 import { Dataservice } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
-
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -29,34 +27,55 @@ const formatDate = (dateStr: string) => {
 };
 
 export default function SystemDataservicesClient() {
-
   const [apis, setApis] = useState<Dataservice[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetchDataservices(currentPage, pageSize, {
+        q: searchQuery.trim() || undefined,
+      });
+      setApis(response.data || []);
+      setTotalItems(response.total || 0);
+    } catch (error) {
+      console.error("Error loading dataservices:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, pageSize, searchQuery]);
 
   useEffect(() => {
-    async function loadDataservices() {
-      setIsLoading(true);
-      try {
-        const response = await fetchDataservices(1, 9999);
-        setApis(response.data || []);
-      } catch (error) {
-        console.error("Error loading dataservices:", error);
-      } finally {
-        setIsLoading(false);
+    loadData();
+  }, [loadData]);
+
+  const handleSearch = (value: string) => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setSearchQuery(value);
+      setCurrentPage(1);
+    }, 400);
+  };
+
+  const filteredApis = useMemo(() => {
+    if (!statusFilter) return apis;
+    return apis.filter((a) => {
+      switch (statusFilter) {
+        case "public":
+          return !a.private;
+        case "draft":
+          return !!a.private;
+        default:
+          return true;
       }
-    }
-    loadDataservices();
-  }, []);
-
-  const getStatusLabel = (api: Dataservice) => {
-    if (api.private) return "Rascunho";
-    return "Público";
-  };
-
-  const getStatusVariant = (api: Dataservice) => {
-    if (api.private) return "warning" as const;
-    return "success" as const;
-  };
+    });
+  }, [apis, statusFilter]);
 
   return (
     <div className="admin-page">
@@ -76,15 +95,19 @@ export default function SystemDataservicesClient() {
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {apis.length} resultados
+        {totalItems} resultados
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
         <div className="admin-search-wrapper">
-          <InputSearchBar hasVoiceActionButton={false}
+          <InputSearchBar
+            hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome da API"
             aria-label="Pesquisar APIs"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              handleSearch(e.target.value);
+            }}
           />
         </div>
         <InputSelect
@@ -92,48 +115,52 @@ export default function SystemDataservicesClient() {
           hideLabel
           placeholder="Filtrar por estado"
           id="filter-status"
+          onChange={(options) => {
+            setStatusFilter(
+              options.length > 0 ? (options[0].value as string) : ""
+            );
+          }}
         >
           <DropdownSection name="status">
             <DropdownOption value="public">Público</DropdownOption>
-            <DropdownOption value="archived">Arquivo</DropdownOption>
             <DropdownOption value="draft">Rascunho</DropdownOption>
-            <DropdownOption value="deleted">Excluído</DropdownOption>
           </DropdownSection>
         </InputSelect>
       </div>
 
-      {!isLoading && apis.length > 0 ? (
+      {isLoading ? (
+        <p className="text-neutral-700 text-sm">A carregar...</p>
+      ) : filteredApis.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Linhas por página",
-            itemsPerPage: 5,
-            totalItems: apis.length,
+            itemsPerPage: pageSize,
+            totalItems: totalItems,
             availablePageSizes: [5, 10, 20],
-            currentPage: 1,
+            currentPage: currentPage,
             buttonDropdownAriaLabel: "Selecionar linhas por página",
             dropdownListAriaLabel: "Opções de linhas por página",
             prevButtonAriaLabel: "Página anterior",
             nextButtonAriaLabel: "Próxima página",
+            onPageChange: (page: number) => setCurrentPage(page),
+            onPageSizeChange: (size: number) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            },
           }}
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Título da API
-              </TableHeaderCell>
+              <TableHeaderCell>Título da API</TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Criado em
-              </TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Modificado em
-              </TableHeaderCell>
+              <TableHeaderCell>Criado em</TableHeaderCell>
+              <TableHeaderCell>Modificado em</TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {apis.map((api, index) => (
-              <TableRow key={index}>
+            {filteredApis.map((api) => (
+              <TableRow key={api.id}>
                 <TableCell headerLabel="Título">
                   <a
                     href={`/pages/dataservices/${api.slug}`}
@@ -143,8 +170,8 @@ export default function SystemDataservicesClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <StatusDot variant={getStatusVariant(api)}>
-                    {getStatusLabel(api)}
+                  <StatusDot variant={api.private ? "warning" : "success"}>
+                    {api.private ? "Rascunho" : "Público"}
                   </StatusDot>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
@@ -152,22 +179,30 @@ export default function SystemDataservicesClient() {
                 </TableCell>
                 <TableCell headerLabel="Modificado em">
                   {formatDate(api.last_modified)}
-                  <br />
-                  <span className="text-sm text-neutral-500">
-                    sobre{" "}
-                    <span className="text-success-600">●</span>{" "}
-                    {api.owner
-                      ? `${api.owner.first_name} ${api.owner.last_name}`
-                      : "—"}
-                  </span>
+                  {api.owner && (
+                    <>
+                      <br />
+                      <span className="text-sm text-neutral-500">
+                        por {api.owner.first_name} {api.owner.last_name}
+                      </span>
+                    </>
+                  )}
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">
                     <a href={`/pages/dataservices/${api.slug}`}>
-                      <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+                      <Icon
+                        name="agora-line-eye"
+                        className="w-[20px] h-[20px]"
+                      />
                     </a>
-                    <a href={`/pages/admin/dataservices/edit?slug=${api.slug}`}>
-                      <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
+                    <a
+                      href={`/pages/admin/dataservices/edit?slug=${api.slug}`}
+                    >
+                      <Icon
+                        name="agora-line-edit"
+                        className="w-[20px] h-[20px]"
+                      />
                     </a>
                   </div>
                 </TableCell>
@@ -176,20 +211,18 @@ export default function SystemDataservicesClient() {
           </TableBody>
         </Table>
       ) : (
-        <div className="datasets-page__body">
-          <div className="datasets-page__content">
-            <CardNoResults
-              className="datasets-page__empty"
-              position="center"
-              icon={
-                <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
-              }
-              title="Sem publicações"
-              description="Nenhuma API encontrada."
-              hasAnchor={false}
+        <CardNoResults
+          position="center"
+          icon={
+            <Icon
+              name="agora-line-code"
+              className="w-12 h-12 text-primary-500 icon-xl"
             />
-          </div>
-        </div>
+          }
+          title="Sem APIs"
+          description="Nenhuma API encontrada."
+          hasAnchor={false}
+        />
       )}
     </div>
   );

@@ -19,12 +19,15 @@ import {
   TableRow,
   TableCell,
 } from "@ama-pt/agora-design-system";
-import { Dataset, Reuse, Follow, UserFollowing } from "@/types/api";
+import { Dataset, Reuse, Follow, UserFollowing, UserPublic } from "@/types/api";
 import {
   fetchMyDatasets,
   fetchMyReuses,
   fetchUserFollowers,
   fetchMyFollowing,
+  fetchUserProfile,
+  fetchDatasets,
+  fetchReuses,
 } from "@/services/api";
 import { format, formatDistanceToNow } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -35,6 +38,8 @@ export default function PublicProfileClient() {
   const router = useRouter();
   const slug = params?.slug as string;
   const isOwnProfile = user?.slug === slug;
+
+  const [profileUser, setProfileUser] = useState<UserPublic | null>(null);
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [reuses, setReuses] = useState<Reuse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,12 +57,26 @@ export default function PublicProfileClient() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [dsResponse, reuseResponse] = await Promise.all([
-          fetchMyDatasets(1, 100),
-          fetchMyReuses(1, 100),
-        ]);
-        setDatasets(dsResponse.data || []);
-        setReuses(reuseResponse.data || []);
+        if (isOwnProfile) {
+          setProfileUser(user as unknown as UserPublic);
+          const [dsResponse, reuseResponse] = await Promise.all([
+            fetchMyDatasets(1, 100),
+            fetchMyReuses(1, 100),
+          ]);
+          setDatasets(dsResponse.data || []);
+          setReuses(reuseResponse.data || []);
+        } else {
+          const fetchedUser = await fetchUserProfile(slug);
+          setProfileUser(fetchedUser);
+          if (fetchedUser) {
+            const [dsResponse, reuseResponse] = await Promise.all([
+              fetchDatasets(1, 100, { owner: fetchedUser.id }),
+              fetchReuses(1, 100, { owner: fetchedUser.id }),
+            ]);
+            setDatasets(dsResponse.data || []);
+            setReuses(reuseResponse.data || []);
+          }
+        }
       } catch (error) {
         console.error("Error loading profile data:", error);
       } finally {
@@ -65,13 +84,16 @@ export default function PublicProfileClient() {
       }
     }
     loadData();
-  }, []);
+  }, [slug, isOwnProfile, user]);
+
+  const displayUser = isOwnProfile ? user : profileUser;
 
   const handleToggleSubscriptions = async () => {
     if (showSubscriptions) {
       setShowSubscriptions(false);
       return;
     }
+    if (!isOwnProfile) return;
     setShowSubscriptions(true);
     setShowFollowers(false);
     setIsLoadingSubscriptions(true);
@@ -91,12 +113,13 @@ export default function PublicProfileClient() {
       setShowFollowers(false);
       return;
     }
-    if (!user?.id) return;
+    const targetId = displayUser?.id;
+    if (!targetId) return;
     setShowFollowers(true);
     setShowSubscriptions(false);
     setIsLoadingFollowers(true);
     try {
-      const response = await fetchUserFollowers(user.id, 1, 100);
+      const response = await fetchUserFollowers(targetId, 1, 100);
       setFollowers(response.data || []);
       setFollowersTotal(response.total ?? 0);
     } catch (error) {
@@ -107,15 +130,18 @@ export default function PublicProfileClient() {
   };
 
   useEffect(() => {
-    if (user?.id) {
-      fetchUserFollowers(user.id, 1, 1).then((res) => {
+    const targetId = displayUser?.id;
+    if (targetId) {
+      fetchUserFollowers(targetId, 1, 1).then((res) => {
         setFollowersTotal(res.total ?? 0);
       });
+    }
+    if (isOwnProfile) {
       fetchMyFollowing(1, 1).then((res) => {
         setSubscriptionsTotal(res.total ?? 0);
       });
     }
-  }, [user?.id]);
+  }, [displayUser?.id, isOwnProfile]);
 
   const totalPages = Math.ceil(datasets.length / itemsPerPage);
 
@@ -151,11 +177,11 @@ export default function PublicProfileClient() {
     }
   };
 
-  const userName = user
-    ? `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim()
+  const userName = displayUser
+    ? `${displayUser.first_name ?? ""} ${displayUser.last_name ?? ""}`.trim()
     : "";
-  const initials = user
-    ? `${user.first_name?.charAt(0).toUpperCase() ?? ""}${user.last_name?.charAt(0).toUpperCase() ?? ""}`
+  const initials = displayUser
+    ? `${displayUser.first_name?.charAt(0).toUpperCase() ?? ""}${displayUser.last_name?.charAt(0).toUpperCase() ?? ""}`
     : "U";
 
   return (
@@ -174,9 +200,9 @@ export default function PublicProfileClient() {
       {/* Profile Card */}
       <div className="profile-card">
         <Avatar
-          avatarType={user?.avatar_thumbnail ? "image" : "initials"}
+          avatarType={displayUser?.avatar_thumbnail ? "image" : "initials"}
           srcPath={
-            (user?.avatar_thumbnail || initials) as unknown as undefined
+            (displayUser?.avatar_thumbnail || initials) as unknown as undefined
           }
           alt={userName}
           className="profile-card__avatar"
@@ -184,34 +210,30 @@ export default function PublicProfileClient() {
 
         <div className="profile-card__body">
           <div className="profile-card__info">
-            {user?.organizations && user.organizations.length > 0 && (
+            {displayUser?.organizations && displayUser.organizations.length > 0 && (
               <p className="text-neutral-900 text-base font-light leading-7">
-                {user.organizations[0].name}
+                {displayUser.organizations[0].name}
               </p>
             )}
             <p className="text-neutral-900 text-xl font-semibold leading-8">
               {userName}
             </p>
-            {user?.last_modified && (
-              <p className="text-neutral-900 text-base leading-7">
-                <span className="font-semibold">Última atualização:</span>{" "}
-                {formatDate(user.last_modified)}
-              </p>
-            )}
           </div>
 
           <div className="profile-card__links">
-            <Button
-              appearance="link"
-              variant="primary"
-              hasIcon
-              leadingIcon="agora-line-package"
-              leadingIconHover="agora-solid-package"
-              onClick={handleToggleSubscriptions}
-            >
-              {subscriptionsTotal}{" "}
-              {subscriptionsTotal === 1 ? "Subscrição" : "Subscrições"}
-            </Button>
+            {isOwnProfile && (
+              <Button
+                appearance="link"
+                variant="primary"
+                hasIcon
+                leadingIcon="agora-line-package"
+                leadingIconHover="agora-solid-package"
+                onClick={handleToggleSubscriptions}
+              >
+                {subscriptionsTotal}{" "}
+                {subscriptionsTotal === 1 ? "Subscrição" : "Subscrições"}
+              </Button>
+            )}
             <Button
               appearance="link"
               variant="primary"
@@ -243,15 +265,15 @@ export default function PublicProfileClient() {
       </div>
 
       {/* Organizations Section */}
-      {user?.organizations && user.organizations.length > 0 && (
+      {displayUser?.organizations && displayUser.organizations.length > 0 && (
         <div className="mt-[48px]">
           <h2 className="font-medium text-neutral-900 text-base uppercase mb-24">
-            {user.organizations.length}{" "}
-            {user.organizations.length === 1 ? "Organização" : "Organizações"}
+            {displayUser.organizations.length}{" "}
+            {displayUser.organizations.length === 1 ? "Organização" : "Organizações"}
           </h2>
 
           <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-24">
-            {user.organizations.map((org) => (
+            {displayUser.organizations.map((org) => (
               <div key={org.id} className="h-full">
                 <CardLinks
                   onClick={() =>

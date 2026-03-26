@@ -13,9 +13,10 @@ import {
   ButtonUploader,
   RadioButton,
 } from "@ama-pt/agora-design-system";
-import { suggestTags } from "@/services/api";
+import { suggestTags, createPost } from "@/services/api";
 import type { TagSuggestion } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
+import type { PostCreatePayload } from "@/types/api";
 
 export default function PostsNewClient() {
   const searchParams = useSearchParams();
@@ -28,8 +29,12 @@ export default function PostsNewClient() {
   const [contentType, setContentType] = useState("markdown");
   const [articleTitle, setArticleTitle] = useState("");
   const [articleHeader, setArticleHeader] = useState("");
+  const [articleContent, setArticleContent] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [tags, setTags] = useState<TagSuggestion[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     suggestTags("", 50).then(setTags);
@@ -55,6 +60,34 @@ export default function PostsNewClient() {
     }
     setFormErrors({});
     router.push("/pages/admin/system/posts/new?step=2");
+  };
+
+  const handleSave = async () => {
+    if (!articleContent.trim()) {
+      setFormErrors({ articleContent: true });
+      return;
+    }
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      const payload: PostCreatePayload = {
+        name: articleTitle.trim(),
+        headline: articleHeader.trim(),
+        content: articleContent.trim(),
+        body_type: contentType,
+        tags: selectedTags,
+      };
+      const result = await createPost(payload);
+      if (result) {
+        router.push("/pages/admin/system/posts");
+      } else {
+        setSaveError("Erro ao guardar o artigo. Verifique a autenticação.");
+      }
+    } catch {
+      setSaveError("Erro ao guardar o artigo.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const stepTitles: Record<number, string> = {
@@ -188,6 +221,9 @@ export default function PostsNewClient() {
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
                   searchNoResultsText="Nenhum resultado encontrado"
+                  onChange={(options) => {
+                    setSelectedTags(options.map((o) => o.value as string));
+                  }}
                 >
                   <DropdownSection name="keywords">
                     {tags.map((tag) => (
@@ -236,12 +272,25 @@ export default function PostsNewClient() {
             <form className="admin-page__form">
               <div className="admin-page__fields-group">
                 <InputTextArea
-                  label="Contente *"
+                  label="Conteúdo *"
                   placeholder="Insira aqui"
                   id="article-content"
                   rows={12}
+                  value={articleContent}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                    setArticleContent(e.target.value);
+                    if (e.target.value.trim()) clearError("articleContent");
+                  }}
+                  hasError={!!formErrors.articleContent}
+                  hasFeedback={!!formErrors.articleContent}
+                  feedbackState="danger"
+                  errorFeedbackText="Campo obrigatório"
                 />
               </div>
+
+              {saveError && (
+                <p className="text-danger-600 text-sm mb-16">{saveError}</p>
+              )}
 
               <div className="admin-page__actions">
                 <Button
@@ -255,9 +304,10 @@ export default function PostsNewClient() {
                 </Button>
                 <Button
                   variant="primary"
-                  onClick={() => router.push("/pages/admin/system/posts")}
+                  onClick={handleSave}
+                  disabled={isSaving}
                 >
-                  Guardar
+                  {isSaving ? "A guardar..." : "Guardar"}
                 </Button>
               </div>
             </form>

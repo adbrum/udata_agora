@@ -1,14 +1,13 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
   Button,
+  CardNoResults,
   Icon,
-  InputSelect,
   InputSearchBar,
-  DropdownSection,
-  DropdownOption,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -18,79 +17,8 @@ import {
 } from "@ama-pt/agora-design-system";
 import StatusDot from "@/components/admin/StatusDot";
 import PublishDropdown from "@/components/admin/PublishDropdown";
-
-interface MockArticle {
-  title: string;
-  slug: string;
-  status: string;
-  statusVariant: "success" | "warning";
-  createdAt: string;
-  updatedAt: string;
-}
-
-const mockArticles: MockArticle[] = [
-  {
-    title: "Nome Artigo",
-    slug: "nome-artigo-1",
-    status: "Rascunho",
-    statusVariant: "warning",
-    createdAt: "2026-01-16",
-    updatedAt: "2026-01-16",
-  },
-  {
-    title: "Nome Artigo",
-    slug: "nome-artigo-2",
-    status: "Rascunho",
-    statusVariant: "warning",
-    createdAt: "2026-01-16",
-    updatedAt: "2026-01-16",
-  },
-  {
-    title:
-      "Municípios reforçam competências em dados abertos com apoio da ENTI",
-    slug: "municipios-reforcam-competencias",
-    status: "Publicado em 5 de novembro de 2025",
-    statusVariant: "success",
-    createdAt: "2025-11-05",
-    updatedAt: "2025-11-28",
-  },
-  {
-    title:
-      "AMA IP dá lugar à ARTE IP, continuando focada em impulsionar o crescimento da Comunidade e Ecossistema de Dados Abertos em Portugal",
-    slug: "ama-ip-da-lugar-arte-ip-publicado",
-    status: "Publicado em 31 de outubro de 2025",
-    statusVariant: "success",
-    createdAt: "2025-10-31",
-    updatedAt: "2025-10-31",
-  },
-  {
-    title:
-      "AMA IP dá lugar à ARTE IP, continuando focada em impulsionar o crescimento da Comunidade e Ecossistema de Dados Abertos em Portugal",
-    slug: "ama-ip-da-lugar-arte-ip-rascunho",
-    status: "Rascunho",
-    statusVariant: "warning",
-    createdAt: "2025-10-31",
-    updatedAt: "2025-10-31",
-  },
-  {
-    title:
-      "AMA promove workshop para apoiar municípios na publicação de dados abertos",
-    slug: "ama-promove-workshop",
-    status: "Publicado em 14 de julho de 2025",
-    statusVariant: "success",
-    createdAt: "2025-07-14",
-    updatedAt: "2025-10-17",
-  },
-  {
-    title:
-      "E-REDES reforça compromisso com a inovação e a transparência através do seu Portal Open Data",
-    slug: "e-redes-reforca-compromisso",
-    status: "Publicado em 8 de maio de 2025",
-    statusVariant: "success",
-    createdAt: "2025-05-08",
-    updatedAt: "2025-05-08",
-  },
-];
+import { fetchPosts } from "@/services/api";
+import { Post } from "@/types/api";
 
 const formatDate = (dateStr: string) => {
   try {
@@ -103,7 +31,43 @@ const formatDate = (dateStr: string) => {
 
 export default function SystemPostsClient() {
   const router = useRouter();
-  const articles = mockArticles;
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetchPosts(currentPage, pageSize);
+      let data = response.data || [];
+      if (searchQuery.trim()) {
+        const q = searchQuery.trim().toLowerCase();
+        data = data.filter((p) => p.name.toLowerCase().includes(q));
+      }
+      setPosts(data);
+      setTotalItems(searchQuery.trim() ? data.length : response.total || 0);
+    } catch (error) {
+      console.error("Error loading posts:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, pageSize, searchQuery]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const handleSearch = (value: string) => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setSearchQuery(value);
+      setCurrentPage(1);
+    }, 400);
+  };
 
   return (
     <div className="admin-page">
@@ -111,6 +75,7 @@ export default function SystemPostsClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
+            { label: "Sistema", url: "#" },
             { label: "Artigos", url: "/pages/admin/system/posts" },
           ]}
         />
@@ -122,30 +87,21 @@ export default function SystemPostsClient() {
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {articles.length} resultados
+        {totalItems} resultados
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
         <div className="admin-search-wrapper">
-          <InputSearchBar hasVoiceActionButton={false}
+          <InputSearchBar
+            hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o título do artigo"
             aria-label="Pesquisar artigos"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              handleSearch(e.target.value);
+            }}
           />
         </div>
-        <InputSelect
-          label=""
-          hideLabel
-          placeholder="Filtrar por estado"
-          id="filter-status"
-        >
-          <DropdownSection name="status">
-            <DropdownOption value="public">Público</DropdownOption>
-            <DropdownOption value="archived">Arquivo</DropdownOption>
-            <DropdownOption value="draft">Rascunho</DropdownOption>
-            <DropdownOption value="deleted">Excluído</DropdownOption>
-          </DropdownSection>
-        </InputSelect>
         <Button
           variant="primary"
           appearance="outline"
@@ -158,70 +114,86 @@ export default function SystemPostsClient() {
         </Button>
       </div>
 
-      <Table
-        paginationProps={{
-          itemsPerPageLabel: "Linhas por página",
-          itemsPerPage: 10,
-          totalItems: articles.length,
-          availablePageSizes: [5, 10, 20],
-          currentPage: 1,
-          buttonDropdownAriaLabel: "Selecionar linhas por página",
-          dropdownListAriaLabel: "Opções de linhas por página",
-          prevButtonAriaLabel: "Página anterior",
-          nextButtonAriaLabel: "Próxima página",
-        }}
-      >
-        <TableHeader>
-          <TableRow>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Título
-            </TableHeaderCell>
-            <TableHeaderCell>Estado</TableHeaderCell>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Criado em
-            </TableHeaderCell>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Atualizado em
-            </TableHeaderCell>
-            <TableHeaderCell>Ação</TableHeaderCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {articles.map((article, index) => (
-            <TableRow key={index}>
-              <TableCell headerLabel="Título">
-                <a
-                  href={`/pages/admin/system/posts/${article.slug}`}
-                  className="text-primary-600 underline"
-                >
-                  {article.title}
-                </a>
-              </TableCell>
-              <TableCell headerLabel="Status">
-                <StatusDot variant={article.statusVariant}>
-                  {article.status.toUpperCase()}
-                </StatusDot>
-              </TableCell>
-              <TableCell headerLabel="Criado em">{formatDate(article.createdAt)}</TableCell>
-              <TableCell headerLabel="Atualizado em">
-                {formatDate(article.updatedAt)}
-              </TableCell>
-              <TableCell headerLabel="Ação">
-                <div className="flex gap-[8px]">
-                  <a href={`/pages/admin/system/posts/${article.slug}`}>
-                    <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
-                  </a>
-                  <a
-                    href={`/pages/admin/system/posts/edit?slug=${article.slug}`}
-                  >
-                    <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
-                  </a>
-                </div>
-              </TableCell>
+      {isLoading ? (
+        <p className="text-neutral-700 text-sm">A carregar...</p>
+      ) : posts.length > 0 ? (
+        <Table
+          paginationProps={{
+            itemsPerPageLabel: "Linhas por página",
+            itemsPerPage: pageSize,
+            totalItems: totalItems,
+            availablePageSizes: [5, 10, 20],
+            currentPage: currentPage,
+            buttonDropdownAriaLabel: "Selecionar linhas por página",
+            dropdownListAriaLabel: "Opções de linhas por página",
+            prevButtonAriaLabel: "Página anterior",
+            nextButtonAriaLabel: "Próxima página",
+            onPageChange: (page: number) => setCurrentPage(page),
+            onPageSizeChange: (size: number) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            },
+          }}
+        >
+          <TableHeader>
+            <TableRow>
+              <TableHeaderCell>Título</TableHeaderCell>
+              <TableHeaderCell>Estado</TableHeaderCell>
+              <TableHeaderCell>Criado em</TableHeaderCell>
+              <TableHeaderCell>Atualizado em</TableHeaderCell>
+              <TableHeaderCell>Ação</TableHeaderCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {posts.map((post) => (
+              <TableRow key={post.id}>
+                <TableCell headerLabel="Título">
+                  <a
+                    href={`/pages/admin/system/posts/${post.slug}`}
+                    className="text-primary-600 underline"
+                  >
+                    {post.name}
+                  </a>
+                </TableCell>
+                <TableCell headerLabel="Estado">
+                  <StatusDot variant={post.published ? "success" : "warning"}>
+                    {post.published ? "PUBLICADO" : "RASCUNHO"}
+                  </StatusDot>
+                </TableCell>
+                <TableCell headerLabel="Criado em">
+                  {formatDate(post.created_at)}
+                </TableCell>
+                <TableCell headerLabel="Atualizado em">
+                  {formatDate(post.last_modified)}
+                </TableCell>
+                <TableCell headerLabel="Ação">
+                  <div className="flex gap-[8px]">
+                    <a href={`/pages/admin/system/posts/${post.slug}`}>
+                      <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+                    </a>
+                    <a href={`/pages/admin/system/posts/edit?slug=${post.slug}`}>
+                      <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
+                    </a>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <CardNoResults
+          position="center"
+          icon={
+            <Icon
+              name="agora-line-edit"
+              className="w-12 h-12 text-primary-500 icon-xl"
+            />
+          }
+          title="Sem artigos"
+          description="Nenhum artigo encontrado."
+          hasAnchor={false}
+        />
+      )}
     </div>
   );
 }

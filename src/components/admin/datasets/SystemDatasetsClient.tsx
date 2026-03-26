@@ -296,7 +296,7 @@ export default function SystemDatasetsClient() {
                     <a href={`/pages/datasets/${dataset.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/datasets/edit?id=${dataset.id}`}>
+                    <a href={`/pages/admin/datasets/${dataset.id}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>

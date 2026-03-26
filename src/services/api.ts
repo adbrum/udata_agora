@@ -317,6 +317,7 @@ export async function fetchDatasets(
       if (filters.granularity) params.set("granularity", filters.granularity);
       if (filters.sort) params.set("sort", filters.sort);
       if (filters.featured !== undefined) params.set("featured", String(filters.featured));
+      if (filters.owner) params.set("owner", filters.owner);
 
       const arrayParams: [string, string | string[] | undefined][] = [
         ["tag", filters.tag],
@@ -870,6 +871,7 @@ export async function fetchReuses(
       if (filters.type) params.set("type", filters.type);
       if (filters.tag) params.set("tag", filters.tag);
       if (filters.organization) params.set("organization", filters.organization);
+      if (filters.owner) params.set("owner", filters.owner);
       if (filters.dataset) params.set("dataset", filters.dataset);
       if (filters.sort) params.set("sort", filters.sort);
     }
@@ -2909,6 +2911,23 @@ export async function fetchMyOrgCommunityResources(
       next_page: null,
       previous_page: null,
     };
+  }
+}
+
+export async function fetchAllCommunityResources(
+  page: number = 1,
+  pageSize: number = 20
+): Promise<{ data: CommunityResource[]; total: number }> {
+  try {
+    const res = await fetch(
+      `${API_AUTH_URL}/datasets/community_resources/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store", credentials: "include" }
+    );
+    if (!res.ok) return { data: [], total: 0 };
+    const json = await res.json();
+    return { data: json.data || [], total: json.total || 0 };
+  } catch {
+    return { data: [], total: 0 };
   }
 }
 

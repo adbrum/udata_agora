@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Breadcrumb,
   CardNoResults,
@@ -15,41 +15,75 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Button,
 } from "@ama-pt/agora-design-system";
 import StatusDot from "@/components/admin/StatusDot";
 import { fetchReuses } from "@/services/api";
 import { Reuse } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 
-
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
   return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
 };
 
-const PAGE_SIZE = 7;
-
 export default function SystemReusesClient() {
-
   const [reuses, setReuses] = useState<Reuse[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetchReuses(currentPage, pageSize, {
+        q: searchQuery.trim() || undefined,
+      });
+      setReuses(response.data || []);
+      setTotalItems(response.total || 0);
+    } catch (error) {
+      console.error("Error loading reuses:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, pageSize, searchQuery]);
 
   useEffect(() => {
-    async function loadReuses() {
-      setIsLoading(true);
-      try {
-        const response = await fetchReuses(1, 9999);
-        setReuses(response.data || []);
-      } catch (error) {
-        console.error("Error loading reuses:", error);
-      } finally {
-        setIsLoading(false);
+    loadData();
+  }, [loadData]);
+
+  const handleSearch = (value: string) => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setSearchQuery(value);
+      setCurrentPage(1);
+    }, 400);
+  };
+
+  const filteredReuses = useMemo(() => {
+    if (!statusFilter) return reuses;
+    return reuses.filter((r) => {
+      switch (statusFilter) {
+        case "public":
+          return !r.private && !r.archived;
+        case "draft":
+          return !!r.private;
+        case "archived":
+          return !!r.archived;
+        default:
+          return true;
       }
-    }
-    loadReuses();
-  }, []);
+    });
+  }, [reuses, statusFilter]);
+
+  const getStatus = (reuse: Reuse) => {
+    if (reuse.archived) return { label: "Arquivo", variant: "warning" as const };
+    if (reuse.private) return { label: "Rascunho", variant: "warning" as const };
+    return { label: "Público", variant: "success" as const };
+  };
 
   return (
     <div className="admin-page">
@@ -69,15 +103,19 @@ export default function SystemReusesClient() {
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {reuses.length} resultados
+        {totalItems} resultados
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
         <div className="admin-search-wrapper">
-          <InputSearchBar hasVoiceActionButton={false}
+          <InputSearchBar
+            hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome da reutilização"
             aria-label="Pesquisar reutilizações"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              handleSearch(e.target.value);
+            }}
           />
         </div>
         <InputSelect
@@ -85,6 +123,11 @@ export default function SystemReusesClient() {
           hideLabel
           placeholder="Filtrar por estado"
           id="filter-status"
+          onChange={(options) => {
+            setStatusFilter(
+              options.length > 0 ? (options[0].value as string) : ""
+            );
+          }}
         >
           <DropdownSection name="status">
             <DropdownOption value="public">Público</DropdownOption>
@@ -95,85 +138,94 @@ export default function SystemReusesClient() {
         </InputSelect>
       </div>
 
-      {!isLoading && reuses.length > 0 ? (
+      {isLoading ? (
+        <p className="text-neutral-700 text-sm">A carregar...</p>
+      ) : filteredReuses.length > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Linhas por página",
-            itemsPerPage: PAGE_SIZE,
-            totalItems: reuses.length,
-            availablePageSizes: [7, 14, 21],
+            itemsPerPage: pageSize,
+            totalItems: totalItems,
+            availablePageSizes: [5, 10, 20],
             currentPage: currentPage,
-            onPageChange: (page: number) => setCurrentPage(page),
             buttonDropdownAriaLabel: "Selecionar linhas por página",
             dropdownListAriaLabel: "Opções de linhas por página",
             prevButtonAriaLabel: "Página anterior",
             nextButtonAriaLabel: "Próxima página",
+            onPageChange: (page: number) => setCurrentPage(page),
+            onPageSizeChange: (size: number) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            },
           }}
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Título da reutilização
-              </TableHeaderCell>
+              <TableHeaderCell>Título da reutilização</TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Criado em
-              </TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Conjuntos de dados
-              </TableHeaderCell>
+              <TableHeaderCell>Criado em</TableHeaderCell>
+              <TableHeaderCell>Conjuntos de dados</TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {reuses.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((reuse, index) => (
-              <TableRow key={index}>
-                <TableCell headerLabel="Título">
-                  <a
-                    href={`/pages/reuses/${reuse.slug}`}
-                    className="text-primary-600 underline"
-                  >
-                    {reuse.title}
-                  </a>
-                </TableCell>
-                <TableCell headerLabel="Estado">
-                  <StatusDot variant="success">Público</StatusDot>
-                </TableCell>
-                <TableCell headerLabel="Criado em">
-                  {formatDate(reuse.created_at)}
-                </TableCell>
-                <TableCell headerLabel="Conjuntos de dados">
-                  {reuse.datasets?.length ?? 0}
-                </TableCell>
-                <TableCell headerLabel="Ações">
-                  <div className="flex gap-[8px]">
-                    <a href={`/pages/reuses/${reuse.slug}`}>
-                      <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+            {filteredReuses.map((reuse) => {
+              const status = getStatus(reuse);
+              return (
+                <TableRow key={reuse.id}>
+                  <TableCell headerLabel="Título">
+                    <a
+                      href={`/pages/reuses/${reuse.slug}`}
+                      className="text-primary-600 underline"
+                    >
+                      {reuse.title}
                     </a>
-                    <a href={`/pages/admin/reuses/edit?id=${reuse.id}`}>
-                      <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
-                    </a>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell headerLabel="Estado">
+                    <StatusDot variant={status.variant}>
+                      {status.label}
+                    </StatusDot>
+                  </TableCell>
+                  <TableCell headerLabel="Criado em">
+                    {formatDate(reuse.created_at)}
+                  </TableCell>
+                  <TableCell headerLabel="Conjuntos de dados">
+                    {reuse.datasets?.length ?? 0}
+                  </TableCell>
+                  <TableCell headerLabel="Ações">
+                    <div className="flex gap-[8px]">
+                      <a href={`/pages/reuses/${reuse.slug}`}>
+                        <Icon
+                          name="agora-line-eye"
+                          className="w-[20px] h-[20px]"
+                        />
+                      </a>
+                      <a href={`/pages/admin/reuses/${reuse.id}`}>
+                        <Icon
+                          name="agora-line-edit"
+                          className="w-[20px] h-[20px]"
+                        />
+                      </a>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       ) : (
-        <div className="datasets-page__body">
-          <div className="datasets-page__content">
-            <CardNoResults
-              className="datasets-page__empty"
-              position="center"
-              icon={
-                <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
-              }
-              title="Sem publicações"
-              description="Nenhuma reutilização encontrada."
-              hasAnchor={false}
+        <CardNoResults
+          position="center"
+          icon={
+            <Icon
+              name="agora-line-edit"
+              className="w-12 h-12 text-primary-500 icon-xl"
             />
-          </div>
-        </div>
+          }
+          title="Sem reutilizações"
+          description="Nenhuma reutilização encontrada."
+          hasAnchor={false}
+        />
       )}
     </div>
   );

@@ -325,6 +325,7 @@ export interface ReuseFilters {
   type?: string;
   tag?: string;
   organization?: string;
+  owner?: string;
   dataset?: string;
   sort?: string;
 }
@@ -664,6 +665,7 @@ export interface DatasetFilters {
   geozone?: string;
   granularity?: string;
   organization?: string | string[];
+  owner?: string;
   badge?: string | string[];
   featured?: boolean;
   sort?: string;

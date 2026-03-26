@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Breadcrumb,
+  CardNoResults,
   Icon,
   InputSelect,
   InputSearchBar,
@@ -20,7 +21,6 @@ import { fetchHarvesters } from "@/services/api";
 import type { HarvestSource } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 import { format } from "date-fns";
-import { pt } from "date-fns/locale";
 
 const VALIDATION_STATUS: Record<
   string,
@@ -46,33 +46,70 @@ const JOB_STATUS: Record<
 
 function getStatus(source: HarvestSource) {
   if (source.validation?.state && source.validation.state !== "accepted") {
-    return VALIDATION_STATUS[source.validation.state] || VALIDATION_STATUS.pending;
+    return (
+      VALIDATION_STATUS[source.validation.state] || VALIDATION_STATUS.pending
+    );
   }
   if (source.last_job?.status) {
-    return JOB_STATUS[source.last_job.status] || { label: "Sem tarefa de momento", variant: "informative" as const };
+    return (
+      JOB_STATUS[source.last_job.status] || {
+        label: "Sem tarefa de momento",
+        variant: "informative" as const,
+      }
+    );
   }
   return { label: "Sem tarefa de momento", variant: "informative" as const };
 }
 
 export default function SystemHarvestersClient() {
   const [harvesters, setHarvesters] = useState<HarvestSource[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetchHarvesters(currentPage, pageSize);
+      setHarvesters(res.data || []);
+      setTotalItems(res.total || 0);
+    } catch (error) {
+      console.error("Error loading harvesters:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, pageSize]);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetchHarvesters(1, 50);
-        setHarvesters(res.data || []);
-      } catch (error) {
-        console.error("Error loading harvesters:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    loadData();
+  }, [loadData]);
+
+  const handleSearch = (value: string) => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setSearchQuery(value);
+      setCurrentPage(1);
+    }, 400);
+  };
+
+  const filtered = useMemo(() => {
+    let result = harvesters;
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter((h) => h.name.toLowerCase().includes(q));
     }
-    load();
-  }, []);
+    if (statusFilter) {
+      result = result.filter((h) => {
+        const valState = h.validation?.state;
+        return valState === statusFilter;
+      });
+    }
+    return result;
+  }, [harvesters, searchQuery, statusFilter]);
 
   return (
     <div className="admin-page">
@@ -92,7 +129,7 @@ export default function SystemHarvestersClient() {
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {isLoading ? "A carregar..." : `${harvesters.length} resultados`}
+        {isLoading ? "A carregar..." : `${totalItems} resultados`}
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
@@ -102,6 +139,9 @@ export default function SystemHarvestersClient() {
             label="Pesquisar"
             placeholder="Pesquise o nome do harvester"
             aria-label="Pesquisar harvesters"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              handleSearch(e.target.value);
+            }}
           />
         </div>
         <InputSelect
@@ -109,99 +149,115 @@ export default function SystemHarvestersClient() {
           hideLabel
           placeholder="Filtrar por estado"
           id="filter-status"
+          onChange={(options) => {
+            setStatusFilter(
+              options.length > 0 ? (options[0].value as string) : ""
+            );
+          }}
         >
           <DropdownSection name="status">
-            <DropdownOption value="pending">Em espera de validação</DropdownOption>
+            <DropdownOption value="pending">
+              Em espera de validação
+            </DropdownOption>
             <DropdownOption value="accepted">Validado</DropdownOption>
             <DropdownOption value="refused">Recusado</DropdownOption>
           </DropdownSection>
         </InputSelect>
       </div>
 
-      <Table
-        paginationProps={{
-          itemsPerPageLabel: "Linhas por página",
-          itemsPerPage,
-          totalItems: harvesters.length,
-          availablePageSizes: [5, 10, 20],
-          currentPage,
-          buttonDropdownAriaLabel: "Selecionar linhas por página",
-          dropdownListAriaLabel: "Opções de linhas por página",
-          prevButtonAriaLabel: "Página anterior",
-          nextButtonAriaLabel: "Próxima página",
-          onPageChange: (page: number) => setCurrentPage(page),
-          onItemsPerPageChange: (size: number) => {
-            setItemsPerPage(size);
-            setCurrentPage(1);
-          },
-        }}
-      >
-        <TableHeader>
-          <TableRow>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Nome
-            </TableHeaderCell>
-            <TableHeaderCell>Estado</TableHeaderCell>
-            <TableHeaderCell>Implementação</TableHeaderCell>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Criado em
-            </TableHeaderCell>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Última execução
-            </TableHeaderCell>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Items
-            </TableHeaderCell>
-            <TableHeaderCell>Ações</TableHeaderCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {harvesters
-            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-            .map((harvester) => {
-            const status = getStatus(harvester);
-            return (
-              <TableRow key={harvester.id}>
-                <TableCell headerLabel="Nome">
-                  <a
-                    href={`/pages/admin/harvesters/${harvester.id}`}
-                    className="text-primary-600 underline"
-                  >
-                    {harvester.name}
-                  </a>
-                </TableCell>
-                <TableCell headerLabel="Estado">
-                  <StatusDot variant={status.variant}>{status.label}</StatusDot>
-                </TableCell>
-                <TableCell headerLabel="Implementação">
-                  {harvester.backend}
-                </TableCell>
-                <TableCell headerLabel="Criado em">
-                  {format(new Date(harvester.created_at), "dd/MM/yyyy")}
-                </TableCell>
-                <TableCell headerLabel="Última execução">
-                  {harvester.last_job?.ended
-                    ? format(new Date(harvester.last_job.ended), "dd/MM/yyyy")
-                    : "Ainda não"}
-                </TableCell>
-                <TableCell headerLabel="Items">
-                  {harvester.last_job?.items?.length || 0}
-                </TableCell>
-                <TableCell headerLabel="Ações">
-                  <div className="flex gap-[8px]">
-                    <a href={`/pages/admin/harvesters/${harvester.id}`}>
-                      <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+      {isLoading ? (
+        <p className="text-neutral-700 text-sm">A carregar...</p>
+      ) : filtered.length > 0 ? (
+        <Table
+          paginationProps={{
+            itemsPerPageLabel: "Linhas por página",
+            itemsPerPage: pageSize,
+            totalItems: totalItems,
+            availablePageSizes: [5, 10, 20],
+            currentPage,
+            buttonDropdownAriaLabel: "Selecionar linhas por página",
+            dropdownListAriaLabel: "Opções de linhas por página",
+            prevButtonAriaLabel: "Página anterior",
+            nextButtonAriaLabel: "Próxima página",
+            onPageChange: (page: number) => setCurrentPage(page),
+            onPageSizeChange: (size: number) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            },
+          }}
+        >
+          <TableHeader>
+            <TableRow>
+              <TableHeaderCell>Nome</TableHeaderCell>
+              <TableHeaderCell>Estado</TableHeaderCell>
+              <TableHeaderCell>Implementação</TableHeaderCell>
+              <TableHeaderCell>Criado em</TableHeaderCell>
+              <TableHeaderCell>Última execução</TableHeaderCell>
+              <TableHeaderCell>Items</TableHeaderCell>
+              <TableHeaderCell>Ações</TableHeaderCell>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filtered.map((harvester) => {
+              const status = getStatus(harvester);
+              return (
+                <TableRow key={harvester.id}>
+                  <TableCell headerLabel="Nome">
+                    <a
+                      href={`/pages/admin/system/harvesters/${harvester.id}`}
+                      className="text-primary-600 underline"
+                    >
+                      {harvester.name}
                     </a>
-                    <a href={`/pages/admin/harvesters/${harvester.id}`}>
-                      <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
+                  </TableCell>
+                  <TableCell headerLabel="Estado">
+                    <StatusDot variant={status.variant}>
+                      {status.label}
+                    </StatusDot>
+                  </TableCell>
+                  <TableCell headerLabel="Implementação">
+                    {harvester.backend}
+                  </TableCell>
+                  <TableCell headerLabel="Criado em">
+                    {format(new Date(harvester.created_at), "dd/MM/yyyy")}
+                  </TableCell>
+                  <TableCell headerLabel="Última execução">
+                    {harvester.last_job?.ended
+                      ? format(new Date(harvester.last_job.ended), "dd/MM/yyyy")
+                      : "Ainda não"}
+                  </TableCell>
+                  <TableCell headerLabel="Items">
+                    {harvester.last_job?.items?.length || 0}
+                  </TableCell>
+                  <TableCell headerLabel="Ações">
+                    <a
+                      href={`/pages/admin/harvesters/${harvester.id}`}
+                    >
+                      <Icon
+                        name="agora-line-edit"
+                        className="w-[20px] h-[20px]"
+                      />
                     </a>
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      ) : (
+        <CardNoResults
+          position="center"
+          icon={
+            <Icon
+              name="agora-line-download"
+              className="w-12 h-12 text-primary-500 icon-xl"
+            />
+          }
+          title="Sem harvesters"
+          description="Nenhum harvester encontrado."
+          hasAnchor={false}
+        />
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 import {
   Breadcrumb,
   Button,
@@ -148,9 +148,10 @@ function DeleteDatasetPopupContent({
 
 export default function DatasetsEditClient() {
   const searchParams = useSearchParams();
+  const params = useParams();
   const router = useRouter();
   const { show, hide } = usePopupContext();
-  const datasetId = searchParams.get("id") || "";
+  const datasetId = (params?.datasetId as string) || searchParams.get("id") || "";
   const slug = searchParams.get("slug") || datasetId;
 
   const [dataset, setDataset] = useState<Dataset | null>(null);
