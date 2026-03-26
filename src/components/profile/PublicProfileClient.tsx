@@ -255,7 +255,7 @@ export default function PublicProfileClient() {
                 hasIcon={true}
                 leadingIcon="agora-line-edit"
                 leadingIconHover="agora-solid-edit"
-                onClick={() => router.push("/pages/admin/profile")}
+                onClick={() => router.push("/pages/admin/me/profile")}
               >
                 Editar o meu perfil
               </Button>

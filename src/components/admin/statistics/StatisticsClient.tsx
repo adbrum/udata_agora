@@ -33,7 +33,7 @@ export default function StatisticsClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "Estatísticas", url: "/pages/admin/statistics" },
+            { label: "Estatísticas", url: "/pages/admin/me/statistics" },
           ]}
         />
       </div>

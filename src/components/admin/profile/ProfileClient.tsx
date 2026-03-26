@@ -198,7 +198,7 @@ export default function ProfileClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "Perfil", url: "/pages/admin/profile" },
+            { label: "Perfil", url: "/pages/admin/me/profile" },
           ]}
         />
       </div>
