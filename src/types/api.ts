@@ -974,6 +974,8 @@ export interface UserAdmin extends UserPublic {
 export interface UserAdminUpdatePayload {
   first_name?: string;
   last_name?: string;
+  about?: string;
+  website?: string;
   roles?: UserRole[];
   active?: boolean;
 }

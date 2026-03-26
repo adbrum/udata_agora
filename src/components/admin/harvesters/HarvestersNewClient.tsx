@@ -364,6 +364,7 @@ export default function HarvestersNewClient() {
 
                 <div className="admin-page__fields-group">
                   <IsolatedSelect
+                    key={`producer-${user?.organizations?.length ?? 0}`}
                     label="Selecione a sua organização *"
                     placeholder="Para pesquisar..."
                     id="harvester-producer"

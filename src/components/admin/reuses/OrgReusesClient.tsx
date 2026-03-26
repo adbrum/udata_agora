@@ -212,7 +212,7 @@ export default function OrgReusesClient() {
                   <Button
                     variant="primary"
                     appearance="outline"
-                    onClick={() => window.location.href = '/pages/admin/org/reuses/new'}
+                    onClick={() => window.location.href = '/pages/admin/reuses/new'}
                   >
                     Publique no portal
                   </Button>

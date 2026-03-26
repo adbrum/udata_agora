@@ -152,7 +152,7 @@ export default function OrgProfileClient() {
                   {org.metrics.datasets} conjuntos de dados
                 </span>
                 <span className="flex items-center gap-[4px]">
-                  <Icon name="agora-line-bar-chart" className="w-[16px] h-[16px]" />
+                  <Icon name="agora-line-refresh" className="w-[16px] h-[16px]" />
                   {org.metrics.reuses} reutilizações
                 </span>
               </div>
