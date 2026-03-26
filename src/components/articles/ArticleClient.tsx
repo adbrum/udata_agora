@@ -61,7 +61,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
           backgroundPosition="center right"
           breadcrumbItems={[
             { label: "Home", url: "/" },
-            { label: "Últimas novidades", url: "/pages/article" },
+            { label: "Últimas novidades", url: "/pages/posts" },
           ]}
         >
           <InputSearchBar
@@ -114,7 +114,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                   <div
                     key={post.id}
                     className="cursor-pointer group flex flex-col h-full"
-                    onClick={() => router.push(`/pages/article/${post.slug}`)}
+                    onClick={() => router.push(`/pages/posts/${post.slug}`)}
                   >
                     <CardLinks
                       className="!w-full h-full text-neutral-900 transition-all group-hover:shadow-md"
@@ -147,7 +147,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                         },
                       ]}
                       mainLink={
-                        <Link href={`/pages/article/${post.slug}`}>
+                        <Link href={`/pages/posts/${post.slug}`}>
                           <span className="underline">{post.name}</span>
                         </Link>
                       }
@@ -163,7 +163,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                 currentPage={currentPage}
                 totalItems={total}
                 pageSize={PAGE_SIZE}
-                baseUrl="/pages/article"
+                baseUrl="/pages/posts"
               />
             </div>
           </div>

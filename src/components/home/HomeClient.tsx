@@ -472,7 +472,7 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
                       blockedLink={false}
                     >
                       <div className="mt-auto pt-16">
-                        <Link href={`/pages/article/${post.slug}`}>
+                        <Link href={`/pages/posts/${post.slug}`}>
                           <Button
                             variant="primary"
                             appearance="link"
@@ -495,7 +495,7 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
               )}
             </div>
             <div className="mt-32">
-              <Link href="/pages/article">
+              <Link href="/pages/posts">
                 <Button
                   variant="primary"
                   appearance="link"

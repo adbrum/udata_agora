@@ -201,7 +201,7 @@ export default function SystemPostsClient() {
                 </TableCell>
                 <TableCell headerLabel="Ação">
                   <div className="flex gap-[8px]">
-                    <a href={`/pages/article/${post.slug}`}>
+                    <a href={`/pages/posts/${post.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
                     <a href={`/pages/admin/posts/${post.id}`}>

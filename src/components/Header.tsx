@@ -302,7 +302,7 @@ export const Header = () => {
             iconHover: "agora-solid-mega-phone",
             title: "Notícias",
             description: "Últimas novidades",
-            href: "/pages/article",
+            href: "/pages/posts",
           },
           // Minicursos ocultos temporariamente
           // {

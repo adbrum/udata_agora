@@ -188,7 +188,7 @@ export default function PostsEditClient() {
             variant="primary"
             appearance="outline"
             onClick={() =>
-              window.open(`/pages/article/${post.slug}`, "_blank")
+              window.open(`/pages/posts/${post.slug}`, "_blank")
             }
           >
             <span className="admin-edit-info__btn-content">
