@@ -76,6 +76,7 @@ import {
   HarvestSource,
   HarvestSourceCreatePayload,
   HarvestSourceUpdatePayload,
+  HomepageData,
 } from "@/types/api";
 
 // Server-side (Node.js) needs absolute URLs; client-side uses relative URLs via Next.js proxy
@@ -1053,7 +1054,7 @@ export async function unfollowReuse(id: string): Promise<void> {
 export async function fetchSiteInfo(): Promise<SiteInfo> {
   try {
     const res = await fetch(`${API_BASE_URL}/site/`, {
-      cache: "no-store",
+      next: { revalidate: 300 },
     });
 
     if (!res.ok) {
@@ -1138,7 +1139,7 @@ export async function fetchFeaturedReuses(pageSize: number = 3): Promise<APIResp
 export async function fetchLatestDatasets(pageSize: number = 3): Promise<APIResponse<Dataset>> {
   try {
     const res = await fetch(`${API_BASE_URL}/datasets/?sort=-created&page_size=${pageSize}`, {
-      cache: "no-store",
+      next: { revalidate: 60 },
     });
 
     if (!res.ok) {
@@ -1162,7 +1163,7 @@ export async function fetchLatestDatasets(pageSize: number = 3): Promise<APIResp
 export async function fetchLatestReuses(pageSize: number = 3): Promise<APIResponse<Reuse>> {
   try {
     const res = await fetch(`${API_BASE_URL}/reuses/?sort=-created&page_size=${pageSize}`, {
-      cache: "no-store",
+      next: { revalidate: 60 },
     });
 
     if (!res.ok) {
@@ -1189,7 +1190,7 @@ export async function fetchPosts(
 ): Promise<APIResponse<Post>> {
   try {
     const res = await fetch(`${API_BASE_URL}/posts/?page=${page}&page_size=${pageSize}`, {
-      cache: "no-store",
+      next: { revalidate: 120 },
     });
 
     if (!res.ok) {
@@ -1206,6 +1207,28 @@ export async function fetchPosts(
       total: 0,
       next_page: null,
       previous_page: null,
+    };
+  }
+}
+
+export async function fetchHomepageData(): Promise<HomepageData> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/site/home/`, {
+      next: { revalidate: 60 },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch homepage data: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching homepage data:", error);
+    return {
+      site_metrics: { datasets: 0, organizations: 0, reuses: 0, users: 0 },
+      latest_datasets: [],
+      latest_reuses: [],
+      latest_posts: [],
     };
   }
 }
