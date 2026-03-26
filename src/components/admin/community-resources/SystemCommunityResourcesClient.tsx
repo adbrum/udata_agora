@@ -32,9 +32,6 @@ export default function SystemCommunityResourcesClient() {
   const searchParams = useSearchParams();
   const resourceId = searchParams.get("resource_id");
 
-  if (resourceId) {
-    return <CommunityResourceEditClient />;
-  }
   const [resources, setResources] = useState<CommunityResource[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,6 +39,7 @@ export default function SystemCommunityResourcesClient() {
   const [pageSize, setPageSize] = useState(10);
 
   const loadData = useCallback(async () => {
+    if (resourceId) return;
     setIsLoading(true);
     try {
       const response = await fetchAllCommunityResources(currentPage, pageSize);
@@ -52,11 +50,15 @@ export default function SystemCommunityResourcesClient() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, resourceId]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  if (resourceId) {
+    return <CommunityResourceEditClient />;
+  }
 
   return (
     <div className="admin-page">
