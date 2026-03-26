@@ -8,6 +8,9 @@ import {
   CardNoResults,
   Icon,
   InputSearchBar,
+  InputSelect,
+  DropdownSection,
+  DropdownOption,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -37,6 +40,7 @@ export default function SystemPostsClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadData = useCallback(async () => {
@@ -48,14 +52,21 @@ export default function SystemPostsClient() {
         const q = searchQuery.trim().toLowerCase();
         data = data.filter((p) => p.name.toLowerCase().includes(q));
       }
+      if (typeFilter) {
+        data = data.filter((p) => {
+          if (typeFilter === "news") return p.kind !== "page";
+          if (typeFilter === "page") return p.kind === "page";
+          return true;
+        });
+      }
       setPosts(data);
-      setTotalItems(searchQuery.trim() ? data.length : response.total || 0);
+      setTotalItems(searchQuery.trim() || typeFilter ? data.length : response.total || 0);
     } catch (error) {
       console.error("Error loading posts:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, pageSize, searchQuery]);
+  }, [currentPage, pageSize, searchQuery, typeFilter]);
 
   useEffect(() => {
     loadData();
@@ -102,6 +113,24 @@ export default function SystemPostsClient() {
             }}
           />
         </div>
+        <InputSelect
+          label=""
+          hideLabel
+          placeholder="Todos"
+          id="filter-type"
+          onChange={(options) => {
+            setTypeFilter(
+              options.length > 0 ? (options[0].value as string) : ""
+            );
+            setCurrentPage(1);
+          }}
+        >
+          <DropdownSection name="type">
+            <DropdownOption value="">Todos</DropdownOption>
+            <DropdownOption value="news">Notícias</DropdownOption>
+            <DropdownOption value="page">Página</DropdownOption>
+          </DropdownSection>
+        </InputSelect>
         <Button
           variant="primary"
           appearance="outline"
@@ -138,6 +167,7 @@ export default function SystemPostsClient() {
           <TableHeader>
             <TableRow>
               <TableHeaderCell>Título</TableHeaderCell>
+              <TableHeaderCell>Tipo</TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell>Criado em</TableHeaderCell>
               <TableHeaderCell>Atualizado em</TableHeaderCell>
@@ -155,9 +185,12 @@ export default function SystemPostsClient() {
                     {post.name}
                   </a>
                 </TableCell>
+                <TableCell headerLabel="Tipo">
+                  {post.kind === "page" ? "Página" : "Notícias"}
+                </TableCell>
                 <TableCell headerLabel="Estado">
                   <StatusDot variant={post.published ? "success" : "warning"}>
-                    {post.published ? "PUBLICADO" : "RASCUNHO"}
+                    {post.published ? "Publicado" : "Rascunho"}
                   </StatusDot>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
@@ -168,10 +201,10 @@ export default function SystemPostsClient() {
                 </TableCell>
                 <TableCell headerLabel="Ação">
                   <div className="flex gap-[8px]">
-                    <a href={`/pages/admin/system/posts/${post.slug}`}>
+                    <a href={`/pages/article/${post.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/system/posts/edit?slug=${post.slug}`}>
+                    <a href={`/pages/admin/posts/${post.id}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>

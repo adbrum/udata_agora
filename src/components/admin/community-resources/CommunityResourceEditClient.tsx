@@ -312,7 +312,7 @@ export default function CommunityResourceEditClient() {
             </p>
 
             {/* PENHORA */}
-            <h2 className="admin-page__section-title">REUTILIZAÇÃO</h2>
+            <h2 className="admin-page__section-title">Reutilização</h2>
 
             <div className="admin-page__fields-group">
               <InputText
@@ -328,7 +328,7 @@ export default function CommunityResourceEditClient() {
 
             {/* SOMA DE VERIFICACAO */}
             <div className="flex flex-col items-start gap-[12px]">
-              <h2 className="admin-page__section-title mb-0">SOMA DE VERIFICAÇÃO</h2>
+              <h2 className="admin-page__section-title mb-0">Soma de verificação</h2>
             {showChecksum ? (
               <Button
                 variant="danger"
@@ -385,7 +385,7 @@ export default function CommunityResourceEditClient() {
             )}
 
             {/* DESCRICAO */}
-            <h2 className="admin-page__section-title">DESCRIÇÃO</h2>
+            <h2 className="admin-page__section-title">Descrição</h2>
 
             <div className="admin-page__fields-group">
               <InputText
@@ -450,7 +450,7 @@ export default function CommunityResourceEditClient() {
             </div>
 
             {/* ESQUEMA DE DADOS */}
-            <h2 className="admin-page__section-title">ESQUEMA DE DADOS</h2>
+            <h2 className="admin-page__section-title">Esquema de dados</h2>
 
             <div className="admin-page__fields-group">
               <IsolatedSelect

@@ -26,6 +26,7 @@ export default function PostsNewClient() {
   const totalSegments = 12;
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
+  const [articleType, setArticleType] = useState("news");
   const [contentType, setContentType] = useState("markdown");
   const [articleTitle, setArticleTitle] = useState("");
   const [articleHeader, setArticleHeader] = useState("");
@@ -190,6 +191,28 @@ export default function PostsNewClient() {
                   feedbackState="danger"
                   errorFeedbackText="Campo obrigatório"
                 />
+
+                <div className="flex flex-col gap-[8px]">
+                  <span className="text-primary-900 text-base font-medium leading-7">
+                    Tipo de artigo
+                  </span>
+                  <div className="flex flex-row gap-4">
+                    <RadioButton
+                      label="Notícias"
+                      id="article-type-news"
+                      name="article-type"
+                      checked={articleType === "news"}
+                      onChange={() => setArticleType("news")}
+                    />
+                    <RadioButton
+                      label="Página"
+                      id="article-type-page"
+                      name="article-type"
+                      checked={articleType === "page"}
+                      onChange={() => setArticleType("page")}
+                    />
+                  </div>
+                </div>
 
                 <div className="flex flex-col gap-[8px]">
                   <span className="text-primary-900 text-base font-medium leading-7">
