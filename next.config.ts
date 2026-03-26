@@ -26,7 +26,8 @@ const nextConfig: NextConfig = {
       },
       {
         key: "Permissions-Policy",
-        value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+        value:
+          'camera=(), microphone=(), geolocation=(), interest-cohort=() fullscreen=(self "https://app.powerbi.com")',
       },
     ];
 
@@ -44,7 +45,7 @@ const nextConfig: NextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: http://localhost:7000 https://dados.gov.pt; font-src 'self' data:; connect-src 'self' http://localhost:7000 https://dados.gov.pt; frame-ancestors 'none';",
+              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: http://localhost:7000 https://dados.gov.pt; frame-src 'self' https://app.powerbi.com; font-src 'self' data:; connect-src 'self' http://localhost:7000 https://dados.gov.pt; frame-ancestors 'none';",
           },
         ],
       },

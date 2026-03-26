@@ -31,12 +31,12 @@ export default function DataSourcesSection({ className, title, description, data
                                         description={description} />
                                 </InfoBlock.Content>
                             </InfoBlock.Header>
-                            <InfoBlock.Content className='flex'>
+                            <InfoBlock.Content>
                                 <div className='flex flex-col gap-16'>
                                     {dataSources.map((source, index) => (
                                         <Anchor
                                             href={source.href}
-                                            className='!justify-start'
+                                            className='!justify-start !text-nowrap'
                                             target="_blank"
                                             key={index}
                                             hasIcon
