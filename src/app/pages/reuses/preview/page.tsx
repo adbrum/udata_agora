@@ -18,7 +18,7 @@ function ReusePreviewContent() {
           <Breadcrumb
             items={[
               { label: "Home", url: "/" },
-              { label: "Reutilizações", url: "/pages/admin/reuses" },
+              { label: "Reutilizações", url: "/pages/admin/me/reuses" },
               { label: title, url: "#" },
             ]}
           />

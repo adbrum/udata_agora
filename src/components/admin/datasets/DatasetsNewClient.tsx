@@ -34,7 +34,7 @@ export default function DatasetsNewClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "Conjuntos de dados", url: "/pages/admin/datasets" },
+            { label: "Conjuntos de dados", url: "/pages/admin/me/datasets" },
           ]}
         />
       </div>
@@ -180,7 +180,7 @@ export default function DatasetsNewClient() {
             setCreatedDatasetId(id);
             router.push(buildStepUrl(currentStep + 1));
           }}
-          onComplete={() => router.push("/pages/admin/datasets")}
+          onComplete={() => router.push("/pages/admin/me/datasets")}
         />
       )}
     </div>

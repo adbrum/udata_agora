@@ -30,7 +30,7 @@ const navGroups: NavGroup[] = [
     children: [
       {
         label: "Conjunto de dados",
-        href: "/pages/admin/datasets",
+        href: "/pages/admin/me/datasets",
       },
       // API oculta temporariamente
       // {
@@ -39,11 +39,11 @@ const navGroups: NavGroup[] = [
       // },
       {
         label: "Reutilizações",
-        href: "/pages/admin/reuses",
+        href: "/pages/admin/me/reuses",
       },
       {
         label: "Recursos comunitários",
-        href: "/pages/admin/community-resources",
+        href: "/pages/admin/me/community-resources",
       },
       {
         label: "Perfil",

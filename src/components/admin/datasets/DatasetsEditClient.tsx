@@ -412,7 +412,7 @@ export default function DatasetsEditClient() {
     try {
       await deleteDataset(dataset.id);
       hide();
-      router.push("/pages/admin/datasets");
+      router.push("/pages/admin/me/datasets");
     } catch (error) {
       console.error("Error deleting dataset:", error);
       setApiError("Erro ao eliminar o conjunto de dados.");
@@ -472,7 +472,7 @@ export default function DatasetsEditClient() {
         <StatusCard type="danger" description="Conjunto de dados não encontrado." />
         <Button
           variant="primary"
-          onClick={() => router.push("/pages/admin/datasets")}
+          onClick={() => router.push("/pages/admin/me/datasets")}
         >
           Voltar
         </Button>
@@ -528,7 +528,7 @@ export default function DatasetsEditClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Conjuntos de dados", url: "/pages/admin/datasets" },
+            { label: "Conjuntos de dados", url: "/pages/admin/me/datasets" },
             { label: dataset.title, url: "#" },
           ]}
         />
@@ -1150,7 +1150,7 @@ export default function DatasetsEditClient() {
                             : format(new Date(resource.created_at), "d 'de' MMMM 'de' yyyy", { locale: pt })}
                         </TableCell>
                         <TableCell headerLabel="Ação">
-                          <a href={`/pages/admin/datasets/edit?id=${dataset.id}`}>
+                          <a href={`/pages/admin/me/datasets/edit?id=${dataset.id}`}>
                             <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                           </a>
                         </TableCell>

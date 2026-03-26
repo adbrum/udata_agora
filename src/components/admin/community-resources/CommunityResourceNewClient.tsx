@@ -33,7 +33,7 @@ export default function CommunityResourceNewClient() {
             { label: displayName || "...", url: "#" },
             {
               label: "Recursos comunitários",
-              url: "/pages/admin/community-resources",
+              url: "/pages/admin/me/community-resources",
             },
           ]}
         />

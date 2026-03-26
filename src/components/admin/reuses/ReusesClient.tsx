@@ -57,7 +57,7 @@ export default function ReusesClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "Reutilizações", url: "/pages/admin/reuses" },
+            { label: "Reutilizações", url: "/pages/admin/me/reuses" },
           ]}
         />
       </div>
@@ -165,7 +165,7 @@ export default function ReusesClient() {
                     <a href={`/pages/reuses/${reuse.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/reuses/edit?id=${reuse.id}`}>
+                    <a href={`/pages/admin/me/reuses/edit?id=${reuse.id}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>

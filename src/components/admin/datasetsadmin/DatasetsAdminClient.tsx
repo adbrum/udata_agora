@@ -307,7 +307,7 @@ export default function DatasetsAdminClient({
     try {
       await updateDataset(createdDataset.id, { private: false });
       if (onComplete) onComplete();
-      else router.push("/pages/admin/datasets");
+      else router.push("/pages/admin/me/datasets");
     } catch (error) {
       console.error("Error publishing dataset:", error);
       setApiError("Erro ao publicar o conjunto de dados. Tente novamente.");
@@ -318,7 +318,7 @@ export default function DatasetsAdminClient({
 
   const handleSaveDraft = () => {
     if (onComplete) onComplete();
-    else router.push("/pages/admin/datasets");
+    else router.push("/pages/admin/me/datasets");
   };
 
   const auxiliarItemsStep2 = [

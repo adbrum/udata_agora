@@ -29,7 +29,7 @@ export default function ReusesNewClient() {
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "Reutilizações", url: "/pages/admin/reuses" },
+            { label: "Reutilizações", url: "/pages/admin/me/reuses" },
           ]}
         />
       </div>

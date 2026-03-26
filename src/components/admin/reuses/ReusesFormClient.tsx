@@ -958,7 +958,7 @@ export default function ReusesFormClient({
                     setIsSubmitting(true);
                     try {
                       await updateReuse(createdReuse.id, { private: true });
-                      window.location.href = "/pages/admin/reuses";
+                      window.location.href = "/pages/admin/me/reuses";
                     } catch {
                       setApiError("Erro ao salvar rascunho. Tente novamente.");
                     } finally {
@@ -977,7 +977,7 @@ export default function ReusesFormClient({
                     setApiError(null);
                     try {
                       await updateReuse(createdReuse.id, { private: false });
-                      window.location.href = "/pages/admin/reuses";
+                      window.location.href = "/pages/admin/me/reuses";
                     } catch {
                       setApiError("Erro ao publicar. Tente novamente.");
                     } finally {

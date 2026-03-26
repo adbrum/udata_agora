@@ -659,7 +659,7 @@ export const Header = () => {
         <span className="agora-link-wrapper agora-link-wrapper-link-neutral full-width inline-flex items-center justify-center min-h-[44px] min-w-[44px] py-8 custom-header-link-wrapper panel-menu-link-wrapper">
           <Link
             className="link-with-icon"
-            href="/pages/admin/datasets"
+            href="/pages/admin/me/datasets"
           >
             <div className="icon-wrapper leading">
               <Icon name="agora-line-hardware-settings" dimensions="s" />

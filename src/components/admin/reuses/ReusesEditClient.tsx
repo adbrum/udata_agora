@@ -316,7 +316,7 @@ export default function ReusesEditClient() {
     setIsSubmitting(true);
     try {
       await deleteReuse(reuse.id);
-      router.push("/pages/admin/reuses");
+      router.push("/pages/admin/me/reuses");
     } catch (error) {
       console.error("Error deleting reuse:", error);
       setApiError("Erro ao eliminar a reutilização.");
@@ -339,7 +339,7 @@ export default function ReusesEditClient() {
         <StatusCard type="danger" description="Reutilização não encontrada." />
         <Button
           variant="primary"
-          onClick={() => router.push("/pages/admin/reuses")}
+          onClick={() => router.push("/pages/admin/me/reuses")}
         >
           Voltar
         </Button>
@@ -353,7 +353,7 @@ export default function ReusesEditClient() {
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
-            { label: "Reutilizações", url: "/pages/admin/reuses" },
+            { label: "Reutilizações", url: "/pages/admin/me/reuses" },
             { label: reuse.title, url: "#" },
           ]}
         />
