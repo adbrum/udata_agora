@@ -47,11 +47,11 @@ const navGroups: NavGroup[] = [
       },
       {
         label: "Perfil",
-        href: "/pages/admin/profile",
+        href: "/pages/admin/me/profile",
       },
       {
         label: "Estatísticas",
-        href: "/pages/admin/statistics",
+        href: "/pages/admin/me/statistics",
       },
     ],
   },
