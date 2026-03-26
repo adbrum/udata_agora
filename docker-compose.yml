@@ -7,6 +7,7 @@ services:
       NEXT_PUBLIC_API_BASE: /api/1
       NEXT_PUBLIC_API_V2_BASE: /api/2
       BACKEND_URL: http://host.docker.internal:7000
+      BACKEND_HOST: localhost:7000
       NEXT_PUBLIC_FRONT_BASE: http://localhost:3000
       NEXT_PUBLIC_BASE_URL: https://dados.gov.pt/
       NEXT_PUBLIC_STATIC_URL: https://dados.gov.pt/static/
