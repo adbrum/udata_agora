@@ -179,7 +179,7 @@ export default function SystemPostsClient() {
               <TableRow key={post.id}>
                 <TableCell headerLabel="Título">
                   <a
-                    href={`/pages/admin/system/posts/${post.slug}`}
+                    href={`/pages/posts/${post.slug}`}
                     className="text-primary-600 underline"
                   >
                     {post.name}
