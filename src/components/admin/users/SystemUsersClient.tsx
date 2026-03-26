@@ -201,7 +201,7 @@ export default function SystemUsersClient() {
                     <a href={`/pages/users/${user.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/system/users/edit?slug=${user.slug}`}>
+                    <a href={`/pages/admin/users/${user.id}/profile`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>

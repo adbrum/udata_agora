@@ -232,7 +232,7 @@ export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
                   <Button
                     variant="primary"
                     appearance="outline"
-                    onClick={() => window.location.href = '/pages/admin/org/datasets/new'}
+                    onClick={() => window.location.href = '/pages/admin/datasets/new'}
                   >
                     Publique no portal
                   </Button>

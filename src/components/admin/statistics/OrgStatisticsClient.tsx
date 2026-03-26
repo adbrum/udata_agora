@@ -113,7 +113,7 @@ export default function OrgStatisticsClient() {
                 </div>
                 <div className="flex-1">
                   <CardFrame label={String(metrics?.reuses ?? 0)}>
-                    <p className="text-neutral-700 text-base">Reutilizar</p>
+                    <p className="text-neutral-700 text-base">Reutilizações</p>
                   </CardFrame>
                 </div>
               </div>
@@ -244,7 +244,7 @@ export default function OrgStatisticsClient() {
           </TabBody>
         </Tab>
         <Tab>
-          <TabHeader>Reutilizar</TabHeader>
+          <TabHeader>Reutilizações</TabHeader>
           <TabBody>
             <div className="mt-[24px]">
               <div className="flex items-end gap-[16px] mb-[24px]">

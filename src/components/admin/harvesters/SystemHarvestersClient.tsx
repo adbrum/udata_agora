@@ -193,7 +193,8 @@ export default function SystemHarvestersClient() {
               <TableHeaderCell>Implementação</TableHeaderCell>
               <TableHeaderCell>Criado em</TableHeaderCell>
               <TableHeaderCell>Última execução</TableHeaderCell>
-              <TableHeaderCell>Items</TableHeaderCell>
+              <TableHeaderCell>Conjuntos de dados</TableHeaderCell>
+              <TableHeaderCell>API</TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
@@ -226,8 +227,11 @@ export default function SystemHarvestersClient() {
                       ? format(new Date(harvester.last_job.ended), "dd/MM/yyyy")
                       : "Ainda não"}
                   </TableCell>
-                  <TableCell headerLabel="Items">
+                  <TableCell headerLabel="Conjuntos de dados">
                     {harvester.last_job?.items?.length || 0}
+                  </TableCell>
+                  <TableCell headerLabel="API">
+                    0
                   </TableCell>
                   <TableCell headerLabel="Ações">
                     <a

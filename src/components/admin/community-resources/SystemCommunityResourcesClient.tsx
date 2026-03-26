@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Breadcrumb,
   CardNoResults,
@@ -16,6 +17,7 @@ import StatusDot from "@/components/admin/StatusDot";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 import { fetchAllCommunityResources } from "@/services/api";
 import { CommunityResource } from "@/types/api";
+import CommunityResourceEditClient from "./CommunityResourceEditClient";
 
 const formatDate = (dateStr: string) => {
   try {
@@ -27,6 +29,12 @@ const formatDate = (dateStr: string) => {
 };
 
 export default function SystemCommunityResourcesClient() {
+  const searchParams = useSearchParams();
+  const resourceId = searchParams.get("resource_id");
+
+  if (resourceId) {
+    return <CommunityResourceEditClient />;
+  }
   const [resources, setResources] = useState<CommunityResource[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -98,7 +106,7 @@ export default function SystemCommunityResourcesClient() {
           <TableHeader>
             <TableRow>
               <TableHeaderCell>Título do recurso</TableHeaderCell>
-              <TableHeaderCell>Autor</TableHeaderCell>
+              <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell>Formato</TableHeaderCell>
               <TableHeaderCell>Criado em</TableHeaderCell>
               <TableHeaderCell>Modificado em</TableHeaderCell>
@@ -130,11 +138,21 @@ export default function SystemCommunityResourcesClient() {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell headerLabel="Autor">
+                  <TableCell headerLabel="Estado">
                     <StatusDot
-                      variant={resource.organization ? "success" : "warning"}
+                      variant={
+                        resource.deleted
+                          ? "danger"
+                          : resource.archived
+                            ? "warning"
+                            : "success"
+                      }
                     >
-                      {authorName}
+                      {resource.deleted
+                        ? "Eliminado"
+                        : resource.archived
+                          ? "Arquivado"
+                          : "Publicado"}
                     </StatusDot>
                   </TableCell>
                   <TableCell headerLabel="Formato">
