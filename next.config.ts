@@ -75,21 +75,17 @@ const nextConfig: NextConfig = {
           destination: `${BACKEND_URL}/get-csrf`,
         },
         // SAML / Autenticação.gov routes
+        // SSO and logout callbacks use dedicated route handlers (src/app/saml/)
+        // that explicitly forward Set-Cookie headers from the backend.
+        // Only /saml/login, /saml/logout, /saml/eidas/login, /saml/eidas/logout
+        // and /saml/migration/* remain as rewrites (they don't set session cookies).
         {
           source: "/saml/login",
           destination: `${BACKEND_URL}/saml/login`,
         },
         {
-          source: "/saml/sso",
-          destination: `${BACKEND_URL}/saml/sso`,
-        },
-        {
           source: "/saml/logout",
           destination: `${BACKEND_URL}/saml/logout`,
-        },
-        {
-          source: "/saml/sso_logout",
-          destination: `${BACKEND_URL}/saml/sso_logout`,
         },
         // Account migration routes
         {
@@ -102,16 +98,8 @@ const nextConfig: NextConfig = {
           destination: `${BACKEND_URL}/saml/eidas/login`,
         },
         {
-          source: "/saml/eidas/sso",
-          destination: `${BACKEND_URL}/saml/eidas/sso`,
-        },
-        {
           source: "/saml/eidas/logout",
           destination: `${BACKEND_URL}/saml/eidas/logout`,
-        },
-        {
-          source: "/saml/eidas/sso_logout",
-          destination: `${BACKEND_URL}/saml/eidas/sso_logout`,
         },
         // API routes — must be in beforeFiles to avoid redirect loops
         // when Flask returns 308 trailing-slash redirects
