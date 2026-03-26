@@ -397,43 +397,59 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
           </div>
         </div>
 
-        {/* Reuses / Storytelling */}
+        {/* Data Stories */}
         <div className="xl:py-64 bg-primary-900">
           <div className="container mx-auto px-4">
             <h2 className="text-xl-bold text-white">Data Stories</h2>
             <p className="mt-16 mb-32 max-w-3xl text-white">
-              Precisa de uma descrição uma vez que é um titulo estrangeiro e novidade no dados.gov
+              Histórias contadas com dados abertos — análises e visualizações sobre temas de interesse público.
             </p>
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32 storytellings">
-              {latestReuses.length > 0 ? (
-                latestReuses.map((reuse) => (
-                  <CardArticle
-                    key={reuse.id}
-                    variant="indented"
-                    image={{
-                      src: reuse.image_thumbnail || reuse.image || "",
-                      alt: reuse.title,
-                    }}
-                    subtitle={
-                      reuse.created_at
-                        ? `Publicado a ${format(new Date(reuse.created_at), "dd MMM yyyy", { locale: pt })}`
-                        : ""
-                    }
-                    title={reuse.title}
-                    mainAnchor={{
-                      href: `/pages/reuses/${reuse.slug}`,
-                    }}
-                    blockedLink={true}
-                  />
-                ))
-              ) : (
-                <div className="xl:col-span-3 text-center py-32 text-neutral-300">
-                  Nenhuma reutilização encontrada.
-                </div>
-              )}
+              {[
+                {
+                  id: "1",
+                  slug: "servicos-publicos/o-canal-presencial",
+                  title: "Serviços Públicos: o canal presencial",
+                  image: "/laptop.png",
+                  created_at: "2024-03-11T12:00:00Z",
+                },
+                {
+                  id: "2",
+                  slug: "territorios-inteligentes/pressao-turistica-em-portugal",
+                  title: "Territórios Inteligentes: Pressão turística em Portugal",
+                  image: "/laptop.png",
+                  created_at: "2024-03-10T12:00:00Z",
+                },
+                {
+                  id: "3",
+                  slug: "servicos-publicos/o-canal-digital",
+                  title: "Serviços Públicos: o canal digital",
+                  image: "/laptop.png",
+                  created_at: "2024-03-09T12:00:00Z",
+                },
+              ].map((story) => (
+                <CardArticle
+                  key={story.id}
+                  variant="indented"
+                  image={{
+                    src: story.image,
+                    alt: story.title,
+                  }}
+                  subtitle={
+                    story.created_at
+                      ? `Publicado a ${format(new Date(story.created_at), "dd MMM yyyy", { locale: pt })}`
+                      : ""
+                  }
+                  title={story.title}
+                  mainAnchor={{
+                    href: `/pages/datastories/${story.slug}`,
+                  }}
+                  blockedLink={true}
+                />
+              ))}
             </div>
             <div className="mt-32">
-              <Link href="/pages/reuses">
+              <Link href="/pages/datastories">
                 <Button
                   variant="primary"
                   appearance="link"
