@@ -281,6 +281,7 @@ export interface DatasetCreatePayload {
   spatial?: SpatialCoverage;
   private?: boolean;
   organization?: string;
+  contact_points?: string[];
   extras?: Record<string, unknown>;
 }
 
@@ -597,6 +598,24 @@ export interface DiscussionCreatePayload {
     class: string;
     id: string;
   };
+  organization?: string;
+}
+
+export interface ContactPoint {
+  id: string;
+  name: string;
+  email: string;
+  contact_form?: string;
+  role: string;
+  organization?: { id: string; name: string } | null;
+  owner?: UserRef | null;
+}
+
+export interface ContactPointCreatePayload {
+  name: string;
+  email?: string;
+  contact_form?: string;
+  role: string;
   organization?: string;
 }
 

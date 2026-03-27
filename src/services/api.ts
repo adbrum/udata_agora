@@ -1,6 +1,8 @@
 import {
   Activity,
   APIResponse,
+  ContactPoint,
+  ContactPointCreatePayload,
   Dataservice,
   DataserviceCreatePayload,
   DataserviceUpdatePayload,
@@ -2507,6 +2509,46 @@ export async function fetchOrgRoles(): Promise<OrgRole[]> {
     console.error("Error fetching org roles:", error);
     return [];
   }
+}
+
+// --- Contact Points ---
+
+export async function fetchOrgContactPoints(
+  orgId: string,
+  page: number = 1,
+  pageSize: number = 100,
+): Promise<APIResponse<ContactPoint>> {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/organizations/${orgId}/contacts/?page=${page}&page_size=${pageSize}`,
+      { cache: "no-store" },
+    );
+    if (!res.ok)
+      throw new Error(`Failed to fetch org contact points: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching org contact points:", error);
+    return {
+      data: [], page: 1, page_size: pageSize,
+      total: 0, next_page: null, previous_page: null,
+    };
+  }
+}
+
+export async function createContactPoint(
+  payload: ContactPointCreatePayload,
+): Promise<ContactPoint> {
+  const res = await fetch(`${API_AUTH_URL}/contacts/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
 }
 
 // --- CSV Export URL Builders ---

@@ -26,8 +26,16 @@ import {
   fetchDataset,
   fetchMyDatasets,
   suggestTags,
+  fetchOrgContactPoints,
+  createContactPoint,
 } from "@/services/api";
-import { License, Frequency, Dataset, TagSuggestion } from "@/types/api";
+import {
+  License,
+  Frequency,
+  Dataset,
+  TagSuggestion,
+  ContactPoint,
+} from "@/types/api";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
 import FileUploadModal from "@/components/admin/FileUploadModal";
@@ -69,10 +77,22 @@ export default function DatasetsAdminClient({
   const [temporalStart, setTemporalStart] = useState("");
   const [temporalEnd, setTemporalEnd] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
-  const [showNewContact, setShowNewContact] = useState(false);
-  const [contactName, setContactName] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
-  const [contactLink, setContactLink] = useState("");
+  const [selectedProducer, setSelectedProducer] = useState("");
+  const [orgContactPoints, setOrgContactPoints] = useState<ContactPoint[]>([]);
+  const [selectedContactPointIds, setSelectedContactPointIds] = useState<string[]>([]);
+
+  interface DraftContact {
+    id: number;
+    name: string;
+    email: string;
+    link: string;
+    saved: boolean;
+    errors: Record<string, boolean>;
+  }
+  const draftIdRef = useRef(0);
+  const [draftContacts, setDraftContacts] = useState<DraftContact[]>([
+    { id: 0, name: "", email: "", link: "", saved: false, errors: {} },
+  ]);
 
   // Step 3 state
   const [resourceUrl, setResourceUrl] = useState("");
@@ -90,19 +110,19 @@ export default function DatasetsAdminClient({
   const producerOptions = useMemo(
     () => (
       <DropdownSection name="identity">
-        <DropdownOption value="user">
-          {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
-        </DropdownOption>
-        <>
-          {(user?.organizations || []).map((org) => (
+        {[
+          <DropdownOption key="user" value="user">
+            {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
+          </DropdownOption>,
+          ...(user?.organizations || []).map((org) => (
             <DropdownOption key={org.id} value={org.id}>
               {org.name}
             </DropdownOption>
-          ))}
-        </>
+          )),
+        ]}
       </DropdownSection>
     ),
-    [user]
+    [user],
   );
 
   const licenseOptions = useMemo(
@@ -143,6 +163,106 @@ export default function DatasetsAdminClient({
     ),
     [tags],
   );
+
+  // Fetch contact points when an organization is selected as producer
+  useEffect(() => {
+    if (selectedProducer && selectedProducer !== "user") {
+      async function loadContactPoints() {
+        try {
+          const response = await fetchOrgContactPoints(selectedProducer);
+          setOrgContactPoints(response.data);
+        } catch (error) {
+          console.error("Error loading contact points:", error);
+          setOrgContactPoints([]);
+        }
+      }
+      loadContactPoints();
+    } else {
+      setOrgContactPoints([]);
+      setSelectedContactPointIds([]);
+    }
+  }, [selectedProducer]);
+
+  const updateDraft = (draftId: number, field: string, value: string) => {
+    setDraftContacts((prev) =>
+      prev.map((d) =>
+        d.id === draftId
+          ? { ...d, [field]: value, errors: { ...d.errors, [field]: false } }
+          : d,
+      ),
+    );
+  };
+
+  const handleSaveContactDraft = async (draftId: number) => {
+    const draft = draftContacts.find((d) => d.id === draftId);
+    if (!draft) return;
+
+    const errors: Record<string, boolean> = {};
+    if (!draft.name.trim()) errors.name = true;
+    if (!draft.email.trim() && !draft.link.trim()) {
+      errors.email = true;
+      errors.link = true;
+    }
+    if (Object.keys(errors).length > 0) {
+      setDraftContacts((prev) =>
+        prev.map((d) => (d.id === draftId ? { ...d, errors } : d)),
+      );
+      return;
+    }
+
+    try {
+      const payload: Parameters<typeof createContactPoint>[0] = {
+        name: draft.name.trim(),
+        role: "contact",
+        organization: selectedProducer,
+      };
+      if (draft.email.trim()) payload.email = draft.email.trim();
+      if (draft.link.trim()) payload.contact_form = draft.link.trim();
+      const newContact = await createContactPoint(payload);
+      setOrgContactPoints((prev) => [...prev, newContact]);
+      setSelectedContactPointIds((prev) => [...prev, newContact.id]);
+      setDraftContacts((prev) =>
+        prev.map((d) =>
+          d.id === draftId ? { ...d, saved: true, errors: {} } : d,
+        ),
+      );
+    } catch (error) {
+      console.error("Error creating contact point:", error);
+    }
+  };
+
+  const handleAddNewDraft = async (saveDraftId: number) => {
+    const draft = draftContacts.find((d) => d.id === saveDraftId);
+    if (!draft) return;
+
+    // Validate before saving
+    const errors: Record<string, boolean> = {};
+    if (!draft.name.trim()) errors.name = true;
+    if (!draft.email.trim() && !draft.link.trim()) {
+      errors.email = true;
+      errors.link = true;
+    }
+    if (Object.keys(errors).length > 0) {
+      setDraftContacts((prev) =>
+        prev.map((d) => (d.id === saveDraftId ? { ...d, errors } : d)),
+      );
+      return;
+    }
+
+    await handleSaveContactDraft(saveDraftId);
+    draftIdRef.current += 1;
+    setDraftContacts((prev) => [
+      ...prev,
+      {
+        id: draftIdRef.current,
+        name: "",
+        email: "",
+        link: "",
+        saved: false,
+        errors: {},
+      },
+    ]);
+  };
 
   // Whether user has existing datasets
   const [hasDatasets, setHasDatasets] = useState(true);
@@ -222,6 +342,9 @@ export default function DatasetsAdminClient({
         payload.organization = selectedProducerRef.current;
       }
       if (selectedLicenseRef.current) payload.license = selectedLicenseRef.current;
+      if (selectedContactPointIds.length > 0) {
+        payload.contact_points = selectedContactPointIds;
+      }
       if (temporalStart) {
         payload.temporal_coverage = {
           start: temporalStart,
@@ -545,6 +668,7 @@ export default function DatasetsAdminClient({
                   placeholder="Selecione o produtor..."
                   id="dataset-producer"
                   onChangeRef={selectedProducerRef}
+                  onChangeCallback={(value) => setSelectedProducer(value)}
                 >
                   {producerOptions}
                 </IsolatedSelect>
@@ -775,6 +899,181 @@ export default function DatasetsAdminClient({
                     {licenseOptions}
                   </IsolatedSelect>
                 </div>
+
+                {selectedProducer && selectedProducer !== "user" && (
+                  <>
+                    <h2 className="admin-page__section-title">
+                      Pontos de contato
+                    </h2>
+
+                    <div className="admin-page__fields-group">
+                      <span className="text-primary-900 text-base font-medium leading-7">
+                        Escolha um ponto de contato.
+                      </span>
+
+                      {draftContacts.map((draft) =>
+                        draft.saved ? (
+                          <div
+                            key={draft.id}
+                            className="border border-neutral-300 rounded"
+                          >
+                            <div
+                              className="flex items-center justify-between
+                                px-4 py-3 border-b border-neutral-200"
+                            >
+                              <span className="text-primary-900 text-sm">
+                                {draft.name}
+                              </span>
+                              <div className="flex items-center gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setDraftContacts((prev) =>
+                                      prev.filter((d) => d.id !== draft.id),
+                                    )
+                                  }
+                                  className="text-neutral-500 hover:text-neutral-700"
+                                  aria-label="Remover contato"
+                                >
+                                  <Icon
+                                    name="agora-line-trash"
+                                    className="w-4 h-4"
+                                  />
+                                </button>
+                              </div>
+                            </div>
+                            <div className="px-4 py-3 flex flex-col gap-1">
+                              {draft.email && (
+                                <span className="text-neutral-700 text-sm">
+                                  E-mail de contato : {draft.email}
+                                </span>
+                              )}
+                              {draft.link && (
+                                <span className="text-neutral-700 text-sm">
+                                  URL de contato: {draft.link}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div key={draft.id}>
+                            <div
+                              className="text-primary-900 text-base
+                                font-medium leading-7"
+                              style={{ paddingBottom: "16px" }}
+                            >
+                              Escolha um ponto de contato.
+                            </div>
+                            <div style={{ paddingBottom: "24px" }}>
+                              <InputText
+                                label="Nome *"
+                                placeholder="Por exemplo, o nome do serviço."
+                                id={`contact-name-${draft.id}`}
+                                value={draft.name}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) =>
+                                  updateDraft(
+                                    draft.id,
+                                    "name",
+                                    e.target.value,
+                                  )
+                                }
+                                hasError={!!draft.errors.name}
+                                hasFeedback={!!draft.errors.name}
+                                feedbackState="danger"
+                                errorFeedbackText="Campo obrigatório"
+                              />
+                            </div>
+                            <div
+                              className="grid grid-cols-2 gap-[18px]"
+                              style={{ paddingBottom: "24px" }}
+                            >
+                              <InputText
+                                label="E-mail"
+                                placeholder="contact@organisation.org"
+                                id={`contact-email-${draft.id}`}
+                                value={draft.email}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) =>
+                                  updateDraft(
+                                    draft.id,
+                                    "email",
+                                    e.target.value,
+                                  )
+                                }
+                                hasError={!!draft.errors.email}
+                                hasFeedback={!!draft.errors.email}
+                                feedbackState="danger"
+                                errorFeedbackText="Preencha o e-mail ou a reutilização"
+                              />
+                              <InputText
+                                label="Reutilização"
+                                placeholder="https://..."
+                                id={`contact-link-${draft.id}`}
+                                value={draft.link}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) =>
+                                  updateDraft(
+                                    draft.id,
+                                    "link",
+                                    e.target.value,
+                                  )
+                                }
+                                hasError={!!draft.errors.link}
+                                hasFeedback={!!draft.errors.link}
+                                feedbackState="danger"
+                                errorFeedbackText="Preencha o e-mail ou a reutilização"
+                              />
+                            </div>
+                            <div style={{ paddingBottom: "24px" }}>
+                              <Button
+                                appearance="outline"
+                                variant="primary"
+                                hasIcon
+                                leadingIcon="agora-line-check-circle"
+                                leadingIconHover="agora-solid-check-circle"
+                                onClick={() =>
+                                  handleSaveContactDraft(draft.id)
+                                }
+                              >
+                                Guardar contato
+                              </Button>
+                            </div>
+                          </div>
+                        ),
+                      )}
+
+                      <div style={{ marginTop: "-16px" }}>
+                        <Button
+                          appearance="outline"
+                          variant="primary"
+                          hasIcon
+                          leadingIcon="agora-line-plus-circle"
+                          leadingIconHover="agora-solid-plus-circle"
+                          onClick={() => {
+                            draftIdRef.current += 1;
+                            setDraftContacts((prev) => [
+                              ...prev,
+                              {
+                                id: draftIdRef.current,
+                                name: "",
+                                email: "",
+                                link: "",
+                                saved: false,
+                                errors: {},
+                              },
+                            ]);
+                          }}
+                        >
+                          Novo contato
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <h2 className="admin-page__section-title">Tempo</h2>
 
