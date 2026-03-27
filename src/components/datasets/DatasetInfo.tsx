@@ -95,11 +95,27 @@ const CopyButton = ({ text }: { text: string }) => {
 };
 
 export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
+  const [showExtras, setShowExtras] = useState(false);
+  const [showHarvest, setShowHarvest] = useState(false);
+
   if (!dataset) return null;
 
   const hasInfo = dataset.tags?.length > 0 || dataset.id || dataset.license;
   const hasTemporal = dataset.created_at || dataset.frequency || dataset.last_modified;
   const hasSpatial = dataset.spatial?.zones?.length || dataset.spatial?.granularity;
+  const hasExtras = dataset.page || (dataset.contact_points && dataset.contact_points.length > 0);
+  const harvestData = dataset.extras?.["harvest:domain"]
+    ? Object.entries(dataset.extras)
+        .filter(([key]) => key.startsWith("harvest:"))
+        .reduce(
+          (acc, [key, value]) => {
+            acc[key.replace("harvest:", "")] = value;
+            return acc;
+          },
+          {} as Record<string, unknown>
+        )
+    : dataset.harvest;
+  const hasHarvest = harvestData && Object.keys(harvestData).length > 0;
 
 
   return (
@@ -206,6 +222,94 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* EXTRAS */}
+      {hasExtras && (
+        <div className="mt-32 border-t border-neutral-200 pt-24">
+          <button
+            onClick={() => setShowExtras(!showExtras)}
+            className="flex items-center justify-between w-full"
+          >
+            <h3 className="font-bold text-sm text-neutral-900 uppercase tracking-wider">
+              Extras
+            </h3>
+            <span className="flex items-center gap-8 text-sm text-primary-600">
+              {showExtras ? "Ocultar extras" : "Ver extras"}
+              <Icon
+                name={showExtras ? "agora-line-chevron-up" : "agora-line-chevron-down"}
+                className="w-[16px] h-[16px]"
+              />
+            </span>
+          </button>
+          {showExtras && (
+            <div className="grid grid-cols-3 gap-24 mt-16">
+              {dataset.page && (
+                <div>
+                  <p className="font-bold text-neutral-900 text-sm mb-8">links</p>
+                  <span className="text-neutral-900 text-sm break-all">{dataset.page}</span>
+                </div>
+              )}
+              <div>
+                <p className="font-bold text-neutral-900 text-sm mb-8">contact</p>
+                <span className="text-neutral-900 text-sm break-all">
+                  {dataset.contact_points && dataset.contact_points.length > 0
+                    ? dataset.contact_points.map((cp) => cp.email || cp.name).join(", ")
+                    : "Não disponível"}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* HARVEST */}
+      {hasHarvest && (
+        <div className="mt-32 border-t border-neutral-200 pt-24">
+          <button
+            onClick={() => setShowHarvest(!showHarvest)}
+            className="flex items-center justify-between w-full"
+          >
+            <h3 className="font-bold text-sm text-neutral-900 uppercase tracking-wider">
+              Harvest
+            </h3>
+            <span className="flex items-center gap-8 text-sm text-primary-600">
+              {showHarvest ? "Ocultar harvest" : "Ver extras de harvest"}
+              <Icon
+                name={showHarvest ? "agora-line-chevron-up" : "agora-line-chevron-down"}
+                className="w-[16px] h-[16px]"
+              />
+            </span>
+          </button>
+          {showHarvest && (
+            <div className="grid grid-cols-3 gap-x-24 gap-y-24 mt-16">
+              {[
+                "backend",
+                "created_at",
+                "modified_at",
+                "remote_url",
+                "uri",
+                "dct_identifier",
+                "archived_at",
+                "archived",
+                "domain",
+                "last_update",
+                "remote_id",
+                "source_id",
+              ].map((key) => {
+                const value = harvestData?.[key];
+                return (
+                  <div key={key}>
+                    <p className="font-bold text-neutral-900 text-sm mb-8">{key}</p>
+                    <span className="text-neutral-900 text-sm break-all">
+                      {value === null || value === undefined ? "None" : String(value)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 

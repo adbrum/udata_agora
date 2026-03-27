@@ -263,6 +263,7 @@ export interface Dataset {
   quality?: DatasetQuality;
   extras?: Record<string, unknown>;
   harvest?: Record<string, unknown> | null;
+  contact_points?: ContactPoint[];
   uri: string;
   page: string;
   permissions?: DatasetPermissions;
