@@ -1,7 +1,15 @@
 "use client";
 
 import React from "react";
-import { Accordion, AccordionGroup, ToggleGroup, Toggle } from "@ama-pt/agora-design-system";
+import {
+  Accordion,
+  AccordionGroup,
+  ToggleGroup,
+  Toggle,
+  InputText,
+  InputTextArea,
+  Button,
+} from "@ama-pt/agora-design-system";
 import PageBanner from "@/components/PageBanner";
 
 const FAQ_DATA = [
@@ -117,6 +125,26 @@ const FAQ_DATA = [
 const SupportPage = () => {
   const [activeItem, setActiveItem] = React.useState("Nesta página");
   const [expandedId, setExpandedId] = React.useState<string | null>("0-1");
+  const [selectedToggle, setSelectedToggle] = React.useState<string | null>(null);
+  const [subjectBody, setSubjectBody] = React.useState("");
+
+  const TOGGLE_PREFIX_MAP: Record<string, string> = {
+    question: "Pergunta",
+    bug: "Bug",
+    feedback: "Feedback",
+  };
+
+  const TOGGLE_TITLE_MAP: Record<string, string> = {
+    question: "Qual problema você está enfrentando?",
+    bug: "Qual problema você está enfrentando?",
+    feedback: "Envie seu feedback",
+  };
+
+  const TOGGLE_SUBJECT_LABEL_MAP: Record<string, string> = {
+    question: "O assunto da sua pergunta *",
+    bug: "O assunto do seu bug *",
+    feedback: "O assunto do seu feedback *",
+  };
 
   return (
     <main id="nesta-pagina" className="flex-grow bg-white pb-64">
@@ -341,7 +369,14 @@ const SupportPage = () => {
             Não encontrou o que procurava?
           </h3>
 
-          <ToggleGroup>
+          <ToggleGroup
+            multiple={false}
+            onChange={(val) => {
+              const selected = val.length > 0 ? val[0] : null;
+              setSelectedToggle(selected);
+              setSubjectBody("");
+            }}
+          >
             <Toggle
               value="question"
               leadingIcon="agora-line-question-mark"
@@ -351,20 +386,12 @@ const SupportPage = () => {
               Tenho uma pergunta
             </Toggle>
             <Toggle
-              value="data"
-              leadingIcon="agora-line-help-support"
-              leadingIconHover="agora-solid-help-support"
-              hasIcon={true}
-            >
-              Solicitação de Dados
-            </Toggle>
-            <Toggle
               value="bug"
               leadingIcon="agora-line-alert-triangle"
               leadingIconHover="agora-solid-alert-triangle"
               hasIcon={true}
             >
-              Enviar um bug
+              Reportar um bug
             </Toggle>
             <Toggle
               value="feedback"
@@ -372,9 +399,63 @@ const SupportPage = () => {
               leadingIconHover="agora-solid-chat"
               hasIcon={true}
             >
-              Envie seu feedback em data.gov.pt
+              Envie seu feedback
             </Toggle>
           </ToggleGroup>
+
+          {selectedToggle && (
+            <div className="mt-[32px] max-w-2xl">
+              <h3 className="text-[20px] font-bold text-[#021C51] mb-[24px]">
+                {TOGGLE_TITLE_MAP[selectedToggle]}
+              </h3>
+
+              <div>
+                <div className="mt-[20px]">
+                  <InputText
+                    label="Seu endereço de e-mail *"
+                    type="email"
+                    required
+                  />
+                </div>
+
+                <div className="mt-[20px]">
+                  <div className="agora-input-text-wrapper">
+                    <label className="input-text-label">
+                      {TOGGLE_SUBJECT_LABEL_MAP[selectedToggle]}
+                    </label>
+                    <div
+                      className="flex items-center w-full rounded-[4px] border-[2px] border-neutral-700 bg-white px-[16px]"
+                      style={{ height: "60px" }}
+                    >
+                      <span className="text-neutral-900 whitespace-nowrap text-base">
+                        {TOGGLE_PREFIX_MAP[selectedToggle]} -&nbsp;
+                      </span>
+                      <input
+                        type="text"
+                        className="flex-1 bg-transparent outline-none text-neutral-900 text-base placeholder:text-neutral-700"
+                        placeholder="..."
+                        value={subjectBody}
+                        onChange={(e) => setSubjectBody(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-[20px]">
+                  <InputTextArea
+                    label="Sua pergunta *"
+                    required
+                    rows={5}
+                  />
+                </div>
+
+                <div className="mt-[20px]">
+                  <Button>Enviar</Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </main>
