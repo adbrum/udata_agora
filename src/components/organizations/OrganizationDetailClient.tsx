@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -22,6 +22,47 @@ interface OrganizationDetailClientProps {
 
 export default function OrganizationDetailClient({ organization }: OrganizationDetailClientProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const [availableHeight, setAvailableHeight] = useState<number | undefined>(undefined);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
+
+  const READMORE_BUTTON_HEIGHT = 48;
+
+  const checkOverflow = useCallback(() => {
+    if (measureRef.current && sidebarRef.current && titleRef.current) {
+      const sidebarHeight = sidebarRef.current.offsetHeight;
+      const titleHeight = titleRef.current.offsetHeight;
+      const fullHeight = measureRef.current.offsetHeight;
+      const maxDescHeight = sidebarHeight - titleHeight;
+      const overflows = fullHeight > maxDescHeight;
+      if (overflows) {
+        const lineHeight = parseFloat(getComputedStyle(measureRef.current).lineHeight) || 24;
+        const usable = maxDescHeight - READMORE_BUTTON_HEIGHT;
+        const snapped = Math.floor(usable / lineHeight) * lineHeight;
+        setAvailableHeight(snapped);
+      } else {
+        setAvailableHeight(maxDescHeight);
+      }
+      setIsOverflowing(overflows);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+
+    const observer = new ResizeObserver(checkOverflow);
+    if (sidebarRef.current) observer.observe(sidebarRef.current);
+    if (measureRef.current) observer.observe(measureRef.current);
+
+    return () => {
+      window.removeEventListener("resize", checkOverflow);
+      observer.disconnect();
+    };
+  }, [checkOverflow]);
 
   return (
     <div className="flex flex-col font-sans text-neutral-900 bg-white min-h-screen overflow-x-hidden">
@@ -55,7 +96,7 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
           {/* Main Content Column */}
           <div className="xl:col-span-6 xl:block">
             {/* Title & Header */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4" ref={titleRef}>
               <div className="flex justify-between items-start">
                 <h1 className="text-xl-bold text-primary-900 leading-tight mb-24 max-w-[592px]">
                   {organization.name}
@@ -64,39 +105,69 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
             </div>
 
             {/* Description Section */}
-            <div className="prose max-w-none text-neutral-700 text-lg leading-relaxed mb-12">
-              <p className="text-neutral-900 text-m-light mb-[24px] max-w-[592px]">
-                {organization.description || "Esta organização não possui descrição."}
-              </p>
-
-              {/* Static sections to mirror dataset page as requested (copy) */}
-              <div className="mt-8">
-                <h3 className="text-xl font-bold text-primary-900 mb-[16px]">
-                  Observações preliminares
-                </h3>
-                <p className="text-neutral-900 mb-[16px] max-w-[592px]">
-                  Informações adicionais sobre o papel desta organização na gestão e publicação de
-                  dados abertos.
+            <div className="prose max-w-none max-w-ch text-neutral-700 text-lg leading-relaxed mb-12 relative">
+              {/* Hidden measure element to get full content height */}
+              <div ref={measureRef} className="absolute invisible pointer-events-none" style={{ top: 0, left: 0, right: 0 }} aria-hidden="true">
+                <p className="text-neutral-900 text-m-light mb-[24px] max-w-[592px]">
+                  {organization.description || "Esta organização não possui descrição."}
                 </p>
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-primary-900 mb-[16px]">
+                    Observações preliminares
+                  </h3>
+                  <p className="text-neutral-900 mb-[16px] max-w-[592px]">
+                    Informações adicionais sobre o papel desta organização na gestão e publicação de
+                    dados abertos.
+                  </p>
+                </div>
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-primary-900 mb-[16px]">
+                    Sobre a organização
+                  </h3>
+                  <p className="text-neutral-900 mb-[24px] max-w-[592px]">
+                    {organization.name} é um publicador ativo no Portal de Dados Abertos, contribuindo
+                    para a transparência e reutilização de informação pública em Portugal.
+                  </p>
+                </div>
               </div>
-
-              <div className="mt-8">
-                <h3 className="text-xl font-bold text-primary-900 mb-[16px]">
-                  Sobre a organização
-                </h3>
-                <p className="text-neutral-900 mb-[24px] max-w-[592px]">
-                  {organization.name} é um publicador ativo no Portal de Dados Abertos, contribuindo
-                  para a transparência e reutilização de informação pública em Portugal.
+              <div
+                className="overflow-hidden"
+                style={!expanded && isOverflowing && availableHeight ? { maxHeight: availableHeight } : undefined}
+              >
+                <p className="text-neutral-900 text-m-light mb-[24px] max-w-[592px]">
+                  {organization.description || "Esta organização não possui descrição."}
                 </p>
 
-                <div className="mt-auto flex justify-center">
-                  <a
-                    href={organization.uri || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-8 text-primary-600 cursor-pointer hover:underline mb-[24px] mt-[24px]"
-                  >
-                    Leia mais
+                {/* Static sections to mirror dataset page as requested (copy) */}
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-primary-900 mb-[16px]">
+                    Observações preliminares
+                  </h3>
+                  <p className="text-neutral-900 mb-[16px] max-w-[592px]">
+                    Informações adicionais sobre o papel desta organização na gestão e publicação de
+                    dados abertos.
+                  </p>
+                </div>
+
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-primary-900 mb-[16px]">
+                    Sobre a organização
+                  </h3>
+                  <p className="text-neutral-900 mb-[24px] max-w-[592px]">
+                    {organization.name} é um publicador ativo no Portal de Dados Abertos, contribuindo
+                    para a transparência e reutilização de informação pública em Portugal.
+                  </p>
+                </div>
+              </div>
+              {isOverflowing && (
+                <button
+                  onClick={() => setExpanded(!expanded)}
+                  className="flex items-center gap-8 text-primary-600 cursor-pointer hover:underline mt-8"
+                >
+                  {expanded ? "Ler menos" : "Leia mais"}
+                  {expanded ? (
+                    <Icon name="agora-line-arrow-up-circle" className="w-24 h-24" />
+                  ) : (
                     <svg
                       width="24"
                       height="24"
@@ -113,14 +184,14 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
                         d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z"
                       ></path>
                     </svg>
-                  </a>
-                </div>
-              </div>
+                  )}
+                </button>
+              )}
             </div>
           </div>
 
           <div className="xl:col-span-6">
-            <div className="flex flex-col h-fit card-article-3_2 organization_detail">
+            <div className="flex flex-col h-fit card-article-3_2 organization_detail" ref={sidebarRef}>
               <CardArticle
                 className="card-detail-info border-none shadow-none mb-16 bg-[#F2F6FF] p-32 rounded-4"
                 subtitle={
@@ -139,11 +210,6 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
                       </div>
                     )}
                     <div className="text-neutral-900 text-m-light mb-[8px]">Organização</div>
-                  </div>
-                }
-                title={
-                  <div className="text-l-semibold text-neutral-900 leading-tight mb-[8px]">
-                    {organization.name}
                   </div>
                 }
               >
