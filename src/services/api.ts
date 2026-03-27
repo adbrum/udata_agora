@@ -629,20 +629,36 @@ export async function fetchOrgReuses(org: string): Promise<Reuse[]> {
   }
 }
 
-export async function fetchOrgDiscussions(org: string): Promise<Discussion[]> {
+export async function fetchOrgDiscussions(
+  orgId: string,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<APIResponse<Discussion>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/organizations/${org}/discussions/`, {
+    const params = new URLSearchParams({
+      org: orgId,
+      page: String(page),
+      page_size: String(pageSize),
+    });
+    const res = await fetch(`${API_BASE_URL}/discussions/?${params.toString()}`, {
       cache: "no-store",
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to fetch organization discussions: ${res.statusText}`);
+      throw new Error(`Failed to fetch org discussions: ${res.statusText}`);
     }
 
     return await res.json();
   } catch (error) {
-    console.error("Error fetching organization discussions:", error);
-    return [];
+    console.error("Error fetching org discussions:", error);
+    return {
+      data: [],
+      page: 1,
+      page_size: pageSize,
+      total: 0,
+      next_page: null,
+      previous_page: null,
+    };
   }
 }
 
@@ -1586,11 +1602,23 @@ export async function uploadResource(datasetId: string, file: File): Promise<Res
     credentials: "include",
     body: formData,
   });
+  const text = await res.text();
   if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw { status: res.status, data: error };
+    let data: Record<string, unknown> = {};
+    try {
+      data = JSON.parse(text);
+    } catch {
+      if (text) data = { message: text };
+    }
+    throw { status: res.status, data };
   }
-  return await res.json();
+  try {
+    return JSON.parse(text) as Resource;
+  } catch {
+    throw new Error(
+      `Upload returned ${res.status} but response is not valid JSON: ${text.slice(0, 200)}`
+    );
+  }
 }
 
 export async function updateResource(
@@ -2176,6 +2204,83 @@ export async function deleteDiscussion(
     return true;
   } catch (error) {
     console.error("Error deleting discussion:", error);
+    return false;
+  }
+}
+
+export async function updateDiscussion(
+  discussionId: string,
+  title: string
+): Promise<Discussion | null> {
+  try {
+    const res = await fetch(
+      `${API_AUTH_URL}/discussions/${discussionId}/`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ title }),
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to update discussion: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating discussion:", error);
+    return null;
+  }
+}
+
+export async function editDiscussionComment(
+  discussionId: string,
+  commentIndex: number,
+  comment: string
+): Promise<Discussion | null> {
+  try {
+    const res = await fetch(
+      `${API_AUTH_URL}/discussions/${discussionId}/comments/${commentIndex}/`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ comment }),
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to edit comment: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error editing comment:", error);
+    return null;
+  }
+}
+
+export async function deleteDiscussionComment(
+  discussionId: string,
+  commentIndex: number
+): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `${API_AUTH_URL}/discussions/${discussionId}/comments/${commentIndex}/`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to delete comment: ${res.statusText}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error deleting comment:", error);
     return false;
   }
 }

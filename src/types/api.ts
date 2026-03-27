@@ -596,6 +596,7 @@ export interface DiscussionCreatePayload {
     class: string;
     id: string;
   };
+  organization?: string;
 }
 
 export interface License {
