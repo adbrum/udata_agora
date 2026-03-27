@@ -361,8 +361,10 @@ export default function LoginClient() {
                       </div>
 
                       {error && (
-                        <div className="p-16 rounded-8 bg-red-50 text-red-700 text-sm font-medium border border-red-200">
-                          {error}
+                        <div style={{ backgroundColor: "#FEE2E2", padding: "12px 16px", borderRadius: "4px" }}>
+                          <p style={{ color: "#B91C1C", fontSize: "14px", fontWeight: 600, margin: 0 }}>
+                            {error}
+                          </p>
                         </div>
                       )}
 

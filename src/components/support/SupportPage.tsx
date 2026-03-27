@@ -135,8 +135,8 @@ const SupportPage = () => {
   };
 
   const TOGGLE_TITLE_MAP: Record<string, string> = {
-    question: "Qual problema você está enfrentando?",
-    bug: "Qual problema você está enfrentando?",
+    question: "Qual o problema que está a enfrentar?",
+    bug: "Qual o problema que está a enfrentar?",
     feedback: "Envie seu feedback",
   };
 
