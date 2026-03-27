@@ -111,7 +111,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                     {renderTabBody(<DatasetResourcesTable resources={dataset.resources} />)}
                 </Tab>
                 <Tab>
-                    <TabHeader>Reutilizações e APIs ({reuseCount})</TabHeader>
+                    <TabHeader>Reutilizações ({reuseCount})</TabHeader>
                     {renderTabBody(
                         <div>
                             <h3 className="font-medium text-neutral-900 text-base mb-16">
@@ -126,6 +126,15 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                     title="Sem reutilizações"
                                     description="Ainda não existem reutilizações associadas a este conjunto de dados."
                                     hasAnchor={false}
+                                    extraDescription={
+                                        <div className="mt-24">
+                                            <Link href="/pages/admin/reuses/new">
+                                                <Button variant="primary" appearance="outline">
+                                                    Adicione uma reutilização
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    }
                                 />
                             ) : (
                                 <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-32">
