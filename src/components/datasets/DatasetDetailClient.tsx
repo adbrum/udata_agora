@@ -197,28 +197,6 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
           )}
         </div>
 
-        {/* Produtor */}
-        {(dataset.owner || dataset.organization) && (
-          <p className="admin-edit-info__activity mb-[24px]">
-            <Icon name="agora-line-user" className="admin-edit-info__clock-icon" />
-            {" Produtor: "}
-            {dataset.owner ? (
-              <Link
-                href={`/pages/users/${dataset.owner.slug}`}
-                className="text-primary-600 underline"
-              >
-                {dataset.owner.first_name} {dataset.owner.last_name}
-              </Link>
-            ) : dataset.organization ? (
-              <Link
-                href={`/pages/organizations/${dataset.organization.slug}`}
-                className="text-primary-600 underline"
-              >
-                {dataset.organization.name}
-              </Link>
-            ) : null}
-          </p>
-        )}
 
         <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mb-[24px]">
           {/* Main Content Column */}
@@ -237,14 +215,6 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
           {/* Sidebar */}
           <div className="xl:col-span-6">
             <div className="flex flex-col h-fit">
-              {/* Licença */}
-              {dataset.license && (
-                <div className="bg-[#F2F6FF] rounded-4 p-32 mb-16">
-                  <h3 className="text-m-semibold text-neutral-900 mb-8">Licença</h3>
-                  <span className="text-primary-600 text-sm">{dataset.license}</span>
-                </div>
-              )}
-
               <div className="flex flex-col gap-16 bg-[#F2F6FF] rounded-4 p-32 mb-16">
                 {dataset.organization?.logo ? (
                   <div className="w-fit h-[48px] card-article-3_2-img py-8 rounded-8 border-2 border-primary-300 flex items-center justify-center">
@@ -273,9 +243,6 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                       'Organização Desconhecida'
                     )}
                   </div>
-                  <div className="text-l-semibold text-neutral-900 leading-tight mb-[8px]">
-                    {dataset.title}
-                  </div>
                   <div className="text-neutral-900 text-sm mb-[16px]">
                     <span className="text-m-semibold">Última atualização:</span>{' '}
                     {new Date(dataset.last_modified).toLocaleDateString('pt-PT', {
@@ -285,10 +252,16 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                     })}
                   </div>
                   {dataset.license && (
-                    <div className="pt-8">
-                      <span className="text-primary-600 font-medium text-sm">
+                    <div className="text-sm">
+                      <a
+                        href={dataset.license_url || `https://dados.gov.pt/pt/licenses/${dataset.license}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary-600 underline"
+                      >
+                        <span className="text-m-semibold">Licença:</span>{' '}
                         {dataset.license}
-                      </span>
+                      </a>
                     </div>
                   )}
                 </div>

@@ -242,6 +242,7 @@ export interface Dataset {
   organization: Organization | null;
   owner: UserRef | null;
   license: string | null;
+  license_url: string | null;
   frequency: string;
   frequency_date?: string | null;
   temporal_coverage?: TemporalCoverage | null;
