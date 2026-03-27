@@ -396,7 +396,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                 </div>
                                             </div>
                                             {disc.discussion.length > 0 && (
-                                                <p className="text-neutral-900 text-sm mt-16">
+                                                <p className="text-neutral-900 text-sm mt-16 mb-16">
                                                     {disc.discussion[0].content}
                                                 </p>
                                             )}

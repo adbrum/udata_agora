@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -20,9 +20,16 @@ import {
   InputSearchBar,
   InputText,
   InputTextArea,
+  DropdownSection,
+  DropdownOption,
+  usePopupContext,
 } from '@ama-pt/agora-design-system';
 import { Reuse, Dataset, Discussion, DiscussionCreatePayload } from '@/types/api';
-import { fetchDataset, fetchReuse, fetchDiscussions, createDiscussion } from '@/services/api';
+import { fetchDataset, fetchReuse, fetchDiscussions, createDiscussion, replyToDiscussion } from '@/services/api';
+import { useAuth } from '@/context/AuthContext';
+import IsolatedSelect from '@/components/admin/IsolatedSelect';
+import EditDiscussionPopup from '@/components/discussions/EditDiscussionPopup';
+import DeleteDiscussionPopup from '@/components/discussions/DeleteDiscussionPopup';
 
 import { format, formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -33,6 +40,8 @@ interface ReuseDetailClientProps {
 
 export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
   const router = useRouter();
+  const { user } = useAuth();
+  const { show, hide } = usePopupContext();
   const [reuse, setReuse] = useState<Reuse | null>(null);
   const [isLoadingReuse, setIsLoadingReuse] = useState(true);
   const [fullDatasets, setFullDatasets] = useState<Dataset[]>([]);
@@ -42,7 +51,12 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
   const [showNewDiscussion, setShowNewDiscussion] = useState(false);
   const [newDiscTitle, setNewDiscTitle] = useState('');
   const [newDiscMessage, setNewDiscMessage] = useState('');
+  const selectedIdentityRef = useRef('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyMessage, setReplyMessage] = useState('');
+  const replyIdentityRef = useRef('');
+  const [isReplying, setIsReplying] = useState(false);
 
   const handleCreateDiscussion = async () => {
     if (!reuse || !newDiscTitle.trim() || !newDiscMessage.trim()) return;
@@ -55,6 +69,8 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
           class: 'Reuse',
           id: reuse.id,
         },
+        ...(selectedIdentityRef.current && selectedIdentityRef.current !== 'user'
+          ? { organization: selectedIdentityRef.current } : {}),
       };
       const created = await createDiscussion(payload);
       if (created) {
@@ -458,91 +474,114 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                     <div className="bg-white rounded-8 p-32 mb-24">
                       <div className="flex justify-between items-center mb-16">
                         <h3 className="font-bold text-neutral-900 text-base">Nova discussão</h3>
-                        <Button variant="primary" appearance="link" onClick={() => setShowNewDiscussion(false)}>
+                        <Button variant="primary" appearance="outline" hasIcon leadingIcon="agora-line-x" leadingIconHover="agora-solid-x" onClick={() => setShowNewDiscussion(false)}>
                           Fechar
                         </Button>
                       </div>
                       <p className="text-sm text-neutral-900 mb-16">
                         Os campos marcados com um asterisco (<span className="text-red-500">*</span>) são obrigatórios.
                       </p>
+                      {user?.organizations && user.organizations.length > 0 && (
+                        <div className="mb-24">
+                          <span className="block text-sm font-medium text-neutral-900 mb-8">
+                            Escolha a identidade com a qual deseja publicar esta mensagem.
+                          </span>
+                          <IsolatedSelect label="" hideLabel placeholder="Para pesquisar..." id="discussion-identity-reuse" onChangeRef={selectedIdentityRef} searchable searchInputPlaceholder="Para pesquisar..." searchNoResultsText="Sem resultados">
+                            <DropdownSection name="identity">
+                              <DropdownOption value="user">{user.first_name} {user.last_name} (utilizador)</DropdownOption>
+                              {user.organizations.map((org) => (
+                                <DropdownOption key={org.id} value={org.id}>{org.name}</DropdownOption>
+                              ))}
+                            </DropdownSection>
+                          </IsolatedSelect>
+                        </div>
+                      )}
                       <div className="mb-24">
-                        <InputText
-                          label="Título *"
-                          value={newDiscTitle}
-                          onChange={(e) => setNewDiscTitle(e.target.value)}
-                          required
-                        />
+                        <InputText label="Título *" value={newDiscTitle} onChange={(e) => setNewDiscTitle(e.target.value)} required />
                       </div>
                       <div className="mb-24">
-                        <InputTextArea
-                          label="A sua mensagem *"
-                          value={newDiscMessage}
-                          onChange={(e) => setNewDiscMessage(e.target.value)}
-                          rows={4}
-                          placeholder="Por favor, mantenha a cordialidade e uma postura construtiva. Evite partilhar informações pessoais."
-                          required
-                        />
+                        <InputTextArea label="A sua mensagem *" value={newDiscMessage} onChange={(e) => setNewDiscMessage(e.target.value)} rows={4} placeholder="Por favor, mantenha a cordialidade e uma postura construtiva. Evite partilhar informações pessoais." required />
                       </div>
                       <div className="flex justify-end">
-                        <Button
-                          variant="primary"
-                          appearance="solid"
-                          onClick={handleCreateDiscussion}
-                          disabled={isSubmitting || !newDiscTitle.trim() || !newDiscMessage.trim()}
-                        >
+                        <Button variant="primary" appearance="solid" onClick={handleCreateDiscussion} disabled={isSubmitting || !newDiscTitle.trim() || !newDiscMessage.trim()}>
                           {isSubmitting ? 'A enviar...' : 'Enviar'}
                         </Button>
                       </div>
                     </div>
                   )}
                   {discussionCount === 0 ? (
-                    <CardNoResults
-                      position="center"
-                      icon={
-                        <Icon name="agora-line-chat" className="w-[40px] h-[40px] text-primary-500 icon-xl" />
-                      }
-                      title="Ainda não há discussão."
-                      description=""
-                      hasAnchor={false}
-                    />
+                    <CardNoResults position="center" icon={<Icon name="agora-line-chat" className="w-[40px] h-[40px] text-primary-500 icon-xl" />} title="Ainda não há discussão." description="" hasAnchor={false} />
                   ) : (
-                    <div className="space-y-16">
+                    <div className="flex flex-col gap-32">
                       {discussions.map((disc) => (
                         <div key={disc.id} className="bg-white rounded-8 p-32">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
                               <h4 className="font-bold text-neutral-900 text-base">{disc.title}</h4>
                               <p className="text-sm text-neutral-900 mt-4">
-                                <span className="text-primary-600 font-medium">
-                                  {disc.user.first_name} {disc.user.last_name}
-                                </span>
+                                <span className="text-primary-600 font-medium">{disc.user.first_name} {disc.user.last_name}</span>
                                 {' — Publicado em '}
                                 {format(new Date(disc.created), "d 'de' MMMM 'de' yyyy", { locale: pt })}
                               </p>
                             </div>
+                            <div className="flex gap-8">
+                              <Button variant="primary" appearance="outline" hasIcon iconOnly leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit" aria-label="Editar discussão" onClick={() => show(<EditDiscussionPopup discussion={disc} commentIndex={0} onUpdated={(updated) => setDiscussions((prev) => prev.map((d) => (d.id === updated.id ? updated : d)))} />, { title: "Editar a mensagem", closeAriaLabel: "Fechar", dimensions: "m" })}>{" "}</Button>
+                              <Button variant="danger" appearance="solid" hasIcon iconOnly leadingIcon="agora-line-trash" leadingIconHover="agora-solid-trash" aria-label="Eliminar discussão" onClick={() => show(<DeleteDiscussionPopup discussion={disc} commentIndex={0} onDeleted={() => { setDiscussions((prev) => prev.filter((d) => d.id !== disc.id)); setDiscussionCount((prev) => prev - 1); }} />, { title: "Tem certeza de que deseja eliminar esta discussão?", closeAriaLabel: "Fechar", dimensions: "m" })}>{" "}</Button>
+                            </div>
                           </div>
                           {disc.discussion.length > 0 && (
-                            <p className="text-neutral-900 text-sm mt-16">{disc.discussion[0].content}</p>
+                            <p className="text-neutral-900 text-sm mt-16 mb-16">{disc.discussion[0].content}</p>
                           )}
                           {disc.discussion.length > 1 && (
                             <div className="mt-16 space-y-16 border-t border-neutral-200 pt-16">
                               {disc.discussion.slice(1).map((msg, idx) => (
                                 <div key={idx} className="border-l-2 border-primary-600" style={{ paddingLeft: "24px" }}>
-                                  <p className="text-sm text-neutral-900">
-                                    <span className="text-primary-600 font-medium">
-                                      {msg.posted_by.first_name} {msg.posted_by.last_name}
-                                    </span>
-                                    {' — '}
-                                    {format(new Date(msg.posted_on), "d 'de' MMMM 'de' yyyy", { locale: pt })}
-                                  </p>
+                                  <div className="flex justify-between items-start">
+                                    <p className="text-sm text-neutral-900">
+                                      <span className="text-primary-600 font-medium">{msg.posted_by.first_name} {msg.posted_by.last_name}</span>
+                                      {' — '}
+                                      {format(new Date(msg.posted_on), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                                    </p>
+                                    <div className="flex gap-8">
+                                      <Button variant="primary" appearance="outline" hasIcon iconOnly leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit" aria-label="Editar comentário" onClick={() => show(<EditDiscussionPopup discussion={disc} commentIndex={idx + 1} onUpdated={(updated) => setDiscussions((prev) => prev.map((d) => (d.id === updated.id ? updated : d)))} />, { title: "Editar a mensagem", closeAriaLabel: "Fechar", dimensions: "m" })}>{" "}</Button>
+                                      <Button variant="danger" appearance="solid" hasIcon iconOnly leadingIcon="agora-line-trash" leadingIconHover="agora-solid-trash" aria-label="Eliminar comentário" onClick={() => show(<DeleteDiscussionPopup discussion={disc} commentIndex={idx + 1} onDeleted={() => setDiscussions((prev) => prev.map((d) => d.id === disc.id ? { ...d, discussion: d.discussion.filter((_, i) => i !== idx + 1) } : d))} />, { title: "Tem certeza de que deseja apagar esta mensagem?", closeAriaLabel: "Fechar", dimensions: "m" })}>{" "}</Button>
+                                    </div>
+                                  </div>
                                   <p className="text-neutral-900 text-sm mt-4">{msg.content}</p>
                                 </div>
                               ))}
                             </div>
                           )}
-                          <div className="flex justify-end" style={{ marginTop: "32px" }}>
-                            <Button variant="primary" appearance="outline">Responder</Button>
-                          </div>
+                          {replyingTo === disc.id ? (
+                            <div className="mt-48 border-t border-neutral-200 pt-32">
+                              <div className="flex justify-between items-center mb-24">
+                                <h4 className="font-bold text-neutral-900 text-sm uppercase">Responder</h4>
+                                <Button variant="primary" appearance="outline" hasIcon leadingIcon="agora-line-x" leadingIconHover="agora-solid-x" onClick={() => { setReplyingTo(null); setReplyMessage(''); }}>Fechar</Button>
+                              </div>
+                              {user?.organizations && user.organizations.length > 0 && (
+                                <div className="mb-16">
+                                  <span className="block text-sm font-medium text-neutral-900 mb-8">Escolha a identidade com a qual deseja publicar esta mensagem.</span>
+                                  <IsolatedSelect label="" hideLabel placeholder="Para pesquisar..." id={`reply-identity-${disc.id}`} onChangeRef={replyIdentityRef} searchable searchInputPlaceholder="Para pesquisar..." searchNoResultsText="Sem resultados">
+                                    <DropdownSection name="identity">
+                                      <DropdownOption value="user">{user.first_name} {user.last_name} (utilizador)</DropdownOption>
+                                      {user.organizations.map((org) => (<DropdownOption key={org.id} value={org.id}>{org.name}</DropdownOption>))}
+                                    </DropdownSection>
+                                  </IsolatedSelect>
+                                </div>
+                              )}
+                              <div className="mb-16">
+                                <InputTextArea label="Sua mensagem" value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} rows={3} placeholder="Por favor, mantenha a cordialidade e a postura construtiva. Evite compartilhar informações pessoais." />
+                              </div>
+                              <div className="flex justify-end gap-16">
+                                <Button variant="primary" appearance="outline" disabled={isReplying || !replyMessage.trim()} onClick={async () => { setIsReplying(true); const org = replyIdentityRef.current && replyIdentityRef.current !== 'user' ? replyIdentityRef.current : undefined; const updated = await replyToDiscussion(disc.id, replyMessage.trim(), { organization: org, close: true }); if (updated) { setDiscussions((prev) => prev.map((d) => (d.id === updated.id ? updated : d))); setReplyingTo(null); setReplyMessage(''); } setIsReplying(false); }}>Responder e fechar</Button>
+                                <Button variant="primary" appearance="solid" disabled={isReplying || !replyMessage.trim()} onClick={async () => { setIsReplying(true); const org = replyIdentityRef.current && replyIdentityRef.current !== 'user' ? replyIdentityRef.current : undefined; const updated = await replyToDiscussion(disc.id, replyMessage.trim(), { organization: org }); if (updated) { setDiscussions((prev) => prev.map((d) => (d.id === updated.id ? updated : d))); setReplyingTo(null); setReplyMessage(''); } setIsReplying(false); }}>Responder</Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex justify-end" style={{ marginTop: "32px" }}>
+                              <Button variant="primary" appearance="outline" onClick={() => { setReplyingTo(disc.id); setReplyMessage(''); }}>Responder</Button>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
