@@ -41,8 +41,9 @@ import {
   fetchLicenses,
   fetchFrequencies,
   fetchActivity,
+  fetchDiscussions,
 } from "@/services/api";
-import { Dataset, License, Frequency, Activity, Resource } from "@/types/api";
+import { Dataset, License, Frequency, Activity, Resource, Discussion } from "@/types/api";
 import StatusDot from "@/components/admin/StatusDot";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
@@ -189,6 +190,10 @@ export default function DatasetsEditClient() {
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
 
   // Activity data
+  const [discussions, setDiscussions] = useState<Discussion[]>([]);
+  const [discussionsLoading, setDiscussionsLoading] = useState(false);
+  const [discussionsLoaded, setDiscussionsLoaded] = useState(false);
+
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(false);
   const [activitiesLoaded, setActivitiesLoaded] = useState(false);
@@ -231,6 +236,18 @@ export default function DatasetsEditClient() {
     }
     if (slug) loadData();
   }, [slug]);
+
+  const loadDiscussions = () => {
+    if (discussionsLoaded || !dataset) return;
+    setDiscussionsLoading(true);
+    fetchDiscussions(dataset.id)
+      .then((res) => {
+        setDiscussions(res.data);
+        setDiscussionsLoaded(true);
+      })
+      .catch((err) => console.error("Error loading discussions:", err))
+      .finally(() => setDiscussionsLoading(false));
+  };
 
   const loadActivities = () => {
     if (activitiesLoaded || !dataset) return;
@@ -623,6 +640,7 @@ export default function DatasetsEditClient() {
         onTabActivation={(index: number) => {
           setApiError(null);
           setApiSuccess(null);
+          if (index === 2) loadDiscussions();
           if (index === 3) loadActivities();
         }}
       >
@@ -1165,21 +1183,76 @@ export default function DatasetsEditClient() {
 
         {/* Discussions Tab */}
         <Tab>
-          <TabHeader>Discussões (0)</TabHeader>
+          <TabHeader>Discussões ({discussions.length})</TabHeader>
           <TabBody>
             <div className="mt-[24px]">
-              <h2 className="font-medium text-neutral-900 text-base mb-[16px]">
-                0 DISCUSSÕES
-              </h2>
-              <CardNoResults
-                position="center"
-                icon={
-                  <Icon name="agora-line-chat" className="w-12 h-12 text-primary-500 icon-xl" />
-                }
-                title="Sem discussões"
-                description="Ainda não existem discussões neste conjunto de dados."
-                hasAnchor={false}
-              />
+              {discussionsLoading && (
+                <p className="text-neutral-700 text-sm">A carregar...</p>
+              )}
+              {discussionsLoaded && discussions.length === 0 && (
+                <CardNoResults
+                  position="center"
+                  icon={
+                    <Icon name="agora-line-chat" className="w-12 h-12 text-primary-500 icon-xl" />
+                  }
+                  title="Sem discussões"
+                  description="Ainda não existem discussões neste conjunto de dados."
+                  hasAnchor={false}
+                />
+              )}
+              {discussionsLoaded && discussions.length > 0 && (
+                <div>
+                  <h2 className="font-medium text-neutral-900 text-base mb-[16px]">
+                    {discussions.length} {discussions.length === 1 ? "DISCUSSÃO" : "DISCUSSÕES"}
+                  </h2>
+                  <div className="space-y-[16px]">
+                    {discussions.map((disc) => (
+                      <div key={disc.id} className="bg-white rounded-[8px] p-[32px]">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-bold text-neutral-900 text-base">{disc.title}</h4>
+                            <p className="text-sm text-neutral-900 mt-[4px]">
+                              <span className="text-primary-600 font-medium">
+                                {disc.user.first_name} {disc.user.last_name}
+                              </span>
+                              {" — Publicado em "}
+                              {format(new Date(disc.created), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                            </p>
+                          </div>
+                          <Pill
+                            variant={disc.closed ? "neutral" : "informative"}
+                          >
+                            {disc.closed ? "Fechada" : "Aberta"}
+                          </Pill>
+                        </div>
+                        {disc.discussion.length > 0 && (
+                          <p className="text-neutral-900 text-sm mt-[16px]">
+                            {disc.discussion[0].content}
+                          </p>
+                        )}
+                        {disc.discussion.length > 1 && (
+                          <div className="mt-[16px] space-y-[16px] border-t border-neutral-200 pt-[16px]">
+                            {disc.discussion.slice(1).map((msg, idx) => (
+                              <div key={idx} className="border-l-2 border-primary-600 pl-[24px]">
+                                <p className="text-sm text-neutral-900">
+                                  <span className="text-primary-600 font-medium">
+                                    {msg.posted_by.first_name} {msg.posted_by.last_name}
+                                  </span>
+                                  {" — "}
+                                  {format(new Date(msg.posted_on), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                                </p>
+                                <p className="text-neutral-900 text-sm mt-[4px]">
+                                  {msg.content}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </TabBody>
         </Tab>

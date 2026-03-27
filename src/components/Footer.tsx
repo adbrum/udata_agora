@@ -116,6 +116,8 @@ export const Footer = () => {
         }))}
         usefulLinks={usefulLinksData.map((l) => ({
           href: l.href,
+          target: "_blank",
+          rel: "noopener noreferrer",
           children: l.label,
         }))}
         copyright="© 2022 República Portuguesa. Todos os direitos reservados."

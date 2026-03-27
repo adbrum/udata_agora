@@ -1,0 +1,118 @@
+"use client";
+
+import React, { useState } from "react";
+import { Button, RadioButton, usePopupContext } from "@ama-pt/agora-design-system";
+import { Discussion } from "@/types/api";
+import { deleteDiscussion, deleteDiscussionComment } from "@/services/api";
+import { format } from "date-fns";
+import { pt } from "date-fns/locale";
+
+interface DeleteDiscussionPopupProps {
+  discussion: Discussion;
+  commentIndex: number;
+  onDeleted: () => void;
+}
+
+export default function DeleteDiscussionPopup({
+  discussion,
+  commentIndex,
+  onDeleted,
+}: DeleteDiscussionPopupProps) {
+  const { hide } = usePopupContext();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [notificationType, setNotificationType] = useState("automatic");
+  const isMainPost = commentIndex === 0;
+  const msg = discussion.discussion[commentIndex];
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      let success = false;
+      if (isMainPost) {
+        success = await deleteDiscussion(discussion.id);
+      } else {
+        success = await deleteDiscussionComment(discussion.id, commentIndex);
+      }
+      if (success) {
+        onDeleted();
+        hide();
+      }
+    } catch (error) {
+      console.error("Error deleting:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-24">
+      <div>
+        {isMainPost && (
+          <h4 className="font-bold text-neutral-900 text-base mb-8">
+            {discussion.title}
+          </h4>
+        )}
+        <p className="text-sm text-neutral-900">
+          <span className="text-primary-600 font-medium underline">
+            {msg?.posted_by.first_name} {msg?.posted_by.last_name}
+          </span>
+          {" — Publicado em "}
+          {format(
+            new Date(msg?.posted_on || discussion.created),
+            "d 'de' MMMM 'de' yyyy",
+            { locale: pt }
+          )}
+        </p>
+        {msg && (
+          <p className="text-neutral-900 text-sm mt-8">{msg.content}</p>
+        )}
+      </div>
+
+      <p className="text-neutral-900 text-sm font-medium">
+        {isMainPost
+          ? "Essa ação é irreversível. Todos os comentários nesta discussão também serão apagados."
+          : "Essa ação é irreversível."}
+      </p>
+
+      <div>
+        <p className="text-neutral-900 text-sm font-medium mb-12">
+          Notificação por e-mail
+        </p>
+        <div className="flex items-center gap-24">
+          <RadioButton
+            label="Enviar um e-mail automático (opções de recurso)"
+            name="notification-type"
+            value="automatic"
+            checked={notificationType === "automatic"}
+            onChange={() => setNotificationType("automatic")}
+          />
+          <RadioButton
+            label="Enviar um e-mail personalizado"
+            name="notification-type"
+            value="custom"
+            checked={notificationType === "custom"}
+            onChange={() => setNotificationType("custom")}
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-16">
+        <Button variant="neutral" appearance="outline" onClick={hide}>
+          Cancelar
+        </Button>
+        <Button
+          variant="danger"
+          appearance="solid"
+          onClick={handleDelete}
+          disabled={isDeleting}
+        >
+          {isDeleting
+            ? "A apagar..."
+            : isMainPost
+              ? "Elimine a discussão e os comentários"
+              : "Apagar comentário"}
+        </Button>
+      </div>
+    </div>
+  );
+}
