@@ -464,13 +464,6 @@ export const Header = () => {
                 description: "Entidades",
                 href: "/pages/admin/organizations/new?step=1",
               },
-              {
-                iconDefault: "agora-line-help-support",
-                iconHover: "agora-solid-help-support",
-                title: "Contactar",
-                description: "Fale connosco",
-                href: "/pages/support",
-              },
             ].map((card) => (
               <NavigationLink key={card.title} appearance="link">
                 <HeaderCard {...card} onLinkClick={handleLinkClick} />

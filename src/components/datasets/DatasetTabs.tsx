@@ -585,7 +585,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                 <p className="text-neutral-900 text-base font-normal mb-8">
                                     Atualmente, não existem recursos comunitários disponíveis para este conjunto de dados.
                                 </p>
-                                <div className="flex flex-row items-center gap-16 mt-32">
+                                <div className="flex justify-center mt-32">
                                     <Link href={`/pages/admin/community-resources/new?dataset_id=${dataset.id}`}>
                                         <Button
                                             variant="primary"
@@ -594,12 +594,6 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                             Compartilhe os seus recursos
                                         </Button>
                                     </Link>
-                                    <Button
-                                        variant="primary"
-                                        appearance="outline"
-                                    >
-                                        Saiba mais sobre a comunidade
-                                    </Button>
                                 </div>
                             </div>
                         ) : (

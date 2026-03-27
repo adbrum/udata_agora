@@ -101,7 +101,6 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
   const hasTemporal = dataset.created_at || dataset.frequency || dataset.last_modified;
   const hasSpatial = dataset.spatial?.zones?.length || dataset.spatial?.granularity;
 
-  const embedCode = `<div data-udata-dataset="${dataset.id}"></div><script data-udata="https://dados.gov.pt/" src="https://dados.gov.pt/oembed.js" async defer></script>`;
 
   return (
     <div className="bg-white rounded-8 p-32">
@@ -210,18 +209,6 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
         </div>
       )}
 
-      {/* INTEGRE-O AO SEU SITE */}
-      <div className="mt-32">
-        <div className="flex items-center gap-8 mb-16">
-          <h3 className="font-bold text-sm text-neutral-900 uppercase tracking-wider">
-            Integre-o ao seu site.
-          </h3>
-          <CopyButton text={embedCode} />
-        </div>
-        <div className="bg-neutral-100 rounded-8 p-16">
-          <code className="text-sm text-neutral-900 break-all">{embedCode}</code>
-        </div>
-      </div>
     </div>
   );
 };
