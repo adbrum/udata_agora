@@ -30,8 +30,19 @@ export async function POST(request: NextRequest) {
     responseHeaders.append("Set-Cookie", cleaned);
   }
 
-  // 302 = login succeeded (backend redirects to /)
+  // 302 = backend redirect (could be success or failed login redirecting back to /login/)
   if (backendResponse.status === 302) {
+    const redirectLocation = backendResponse.headers.get("location") || "/";
+
+    // If backend redirects back to /login/, credentials were invalid
+    if (redirectLocation.includes("/login")) {
+      responseHeaders.set("Content-Type", "application/json");
+      return NextResponse.json(
+        { message: "Autenticação falhada - identidade ou senha/código inválido" },
+        { status: 401, headers: responseHeaders }
+      );
+    }
+
     // Build a cookie string with the session cookies from the login response
     // so the migration check call uses the authenticated session
     const existingCookies = request.headers.get("cookie") || "";
@@ -75,16 +86,18 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 400 = validation error (wrong password, missing CSRF, etc.)
+  // Login failed — backend returned non-302 (e.g. 200 with re-rendered form or 400)
   const responseBody = await backendResponse.text();
 
   // Try to extract error from HTML form response
   const errorMatch = responseBody.match(/class="help-block">([^<]+)</);
-  const errorMessage = errorMatch ? errorMatch[1].trim() : "Invalid credentials";
+  const errorMessage = errorMatch
+    ? errorMatch[1].trim()
+    : "Autenticação falhada - identidade ou senha/código inválido";
 
   responseHeaders.set("Content-Type", "application/json");
   return NextResponse.json(
     { message: errorMessage },
-    { status: backendResponse.status, headers: responseHeaders }
+    { status: 401, headers: responseHeaders }
   );
 }
