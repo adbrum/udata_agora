@@ -23,7 +23,7 @@ const linkColumns = [
     title: 'Desenvolvimento',
     links: [
       { href: '/pages/docapi', label: 'API dos dados.gov' },
-      { href: 'https://github.com/opendatateam/udata', label: 'Motor de código aberto: udata (14.7.2)' },
+      { href: 'https://github.com/opendatateam/udata', label: `Motor de código aberto: udata (${process.env.NEXT_PUBLIC_UDATA_VERSION})` },
       { href: '#', label: 'Interface de utilizador de dados.gov: frontend' },
     ],
   },

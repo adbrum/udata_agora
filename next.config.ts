@@ -1,8 +1,23 @@
 import type { NextConfig } from "next";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 
 const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:7000";
 
+// Read udata version from backend pyproject.toml at build time
+let udataVersion = "unknown";
+try {
+  const pyproject = readFileSync(resolve(__dirname, "../backend/pyproject.toml"), "utf-8");
+  const match = pyproject.match(/^version\s*=\s*"([^"]+)"/m);
+  if (match) udataVersion = match[1];
+} catch {
+  // backend dir not available (e.g. standalone frontend deploy)
+}
+
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_UDATA_VERSION: udataVersion,
+  },
   // Standalone output for Docker deployment
   output: "standalone",
   typescript: {
