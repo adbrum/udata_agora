@@ -285,15 +285,23 @@ export default function DatasetsAdminClient({
       }
       onNextStep();
     } catch (error) {
-      console.error("Error uploading resources:", error);
-      const err = error as { status?: number; data?: Record<string, unknown> };
-      if (err.data && typeof err.data === "object") {
-        const messages = Object.entries(err.data)
-          .map(([key, val]) => `${key}: ${val}`)
-          .join(", ");
-        setApiError(`Erro ao carregar ficheiro: ${messages}`);
+      if (error instanceof Error) {
+        console.error("Error uploading resources:", error.message, error.stack);
+        setApiError(`Erro ao carregar ficheiro: ${error.message}`);
       } else {
-        setApiError("Erro ao carregar ficheiro. Tente novamente.");
+        const err = error as { status?: number; data?: Record<string, unknown> };
+        console.error("Error uploading resources:", err.status, err.data);
+        if (err.data && typeof err.data === "object" && Object.keys(err.data).length > 0) {
+          const msg =
+            (err.data.message as string) ||
+            Object.entries(err.data)
+              .map(([key, val]) => `${key}: ${val}`)
+              .join(", ");
+          setApiError(`Erro ao carregar ficheiro: ${msg}`);
+        } else {
+          const statusHint = err.status ? ` (${err.status})` : "";
+          setApiError(`Erro ao carregar ficheiro${statusHint}. Tente novamente.`);
+        }
       }
     } finally {
       setIsSubmitting(false);
