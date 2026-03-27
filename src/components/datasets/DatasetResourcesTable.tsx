@@ -289,7 +289,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
       <div className="w-[2px] bg-primary-600 shrink-0" />
       <div className="flex-1 min-w-0">
         <FlexTabs>
-          {isTabular && (
+          {isTabular && !isLoading && !error && tabularData && (
           <Tab>
             <TabHeader>Pré-visualização</TabHeader>
             <TabBody>
@@ -365,7 +365,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
             </TabBody>
           </Tab>
           )}
-          {isTabular && (
+          {isTabular && !isLoading && !error && tabularData && (
           <Tab>
             <TabHeader>Estrutura de dados</TabHeader>
             <TabBody>
