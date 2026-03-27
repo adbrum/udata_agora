@@ -12,6 +12,8 @@ import {
   TabBody,
   CardLinks,
   CardNoResults,
+  CardFrame,
+  Avatar,
   Icon,
   SearchPagination,
   StatusCard,
@@ -181,7 +183,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
           className="absolute inset-y-0 -mx-4 sm:-mx-8 md:-mx-16 lg:-mx-32 xl:-mx-64 bg-primary-100 border-t border-dashed border-primary-400 z-0"
           aria-hidden="true"
         />
-        <div className="relative z-10 py-64">
+        <div className="relative z-10">
           <div className="container mx-auto max-w-5xl">{content}</div>
         </div>
       </div>
@@ -219,21 +221,20 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
         <Tab>
           <TabHeader>Apresentação</TabHeader>
           {renderTabBody(
-            <div>
-              <h2 className="text-sm text-neutral-500 mb-16">
+            <div className="bg-white rounded-8 p-32">
+              <h2 className="text-l-bold text-neutral-900 mb-24">
                 Descrição da organização
               </h2>
-              <div className="prose max-w-none text-neutral-900">
-                {organization.description ? (
-                  <p className="text-m-light leading-relaxed whitespace-pre-line text-neutral-900">
-                    {organization.description}
-                  </p>
-                ) : (
-                  <p className="text-neutral-500">
-                    Esta organização não possui descrição.
-                  </p>
-                )}
-              </div>
+              {organization.description ? (
+                <div
+                  className="prose max-w-[75ch] text-neutral-900 text-m-light leading-relaxed [&_a]:underline [&_a]:text-primary-600"
+                  dangerouslySetInnerHTML={{ __html: organization.description }}
+                />
+              ) : (
+                <p className="text-neutral-500">
+                  Esta organização não possui descrição.
+                </p>
+              )}
             </div>
           )}
         </Tab>
@@ -244,16 +245,13 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
             Conjuntos de dados ({organization.metrics?.datasets || 0})
           </TabHeader>
           {renderTabBody(
-            <>
-              <h2 className="text-sm text-neutral-500 mb-16">
-                Conjuntos de dados da organização
-              </h2>
+            <div>
+              <h3 className="font-medium text-neutral-900 text-base mb-24">
+                {datasetsResponse?.total || 0} {(datasetsResponse?.total || 0) === 1 ? "CONJUNTO DE DADOS" : "CONJUNTOS DE DADOS"}
+              </h3>
               {!isLoadingDatasets && datasets.length > 0 ? (
                 <>
-                  <div className="text-sm text-neutral-500 mb-16">
-                    {datasetsResponse?.total || 0} conjuntos de dados
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-16">
+                  <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-32">
                     {datasets.map((dataset) => (
                       <div key={dataset.id} className="h-full">
                         <CardLinks
@@ -313,10 +311,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                                   className="flex items-center gap-8"
                                   title="Reutilizações"
                                 >
-                                  <Icon
-                                    name="agora-line-refresh"
-                                    aria-hidden="true"
-                                  />
+                                  <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
                                   <span>{dataset.metrics?.reuses || 0}</span>
                                 </div>
                                 <div
@@ -359,11 +354,15 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                     )}
                 </>
               ) : (
-                <div className="text-neutral-500">
-                  Esta organização não possui conjuntos de dados publicados.
-                </div>
+                <CardNoResults
+                  position="center"
+                  icon={<Icon name="agora-line-file" className="w-[40px] h-[40px] text-primary-500 icon-xl" />}
+                  title="Sem conjuntos de dados"
+                  description="Esta organização não possui conjuntos de dados publicados."
+                  hasAnchor={false}
+                />
               )}
-            </>
+            </div>
           )}
         </Tab>
 
@@ -373,15 +372,12 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
             API ({organization.metrics?.dataservices || 0})
           </TabHeader>
           {renderTabBody(
-            <>
-              <h2 className="text-sm text-neutral-500 mb-16">
-                API da organização
-              </h2>
+            <div>
+              <h3 className="font-medium text-neutral-900 text-base mb-16">
+                {dataservicesResponse?.total || 0} {(dataservicesResponse?.total || 0) === 1 ? "API" : "APIs"}
+              </h3>
               {!isLoadingDataservices && dataservices.length > 0 ? (
                 <>
-                  <div className="text-sm text-neutral-500 mb-16">
-                    {dataservicesResponse?.total || 0} APIs
-                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-16">
                     {dataservices.map((ds) => (
                       <div key={ds.id} className="h-full">
@@ -474,11 +470,15 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                     )}
                 </>
               ) : (
-                <div className="text-neutral-500">
-                  Esta organização não possui APIs publicadas.
-                </div>
+                <CardNoResults
+                  position="center"
+                  icon={<Icon name="agora-line-file" className="w-[40px] h-[40px] text-primary-500 icon-xl" />}
+                  title="Sem APIs"
+                  description="Esta organização não possui APIs publicadas."
+                  hasAnchor={false}
+                />
               )}
-            </>
+            </div>
           )}
         </Tab>
 
@@ -488,10 +488,10 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
             Reutilizações ({organization.metrics?.reuses || 0})
           </TabHeader>
           {renderTabBody(
-            <>
-              <h2 className="text-sm text-neutral-500 mb-16">
-                Reutilizações da organização
-              </h2>
+            <div>
+              <h3 className="font-medium text-neutral-900 text-base mb-16">
+                {reuses.length} {reuses.length === 1 ? "REUTILIZAÇÃO" : "REUTILIZAÇÕES"}
+              </h3>
               {!isLoadingReuses && reuses.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets-px0 gap-32">
                   {reuses.map((reuse) => (
@@ -568,11 +568,15 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                   ))}
                 </div>
               ) : (
-                <div className="text-neutral-500">
-                  Nenhuma reutilização associada a esta organização.
-                </div>
+                <CardNoResults
+                  position="center"
+                  icon={<Icon name="agora-line-file" className="w-[40px] h-[40px] text-primary-500 icon-xl" />}
+                  title="Sem reutilizações"
+                  description="Nenhuma reutilização associada a esta organização."
+                  hasAnchor={false}
+                />
               )}
-            </>
+            </div>
           )}
         </Tab>
 
@@ -778,7 +782,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                         </div>
                       </div>
                       {disc.discussion.length > 0 && (
-                        <p className="text-neutral-900 text-sm mt-16">
+                        <p className="text-neutral-900 text-sm mt-16 mb-16">
                           {disc.discussion[0].content}
                         </p>
                       )}
@@ -998,77 +1002,63 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
         <Tab>
           <TabHeader>Informações</TabHeader>
           {renderTabBody(
-            <div className="flex flex-col gap-32">
+            <div className="bg-white rounded-8 p-32">
               {/* Statistics Section */}
-              <section>
-                <h3 className="text-l-semibold text-neutral-900 font-bold mb-16">
+              <div>
+                <h3 className="font-bold text-sm uppercase tracking-wider mb-16">
                   Estatísticas
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-16">
-                  <div className="bg-white rounded-4 p-24 border border-neutral-200">
-                    <div className="text-sm text-neutral-500 mb-4">
-                      Conjuntos de dados
-                    </div>
-                    <div className="text-l-semibold font-bold text-neutral-900">
-                      {organization.metrics?.datasets || 0}
-                    </div>
+                <div className="flex gap-24 pb-48">
+                  <div className="flex-1">
+                    <CardFrame label={String(organization.metrics?.datasets || 0)}>
+                      <p className="text-neutral-700 text-base">Conjuntos de dados</p>
+                    </CardFrame>
                   </div>
-                  <div className="bg-white rounded-4 p-24 border border-neutral-200">
-                    <div className="text-sm text-neutral-500 mb-4">API</div>
-                    <div className="text-l-semibold font-bold text-neutral-900">
-                      {organization.metrics?.dataservices || 0}
-                    </div>
+                  <div className="flex-1">
+                    <CardFrame label={String(organization.metrics?.dataservices || 0)}>
+                      <p className="text-neutral-700 text-base">API</p>
+                    </CardFrame>
                   </div>
-                  <div className="bg-white rounded-4 p-24 border border-neutral-200">
-                    <div className="text-sm text-neutral-500 mb-4">
-                      Reutilizações
-                    </div>
-                    <div className="text-l-semibold font-bold text-neutral-900">
-                      {organization.metrics?.reuses || 0}
-                    </div>
+                  <div className="flex-1">
+                    <CardFrame label={String(organization.metrics?.reuses || 0)}>
+                      <p className="text-neutral-700 text-base">Reutilizações</p>
+                    </CardFrame>
                   </div>
-                  <div className="bg-white rounded-4 p-24 border border-neutral-200">
-                    <div className="text-sm text-neutral-500 mb-4">
-                      Seguidores
-                    </div>
-                    <div className="text-l-semibold font-bold text-neutral-900">
-                      {organization.metrics?.followers || 0}
-                    </div>
+                  <div className="flex-1">
+                    <CardFrame label={String(organization.metrics?.followers || 0)}>
+                      <p className="text-neutral-700 text-base">Seguidores</p>
+                    </CardFrame>
                   </div>
                 </div>
-              </section>
+              </div>
 
               {/* Members Section */}
               {organization.members?.length > 0 && (
-                <section>
-                  <h3 className="text-l-semibold text-neutral-900 font-bold mb-16">
+                <div style={{ marginTop: "64px" }}>
+                  <h3 className="font-bold text-sm uppercase tracking-wider mb-16">
                     Membros
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-24">
                     {organization.members.map((member, index) => (
                       <div
                         key={member.user?.id || index}
-                        className={`flex items-center gap-16 px-24 ${index % 3 !== 0 ? "border-l border-neutral-200" : ""}`}
+                        className="flex items-center gap-16"
                       >
                         <div className="flex-shrink-0">
-                          {member.user?.avatar_thumbnail ? (
-                            <img
-                              src={member.user.avatar_thumbnail}
-                              alt={`${member.user.first_name} ${member.user.last_name}`}
-                              className="w-[48px] h-[48px] rounded-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-[48px] h-[48px] rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-m-semibold">
-                              {member.user?.first_name?.[0]}
-                              {member.user?.last_name?.[0]}
-                            </div>
-                          )}
+                          <Avatar
+                            avatarType={member.user?.avatar_thumbnail ? "image" : "initials"}
+                            srcPath={
+                              (member.user?.avatar_thumbnail ||
+                                `${(member.user?.first_name || "")[0] || ""}${(member.user?.last_name || "")[0] || ""}`.toUpperCase()) as unknown as undefined
+                            }
+                            alt={`${member.user?.first_name} ${member.user?.last_name}`}
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-m-semibold text-neutral-900 truncate">
+                          <p className="font-bold text-sm truncate">
                             {member.user?.first_name} {member.user?.last_name}
                           </p>
-                          <span className="text-xs font-medium text-primary-600 bg-primary-100 px-8 py-2 rounded">
+                          <span className="text-xs font-medium text-primary-600 mt-4 block">
                             {member.role === "admin"
                               ? "Administrador"
                               : "Editor"}
@@ -1077,82 +1067,68 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                       </div>
                     ))}
                   </div>
-                </section>
+                </div>
               )}
 
               {/* Technical Information Section */}
-              <section>
-                <h3 className="text-l-semibold text-neutral-900 font-bold mb-16">
+              <div className="mt-32">
+                <h3 className="font-bold text-sm uppercase tracking-wider mb-16">
                   Informações técnicas
                 </h3>
-                <div className="bg-white rounded-4 p-24 border border-neutral-200">
-                  <dl className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                <div className="grid grid-cols-3 gap-24">
+                  <div>
+                    <p className="font-bold text-sm mb-8">Última atualização</p>
+                    <span className="text-sm">
+                      {organization.last_modified
+                        ? format(
+                            new Date(organization.last_modified),
+                            "d 'de' MMMM 'de' yyyy",
+                            { locale: pt }
+                          )
+                        : "—"}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm mb-8">Identificador</p>
+                    <span className="text-sm">{organization.id}</span>
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm mb-8">Data de criação</p>
+                    <span className="text-sm">
+                      {organization.created_at
+                        ? format(
+                            new Date(organization.created_at),
+                            "d 'de' MMMM 'de' yyyy",
+                            { locale: pt }
+                          )
+                        : "—"}
+                    </span>
+                  </div>
+                  {organization.url && (
                     <div>
-                      <dt className="text-sm font-semibold text-neutral-500">
-                        Última atualização
-                      </dt>
-                      <dd className="text-neutral-900 mt-2">
-                        {organization.last_modified
-                          ? format(
-                              new Date(organization.last_modified),
-                              "d 'de' MMMM 'de' yyyy",
-                              { locale: pt }
-                            )
-                          : "—"}
-                      </dd>
+                      <p className="font-bold text-sm mb-8">Website</p>
+                      <a
+                        href={organization.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary-600 hover:underline text-sm"
+                      >
+                        {organization.url}
+                      </a>
                     </div>
+                  )}
+                  {organization.business_number_id && (
                     <div>
-                      <dt className="text-sm font-semibold text-neutral-500">
-                        Identificador
-                      </dt>
-                      <dd className="text-neutral-900 mt-2 font-mono text-sm">
-                        {organization.id}
-                      </dd>
+                      <p className="font-bold text-sm mb-8">
+                        NIF / Identificação fiscal
+                      </p>
+                      <span className="text-sm">
+                        {organization.business_number_id}
+                      </span>
                     </div>
-                    <div>
-                      <dt className="text-sm font-semibold text-neutral-500">
-                        Data de criação
-                      </dt>
-                      <dd className="text-neutral-900 mt-2">
-                        {organization.created_at
-                          ? format(
-                              new Date(organization.created_at),
-                              "d 'de' MMMM 'de' yyyy",
-                              { locale: pt }
-                            )
-                          : "—"}
-                      </dd>
-                    </div>
-                    {organization.url && (
-                      <div>
-                        <dt className="text-sm font-semibold text-neutral-500">
-                          Website
-                        </dt>
-                        <dd className="mt-2">
-                          <a
-                            href={organization.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary-600 hover:underline text-sm"
-                          >
-                            {organization.url}
-                          </a>
-                        </dd>
-                      </div>
-                    )}
-                    {organization.business_number_id && (
-                      <div>
-                        <dt className="text-sm font-semibold text-neutral-500">
-                          NIF / Identificação fiscal
-                        </dt>
-                        <dd className="text-neutral-900 mt-2">
-                          {organization.business_number_id}
-                        </dd>
-                      </div>
-                    )}
-                  </dl>
+                  )}
                 </div>
-              </section>
+              </div>
             </div>
           )}
         </Tab>
