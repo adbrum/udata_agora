@@ -285,7 +285,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
   const FlexTabs = Tabs as React.FC<Omit<React.ComponentProps<typeof Tabs>, "children"> & { children: React.ReactNode }>;
 
   return (
-    <div className="flex gap-16">
+    <div className="flex gap-16 overflow-hidden">
       <div className="w-[2px] bg-primary-600 shrink-0" />
       <div className="flex-1 min-w-0">
         <FlexTabs>
@@ -323,31 +323,33 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                         Explore os dados
                       </Button>
                     </div>
-                    <Table desktopLayout="table">
-                      <TableHeader>
-                        <TableRow>
-                          {tabularData.headers.map((header, i) => (
-                            <TableHeaderCell key={i} sortType="string">
-                              {header}
-                            </TableHeaderCell>
-                          ))}
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {tabularData.rows.map((row, i) => (
-                          <TableRow key={i}>
-                            {row.map((cell, j) => (
-                              <TableCell
-                                key={j}
-                                headerLabel={tabularData.headers[j] || ""}
-                              >
-                                {cell}
-                              </TableCell>
+                    <div className="overflow-x-auto">
+                      <Table desktopLayout="table">
+                        <TableHeader>
+                          <TableRow>
+                            {tabularData.headers.map((header, i) => (
+                              <TableHeaderCell key={i} sortType="string">
+                                {header}
+                              </TableHeaderCell>
                             ))}
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {tabularData.rows.map((row, i) => (
+                            <TableRow key={i}>
+                              {row.map((cell, j) => (
+                                <TableCell
+                                  key={j}
+                                  headerLabel={tabularData.headers[j] || ""}
+                                >
+                                  {cell}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                     <p className="text-neutral-900 text-sm" style={{ marginTop: "24px" }}>
                       Última atualização da pré-visualização:{" "}
                       {tabularData.lastModified
