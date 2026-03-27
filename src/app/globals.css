@@ -1897,8 +1897,10 @@ body:has(.admin-wrapper)>div>header.sticky {
 p.max-w-ch,
 .max-w-ch p,
 li.max-w-ch,
-.max-w-ch li {
-  max-width: 65ch;
+.max-w-ch li,
+div.max-w-ch,
+.max-w-ch div {
+  max-width: 75ch;
 }
 
 @media (min-width: 768px) {

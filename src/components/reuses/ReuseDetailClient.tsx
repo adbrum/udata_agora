@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -57,6 +57,45 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
   const [replyMessage, setReplyMessage] = useState('');
   const replyIdentityRef = useRef('');
   const [isReplying, setIsReplying] = useState(false);
+
+  const [descExpanded, setDescExpanded] = useState(false);
+  const [descOverflowing, setDescOverflowing] = useState(false);
+  const [descAvailableHeight, setDescAvailableHeight] = useState<number | undefined>(undefined);
+  const descMeasureRef = useRef<HTMLDivElement>(null);
+  const descTitleRef = useRef<HTMLDivElement>(null);
+  const descSidebarRef = useRef<HTMLDivElement>(null);
+  const READMORE_BUTTON_HEIGHT = 48;
+
+  const checkDescOverflow = useCallback(() => {
+    if (descMeasureRef.current && descSidebarRef.current && descTitleRef.current) {
+      const sidebarHeight = descSidebarRef.current.offsetHeight;
+      const titleHeight = descTitleRef.current.offsetHeight;
+      const fullHeight = descMeasureRef.current.offsetHeight;
+      const maxDescHeight = sidebarHeight - titleHeight;
+      const overflows = fullHeight > maxDescHeight;
+      if (overflows) {
+        const lineHeight = parseFloat(getComputedStyle(descMeasureRef.current).lineHeight) || 24;
+        const usable = maxDescHeight - READMORE_BUTTON_HEIGHT;
+        const snapped = Math.floor(usable / lineHeight) * lineHeight;
+        setDescAvailableHeight(snapped);
+      } else {
+        setDescAvailableHeight(maxDescHeight);
+      }
+      setDescOverflowing(overflows);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkDescOverflow();
+    window.addEventListener("resize", checkDescOverflow);
+    const observer = new ResizeObserver(checkDescOverflow);
+    if (descSidebarRef.current) observer.observe(descSidebarRef.current);
+    if (descMeasureRef.current) observer.observe(descMeasureRef.current);
+    return () => {
+      window.removeEventListener("resize", checkDescOverflow);
+      observer.disconnect();
+    };
+  }, [checkDescOverflow, reuse]);
 
   const handleCreateDiscussion = async () => {
     if (!reuse || !newDiscTitle.trim() || !newDiscMessage.trim()) return;
@@ -358,17 +397,47 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                 <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6">
                   {/* Main Content */}
                   <div className="xl:col-span-8 max-w-ch">
-                    <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed">
-                      <h2 className="text-l-bold text-neutral-900 mb-32">Descrição</h2>
+                    <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed relative">
+                      <div ref={descTitleRef}>
+                        <h2 className="text-l-bold text-neutral-900 mb-32">Descrição</h2>
+                      </div>
+                      {/* Hidden measure element */}
+                      <div ref={descMeasureRef} className="absolute invisible pointer-events-none" style={{ top: 0, left: 0, right: 0 }} aria-hidden="true">
+                        <div
+                          className="mb-32 text-neutral-900 [&_a]:underline [&_a]:text-primary-600"
+                          dangerouslySetInnerHTML={{ __html: reuse.description }}
+                        />
+                      </div>
                       <div
-                        className="mb-32 text-neutral-900 [&_a]:underline [&_a]:text-primary-600"
-                        dangerouslySetInnerHTML={{ __html: reuse.description }}
-                      />
+                        className="overflow-hidden"
+                        style={!descExpanded && descOverflowing && descAvailableHeight ? { maxHeight: descAvailableHeight } : undefined}
+                      >
+                        <div
+                          className="mb-32 text-neutral-900 [&_a]:underline [&_a]:text-primary-600"
+                          dangerouslySetInnerHTML={{ __html: reuse.description }}
+                        />
+                      </div>
+                      {descOverflowing && (
+                        <button
+                          onClick={() => setDescExpanded(!descExpanded)}
+                          className="flex items-center gap-8 text-primary-600 cursor-pointer hover:underline mt-8"
+                        >
+                          {descExpanded ? "Ler menos" : "Leia mais"}
+                          {descExpanded ? (
+                            <Icon name="agora-line-arrow-up-circle" className="w-24 h-24" />
+                          ) : (
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="icon icon-m fill-[var(--color-primary-600)] w-32 h-32" aria-hidden="true" role="img">
+                              <path d="M11.2929 8.70711C10.9024 8.31658 10.9024 7.68342 11.2929 7.29289C11.6834 6.90237 12.3166 6.90237 12.7071 7.29289L16.7071 11.2929C17.0976 11.6834 17.0976 12.3166 16.7071 12.7071L12.7071 16.7071C12.3166 17.0976 11.6834 17.0976 11.2929 16.7071C10.9024 16.3166 10.9024 15.6834 11.2929 15.2929L13.5858 13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H13.5858L11.2929 8.70711Z" />
+                              <path fillRule="evenodd" clipRule="evenodd" d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z" />
+                            </svg>
+                          )}
+                        </button>
+                      )}
                     </div>
                   </div>
 
                   {/* Sidebar Metadata */}
-                  <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-16">
+                  <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-16" ref={descSidebarRef}>
                     <div className="bg-white p-32 rounded-4">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Tipo</h3>
                       <p className="font-medium text-neutral-900">

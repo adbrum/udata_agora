@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { Button, Icon, Breadcrumb, Pill, ProgressBar } from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
@@ -14,22 +14,63 @@ interface DatasetDetailClientProps {
   slug: string;
 }
 
-const DESCRIPTION_MAX_LENGTH = 400;
+const READMORE_BUTTON_HEIGHT = 48;
 
-function DescriptionWithReadMore({ text }: { text: string }) {
+function DescriptionWithReadMore({ text, sidebarRef, titleRef }: { text: string; sidebarRef: React.RefObject<HTMLDivElement | null>; titleRef: React.RefObject<HTMLDivElement | null> }) {
   const [expanded, setExpanded] = useState(false);
-  const needsTruncation = text.length > DESCRIPTION_MAX_LENGTH;
-  const displayText = !expanded && needsTruncation
-    ? text.slice(0, DESCRIPTION_MAX_LENGTH) + "..."
-    : text;
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const [availableHeight, setAvailableHeight] = useState<number | undefined>(undefined);
+  const measureRef = useRef<HTMLDivElement>(null);
+
+  const checkOverflow = useCallback(() => {
+    if (measureRef.current && sidebarRef.current && titleRef.current) {
+      const sidebarHeight = sidebarRef.current.offsetHeight;
+      const titleHeight = titleRef.current.offsetHeight;
+      const fullHeight = measureRef.current.offsetHeight;
+      const maxDescHeight = sidebarHeight - titleHeight;
+      const overflows = fullHeight > maxDescHeight;
+      if (overflows) {
+        const lineHeight = parseFloat(getComputedStyle(measureRef.current).lineHeight) || 24;
+        const usable = maxDescHeight - READMORE_BUTTON_HEIGHT;
+        const snapped = Math.floor(usable / lineHeight) * lineHeight;
+        setAvailableHeight(snapped);
+      } else {
+        setAvailableHeight(maxDescHeight);
+      }
+      setIsOverflowing(overflows);
+    }
+  }, [sidebarRef, titleRef]);
+
+  useEffect(() => {
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+
+    const observer = new ResizeObserver(checkOverflow);
+    if (sidebarRef.current) observer.observe(sidebarRef.current);
+    if (measureRef.current) observer.observe(measureRef.current);
+
+    return () => {
+      window.removeEventListener("resize", checkOverflow);
+      observer.disconnect();
+    };
+  }, [checkOverflow, text]);
 
   return (
-    <div className="prose max-w-none text-neutral-700 text-lg leading-relaxed mb-12">
-      <p className="text-neutral-900 text-m-light mb-[24px]">{displayText}</p>
-      {needsTruncation && (
+    <div className="prose max-w-none max-w-ch text-neutral-700 text-lg leading-relaxed mb-12 relative">
+      {/* Hidden measure element to get full content height */}
+      <div ref={measureRef} className="absolute invisible pointer-events-none" style={{ top: 0, left: 0, right: 0 }} aria-hidden="true">
+        <p className="text-neutral-900 text-m-light mb-[24px]">{text}</p>
+      </div>
+      <div
+        className="overflow-hidden"
+        style={!expanded && isOverflowing && availableHeight ? { maxHeight: availableHeight } : undefined}
+      >
+        <p className="text-neutral-900 text-m-light mb-[24px]">{text}</p>
+      </div>
+      {isOverflowing && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-8 text-primary-600 cursor-pointer hover:underline"
+          className="flex items-center gap-8 text-primary-600 cursor-pointer hover:underline mt-8"
         >
           {expanded ? "Ler menos" : "Leia mais"}
           {expanded ? (
@@ -101,6 +142,8 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
   const [isLoading, setIsLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function loadDataset() {
@@ -201,20 +244,20 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
         <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mb-[24px]">
           {/* Main Content Column */}
           <div className="xl:col-span-6 xl:block">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4" ref={titleRef}>
               <h1 className="text-xl-bold text-primary-900 leading-tight mb-24">
                 {dataset.title}
               </h1>
             </div>
 
             {/* Description */}
-            <DescriptionWithReadMore text={dataset.description} />
+            <DescriptionWithReadMore text={dataset.description} sidebarRef={sidebarRef} titleRef={titleRef} />
 
           </div>
 
           {/* Sidebar */}
           <div className="xl:col-span-6">
-            <div className="flex flex-col h-fit">
+            <div className="flex flex-col h-fit" ref={sidebarRef}>
               <div className="flex flex-col gap-16 bg-[#F2F6FF] rounded-4 p-32 mb-16">
                 {dataset.organization?.logo ? (
                   <div className="w-fit h-[48px] card-article-3_2-img py-8 rounded-8 border-2 border-primary-300 flex items-center justify-center">
