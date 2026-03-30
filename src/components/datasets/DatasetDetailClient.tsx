@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { Button, Icon, Breadcrumb, Pill, ProgressBar } from '@ama-pt/agora-design-system';
+import {
+  Button,
+  Icon,
+  Breadcrumb,
+  Pill,
+  ProgressBar,
+  CardExpandable,
+} from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
 import { fetchDataset, followEntity, unfollowEntity } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
@@ -131,6 +138,7 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
   const [isLoading, setIsLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
+  const [qualityExpanded, setQualityExpanded] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
 
@@ -316,30 +324,43 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
               </div>
 
               {/* Quality */}
-              <div className="bg-[#F2F6FF] rounded-4 p-32 mb-16">
-                <div className="flex justify-between items-end mb-4">
-                  <h3 className="text-l-semibold font-bold text-neutral-900 mb-[8px]">
-                    Qualidade dos metadados
-                  </h3>
-                </div>
-                <div className={qualityScore <= 45 ? "quality-progress-warning" : ""}>
-                  <ProgressBar value={qualityScore} max={100} hidePercentageValue={true} />
-                </div>
-                <div className="text-xs text-neutral-700 mt-8">
-                  {qualityScore}%
-                  {qualityDetails.length > 0 && ` (${qualityDetails.join(', ')})`}
-                </div>
+              <CardExpandable
+                variant="primary-100"
+                cardTitle="Qualidade dos metadados"
+                cardHeadingLevel="h3"
+                cardSubtitle={
+                  <div className="flex flex-col gap-4 mt-8">
+                    <div className={qualityScore <= 45 ? "quality-progress-warning" : ""}>
+                      <ProgressBar value={qualityScore} max={100} hidePercentageValue={true} />
+                    </div>
+                    <div className="text-xs text-neutral-700">
+                      {qualityScore}%
+                      {qualityDetails.length > 0 && ` (${qualityDetails.join(', ')})`}
+                    </div>
+                  </div>
+                }
+                accordionHeadingTitle={qualityExpanded ? "Fechar informação" : "Ver mais informação"}
+                accordionHeadingLevel="h4"
+                expanded={qualityExpanded}
+                onExpanded={() => setQualityExpanded(true)}
+                onCollapsed={() => setQualityExpanded(false)}
+              >
                 {qualityMissing.length > 0 && (
-                  <div className="flex flex-col gap-8 mt-16">
+                  <div className="flex flex-col gap-8">
                     {qualityMissing.map((label) => (
                       <div key={label} className="flex items-center gap-8">
-                        <Icon name="agora-line-alert-triangle" className="w-[20px] h-[20px] fill-[#B06112]" />
-                        <span className="text-neutral-900 text-base">{label} dos dados não preenchidos</span>
+                        <Icon
+                          name="agora-line-alert-triangle"
+                          className="w-[20px] h-[20px] fill-[#B06112]"
+                        />
+                        <span className="text-neutral-900 text-base">
+                          {label} dos dados não preenchidos
+                        </span>
                       </div>
                     ))}
                   </div>
                 )}
-              </div>
+              </CardExpandable>
             </div>
           </div>
         </div>
