@@ -306,7 +306,7 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
         {/* Featured Datasets */}
         <div className="xl:pt-64 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-xl-bold mb-32 text-primary-900 ">Conjunto de dados</h2>
+            <h2 className="text-xl-bold mb-32 text-primary-900 ">Conjuntos de dados</h2>
 
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {latestDatasets.length > 0 ? (
