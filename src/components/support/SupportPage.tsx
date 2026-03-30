@@ -4,6 +4,7 @@ import React from "react";
 import {
   Accordion,
   AccordionGroup,
+  Icon,
   ToggleGroup,
   Toggle,
   InputText,
@@ -14,109 +15,90 @@ import PageBanner from "@/components/PageBanner";
 
 const FAQ_DATA = [
   {
-    category: "Negócios",
+    category: "Sobre dados específicos",
     items: [
       {
-        question:
-          "Os seus dados estão visíveis na base de dados Sirene e deseja torná-los privados?",
-        answer: "Informações sobre como tornar os seus dados privados na base de dados Sirene.",
-      },
-      {
-        question: "Está à procura do seu número SIRET, SIREN ou RNA?",
-        answer:
-          "Se está à procura do seu número SIRET ou SIREN, pode visitar o site do Diretório Comercial. Se representa uma associação e está à procura do seu número de registro (RNA), pode consultar o mecanismo de busca de associações do Diário Oficial (pelo qual não nos responsabilizamos). Para mais informações, visite o site Serviço-Público.pt.",
+        question: "Dados sobre um tema concreto?",
+        answer: "",
+        richAnswer: true,
         defaultExpanded: true,
       },
+    ],
+  },
+  {
+    category: "Publicar dados no portal",
+    items: [
       {
-        question:
-          "Tem alguma dúvida sobre uma organização de treinamento ou uma certificação Qualiopi?",
-        answer: "Informações sobre organizações de treinamento e certificação Qualiopi.",
+        question: "Quer publicar no portal dados.gov.pt?",
+        answer: "",
+        richAnswer: "publicar",
+        defaultExpanded: true,
       },
     ],
   },
   {
-    category: "Dados fundiários, cadastro e endereços",
+    category: "Usar dados / reutilização",
     items: [
       {
-        question:
-          "Tem alguma dúvida sobre o aplicação DVF (solicitações de valor de terreno)?",
-        answer: "Informações sobre o aplicação DVF.",
-      },
-      {
-        question: "Tem alguma pergunta sobre o registro de imóveis?",
-        answer: "Informações sobre o registro de imóveis.",
-      },
-      {
-        question: "Notei um erro na planta cadastral. Como posso corrigi-lo?",
-        answer: "Instruções para corrigir erros na planta cadastral.",
-      },
-      {
-        question: "O que posso fazer com os dados?",
-        answer: "Informações sobre permissões e usos dos dados.",
-      },
-      {
-        question:
-          "Tem alguma dúvida sobre o base de dados nacional de endereços? Algum endereço está incorreto?",
-        answer: "Informações sobre o base de dados nacional de endereços.",
+        question: "Precisa de ajuda para encontrar ou usar dados?",
+        answer: "",
+        richAnswer: "usar-dados",
+        defaultExpanded: true,
       },
     ],
   },
   {
-    category: "APIs públicas",
+    category: "APIs e Acesso Técnico",
     items: [
       {
-        question:
-          "Tem alguma dúvida sobre os limites de chamadas da API de particionamento administrativo (API Geográfica)?",
-        answer: "Informações sobre limites de chamadas da API Geográfica.",
-      },
-      {
-        question:
-          "Está à procura de uma API ou um base de dados de placas de veículos, cartas de condução ou documentos de registro de veículos?",
-        answer: "Informações sobre dados de veículos e habilitação.",
-      },
-      {
-        question:
-          'Está à procura de a API de Serviços de Terceiros para se beneficiar do regime de pagamento antecipado imediato do crédito fiscal para "serviços pessoais"?',
-        answer: "Informações sobre a API de Serviços de Terceiros.",
-      },
-      {
-        question: "Está a enfrentar algum problema com o DataPass?",
-        answer: "Suporte para problemas com o DataPass.",
+        question: "Questões sobre API ou acesso de programação",
+        answer: "",
+        richAnswer: "apis",
+        defaultExpanded: true,
       },
     ],
   },
   {
-    category: "Outros dados",
+    category: "Questões legais e privacidade",
     items: [
       {
-        question:
-          "Tem alguma dúvida sobre o diretório nacional de infraestrutura de recarga para veículos elétricos (EVCI)?",
-        answer: "Informações sobre o infraestrutura de recarga EVCI.",
-      },
-      {
-        question: "Tem alguma pergunta sobre dados relacionados à COVID-19?",
-        answer: "Informações sobre dados da COVID-19.",
+        question: "Dúvidas sobre legalidade ou dados pessoais",
+        answer: "",
+        richAnswer: "legais",
+        defaultExpanded: true,
       },
     ],
   },
   {
-    category: "Outras perguntas frequentes",
+    category: "Problemas técnicos no portal",
     items: [
       {
-        question: "Tem alguma dúvida sobre os seus dados pessoais?",
-        answer: "Informações sobre tratamento de dados pessoais.",
+        question: "Tem um erro no sistema?",
+        answer: "",
+        richAnswer: "problemas-tecnicos",
+        defaultExpanded: true,
       },
+    ],
+  },
+  {
+    category: "Pedidos de novos dados",
+    items: [
       {
-        question: "Tem alguma dúvida sobre autorização de residência?",
-        answer: "Informações sobre autorização de residência.",
+        question: "Não encontrou os dados que procura?",
+        answer: "",
+        richAnswer: "pedidos-dados",
+        defaultExpanded: true,
       },
+    ],
+  },
+  {
+    category: "Outros assuntos",
+    items: [
       {
-        question: "Tem alguma dúvida ou já foi vítima de fraude ou burla?",
-        answer: "Informações e suporte para casos de fraude.",
-      },
-      {
-        question: "Tem alguma dúvida sobre a conta de formação profissional (CPF)?",
-        answer: "Informações sobre a conta de formação profissional.",
+        question: "Outras necessidades",
+        answer: "",
+        richAnswer: "outros",
+        defaultExpanded: true,
       },
     ],
   },
@@ -271,7 +253,7 @@ const SupportPage = () => {
                       .replace(/[\u0300-\u036f]/g, "")
                       .replace(/\s+/g, "-")
                       .replace(/[^\w-]/g, "")}
-                    className={`${category.category !== "Negócios" ? "mt-[32px]" : ""} scroll-mt-[190px]`}
+                    className={`${category.category !== "Sobre dados específicos" ? "mt-[32px]" : ""} scroll-mt-[190px]`}
                   >
                     <h3 className="text-[20px] font-bold text-[#021C51] mb-[16px]">
                       {category.category}
@@ -297,7 +279,414 @@ const SupportPage = () => {
                             }}
                           >
                             <div className="py-16 mr-[16px] text-neutral-900 leading-relaxed">
-                              {item.answer}
+                              {"richAnswer" in item && item.richAnswer === "publicar" ? (
+                                <div className="space-y-[16px]">
+                                  <div>
+                                    <p className="font-bold">
+                                      Informação oficial sobre publicação
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Página &ldquo;Publicar Dados&rdquo; no portal português:
+                                    </p>
+                                    <p>
+                                      Como publicar dados — explicação passo-a-passo no portal{" "}
+                                      <a
+                                        href="https://dados.gov.pt/pt/pages/faqs/publish"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        (Como publicar dados)
+                                      </a>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Tópicos incluídos:</p>
+                                    <p><Icon name="agora-line-check" className="inline w-16 h-16" /> Quem pode publicar (AP e outros participantes)</p>
+                                    <p><Icon name="agora-line-check" className="inline w-16 h-16" /> Criar conta / associar organização</p>
+                                    <p><Icon name="agora-line-check" className="inline w-16 h-16" /> Carregar datasets ou referenciar URL</p>
+                                    <p><Icon name="agora-line-check" className="inline w-16 h-16" /> Usar API ou harvester</p>
+                                    <p><Icon name="agora-line-check" className="inline w-16 h-16" /> Certificação de fornecedores oficiais</p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Tornar-me publicador</p>
+                                    <p>1. Criar conta no portal</p>
+                                    <p>2. Associar-se à organização</p>
+                                    <p>3. Aguardar validação</p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Atualizar um dataset</p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Pode editar o conjunto de dados e substituir ou acrescentar
+                                      recursos a qualquer momento.
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Dados pessoais ou sensíveis</p>
+                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Apenas dados anonimizados podem ser publicados.</p>
+                                    <p>Para questões sobre proteção de dados:</p>
+                                    <p>
+                                      <a
+                                        href="https://www.cnpd.pt"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        Comissão Nacional de Proteção de Dados
+                                      </a>
+                                    </p>
+                                  </div>
+                                </div>
+                              ) : "richAnswer" in item && item.richAnswer === "usar-dados" ? (
+                                <div className="space-y-[16px]">
+                                  <div>
+                                    <p className="font-bold">
+                                      Pesquisa de dados aberta do portal
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Página principal do portal:{" "}
+                                      <a
+                                        href="https://dados.gov.pt/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        Dados.gov
+                                      </a>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Como reutilizar dados</p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Consultar secções de exemplos de reutilização e licenças
+                                      no portal (ex:{" "}
+                                      <a
+                                        href="https://dados.gov.pt/pt/pages/faqs/reuse/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        Como reutilizar dados?
+                                      </a>
+                                      {" "})
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Licenças de dados abertos</p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Licenças padrão (ex.: Creative Commons CC BY 4.0
+                                      utilizado no portal){" "}
+                                      <a
+                                        href="https://dados.gov.pt/pt/pages/faqs/terms"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        (Licenças)
+                                      </a>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Citar dados corretamente</p>
+                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Ver informação de metadados em cada conjunto de dados</p>
+                                    <p className="ml-[16px]">
+                                      Indicar: nome do dataset, entidade publicadora, link
+                                      original, data de acesso
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Casos de reutilização</p>
+                                    <p className="ml-[16px]">
+                                      Consultar exemplos de projetos baseados em dados abertos no
+                                      portal
+                                    </p>
+                                  </div>
+                                </div>
+                              ) : "richAnswer" in item && item.richAnswer === "apis" ? (
+                                <div className="space-y-[16px]">
+                                  <div>
+                                    <p className="font-bold">Documentação da API</p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Endpoint de API do portal{" "}
+                                      <a
+                                        href="https://dados.gov.pt/api"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        (API)
+                                      </a>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Autenticação / chave API</p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> A API permite leitura aberta. Para escrita/autenticação é
+                                      necessário gerar o token na área de administração do
+                                      utilizador.
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">
+                                      Limites de pedidos / uso responsável
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Política de uso do API nos termos do portal{" "}
+                                      <a
+                                        href="https://dados.gov.pt/pt/pages/api-tutorial/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        (API tutorial)
+                                      </a>
+                                    </p>
+                                  </div>
+                                </div>
+                              ) : "richAnswer" in item && item.richAnswer === "legais" ? (
+                                <div className="space-y-[16px]">
+                                  <div>
+                                    <p className="font-bold">
+                                      Proteção de Dados Pessoais / RGPD
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Contactar a{" "}
+                                      <a
+                                        href="https://www.cnpd.pt"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        Comissão Nacional de Proteção de Dados
+                                      </a>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">
+                                      Pedido de remoção de dados pessoais
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Contactar a equipa do dados.gov na página de{" "}
+                                      <a
+                                        href="https://dados.gov.pt/pages/support"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        Suporte
+                                      </a>
+                                    </p>
+                                  </div>
+                                </div>
+                              ) : "richAnswer" in item &&
+                                item.richAnswer === "problemas-tecnicos" ? (
+                                <div className="space-y-[16px]">
+                                  <div>
+                                    <p className="font-bold">
+                                      Erros de login / publicação / upload / pesquisa / comentários
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Contactar a equipa do dados.gov na página de{" "}
+                                      <a
+                                        href="https://dados.gov.pt/pages/support"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        Suporte
+                                      </a>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">
+                                      Página ou funcionalidade indisponível
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Contactar a equipa do dados.gov na página de{" "}
+                                      <a
+                                        href="https://dados.gov.pt/pages/support"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        suporte
+                                      </a>
+                                      {" "}escolhendo &ldquo;Reportar um bug&rdquo;.
+                                    </p>
+                                  </div>
+                                </div>
+                              ) : "richAnswer" in item &&
+                                item.richAnswer === "pedidos-dados" ? (
+                                <div className="space-y-[16px]">
+                                  <div>
+                                    <p className="font-bold">Sugerir conjunto de dados</p>
+                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Formulário de sugestão no portal</p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">
+                                      Pedido formal de dados a uma entidade pública
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Pode dirigir pedidos à{" "}
+                                      <a
+                                        href="https://www.cada.pt"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        Comissão de Acesso a Documentos Administrativos
+                                      </a>
+                                    </p>
+                                    <p>
+                                      <a
+                                        href="https://dados.gov.pt/en/contact/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        (formulário e orientação disponíveis na página de contato)
+                                      </a>
+                                    </p>
+                                    <p>
+                                      <a
+                                        href="https://dados.gov.pt/pt/organizations/comissao-de-acesso-aos-documentos-administrativos/#/presentation"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        Comissão de Acesso a Documentos Administrativos
+                                      </a>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">
+                                      Ver pedidos existentes de abertura de dados
+                                    </p>
+                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Consultar lista pública de pedidos no portal</p>
+                                  </div>
+                                </div>
+                              ) : "richAnswer" in item &&
+                                item.richAnswer === "outros" ? (
+                                <div className="space-y-[16px]">
+                                  <div>
+                                    <p className="font-bold">Dar feedback ao portal</p>
+                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Formulário de feedback</p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Sugerir melhorias do sistema</p>
+                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Formulário de sugestões</p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Reportar conteúdo impróprio</p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Usar funcionalidades de sinalização do portal
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Eventos, formação e comunidade</p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Consultar secções de iniciativas e casos de reutilização
+                                    </p>
+                                  </div>
+                                </div>
+                              ) : "richAnswer" in item && item.richAnswer ? (
+                                <div className="space-y-[16px]">
+                                  <div>
+                                    <p className="font-bold">Estatísticas oficiais</p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Visitar o Instituto Nacional de Estatística no{" "}
+                                      <a
+                                        href="https://dados.gov.pt/pt/organizations/instituto-nacional-de-estatistica/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        dados.gov.
+                                      </a>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Dados geográficos / cartografia</p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Direção-Geral do Território no{" "}
+                                      <a
+                                        href="https://dados.gov.pt/pt/organizations/direcao-geral-do-territorio/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        dados.gov.
+                                      </a>
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Sistema Nacional de Informação Geográfica{" "}
+                                      <a
+                                        href="https://snig.dgterritorio.gov.pt/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        (SNIG)
+                                      </a>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">Dados bibliográficos / culturais</p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Biblioteca Nacional de Portugal -{" "}
+                                      <a
+                                        href="https://opendata.bnportugal.gov.pt/eng_index.htm"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        OpenData BNP
+                                      </a>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">
+                                      Dados do Sistema de Informação Cadastral Simplificado e do
+                                      Balcão Único do Prédio
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> eBUPI no{" "}
+                                      <a
+                                        href="https://dados.gov.pt/pt/organizations/ebupi-estrutura-de-missao-para-a-expansao-do-sistema-de-informacao-cadastral-simplificado/#/presentation"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        dados.gov
+                                      </a>
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Estrutura de Missão Para a Expansão do Sistema de
+                                      Informação Cadastral Simplificado no{" "}
+                                      <a
+                                        href="https://www.gov.pt/entidades/estrutura-de-missao-para-a-expansao-do-sistema-de-informacao-cadastral-simplificado"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        gov.pt
+                                      </a>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold">
+                                      Questões sobre um dataset no dados.gov
+                                    </p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Abrir o separador{" "}
+                                      <strong>&ldquo;Discussões&rdquo;</strong> na página do
+                                      conjunto de dados.
+                                    </p>
+                                  </div>
+                                </div>
+                              ) : (
+                                item.answer
+                              )}
                             </div>
                           </Accordion>
                         );
