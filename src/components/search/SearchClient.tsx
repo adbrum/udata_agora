@@ -52,13 +52,13 @@ const TYPES: {
     icon: "agora-line-layers-menu",
     iconHover: "agora-solid-layers-menu",
   },
-  {
-    type: "dataservices",
-    label: "APIs",
-    icon: (active: boolean) =>
-      active ? "/Icons/reduce_white.svg" : "/Icons/reduce.svg",
-    iconHover: "/Icons/reduce_white.svg",
-  },
+  // {
+  //   type: "dataservices",
+  //   label: "APIs",
+  //   icon: (active: boolean) =>
+  //     active ? "/Icons/reduce_white.svg" : "/Icons/reduce.svg",
+  //   iconHover: "/Icons/reduce_white.svg",
+  // },
   {
     type: "reuses",
     label: "Reutilizações",
