@@ -576,22 +576,14 @@ const ResourceCard: React.FC<{
           Atualizado em {formatDate(resource.created_at)}
         </p>
         {authorName && (
-          <p className="text-sm text-neutral-700">
+          <p className="text-sm text-neutral-900">
             Por{" "}
             {authorUrl ? (
-              <a href={authorUrl} className="text-primary-600 hover:underline inline-flex items-center gap-4">
-                {isOrganization && (
-                  <Icon name="agora-line-building" className="w-4 h-4" />
-                )}
+              <a href={authorUrl} className="text-primary-600 hover:underline">
                 {authorName}
               </a>
             ) : (
-              <span className="inline-flex items-center gap-4">
-                {isOrganization && (
-                  <Icon name="agora-line-building" className="w-4 h-4" />
-                )}
-                {authorName}
-              </span>
+              <span>{authorName}</span>
             )}
           </p>
         )}

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Tabs, Tab, TabHeader, TabBody, CardNoResults, CardLinks, Icon, StatusCard, Button, InputSearchBar, InputText, InputTextArea, DropdownSection, DropdownOption, usePopupContext } from '@ama-pt/agora-design-system';
+import { Avatar, Tabs, Tab, TabHeader, TabBody, CardNoResults, CardLinks, Icon, StatusCard, Button, InputSearchBar, InputText, InputTextArea, DropdownSection, DropdownOption, usePopupContext } from '@ama-pt/agora-design-system';
 import { Dataset, Discussion, DiscussionCreatePayload, Reuse, CommunityResource } from '@/types/api';
 import IsolatedSelect from '@/components/admin/IsolatedSelect';
 import EditDiscussionPopup from '@/components/discussions/EditDiscussionPopup';
@@ -369,13 +369,23 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                             <div className="flex justify-between items-start">
                                                 <div className="flex-1">
                                                     <h4 className="font-bold text-neutral-900 text-base">{disc.title}</h4>
-                                                    <p className="text-sm text-neutral-900 mt-4">
-                                                        <span className="text-primary-600 font-medium">
-                                                            {disc.user.first_name} {disc.user.last_name}
-                                                        </span>
-                                                        {' — Publicado em '}
-                                                        {format(new Date(disc.created), "d 'de' MMMM 'de' yyyy", { locale: pt })}
-                                                    </p>
+                                                    <div className="flex items-center gap-8 mt-4">
+                                                        <Avatar
+                                                            avatarType={disc.user.avatar_thumbnail ? "image" : "initials"}
+                                                            srcPath={
+                                                                (disc.user.avatar_thumbnail ||
+                                                                    `${disc.user.first_name?.charAt(0).toUpperCase() ?? ""}${disc.user.last_name?.charAt(0).toUpperCase() ?? ""}`) as unknown as undefined
+                                                            }
+                                                            alt={`${disc.user.first_name} ${disc.user.last_name}`}
+                                                        />
+                                                        <p className="text-sm text-neutral-900">
+                                                            <span className="text-primary-600 font-medium">
+                                                                {disc.user.first_name} {disc.user.last_name}
+                                                            </span>
+                                                            {' — Publicado em '}
+                                                            {format(new Date(disc.created), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                                 <div className="flex gap-[18px]">
                                                     <Button
@@ -417,17 +427,27 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                             )}
                                             {/* Replies */}
                                             {disc.discussion.length > 1 && (
-                                                <div className="mt-16 space-y-16 border-t border-neutral-200 pt-16">
+                                                <div className="mt-16 space-y-16 pt-16">
                                                     {disc.discussion.slice(1).map((msg, idx) => (
                                                         <div key={idx} className="border-l-2 border-primary-600" style={{ paddingLeft: "24px" }}>
                                                             <div className="flex justify-between items-start">
-                                                                <p className="text-sm text-neutral-900">
-                                                                    <span className="text-primary-600 font-medium">
-                                                                        {msg.posted_by.first_name} {msg.posted_by.last_name}
-                                                                    </span>
-                                                                    {' — '}
-                                                                    {format(new Date(msg.posted_on), "d 'de' MMMM 'de' yyyy", { locale: pt })}
-                                                                </p>
+                                                                <div className="flex items-center gap-8">
+                                                                    <Avatar
+                                                                        avatarType={msg.posted_by.avatar_thumbnail ? "image" : "initials"}
+                                                                        srcPath={
+                                                                            (msg.posted_by.avatar_thumbnail ||
+                                                                                `${msg.posted_by.first_name?.charAt(0).toUpperCase() ?? ""}${msg.posted_by.last_name?.charAt(0).toUpperCase() ?? ""}`) as unknown as undefined
+                                                                        }
+                                                                        alt={`${msg.posted_by.first_name} ${msg.posted_by.last_name}`}
+                                                                    />
+                                                                    <p className="text-sm text-neutral-900">
+                                                                        <span className="text-primary-600 font-medium">
+                                                                            {msg.posted_by.first_name} {msg.posted_by.last_name}
+                                                                        </span>
+                                                                        {' — '}
+                                                                        {format(new Date(msg.posted_on), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                                                                    </p>
+                                                                </div>
                                                                 <div className="flex gap-[18px]">
                                                                     <Button
                                                                         variant="primary"
@@ -469,7 +489,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                 </div>
                                             )}
                                             {replyingTo === disc.id ? (
-                                                <div className="mt-48 border-t border-neutral-200 pt-32">
+                                                <div className="mt-48 pt-32">
                                                     <div className="flex justify-between items-center mb-24">
                                                         <h4 className="font-bold text-neutral-900 text-sm uppercase">Responder</h4>
                                                         <Button
@@ -484,7 +504,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                         </Button>
                                                     </div>
                                                     {user?.organizations && user.organizations.length > 0 && (
-                                                        <div className="mb-16">
+                                                        <div className="mb-32 w-1/2">
                                                             <span className="block text-sm font-medium text-neutral-900 mb-8">
                                                                 Escolha a identidade com a qual deseja publicar esta mensagem.
                                                             </span>
@@ -511,9 +531,9 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                             </IsolatedSelect>
                                                         </div>
                                                     )}
-                                                    <div className="mb-16">
+                                                    <div className="mb-32 w-1/2">
                                                         <InputTextArea
-                                                            label="Sua mensagem"
+                                                            label="A sua mensagem"
                                                             value={replyMessage}
                                                             onChange={(e) => setReplyMessage(e.target.value)}
                                                             rows={3}
@@ -521,24 +541,6 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                         />
                                                     </div>
                                                     <div className="flex justify-end gap-16">
-                                                        <Button
-                                                            variant="primary"
-                                                            appearance="outline"
-                                                            disabled={isReplying || !replyMessage.trim()}
-                                                            onClick={async () => {
-                                                                setIsReplying(true);
-                                                                const org = replyIdentityRef.current && replyIdentityRef.current !== 'user' ? replyIdentityRef.current : undefined;
-                                                                const updated = await replyToDiscussion(disc.id, replyMessage.trim(), { organization: org, close: true });
-                                                                if (updated) {
-                                                                    setDiscussions((prev) => prev.map((d) => (d.id === updated.id ? updated : d)));
-                                                                    setReplyingTo(null);
-                                                                    setReplyMessage('');
-                                                                }
-                                                                setIsReplying(false);
-                                                            }}
-                                                        >
-                                                            Responder e fechar
-                                                        </Button>
                                                         <Button
                                                             variant="primary"
                                                             appearance="solid"
@@ -609,7 +611,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                             <div>
                                 <div className="mb-24">
                                     <StatusCard
-                                        type="warning"
+                                        type="info"
                                         description="Estes recursos são publicados pela comunidade e não são da responsabilidade do produtor dos dados."
                                     />
                                 </div>
