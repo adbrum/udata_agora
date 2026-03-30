@@ -180,7 +180,7 @@ export default function LoginClient() {
                         <p className="text-[#2B363C]">
                           Precisa do código PIN da sua CMD e do telemóvel que lhe está associado.
                         </p>
-                        <p className="text-sm text-neutral-700 mt-8">
+                        <p className="text-sm text-neutral-900 mt-8">
                           Ainda não tem conta? Ao autenticar-se com a Chave Móvel Digital, a sua
                           conta será criada automaticamente.
                         </p>
@@ -269,7 +269,7 @@ export default function LoginClient() {
                           país de origem na União Europeia (UE). Este meio de autenticação está
                           disponível para a qualquer cidadã/o da UE.
                         </p>
-                        <p className="text-sm text-neutral-700 mt-8">
+                        <p className="text-sm text-neutral-900 mt-8">
                           Ainda não tem conta? Ao autenticar-se com o eIDAS, a sua conta será
                           criada automaticamente.
                         </p>
@@ -391,9 +391,18 @@ export default function LoginClient() {
                         <StatusCard type="danger" description={error} />
                       )}
 
-                      <form className="flex flex-col gap-24" onSubmit={handleSubmit}>
+                      <form
+                        className="flex flex-col gap-24"
+                        onSubmit={handleSubmit}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            e.currentTarget.requestSubmit();
+                          }
+                        }}
+                      >
                         <InputText
-                          label="Endereço de email *"
+                          label="Endereço de e-mail *"
                           placeholder="Introduza aqui o texto"
                           id="login-email"
                           name="email"
