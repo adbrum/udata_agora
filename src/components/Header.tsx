@@ -344,7 +344,7 @@ export const Header = () => {
           <Logo>
             <Link href="/" className="flex items-center">
               <NextImage
-                src="/Logos/logo.png"
+                src="/Logos/logo.svg"
                 alt="dados.gov"
                 height={43}
                 width={251}
@@ -682,7 +682,7 @@ export const Header = () => {
             <div className="icon-wrapper leading">
               <Icon name="agora-line-log-out" dimensions="s" />
             </div>
-            <span className="children-wrapper">Desconectar</span>
+            <span className="children-wrapper">Sair</span>
           </a>
         </span>
       </div>,
