@@ -11,7 +11,6 @@ import {
   CardLinks,
   CardNoResults,
   Icon,
-  Pill,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -30,6 +29,7 @@ import {
   fetchReuses,
 } from "@/services/api";
 import { format, formatDistanceToNow } from "date-fns";
+import StatusDot from "@/components/admin/StatusDot";
 import { pt } from "date-fns/locale";
 
 export default function PublicProfileClient() {
@@ -272,7 +272,7 @@ export default function PublicProfileClient() {
             {displayUser.organizations.length === 1 ? "Organização" : "Organizações"}
           </h2>
 
-          <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-24">
+          <div className="grid grid-cols-2 agora-card-links-datasets-px0 profile-org-cards gap-24">
             {displayUser.organizations.map((org) => (
               <div key={org.id} className="h-full">
                 <CardLinks
@@ -558,7 +558,11 @@ export default function PublicProfileClient() {
                     {dataset.organization?.acronym || dataset.organization?.name || "—"}
                   </TableCell>
                   <TableCell headerLabel="Estado">
-                    <Pill variant="success">Público</Pill>
+                    {dataset.private ? (
+                      <StatusDot variant="warning">Rascunho</StatusDot>
+                    ) : (
+                      <StatusDot variant="success">Público</StatusDot>
+                    )}
                   </TableCell>
                   <TableCell headerLabel="Data de criação">
                     {formatShortDate(dataset.created_at)}
