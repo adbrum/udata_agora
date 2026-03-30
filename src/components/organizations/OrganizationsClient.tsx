@@ -234,10 +234,7 @@ export default function OrganizationsClient({
                           onClick={() => router.push(`/pages/organizations/${org.slug}`)}
                           className="cursor-pointer text-neutral-900"
                           variant="transparent"
-                          image={{
-                            src: org.logo || '/images/placeholders/organization.png',
-                            alt: org.name,
-                          }}
+                          {...(org.logo ? { image: { src: org.logo, alt: org.name } } : {})}
                           category="Organização"
                           title={<div className="underline text-xl-bold">{org.name}</div>}
                           description={
