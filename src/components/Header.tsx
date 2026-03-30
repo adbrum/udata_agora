@@ -344,7 +344,7 @@ export const Header = () => {
           <Logo>
             <Link href="/" className="flex items-center">
               <NextImage
-                src="/Logos/logo.png"
+                src="/Logos/logo.svg"
                 alt="dados.gov"
                 height={43}
                 width={251}

@@ -98,7 +98,7 @@ export const Footer = () => {
         darkMode={true}
         brandImage={{
           image: {
-            src: '/Logos/logo.png',
+            src: '/Logos/logo.svg',
             alt: 'dados.gov',
             style: { height: '43px', width: 'auto' }
           }
