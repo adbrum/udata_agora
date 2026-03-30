@@ -854,7 +854,7 @@ export default function ReusesFormClient({
                     src: createdReuse?.image_thumbnail || createdReuse?.image || "/laptop.png",
                     alt: reuseName || "Sem título",
                   }}
-                  category={createdReuse?.organization?.name || "Reutilização"}
+                  category={createdReuse?.organization?.name || (createdReuse?.owner ? `${createdReuse.owner.first_name} ${createdReuse.owner.last_name}`.trim() : "Reutilização")}
                   title={<div className="underline text-xl-bold">{reuseName || "Sem título"}</div>}
                   description={
                     <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
