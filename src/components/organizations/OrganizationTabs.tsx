@@ -32,7 +32,6 @@ import DeleteDiscussionPopup from "@/components/discussions/DeleteDiscussionPopu
 import {
   Organization,
   Dataset,
-  Dataservice,
   Reuse,
   Discussion,
   DiscussionCreatePayload,
@@ -40,7 +39,6 @@ import {
 } from "@/types/api";
 import {
   fetchOrgDatasets,
-  fetchOrgDataservices,
   fetchOrgReuses,
   fetchOrgDiscussions,
   createDiscussion,
@@ -60,9 +58,6 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
 
   const [datasetsResponse, setDatasetsResponse] = useState<APIResponse<Dataset> | null>(null);
   const [datasetsPage, setDatasetsPage] = useState(1);
-  const [dataservicesResponse, setDataservicesResponse] =
-    useState<APIResponse<Dataservice> | null>(null);
-  const [dataservicesPage, setDataservicesPage] = useState(1);
   const [reuses, setReuses] = useState<Reuse[]>([]);
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [discussionCount, setDiscussionCount] = useState(0);
@@ -76,7 +71,6 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
   const replyIdentityRef = useRef("");
   const [isReplying, setIsReplying] = useState(false);
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(true);
-  const [isLoadingDataservices, setIsLoadingDataservices] = useState(true);
   const [isLoadingReuses, setIsLoadingReuses] = useState(true);
   const [isLoadingDiscussions, setIsLoadingDiscussions] = useState(true);
 
@@ -136,25 +130,6 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organization.slug, datasetsPage]);
 
-  useEffect(() => {
-    async function loadDataservices() {
-      if (!dataservicesResponse) setIsLoadingDataservices(true);
-      try {
-        const response = await fetchOrgDataservices(
-          organization.id,
-          dataservicesPage,
-          20
-        );
-        setDataservicesResponse(response);
-      } catch (error) {
-        console.error("Error loading organization dataservices:", error);
-      } finally {
-        setIsLoadingDataservices(false);
-      }
-    }
-    loadDataservices();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [organization.id, dataservicesPage]);
 
   useEffect(() => {
     async function loadReuses() {
@@ -215,7 +190,6 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
   };
 
   const datasets = datasetsResponse?.data || [];
-  const dataservices = dataservicesResponse?.data || [];
 
   const renderTabBody = (content: React.ReactNode) => (
     <TabBody>
@@ -480,123 +454,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
           )}
         </Tab>
 
-        {/* Tab 3: API */}
-        <Tab>
-          <TabHeader>
-            API ({organization.metrics?.dataservices || 0})
-          </TabHeader>
-          {renderTabBody(
-            <div>
-              <h3 className="font-medium text-neutral-900 text-base mb-16">
-                {dataservicesResponse?.total || 0} {(dataservicesResponse?.total || 0) === 1 ? "API" : "APIs"}
-              </h3>
-              {!isLoadingDataservices && dataservices.length > 0 ? (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-32">
-                    {dataservices.map((ds) => (
-                      <div key={ds.id} className="h-full">
-                        <CardLinks
-                          className="cursor-pointer text-neutral-900"
-                          variant="white"
-                          image={{
-                            src:
-                              ds.organization?.logo ||
-                              "/images/placeholders/organization.png",
-                            alt: ds.organization?.name || "Organização sem logo",
-                          }}
-                          category={ds.organization?.name}
-                          title={
-                            <div className="flex items-center gap-8">
-                              <Icon
-                                name="agora-line-code"
-                                className="text-primary-600"
-                                aria-hidden="true"
-                              />
-                              <span>{ds.title}</span>
-                            </div>
-                          }
-                          description={
-                            <div className="flex flex-col gap-12">
-                              <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
-                                {ds.description}
-                              </p>
-                              {ds.format && (
-                                <span className="text-xs font-medium text-primary-600 bg-primary-50 px-8 py-2 rounded w-fit">
-                                  {ds.format}
-                                </span>
-                              )}
-                              <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[8px] text-[#034AD8]">
-                                <div
-                                  className="flex items-center gap-8"
-                                  title="Visualizações"
-                                >
-                                  <Icon
-                                    name="agora-line-eye"
-                                    aria-hidden="true"
-                                  />
-                                  <span>{ds.metrics?.views || 0}</span>
-                                </div>
-                                <div
-                                  className="flex items-center gap-8"
-                                  title="Seguidores"
-                                >
-                                  <Icon
-                                    name="agora-line-star"
-                                    aria-hidden="true"
-                                  />
-                                  <span>{ds.metrics?.followers || 0}</span>
-                                </div>
-                              </div>
-                            </div>
-                          }
-                          date={
-                            <span className="font-[300]">
-                              {ds.last_modified && !isNaN(new Date(ds.last_modified).getTime())
-                                ? `Atualizado há ${formatDistanceToNow(new Date(ds.last_modified), { locale: pt })}`
-                                : "Data indisponível"}
-                            </span>
-                          }
-                          mainLink={
-                            ds.base_api_url ? (
-                              <a
-                                href={ds.base_api_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <span className="underline">{ds.title}</span>
-                              </a>
-                            ) : (
-                              <span>{ds.title}</span>
-                            )
-                          }
-                          blockedLink={true}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  {dataservicesResponse &&
-                    renderPagination(
-                      dataservicesPage,
-                      dataservicesResponse.total,
-                      dataservicesResponse.page_size,
-                      !!dataservicesResponse.next_page,
-                      setDataservicesPage
-                    )}
-                </>
-              ) : (
-                <CardNoResults
-                  position="center"
-                  icon={<Icon name="agora-line-file" className="w-[40px] h-[40px] text-primary-500 icon-xl" />}
-                  title="Sem APIs"
-                  description="Esta organização não possui APIs publicadas."
-                  hasAnchor={false}
-                />
-              )}
-            </div>
-          )}
-        </Tab>
-
-        {/* Tab 4: Reutilizações */}
+        {/* Tab 3: Reutilizações */}
         <Tab>
           <TabHeader>
             Reutilizações ({organization.metrics?.reuses || 0})
@@ -1126,11 +984,6 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
                   <div className="flex-1">
                     <CardFrame label={String(organization.metrics?.datasets || 0)}>
                       <p className="text-base">Conjuntos de dados</p>
-                    </CardFrame>
-                  </div>
-                  <div className="flex-1">
-                    <CardFrame label={String(organization.metrics?.dataservices || 0)}>
-                      <p className="text-base">API</p>
                     </CardFrame>
                   </div>
                   <div className="flex-1">
