@@ -28,6 +28,10 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     async function loadPosts() {
       try {
         const response = await fetchPosts(currentPage, PAGE_SIZE);

@@ -18,6 +18,10 @@ export default function ArticleDetail({ rid }: ArticleDetailProps) {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     async function loadData() {
       try {
         const postData = await fetchPost(rid);
