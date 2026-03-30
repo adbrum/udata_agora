@@ -43,7 +43,7 @@ export default function DataStoryDetailPage() {
             extraPy: 'pt-[64px]',
             iFrame: {
                 className: '',
-                src: 'https://app.powerbi.com/view?r=eyJrIjoiMGYxNjMzNjgtYmFmYy00Njg2LWExY2QtMmY4MjgwNjM1YmExIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
+                src: 'https://app.powerbi.com/view?r=eyJrIjoiY2M1OTY2Y2EtZWVhMy00NGZlLTllYjItNDUyYTBlZmJkMDczIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
             source: {
                 dataSource: "INE",
@@ -58,7 +58,7 @@ export default function DataStoryDetailPage() {
             extraPy: 'pt-[64px]',
             iFrame: {
                 className: '',
-                src: 'https://app.powerbi.com/view?r=eyJrIjoiY2M1OTY2Y2EtZWVhMy00NGZlLTllYjItNDUyYTBlZmJkMDczIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
+                src: 'https://app.powerbi.com/view?r=eyJrIjoiMGYxNjMzNjgtYmFmYy00Njg2LWExY2QtMmY4MjgwNjM1YmExIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
             source: {
                 dataSource: "INE",
