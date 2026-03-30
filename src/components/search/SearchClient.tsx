@@ -405,7 +405,7 @@ export default function SearchClient() {
         >
           <InputSearchBar
             label="Pesquisa avançada"
-            placeholder="Pesquisar datasets, organizações, reutilizações..."
+            placeholder="Pesquisar conjunto de dados, organizações, reutilizações..."
             id="search-page-input"
             hasVoiceActionButton={false}
             voiceActionAltText="Pesquisar por voz"
@@ -715,11 +715,9 @@ export default function SearchClient() {
                               <h3 className="text-m-bold text-primary-700">
                                 {reuse.title}
                               </h3>
-                              {reuse.organization && (
-                                <p className="text-s-regular text-neutral-500 mt-4">
-                                  {reuse.organization.name}
-                                </p>
-                              )}
+                              <p className="text-s-regular text-neutral-500 mt-4">
+                                {reuse.organization?.name || (reuse.owner ? `${reuse.owner.first_name} ${reuse.owner.last_name}`.trim() : '')}
+                              </p>
                               <p className="text-s-regular text-neutral-700 mt-4 line-clamp-2">
                                 {reuse.description}
                               </p>

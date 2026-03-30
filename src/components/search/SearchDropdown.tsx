@@ -25,7 +25,7 @@ interface SearchDropdownProps {
 export default function SearchDropdown({
   id,
   darkMode = false,
-  placeholder = "Pesquisar datasets, organizações, reutilizações...",
+  placeholder = "Pesquisar conjunto de dados, organizações, reutilizações...",
   label = "Pesquisar",
   hasVoiceActionButton = false,
   excludeTypes = [],

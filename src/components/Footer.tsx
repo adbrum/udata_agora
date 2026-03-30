@@ -34,7 +34,7 @@ const socialLinksData = [
 ];
 
 const usefulLinksData = [
-  { href: 'https://www.portugal.gov.pt/pt/gc23', label: 'República Portuguesa' },
+  { href: 'https://www.portugal.gov.pt/pt/gc25', label: 'República Portuguesa' },
   { href: 'https://www.compete2020.gov.pt/', label: 'Compete 2020' },
   { href: 'https://portugal2020.pt/', label: 'Portugal 2020' },
   { href: 'https://commission.europa.eu/funding-tenders/find-funding/funding-management-mode/2014-2020-european-structural-and-investment-funds_en?prefLang=pt', label: 'Comissão Europeia' },
@@ -112,7 +112,7 @@ export const Footer = () => {
         socialsLink={socialLinksData.map((s) => ({
           icon: s.icon,
           iconHover: s.iconHover,
-          link: { href: s.href, 'aria-label': s.label },
+          link: { href: s.href, 'aria-label': s.label, target: '_blank', rel: 'noopener noreferrer' },
         }))}
         usefulLinks={usefulLinksData.map((l) => ({
           href: l.href,

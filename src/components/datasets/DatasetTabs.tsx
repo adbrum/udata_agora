@@ -154,7 +154,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                     src: reuse.image_thumbnail || reuse.image || '/laptop.png',
                                                     alt: reuse.title,
                                                 }}
-                                                category={reuse.organization?.name || 'Reutilização'}
+                                                category={reuse.organization?.name || (reuse.owner ? `${reuse.owner.first_name} ${reuse.owner.last_name}`.trim() : 'Reutilização')}
                                                 title={<div className="underline text-xl-bold">{reuse.title}</div>}
                                                 description={
                                                     reuse.description ? (

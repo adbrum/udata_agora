@@ -592,7 +592,7 @@ export async function fetchOrgDatasets(
 ): Promise<APIResponse<Dataset>> {
   try {
     const res = await fetch(
-      `${API_BASE_URL}/organizations/${org}/datasets/?page=${page}&page_size=${pageSize}`,
+      `${API_BASE_URL}/organizations/${org}/datasets/?page=${page}&page_size=${pageSize}&sort=-created`,
       { cache: "no-store" }
     );
 
