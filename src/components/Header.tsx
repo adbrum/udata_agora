@@ -89,34 +89,11 @@ export const Header = () => {
       setSelectedArea('1');
     }
 
-    // Force close the responsive menu on route change
-    const closeMenu = () => {
-      // 1. Try via design system ref
-      if (headerRef.current?.closeResponsiveMenu) {
-        headerRef.current.closeResponsiveMenu();
-      }
-
-      // 2. Fallback: Try to trigger click on the close button in the modal/menu
-      const closeButton = document.querySelector(
-        '.agora-header-navigation-modal [aria-label="Fechar"], .agora-header-navigation-modal button.agora-modal-close'
-      ) as HTMLButtonElement;
-      if (closeButton) {
-        closeButton.click();
-      }
-
-      // 3. Fallback: Close expanded panel by clicking its toggle button
-      const expandedBtn = document.querySelector(
-        '.agora-header button.panel-menu-button[aria-expanded="true"]'
-      ) as HTMLButtonElement;
-      if (expandedBtn) {
-        expandedBtn.click();
-      }
-    };
-
-    // Small timeout to ensure the route change has started and the DOM is accessible
-    const timer = setTimeout(closeMenu, 100);
+    // Force close all menus/panels on route change via design system API
+    if (headerRef.current?.closeAll) {
+      headerRef.current.closeAll();
+    }
     setSubmenu(null);
-    return () => clearTimeout(timer);
   }, [pathname]);
 
   // Mark header when on auth pages so CSS can style the "Autenticar" button
@@ -317,20 +294,12 @@ export const Header = () => {
         ];
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    // Force close the menu immediately
-    if (headerRef.current?.closeResponsiveMenu) {
-      headerRef.current.closeResponsiveMenu();
+    // Close all menus/panels via design system API
+    if (headerRef.current?.closeAll) {
+      headerRef.current.closeAll();
     }
+    setSubmenu(null);
 
-    // Fallback close
-    const closeButton = document.querySelector(
-      '.agora-header-navigation-modal [aria-label="Fechar"], .agora-header-navigation-modal button.agora-modal-close'
-    ) as HTMLButtonElement;
-    if (closeButton) {
-      closeButton.click();
-    }
-
-    // In mobile, sometimes we need to manually trigger the router to ensure it happens after the menu closes
     if (href !== '#') {
       router.push(href);
     }
