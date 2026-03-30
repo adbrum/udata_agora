@@ -14,6 +14,7 @@ import {
   TabBody,
   InputText,
   InputPassword,
+  StatusCard,
 } from "@ama-pt/agora-design-system";
 import { fetchCsrfToken, login } from "@/services/api";
 
@@ -387,11 +388,7 @@ export default function LoginClient() {
                       </div>
 
                       {error && (
-                        <div style={{ backgroundColor: "#FEE2E2", padding: "12px 16px", borderRadius: "4px" }}>
-                          <p style={{ color: "#B91C1C", fontSize: "14px", fontWeight: 600, margin: 0 }}>
-                            {error}
-                          </p>
-                        </div>
+                        <StatusCard type="danger" description={error} />
                       )}
 
                       <form className="flex flex-col gap-24" onSubmit={handleSubmit}>

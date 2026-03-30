@@ -87,11 +87,13 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
                 </h1>
               </div>
               <div className="subtitle">
-                <div className="container mx-auto text-left max-w-ch">
-                  Aceda, explore e reutilize dados públicos de forma transparente e acessível.
-                  Milhares de
-                  <br />
-                  conjuntos de dados ao seu dispor.
+                <div className="container mx-auto text-left">
+                  <p className="max-w-ch">
+                    Aceda, explore e reutilize dados públicos de forma transparente e acessível.
+                    Milhares de
+                    <br />
+                    conjuntos de dados ao seu dispor.
+                  </p>
                 </div>
               </div>
             </div>

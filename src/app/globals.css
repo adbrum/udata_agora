@@ -1113,6 +1113,7 @@ body:has(.admin-wrapper)>div>header.sticky {
   align-items: center;
   gap: 10px;
   padding: 16px;
+  padding-left: 36px;
   text-decoration: none;
   color: var(--color-white);
   font-size: 16px;
@@ -1129,7 +1130,7 @@ body:has(.admin-wrapper)>div>header.sticky {
 .admin-sidebar-nav__child-item--active {
   background-color: #0338a2;
   border-left: 3px solid var(--color-white);
-  padding-left: 16px;
+  padding-left: 36px;
   font-weight: 700;
 }
 
