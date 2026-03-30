@@ -377,7 +377,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                         {format(new Date(disc.created), "d 'de' MMMM 'de' yyyy", { locale: pt })}
                                                     </p>
                                                 </div>
-                                                <div className="flex gap-8">
+                                                <div className="flex gap-[18px]">
                                                     <Button
                                                         variant="primary"
                                                         appearance="outline"
@@ -395,7 +395,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                     </Button>
                                                     <Button
                                                         variant="danger"
-                                                        appearance="solid"
+                                                        appearance="outline"
                                                         hasIcon
                                                         iconOnly
                                                         leadingIcon="agora-line-trash"
@@ -403,7 +403,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                         aria-label="Eliminar discussão"
                                                         onClick={() => show(
                                                             <DeleteDiscussionPopup discussion={disc} commentIndex={0} onDeleted={() => { setDiscussions((prev) => prev.filter((d) => d.id !== disc.id)); setDiscussionCount((prev) => prev - 1); }} />,
-                                                            { title: "Tem certeza de que deseja eliminar esta discussão?", closeAriaLabel: "Fechar", dimensions: "m" }
+                                                            { title: "Tem certeza de que deseja eliminar esta discussão?", closeAriaLabel: "Fechar", dimensions: "l" }
                                                         )}
                                                     >
                                                         {" "}
@@ -428,7 +428,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                                     {' — '}
                                                                     {format(new Date(msg.posted_on), "d 'de' MMMM 'de' yyyy", { locale: pt })}
                                                                 </p>
-                                                                <div className="flex gap-8">
+                                                                <div className="flex gap-[18px]">
                                                                     <Button
                                                                         variant="primary"
                                                                         appearance="outline"
@@ -446,7 +446,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                                     </Button>
                                                                     <Button
                                                                         variant="danger"
-                                                                        appearance="solid"
+                                                                        appearance="outline"
                                                                         hasIcon
                                                                         iconOnly
                                                                         leadingIcon="agora-line-trash"
@@ -454,7 +454,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                                         aria-label="Eliminar comentário"
                                                                         onClick={() => show(
                                                                             <DeleteDiscussionPopup discussion={disc} commentIndex={idx + 1} onDeleted={() => setDiscussions((prev) => prev.map((d) => d.id === disc.id ? { ...d, discussion: d.discussion.filter((_, i) => i !== idx + 1) } : d))} />,
-                                                                            { title: "Tem certeza de que deseja apagar esta mensagem?", closeAriaLabel: "Fechar", dimensions: "m" }
+                                                                            { title: "Tem certeza de que deseja apagar esta mensagem?", closeAriaLabel: "Fechar", dimensions: "l" }
                                                                         )}
                                                                     >
                                                                         {" "}
