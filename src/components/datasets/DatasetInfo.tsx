@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
-import { Icon } from "@ama-pt/agora-design-system";
+import { Icon, Pill } from "@ama-pt/agora-design-system";
 import { Dataset } from "@/types/api";
 import { frequencyLabelsMap } from "@/utils/frequencyLabels";
 
@@ -123,7 +123,7 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
       {/* INFORMAÇÃO */}
       {hasInfo && (
         <div>
-          <h3 className="font-bold text-sm text-neutral-900 uppercase tracking-wider mb-16">
+          <h3 className="font-bold text-sm text-neutral-900 mb-16">
             Informação
           </h3>
           <div className="grid grid-cols-3 gap-24">
@@ -132,12 +132,9 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
                 <p className="font-bold text-neutral-900 text-sm mb-8">Palavras-chave</p>
                 <div className="flex flex-wrap gap-8">
                   {dataset.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-block border border-neutral-300 rounded-4 px-8 py-4 text-sm text-neutral-900"
-                    >
+                    <Pill key={tag} variant="secondary" appearance="outline" className="rounded-full">
                       {tag}
-                    </span>
+                    </Pill>
                   ))}
                 </div>
               </div>
@@ -166,7 +163,7 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
       {/* TEMPORALIDADE */}
       {hasTemporal && (
         <div className="mt-32">
-          <h3 className="font-bold text-sm text-neutral-900 uppercase tracking-wider mb-16">
+          <h3 className="font-bold text-sm text-neutral-900 mb-16">
             Temporalidade
           </h3>
           <div className="grid grid-cols-3 gap-24">
@@ -199,7 +196,7 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
       {/* COBERTURA ESPACIAL */}
       {hasSpatial && (
         <div className="mt-32">
-          <h3 className="font-bold text-sm text-neutral-900 uppercase tracking-wider mb-16">
+          <h3 className="font-bold text-sm text-neutral-900 mb-16">
             Cobertura espacial
           </h3>
           <div className="grid grid-cols-3 gap-24">
@@ -227,21 +224,18 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
 
       {/* EXTRAS */}
       {hasExtras && (
-        <div className="mt-32 border-t border-neutral-200 pt-24">
+        <div className="mt-32 pt-24">
           <button
             onClick={() => setShowExtras(!showExtras)}
-            className="flex items-center justify-between w-full"
+            className="flex items-center gap-8 w-full"
           >
-            <h3 className="font-bold text-sm text-neutral-900 uppercase tracking-wider">
+            <Icon
+              name={showExtras ? "agora-line-chevron-up" : "agora-line-chevron-down"}
+              className="w-[16px] h-[16px]"
+            />
+            <h3 className="font-bold text-sm text-neutral-900">
               Extras
             </h3>
-            <span className="flex items-center gap-8 text-sm text-primary-600">
-              {showExtras ? "Ocultar extras" : "Ver extras"}
-              <Icon
-                name={showExtras ? "agora-line-chevron-up" : "agora-line-chevron-down"}
-                className="w-[16px] h-[16px]"
-              />
-            </span>
           </button>
           {showExtras && (
             <div className="grid grid-cols-3 gap-24 mt-16">
@@ -266,21 +260,18 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
 
       {/* HARVEST */}
       {hasHarvest && (
-        <div className="mt-32 border-t border-neutral-200 pt-24">
+        <div className="mt-32 pt-24">
           <button
             onClick={() => setShowHarvest(!showHarvest)}
-            className="flex items-center justify-between w-full"
+            className="flex items-center gap-8 w-full"
           >
-            <h3 className="font-bold text-sm text-neutral-900 uppercase tracking-wider">
+            <Icon
+              name={showHarvest ? "agora-line-chevron-up" : "agora-line-chevron-down"}
+              className="w-[16px] h-[16px]"
+            />
+            <h3 className="font-bold text-sm text-neutral-900">
               Harvest
             </h3>
-            <span className="flex items-center gap-8 text-sm text-primary-600">
-              {showHarvest ? "Ocultar harvest" : "Ver extras de harvest"}
-              <Icon
-                name={showHarvest ? "agora-line-chevron-up" : "agora-line-chevron-down"}
-                className="w-[16px] h-[16px]"
-              />
-            </span>
           </button>
           {showHarvest && (
             <div className="grid grid-cols-3 gap-x-24 gap-y-24 mt-16">
