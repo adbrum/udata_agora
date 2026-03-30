@@ -129,8 +129,14 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                     extraDescription={
                                         <div className="mt-24">
                                             <Link href="/pages/admin/reuses/new">
-                                                <Button variant="primary" appearance="outline">
-                                                    Adicione uma reutilização
+                                                <Button
+                                                    variant="primary"
+                                                    appearance="outline"
+                                                    hasIcon={true}
+                                                    leadingIcon="agora-line-plus-circle"
+                                                    leadingIconHover="agora-solid-plus-circle"
+                                                >
+                                                    Adicione
                                                 </Button>
                                             </Link>
                                         </div>
@@ -589,9 +595,12 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                     <Link href={`/pages/admin/community-resources/new?dataset_id=${dataset.id}`}>
                                         <Button
                                             variant="primary"
-                                            appearance="solid"
+                                            appearance="outline"
+                                            hasIcon={true}
+                                            leadingIcon="agora-line-plane"
+                                            leadingIconHover="agora-solid-plane"
                                         >
-                                            Compartilhe os seus recursos
+                                            Partilhe
                                         </Button>
                                     </Link>
                                 </div>
@@ -613,10 +622,10 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                             variant="primary"
                                             appearance="outline"
                                             hasIcon={true}
-                                            leadingIcon="agora-line-plus-circle"
-                                            leadingIconHover="agora-solid-plus-circle"
+                                            leadingIcon="agora-line-plane"
+                                            leadingIconHover="agora-solid-plane"
                                         >
-                                            Compartilhe os seus recursos
+                                            Partilhe
                                         </Button>
                                     </Link>
                                 </div>
