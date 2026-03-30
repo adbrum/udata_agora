@@ -386,7 +386,7 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
           <div className="container mx-auto px-4">
             <h2 className="mb-48 text-gray-medium mt-32 text-m-bold">Utilizado diariamente por:</h2>
             <div className="flex flex-wrap items-center justify-between gap-x-32 gap-y-32">
-              {["arte.svg", "ADC.svg", "IMPIC.svg", "DSPA.svg", "apa.svg"].map((logo, i) => (
+              {["arte_black.svg", "ADC.svg", "IMPIC.svg", "DSPA.svg", "apa.svg"].map((logo, i) => (
                 <div key={i} className="flex items-center justify-center">
                   <img
                     src={`/Logos/${logo}`}
