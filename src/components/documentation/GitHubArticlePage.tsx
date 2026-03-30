@@ -36,10 +36,12 @@ const markdownComponents = {
     <p className="text-[16px] leading-[28px] mb-[16px]">{children}</p>
   ),
   a: ({ href, children }: any) => {
-    const isExternal = href?.startsWith("http");
+    const resolvedHref =
+      href === "/docapi/" ? "https://10.55.37.38/docapi/" : href;
+    const isExternal = resolvedHref?.startsWith("http");
     return (
       <Link
-        href={href ?? "#"}
+        href={resolvedHref ?? "#"}
         target={isExternal ? "_blank" : undefined}
         rel={isExternal ? "noopener noreferrer" : undefined}
         className="text-[#034AD8] underline font-medium hover:text-primary-700"
