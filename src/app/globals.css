@@ -623,6 +623,25 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   margin-top: auto;
 }
 
+/* Profile organization cards — equal height alignment */
+.profile-org-cards {
+  align-items: stretch;
+}
+
+.profile-org-cards .agora-card-links {
+  height: 100%;
+}
+
+.profile-org-cards .agora-card-links .card-links-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-org-cards .agora-card-links .card-links-container .bottom-container {
+  margin-top: auto;
+}
+
 /* Override icon fill and link color for reuses, article and organization pages */
 .reuse .agora-card-links.transparent .topic-item .icon,
 .article .agora-card-links.transparent .topic-item .icon,

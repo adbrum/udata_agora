@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow, format } from "date-fns";
@@ -15,6 +15,7 @@ import {
   CardFrame,
   Avatar,
   Icon,
+  Pill,
   SearchPagination,
   StatusCard,
   Button,
@@ -78,6 +79,46 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
   const [isLoadingDataservices, setIsLoadingDataservices] = useState(true);
   const [isLoadingReuses, setIsLoadingReuses] = useState(true);
   const [isLoadingDiscussions, setIsLoadingDiscussions] = useState(true);
+
+  // Description expand/collapse state
+  const [descExpanded, setDescExpanded] = useState(false);
+  const [descOverflowing, setDescOverflowing] = useState(false);
+  const [descAvailableHeight, setDescAvailableHeight] = useState<number | undefined>(undefined);
+  const descMeasureRef = useRef<HTMLDivElement>(null);
+  const descTitleRef = useRef<HTMLDivElement>(null);
+  const descSidebarRef = useRef<HTMLDivElement>(null);
+  const DESC_READMORE_HEIGHT = 48;
+
+  const checkDescOverflow = useCallback(() => {
+    if (descMeasureRef.current && descSidebarRef.current && descTitleRef.current) {
+      const sidebarHeight = descSidebarRef.current.offsetHeight;
+      const titleHeight = descTitleRef.current.offsetHeight;
+      const fullHeight = descMeasureRef.current.offsetHeight;
+      const maxDescHeight = sidebarHeight - titleHeight;
+      const overflows = fullHeight > maxDescHeight;
+      if (overflows) {
+        const lineHeight = parseFloat(getComputedStyle(descMeasureRef.current).lineHeight) || 24;
+        const usable = maxDescHeight - DESC_READMORE_HEIGHT;
+        const snapped = Math.floor(usable / lineHeight) * lineHeight;
+        setDescAvailableHeight(snapped);
+      } else {
+        setDescAvailableHeight(maxDescHeight);
+      }
+      setDescOverflowing(overflows);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkDescOverflow();
+    window.addEventListener("resize", checkDescOverflow);
+    const observer = new ResizeObserver(checkDescOverflow);
+    if (descSidebarRef.current) observer.observe(descSidebarRef.current);
+    if (descMeasureRef.current) observer.observe(descMeasureRef.current);
+    return () => {
+      window.removeEventListener("resize", checkDescOverflow);
+      observer.disconnect();
+    };
+  }, [checkDescOverflow]);
 
   useEffect(() => {
     async function loadDatasets() {
@@ -180,7 +221,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
     <TabBody>
       <div className="relative">
         <div
-          className="absolute inset-y-0 -mx-4 sm:-mx-8 md:-mx-16 lg:-mx-32 xl:-mx-64 bg-primary-100 border-t border-dashed border-primary-400 z-0"
+          className="absolute inset-y-0 -mx-4 sm:-mx-8 md:-mx-16 lg:-mx-32 xl:-mx-64 bg-primary-100 z-0"
           aria-hidden="true"
         />
         <div className="relative z-10">
@@ -217,24 +258,97 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
   return (
     <div className="mt-64">
       <Tabs>
-        {/* Tab 1: Apresentação */}
+        {/* Tab 1: Descrição */}
         <Tab>
-          <TabHeader>Apresentação</TabHeader>
+          <TabHeader>Descrição</TabHeader>
           {renderTabBody(
-            <div className="bg-white rounded-8 p-32">
-              <h2 className="text-l-bold text-neutral-900 mb-24">
-                Descrição da organização
-              </h2>
-              {organization.description ? (
-                <div
-                  className="prose max-w-[75ch] text-neutral-900 text-m-light leading-relaxed [&_a]:underline [&_a]:text-primary-600"
-                  dangerouslySetInnerHTML={{ __html: organization.description }}
-                />
-              ) : (
-                <p className="text-neutral-500">
-                  Esta organização não possui descrição.
-                </p>
-              )}
+            <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mt-6">
+              {/* Main Content */}
+              <div className="xl:col-span-8 max-w-ch">
+                <div className="prose prose-lg max-w-none text-neutral-700 leading-relaxed relative">
+                  <div ref={descTitleRef}>
+                    <h2 className="font-medium text-base text-neutral-900 uppercase mb-32">Descrição</h2>
+                  </div>
+                  {organization.description ? (
+                    <>
+                      {/* Hidden measure element */}
+                      <div ref={descMeasureRef} className="absolute invisible pointer-events-none" style={{ top: 0, left: 0, right: 0 }} aria-hidden="true">
+                        <div
+                          className="mb-32 text-neutral-900 [&_a]:underline [&_a]:text-primary-600"
+                          dangerouslySetInnerHTML={{ __html: organization.description }}
+                        />
+                      </div>
+                      <div
+                        className="overflow-hidden"
+                        style={!descExpanded && descOverflowing && descAvailableHeight ? { maxHeight: descAvailableHeight } : undefined}
+                      >
+                        <div
+                          className="mb-32 text-neutral-900 [&_a]:underline [&_a]:text-primary-600"
+                          dangerouslySetInnerHTML={{ __html: organization.description }}
+                        />
+                      </div>
+                      {descOverflowing && (
+                        <button
+                          onClick={() => setDescExpanded(!descExpanded)}
+                          className="flex items-center gap-8 text-primary-600 cursor-pointer hover:underline mt-8"
+                        >
+                          {descExpanded ? "Ler menos" : "Ler mais"}
+                          {descExpanded ? (
+                            <Icon name="agora-line-arrow-up-circle" className="w-24 h-24" />
+                          ) : (
+                            <Icon name="agora-line-arrow-down-circle" className="w-24 h-24" />
+                          )}
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-neutral-500">
+                      Esta organização não possui descrição.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Sidebar Metadata */}
+              <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-16" ref={descSidebarRef}>
+                <div className="bg-white p-32 rounded-4">
+                  <h3 className="text-sm font-bold tracking-wider mb-8">Tipo</h3>
+                  <p className="font-medium text-neutral-900">Publicador Oficial</p>
+                </div>
+
+                <div className="bg-white p-32 rounded-4">
+                  <h3 className="text-sm font-bold tracking-wider mb-8">
+                    Última atualização
+                  </h3>
+                  <p className="font-medium text-neutral-900">
+                    {organization.last_modified
+                      ? format(new Date(organization.last_modified), "d 'de' MMMM 'de' yyyy", { locale: pt })
+                      : "—"}
+                  </p>
+                </div>
+
+                <div className="bg-white p-32 rounded-4">
+                  <h3 className="text-sm font-bold tracking-wider mb-8">
+                    Data de criação
+                  </h3>
+                  <p className="font-medium text-neutral-900">
+                    {organization.created_at
+                      ? format(new Date(organization.created_at), "d 'de' MMMM 'de' yyyy", { locale: pt })
+                      : "—"}
+                  </p>
+                </div>
+
+                <div className="bg-white p-32 rounded-4">
+                  <h3 className="text-sm font-bold tracking-wider mb-8">Vistas</h3>
+                  <div className="text-2xl text-neutral-900 mb-8">
+                    {organization.metrics?.views
+                      ? organization.metrics.views >= 1000
+                        ? (organization.metrics.views / 1000).toLocaleString("pt-PT") + " mil"
+                        : organization.metrics.views.toLocaleString("pt-PT")
+                      : "0"}
+                  </div>
+                </div>
+              </aside>
             </div>
           )}
         </Tab>
@@ -378,7 +492,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
               </h3>
               {!isLoadingDataservices && dataservices.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-16">
+                  <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets gap-32">
                     {dataservices.map((ds) => (
                       <div key={ds.id} className="h-full">
                         <CardLinks
@@ -1005,28 +1119,28 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
             <div className="bg-white rounded-8 p-32">
               {/* Statistics Section */}
               <div>
-                <h3 className="font-bold text-sm uppercase tracking-wider mb-16">
+                <h3 className="font-medium text-base text-neutral-900 uppercase mb-16">
                   Estatísticas
                 </h3>
                 <div className="flex gap-24 pb-48">
                   <div className="flex-1">
                     <CardFrame label={String(organization.metrics?.datasets || 0)}>
-                      <p className="text-neutral-700 text-base">Conjuntos de dados</p>
+                      <p className="text-base">Conjuntos de dados</p>
                     </CardFrame>
                   </div>
                   <div className="flex-1">
                     <CardFrame label={String(organization.metrics?.dataservices || 0)}>
-                      <p className="text-neutral-700 text-base">API</p>
+                      <p className="text-base">API</p>
                     </CardFrame>
                   </div>
                   <div className="flex-1">
                     <CardFrame label={String(organization.metrics?.reuses || 0)}>
-                      <p className="text-neutral-700 text-base">Reutilizações</p>
+                      <p className="text-base">Reutilizações</p>
                     </CardFrame>
                   </div>
                   <div className="flex-1">
                     <CardFrame label={String(organization.metrics?.followers || 0)}>
-                      <p className="text-neutral-700 text-base">Seguidores</p>
+                      <p className="text-base">Seguidores</p>
                     </CardFrame>
                   </div>
                 </div>
@@ -1035,7 +1149,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
               {/* Members Section */}
               {organization.members?.length > 0 && (
                 <div style={{ marginTop: "64px" }}>
-                  <h3 className="font-bold text-sm uppercase tracking-wider mb-16">
+                  <h3 className="font-medium text-base text-neutral-900 uppercase mb-16">
                     Membros
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-24">
@@ -1072,7 +1186,7 @@ export const OrganizationTabs: React.FC<OrganizationTabsProps> = ({ organization
 
               {/* Technical Information Section */}
               <div className="mt-32">
-                <h3 className="font-bold text-sm uppercase tracking-wider mb-16">
+                <h3 className="font-medium text-base text-neutral-900 uppercase mb-16">
                   Informações técnicas
                 </h3>
                 <div className="grid grid-cols-3 gap-24">
