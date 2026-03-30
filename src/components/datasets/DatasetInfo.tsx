@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
-import { Icon, Pill } from "@ama-pt/agora-design-system";
+import { Pill, Accordion, AccordionGroup } from "@ama-pt/agora-design-system";
 import { Dataset } from "@/types/api";
 import { frequencyLabelsMap } from "@/utils/frequencyLabels";
 
@@ -95,8 +95,6 @@ const CopyButton = ({ text }: { text: string }) => {
 };
 
 export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
-  const [showExtras, setShowExtras] = useState(false);
-  const [showHarvest, setShowHarvest] = useState(false);
 
   if (!dataset) return null;
 
@@ -123,7 +121,7 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
       {/* INFORMAÇÃO */}
       {hasInfo && (
         <div>
-          <h3 className="font-bold text-sm text-neutral-900 mb-16">
+          <h3 className="font-medium text-base text-neutral-900 uppercase mb-16">
             Informação
           </h3>
           <div className="grid grid-cols-3 gap-24">
@@ -163,7 +161,7 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
       {/* TEMPORALIDADE */}
       {hasTemporal && (
         <div className="mt-32">
-          <h3 className="font-bold text-sm text-neutral-900 mb-16">
+          <h3 className="font-medium text-base text-neutral-900 uppercase mb-16">
             Temporalidade
           </h3>
           <div className="grid grid-cols-3 gap-24">
@@ -196,7 +194,7 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
       {/* COBERTURA ESPACIAL */}
       {hasSpatial && (
         <div className="mt-32">
-          <h3 className="font-bold text-sm text-neutral-900 mb-16">
+          <h3 className="font-medium text-base text-neutral-900 uppercase mb-16">
             Cobertura espacial
           </h3>
           <div className="grid grid-cols-3 gap-24">
@@ -222,85 +220,61 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
         </div>
       )}
 
-      {/* EXTRAS */}
-      {hasExtras && (
+      {/* EXTRAS & HARVEST */}
+      {(hasExtras || hasHarvest) && (
         <div className="mt-32 pt-24">
-          <button
-            onClick={() => setShowExtras(!showExtras)}
-            className="flex items-center gap-8 w-full"
-          >
-            <Icon
-              name={showExtras ? "agora-line-chevron-up" : "agora-line-chevron-down"}
-              className="w-[16px] h-[16px]"
-            />
-            <h3 className="font-bold text-sm text-neutral-900">
-              Extras
-            </h3>
-          </button>
-          {showExtras && (
-            <div className="grid grid-cols-3 gap-24 mt-16">
-              {dataset.page && (
-                <div>
-                  <p className="font-bold text-neutral-900 text-sm mb-8">links</p>
-                  <span className="text-neutral-900 text-sm break-all">{dataset.page}</span>
-                </div>
-              )}
-              <div>
-                <p className="font-bold text-neutral-900 text-sm mb-8">contact</p>
-                <span className="text-neutral-900 text-sm break-all">
-                  {dataset.contact_points && dataset.contact_points.length > 0
-                    ? dataset.contact_points.map((cp) => cp.email || cp.name).join(", ")
-                    : "Não disponível"}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* HARVEST */}
-      {hasHarvest && (
-        <div className="mt-32 pt-24">
-          <button
-            onClick={() => setShowHarvest(!showHarvest)}
-            className="flex items-center gap-8 w-full"
-          >
-            <Icon
-              name={showHarvest ? "agora-line-chevron-up" : "agora-line-chevron-down"}
-              className="w-[16px] h-[16px]"
-            />
-            <h3 className="font-bold text-sm text-neutral-900">
-              Harvest
-            </h3>
-          </button>
-          {showHarvest && (
-            <div className="grid grid-cols-3 gap-x-24 gap-y-24 mt-16">
-              {[
-                "backend",
-                "created_at",
-                "modified_at",
-                "remote_url",
-                "uri",
-                "dct_identifier",
-                "archived_at",
-                "archived",
-                "domain",
-                "last_update",
-                "remote_id",
-                "source_id",
-              ].map((key) => {
-                const value = harvestData?.[key];
-                return (
-                  <div key={key}>
-                    <p className="font-bold text-neutral-900 text-sm mb-8">{key}</p>
+          <AccordionGroup>
+            {hasExtras && (
+              <Accordion headingTitle="Extras" headingLevel="h3">
+                <div className="grid grid-cols-3 gap-24 p-16">
+                  {dataset.page && (
+                    <div>
+                      <p className="font-bold text-neutral-900 text-sm mb-8">links</p>
+                      <span className="text-neutral-900 text-sm break-all">{dataset.page}</span>
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-bold text-neutral-900 text-sm mb-8">contact</p>
                     <span className="text-neutral-900 text-sm break-all">
-                      {value === null || value === undefined ? "None" : String(value)}
+                      {dataset.contact_points && dataset.contact_points.length > 0
+                        ? dataset.contact_points.map((cp) => cp.email || cp.name).join(", ")
+                        : "Não disponível"}
                     </span>
                   </div>
-                );
-              })}
-            </div>
-          )}
+                </div>
+              </Accordion>
+            )}
+            {hasHarvest && (
+              <Accordion headingTitle="Harvest" headingLevel="h3">
+                <div className="grid grid-cols-3 gap-x-24 gap-y-24 p-16">
+                  {[
+                    "backend",
+                    "created_at",
+                    "modified_at",
+                    "remote_url",
+                    "uri",
+                    "dct_identifier",
+                    "archived_at",
+                    "archived",
+                    "domain",
+                    "last_update",
+                    "remote_id",
+                    "source_id",
+                  ].map((key) => {
+                    const value = harvestData?.[key];
+                    return (
+                      <div key={key}>
+                        <p className="font-bold text-neutral-900 text-sm mb-8">{key}</p>
+                        <span className="text-neutral-900 text-sm break-all">
+                          {value === null || value === undefined ? "None" : String(value)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Accordion>
+            )}
+          </AccordionGroup>
         </div>
       )}
 
