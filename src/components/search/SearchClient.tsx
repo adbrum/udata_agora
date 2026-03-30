@@ -405,7 +405,7 @@ export default function SearchClient() {
         >
           <InputSearchBar
             label="Pesquisa avançada"
-            placeholder="Pesquisar datasets, organizações, reutilizações..."
+            placeholder="Pesquisar conjunto de dados, organizações, reutilizações..."
             id="search-page-input"
             hasVoiceActionButton={false}
             voiceActionAltText="Pesquisar por voz"
