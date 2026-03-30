@@ -206,7 +206,7 @@ export default function DatasetsClient({
         >
           <InputSearchBar
             label="O que procura nos conjuntos de dados?"
-            placeholder="Pesquisar datasets, organizações, temas..."
+            placeholder="Pesquisar conjunto de dados, organizações, temas..."
             id="datasets-search"
             hasVoiceActionButton={false}
             voiceActionAltText="Pesquisar por voz"
