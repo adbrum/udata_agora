@@ -164,7 +164,7 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
                   onClick={() => setExpanded(!expanded)}
                   className="flex items-center gap-8 text-primary-600 cursor-pointer hover:underline mt-8"
                 >
-                  {expanded ? "Ler menos" : "Leia mais"}
+                  {expanded ? "Leia menos" : "Leia mais"}
                   {expanded ? (
                     <Icon name="agora-line-arrow-up-circle" className="w-24 h-24" />
                   ) : (
