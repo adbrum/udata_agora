@@ -106,7 +106,8 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
                       darkMode={true}
                       hasVoiceActionButton={false}
                       label="O que procura no Portal?"
-                      placeholder="Pesquisar datasets, organizações, temas..."
+                      placeholder="Pesquisar conjunto de dados, organizações, temas..."
+                      excludeTypes={["dataservices"]}
                     />
                     <div className="mt-8 text-s-regular text-neutral-200">
                       Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;,
