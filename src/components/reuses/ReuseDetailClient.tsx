@@ -34,6 +34,16 @@ import DeleteDiscussionPopup from '@/components/discussions/DeleteDiscussionPopu
 import { format, formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
+const REUSE_TYPE_LABELS: Record<string, string> = {
+  visualization: "Visualização",
+  application: "Aplicação",
+  blog_post: "Publicação no blog",
+  press_article: "Artigo de imprensa",
+  api: "API",
+  idea: "Ideia",
+  hardware: "Hardware conectado",
+};
+
 interface ReuseDetailClientProps {
   slug: string;
 }
@@ -342,7 +352,7 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                 <div className="flex flex-col gap-24 h-full">
                   <div className="flex items-center flex-wrap gap-16 text-[15px]">
                     <span className="font-semibold text-neutral-900">
-                      {reuse.type || 'Aplicação'}
+                      {REUSE_TYPE_LABELS[reuse.type] || reuse.type || 'Aplicação'}
                     </span>
                     <div className="flex items-center gap-8">
                       <Icon
@@ -422,7 +432,7 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                           onClick={() => setDescExpanded(!descExpanded)}
                           className="flex items-center gap-8 text-primary-600 cursor-pointer hover:underline mt-8"
                         >
-                          {descExpanded ? "Ler menos" : "Leia mais"}
+                          {descExpanded ? "Leia menos" : "Leia mais"}
                           {descExpanded ? (
                             <Icon name="agora-line-arrow-up-circle" className="w-24 h-24" />
                           ) : (
@@ -441,7 +451,7 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                     <div className="bg-white p-32 rounded-4">
                       <h3 className="text-sm font-bold tracking-wider mb-8">Tipo</h3>
                       <p className="font-medium text-neutral-900">
-                        {reuse.type || 'Aplicação'}
+                        {REUSE_TYPE_LABELS[reuse.type] || reuse.type || 'Aplicação'}
                       </p>
                     </div>
 
