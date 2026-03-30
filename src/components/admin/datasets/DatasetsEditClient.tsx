@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter, useParams } from "next/navigation";
 import {
+  Avatar,
   Breadcrumb,
   Button,
   Icon,
@@ -653,7 +654,7 @@ export default function DatasetsEditClient() {
                 {dataset.private && (
                   <div className="dataset-edit-visibility-banner">
                     <StatusCard
-                      type="warning"
+                      type="info"
                       description={
                         <>
                           <strong>Modifique a visibilidade do conjunto de dados.</strong>
@@ -1287,7 +1288,15 @@ export default function DatasetsEditClient() {
                         key={index}
                         className="flex items-start gap-[12px] p-[12px] bg-neutral-50 rounded-lg"
                       >
-                        <Icon name={activity.icon || "agora-line-time"} className="w-[20px] h-[20px] text-primary-500 mt-[2px]" />
+                        <Avatar
+                          avatarType={activity.actor?.avatar_thumbnail ? "image" : "initials"}
+                          srcPath={
+                            (activity.actor?.avatar_thumbnail ||
+                              `${(activity.actor?.first_name || "")[0] || ""}${(activity.actor?.last_name || "")[0] || ""}`.toUpperCase()) as unknown as undefined
+                          }
+                          alt={`${activity.actor?.first_name || ""} ${activity.actor?.last_name || ""}`}
+                          size="sm"
+                        />
                         <div>
                           <p className="text-sm text-neutral-900">
                             <a
