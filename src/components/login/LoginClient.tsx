@@ -218,11 +218,21 @@ export default function LoginClient() {
                     </div>
                     <div className="mt-8">
                       <Checkbox
-                        label="Declaro que li e aceito os termos e condições para o tratamento dos meus dados pessoais no acesso e utilização da Área Reservada do dadosgov.pt"
                         id="terms-cmd"
                         className="text-sm text-neutral-700 leading-relaxed"
                         onChange={(e) => setTermsCmdAccepted(e.target.checked)}
-                      />
+                      >
+                        Declaro que li e aceito os{" "}
+                        <a
+                          href="/pages/faqs/terms"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary-600 underline hover:text-primary-800"
+                        >
+                          termos e condições para o tratamento dos dados pessoais
+                        </a>{" "}
+                        no acesso e utilização da Área Reservada do portal gov.pt
+                      </Checkbox>
                     </div>
                   </div>
                   <div className="mt-16">
@@ -291,11 +301,21 @@ export default function LoginClient() {
                   <div className="flex flex-col gap-24">
                     <div className="mt-8">
                       <Checkbox
-                        label="Declaro que li e aceito os termos e condições para o tratamento dos meus dados pessoais no acesso e utilização da Área Reservada do dadosgov.pt"
                         id="terms-eidas"
                         className="text-sm text-neutral-700 leading-relaxed"
                         onChange={(e) => setTermsEidasAccepted(e.target.checked)}
-                      />
+                      >
+                        Declaro que li e aceito os{" "}
+                        <a
+                          href="/pages/faqs/terms"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary-600 underline hover:text-primary-800"
+                        >
+                          termos e condições para o tratamento dos dados pessoais
+                        </a>{" "}
+                        no acesso e utilização da Área Reservada do portal gov.pt
+                      </Checkbox>
                     </div>
                   </div>
                   <div className="mt-16">
