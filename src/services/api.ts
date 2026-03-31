@@ -1204,12 +1204,16 @@ export async function fetchLatestReuses(pageSize: number = 3): Promise<APIRespon
 
 export async function fetchPosts(
   page: number = 1,
-  pageSize: number = 3
+  pageSize: number = 3,
+  sort: string = "-published"
 ): Promise<APIResponse<Post>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/posts/?page=${page}&page_size=${pageSize}`, {
-      next: { revalidate: 120 },
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/posts/?page=${page}&page_size=${pageSize}&sort=${sort}`,
+      {
+        next: { revalidate: 120 },
+      }
+    );
 
     if (!res.ok) {
       throw new Error(`Failed to fetch posts: ${res.statusText}`);
