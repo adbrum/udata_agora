@@ -330,7 +330,7 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                 cardHeadingLevel="h3"
                 cardSubtitle={
                   <div className="flex flex-col gap-4 mt-8">
-                    <div className={qualityScore <= 45 ? "quality-progress-warning" : ""}>
+                    <div className={qualityScore <= 45 ? "quality-progress-warning" : qualityScore > 50 ? "quality-progress-success" : ""}>
                       <ProgressBar value={qualityScore} max={100} hidePercentageValue={true} />
                     </div>
                     <div className="text-xs text-neutral-700">

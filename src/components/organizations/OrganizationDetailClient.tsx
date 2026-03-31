@@ -280,7 +280,9 @@ export default function OrganizationDetailClient({ organization }: OrganizationD
                 <div className="flex justify-between items-end mb-4">
                   <h3 className="text-l-semibold font-bold text-neutral-900 mb-[8px]">Qualidade dos metadados</h3>
                 </div>
-                <ProgressBar value={100} />
+                <div className="quality-progress-success">
+                  <ProgressBar value={100} />
+                </div>
                 <div className="text-xs text-neutral-500 mt-8">
                   100% de conformidade média
                 </div>

@@ -7,6 +7,7 @@ import {
   Icon,
   CardArticle,
   CardGeneral,
+  ProgressBar,
 } from "@ama-pt/agora-design-system";
 import Link from "next/link";
 import { Dataset, Post, Reuse, SiteMetrics } from "@/types/api";
@@ -270,60 +271,123 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
         </div>
 
         {/* Featured Datasets */}
-        <div className="xl:pt-64 bg-white">
+        <div className="xl:pt-64 pb-64 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-xl-bold mb-32 text-primary-900 ">Conjuntos de dados</h2>
 
             <div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-32">
               {latestDatasets.length > 0 ? (
-                latestDatasets.map((dataset) => (
-                  <Link
-                    key={dataset.id}
-                    href={`/pages/datasets/${dataset.slug}`}
-                    className="dataset-card-home border border-solid border-primary-600 rounded-[4px] overflow-hidden h-full flex flex-col dataset-card-home-small-pill"
-                  >
-                    <CardGeneral
-                      variant="white"
-                      pillText={
-                        dataset.last_modified
-                          ? formatDistanceToNow(new Date(dataset.last_modified), {
-                            locale: pt,
-                          }).replace("aproximadamente ", "").replace("quase ", "").replace("menos de ", "").replace("cerca de ", "") + " atrás"
-                          : "Desconhecido"
-                      }
-                      subtitleText={dataset.organization?.name || "Sem Organização"}
-                      titleText={dataset.title}
-                      descriptionText={
-                        (
-                          <div className="flex flex-col grow">
-                            <div className="flex items-center text-neutral-900 mb-8">
-                              <Icon
-                                name="agora-solid-bullet"
-                                className="w-8 h-8 text-primary-600"
-                                aria-hidden="true"
-                              />
-                              <span>{dataset.metrics?.views || 0} visualizações</span>
+                latestDatasets.map((dataset) => {
+                  const qualityScore = dataset.quality?.score != null
+                    ? Math.round(dataset.quality.score * 100)
+                    : 0;
+                  const formatMetric = (value: number | undefined) => {
+                    if (!value) return "0";
+                    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(".", ",") + " M";
+                    if (value >= 1_000) return (value / 1_000).toFixed(0) + " mil";
+                    return String(value);
+                  };
+                  const timeAgo = dataset.last_modified
+                    ? formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })
+                        .replace("aproximadamente ", "")
+                        .replace("quase ", "")
+                        .replace("menos de ", "")
+                        .replace("cerca de ", "")
+                    : "Desconhecido";
+
+                  return (
+                    <Link
+                      key={dataset.id}
+                      href={`/pages/datasets/${dataset.slug}`}
+                      className="dataset-card-home rounded-[4px] overflow-hidden h-full flex flex-col"
+                    >
+                      <CardGeneral
+                        variant="neutral-100"
+                        image={{
+                          src: dataset.organization?.logo || "/images/placeholders/organization.png",
+                          alt: dataset.organization?.name || "Organização",
+                          height: "56",
+                          className: "bg-primary-100 !object-contain !h-[56px]",
+                        }}
+                        subtitleText={
+                          (
+                            <div className="flex flex-col">
+                              <span style={{ fontSize: "16px" }} className="text-neutral-900">{timeAgo}</span>
+                              <span style={{ fontSize: "16px", fontWeight: 300 }} className="text-neutral-900 mt-4">
+                                {dataset.organization?.name || "Sem Organização"}
+                              </span>
                             </div>
-                            <span className="text-m-regular text-neutral-800 dataset-content-proper mb-16 line-clamp-3">
-                              {dataset.description}
-                            </span>
-                            <div className="flex items-center gap-8 text-primary-600 mt-auto">
-                              <Icon
-                                name="agora-line-arrow-right-circle"
-                                className="w-32 h-32"
-                                aria-hidden="true"
-                              />
+                          ) as unknown as string
+                        }
+                        titleText={dataset.title}
+                        descriptionText={
+                          (
+                            <div className="flex flex-col grow">
+                              <p className="text-m-regular text-neutral-800 line-clamp-3 mb-16">
+                                {dataset.description}
+                              </p>
+                              <div className={`mt-auto ${qualityScore <= 45 ? "quality-progress-warning" : qualityScore > 50 ? "quality-progress-success" : ""}`}>
+                                <ProgressBar
+                                  value={qualityScore}
+                                  max={100}
+                                  hideLabel={true}
+                                  hidePercentageValue={true}
+                                />
+                                <span className="text-[14px] text-neutral-900 mt-4 block">
+                                  {qualityScore}% Qualidade dos metadados
+                                </span>
+                                <div className="flex items-center flex-wrap gap-8 text-xs mt-12 text-neutral-700">
+                                  <div className="flex items-center gap-8" title="Visualizações">
+                                    <Icon
+                                      name={dataset.metrics?.views ? "agora-solid-eye" : "agora-line-eye"}
+                                      dimensions="xs"
+                                      className="fill-neutral-700"
+                                      aria-hidden="true"
+                                    />
+                                    <span>{formatMetric(dataset.metrics?.views)}</span>
+                                  </div>
+                                  <div className="flex items-center gap-8" title="Downloads">
+                                    <Icon
+                                      name={dataset.metrics?.resources_downloads ? "agora-solid-download" : "agora-line-download"}
+                                      dimensions="xs"
+                                      className="fill-neutral-700"
+                                      aria-hidden="true"
+                                    />
+                                    <span>{formatMetric(dataset.metrics?.resources_downloads)}</span>
+                                  </div>
+                                  <div className="flex items-center gap-8" title="Reutilizações">
+                                    <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                    <span>{dataset.metrics?.reuses || 0}</span>
+                                  </div>
+                                  <div className="flex items-center gap-8" title="Favoritos">
+                                    <Icon
+                                      name={dataset.metrics?.followers ? "agora-solid-star" : "agora-line-star"}
+                                      dimensions="xs"
+                                      className="fill-neutral-700"
+                                      aria-hidden="true"
+                                    />
+                                    <span>{formatMetric(dataset.metrics?.followers)}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-8 text-primary-600 mt-16">
+                                  <Icon
+                                    name="agora-line-arrow-right-circle"
+                                    className="w-32 h-32"
+                                    aria-hidden="true"
+                                  />
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        ) as unknown as string
-                      }
-                      isBlockedLink={true}
-                      anchor={{
-                        href: `/pages/datasets/${dataset.slug}`,
-                      }}
-                    />
-                  </Link>
-                ))
+                          ) as unknown as string
+                        }
+                        isBlockedLink={true}
+                        anchor={{
+                          href: `/pages/datasets/${dataset.slug}`,
+                        }}
+                      />
+                    </Link>
+                  );
+                })
               ) : (
                 <div className="xl:col-span-3 text-center py-32 text-neutral-500">
                   Nenhum conjunto de dados encontrado.
@@ -343,24 +407,6 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
                   <span>Ver todos os conjuntos de dados</span>
                 </Button>
               </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Utilizado diariamente por */}
-        <div className="xl:pb-64 bg-white">
-          <div className="container mx-auto px-4">
-            <h2 className="mb-8 text-gray-medium mt-32 text-m-bold">Utilizado diariamente por:</h2>
-            <div className="flex flex-wrap items-center justify-between gap-x-32 gap-y-32">
-              {["arte_black.svg", "ADC.svg", "IMPIC.svg", "DSPA.svg", "apa.svg"].map((logo, i) => (
-                <div key={i} className="flex items-center justify-center">
-                  <img
-                    src={`/Logos/${logo}`}
-                    alt={`Logo ${logo.replace(".svg", "")}`}
-                    className={`${logo === "arte_black.svg" ? "h-[36px]" : "h-[48px]"} w-auto object-contain`}
-                  />
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -491,6 +537,24 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
                   <span>Ver todas as novidades</span>
                 </Button>
               </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Utilizado diariamente por */}
+        <div className="xl:pb-64 bg-white">
+          <div className="container mx-auto px-4">
+            <h2 className="mb-8 text-gray-medium text-m-bold">Utilizado diariamente por:</h2>
+            <div className="flex flex-wrap items-center justify-between gap-x-32 gap-y-32">
+              {["arte_black.svg", "ADC.svg", "IMPIC.svg", "DSPA.svg", "apa.svg"].map((logo, i) => (
+                <div key={i} className="flex items-center justify-center">
+                  <img
+                    src={`/Logos/${logo}`}
+                    alt={`Logo ${logo.replace(".svg", "")}`}
+                    className={`${logo === "arte_black.svg" ? "h-[36px]" : "h-[48px]"} w-auto object-contain`}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
