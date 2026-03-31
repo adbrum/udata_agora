@@ -4,7 +4,6 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  CardGeneral,
   CardLinks,
   InputSearch,
   Button,
@@ -165,6 +164,7 @@ export default function ReusesClient({
   const router = useRouter();
   const { data: reuses, total, page_size } = initialData;
   const [searchQuery, setSearchQuery] = useState(initialFilters?.q || '');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const currentQuery = initialFilters?.q || '';
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -392,8 +392,20 @@ export default function ReusesClient({
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
           {/* Results count + Sort toggles */}
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
-            <div className="xl:col-span-5 flex items-center py-16">
-              <span className="text-neutral-900 font-medium text-base">
+            <div className="xl:col-span-5 flex flex-row items-end gap-24 pl-0 py-16">
+              <Button
+                appearance="outline"
+                variant="neutral"
+                hasIcon
+                {...(filtersOpen
+                  ? { leadingIcon: "agora-line-chevron-left", leadingIconHover: "agora-solid-chevron-left" }
+                  : { trailingIcon: "agora-line-chevron-right", trailingIconHover: "agora-solid-chevron-right" }
+                )}
+                onClick={() => setFiltersOpen(!filtersOpen)}
+              >
+                {filtersOpen ? "Ocultar filtros" : "Abrir filtros"}
+              </Button>
+              <span className="text-neutral-900 text-l-regular whitespace-nowrap">
                 {total.toLocaleString('pt-PT')} Resultados
               </span>
             </div>
@@ -421,8 +433,9 @@ export default function ReusesClient({
           </div>
           <div className="divider-neutral-200 mb-24" />
 
-          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
+          <div className={`grid grid-filters gap-x-[32px] ${filtersOpen ? "md:grid-cols-3 xl:grid-cols-12" : ""}`}>
             {/* Sidebar */}
+            {filtersOpen && (
             <div className="xl:col-span-5 xl:block">
               {siteMetrics && (
                 <div>
@@ -602,19 +615,21 @@ export default function ReusesClient({
                 </Button>
               </div>
             </div>
+            )}
 
             {/* Results Area */}
-            <div className="xl:col-span-7">
+            <div className={filtersOpen ? "xl:col-span-7" : "col-span-full"}>
               <div>
-            <div className="grid xs:grid-cols-1 sm:grid-cols-2 gap-32">
+            <div
+              className="grid agora-card-links-datasets-px0 gap-32"
+              style={{
+                gridTemplateColumns: filtersOpen
+                  ? "repeat(1, minmax(0, 1fr))"
+                  : "repeat(2, minmax(0, 1fr))",
+              }}
+            >
               {reuses.length > 0 ? (
                 reuses.map((reuse) => {
-                  const formatMetric = (value: number | undefined) => {
-                    if (!value) return "0";
-                    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(".", ",") + " M";
-                    if (value >= 1_000) return (value / 1_000).toFixed(0) + " mil";
-                    return String(value);
-                  };
                   const timeAgo = reuse.last_modified || reuse.created_at
                     ? formatDistanceToNow(new Date(reuse.last_modified || reuse.created_at), { locale: pt })
                         .replace("aproximadamente ", "")
@@ -622,117 +637,110 @@ export default function ReusesClient({
                         .replace("menos de ", "")
                         .replace("cerca de ", "")
                     : "Desconhecido";
-                  const ownerName = reuse.organization?.name
-                    || (reuse.owner ? `${reuse.owner.first_name} ${reuse.owner.last_name}`.trim() : "Sem Organização");
 
                   return (
-                    <Link
-                      key={reuse.id}
-                      href={`/pages/reuses/${reuse.slug}`}
-                      className="card-general-listing rounded-[4px] overflow-hidden h-full flex flex-col"
-                    >
-                      <CardGeneral
-                        variant="neutral-100"
+                    <div key={reuse.id} className="h-full">
+                      <CardLinks
+                        onClick={() => router.push(`/pages/reuses/${reuse.slug}`)}
+                        className="cursor-pointer text-neutral-900 h-full"
+                        variant="transparent"
                         image={{
-                          src: reuse.image_thumbnail || reuse.image || "/laptop.png",
+                          src: reuse.image_thumbnail || reuse.image || '/laptop.png',
                           alt: reuse.title,
-                          height: "56px",
-                          className: "bg-primary-100 !object-contain !h-[56px]",
                         }}
-                        subtitleText={
-                          (
-                            <div className="flex flex-col">
-                              <span style={{ fontSize: "16px" }} className="text-neutral-900">{timeAgo}</span>
-                              <span style={{ fontSize: "16px", fontWeight: 300 }} className="text-neutral-900 mt-4">
-                                {ownerName}
+                        category={reuse.organization?.name || 'Reutilização'}
+                        title={<div className="underline text-xl-bold">{reuse.title}</div>}
+                        description={
+                          reuse.description ? (
+                            <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                              {reuse.description}
+                            </p>
+                          ) : undefined
+                        }
+                        date={
+                          <span className="font-[300]">
+                            Atualizado há {timeAgo}
+                          </span>
+                        }
+                        links={[
+                          {
+                            href: '#',
+                            hasIcon: true,
+                            leadingIcon: 'agora-line-eye',
+                            leadingIconHover: 'agora-solid-eye',
+                            trailingIcon: '',
+                            trailingIconHover: '',
+                            trailingIconActive: '',
+                            children: reuse.metrics?.views?.toLocaleString('pt-PT') || '0',
+                            title: 'Visualizações',
+                            onClick: (e: React.MouseEvent) => e.preventDefault(),
+                            className: 'text-[#034AD8]',
+                          },
+                          {
+                            href: '#',
+                            hasIcon: true,
+                            leadingIcon: 'agora-line-calendar',
+                            leadingIconHover: 'agora-solid-calendar',
+                            trailingIcon: '',
+                            trailingIconHover: '',
+                            trailingIconActive: '',
+                            children: `${reuse.datasets?.length || 0} datasets`,
+                            title: 'Datasets',
+                            onClick: (e: React.MouseEvent) => e.preventDefault(),
+                            className: 'text-[#034AD8]',
+                          },
+                          {
+                            href: '#',
+                            hasIcon: false,
+                            children: (
+                              <span className="flex items-center gap-8">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                  <path d="M4 22.9091V15.2727C4 14.6702 4.47969 14.1818 5.07143 14.1818C5.66316 14.1818 6.14286 14.6702 6.14286 15.2727V22.9091C6.14286 23.5116 5.66316 24 5.07143 24C4.47969 24 4 23.5116 4 22.9091ZM10.4286 22.9091V1.09091C10.4286 0.488417 10.9083 0 11.5 0C12.0917 0 12.5714 0.488417 12.5714 1.09091V22.9091C12.5714 23.5116 12.0917 24 11.5 24C10.9083 24 10.4286 23.5116 10.4286 22.9091ZM16.8571 22.9091V9.81818C16.8571 9.21569 17.3368 8.72727 17.9286 8.72727C18.5203 8.72727 19 9.21569 19 9.81818V22.9091C19 23.5116 18.5203 24 17.9286 24C17.3368 24 16.8571 23.5116 16.8571 22.9091Z" fill="currentColor"/>
+                                </svg>
+                                <span>{reuse.metrics?.reuses || 0}</span>
                               </span>
-                            </div>
-                          ) as unknown as string
+                            ),
+                            title: 'Métricas',
+                            onClick: (e: React.MouseEvent) => e.preventDefault(),
+                            className: 'text-[#034AD8]',
+                          },
+                          {
+                            href: '#',
+                            hasIcon: true,
+                            leadingIcon: 'agora-line-star',
+                            leadingIconHover: 'agora-solid-star',
+                            trailingIcon: '',
+                            trailingIconHover: '',
+                            trailingIconActive: '',
+                            children: reuse.metrics?.followers || 0,
+                            title: 'Favoritos',
+                            onClick: (e: React.MouseEvent) => e.preventDefault(),
+                            className: 'text-[#034AD8]',
+                          },
+                        ]}
+                        mainLink={
+                          <Link href={`/pages/reuses/${reuse.slug}`}>
+                            <span className="underline">{reuse.title}</span>
+                          </Link>
                         }
-                        titleText={reuse.title}
-                        descriptionText={
-                          (
-                            <div className="flex flex-col grow">
-                              {reuse.description && (
-                                <p className="text-m-regular text-neutral-800 line-clamp-3 mb-16">
-                                  {reuse.description}
-                                </p>
-                              )}
-                              <div className="mt-auto">
-                                <div className="flex items-center flex-wrap gap-8 text-xs mt-12 text-neutral-700">
-                                  <div className="flex items-center gap-8" title="Visualizações">
-                                    <Icon
-                                      name={reuse.metrics?.views ? "agora-solid-eye" : "agora-line-eye"}
-                                      dimensions="xs"
-                                      className="fill-neutral-700"
-                                      aria-hidden="true"
-                                    />
-                                    <span>{formatMetric(reuse.metrics?.views)}</span>
-                                  </div>
-                                  <div className="flex items-center gap-8" title="Datasets">
-                                    <Icon
-                                      name={reuse.datasets?.length ? "agora-solid-calendar" : "agora-line-calendar"}
-                                      dimensions="xs"
-                                      className="fill-neutral-700"
-                                      aria-hidden="true"
-                                    />
-                                    <span>{reuse.datasets?.length || 0} datasets</span>
-                                  </div>
-                                  <div className="flex items-center gap-8" title="Reutilizações">
-                                    <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
-                                    <span>{reuse.metrics?.reuses || 0}</span>
-                                  </div>
-                                  <div className="flex items-center gap-8" title="Favoritos">
-                                    <Icon
-                                      name={reuse.metrics?.followers ? "agora-solid-star" : "agora-line-star"}
-                                      dimensions="xs"
-                                      className="fill-neutral-700"
-                                      aria-hidden="true"
-                                    />
-                                    <span>{formatMetric(reuse.metrics?.followers)}</span>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-8 text-primary-600 mt-16">
-                                  <Icon
-                                    name="agora-line-arrow-right-circle"
-                                    className="w-32 h-32"
-                                    aria-hidden="true"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          ) as unknown as string
-                        }
-                        isBlockedLink={true}
-                        anchor={{
-                          href: `/pages/reuses/${reuse.slug}`,
-                        }}
+                        blockedLink={true}
                       />
-                    </Link>
+                    </div>
                   );
                 })
               ) : (
                 <div className="col-span-full">
                   <CardNoResults
-                    icon={
-                      <Icon
-                        name="agora-line-search"
-                        className="w-12 h-12 text-primary-500"
-                      />
-                    }
-                    title="Não encontrámos reutilizações"
-                    subtitle={
-                      <span className="font-bold">
-                        Não existem resultados com os filtros ou termos de pesquisa atuais.
-                      </span>
-                    }
-                    description={
-                      <div className="max-w-[592px] mx-auto">
-                        Tente ajustar ou remover alguns filtros para ampliar a pesquisa.
-                      </div>
-                    }
+                    icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />}
+                    title="Não encontrou nenhuma reutilização?"
+                    subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar sua busca.</span>}
+                    description="Explore a nossa lista completa de reutilizações de dados abertos."
                     position="center"
-                    hasAnchor={false}
+                    hasAnchor={true}
+                    valueAnchor="Redefinir filtros"
+                    anchorHref="/pages/reuses"
+                    anchorTrailingIcon="agora-line-arrow-right-circle"
+                    anchorTrailingIconHover="agora-solid-arrow-right-circle"
                   />
                 </div>
               )}

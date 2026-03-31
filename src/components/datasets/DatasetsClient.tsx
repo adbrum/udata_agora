@@ -50,6 +50,7 @@ export default function DatasetsClient({
   const currentQuery = initialFilters.q || '';
   const currentSort = initialFilters.sort || '';
   const [searchQuery, setSearchQuery] = React.useState(currentQuery);
+  const [filtersOpen, setFiltersOpen] = React.useState(false);
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentSortKey = Object.entries(SORT_OPTIONS).find(
@@ -173,8 +174,20 @@ export default function DatasetsClient({
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
           {/* Results count + Sort toggles — full width, aligned with grid */}
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
-            <div className="xl:col-span-5 flex items-center pl-0 py-16">
-              <span className="text-neutral-900 font-medium text-base">
+            <div className="xl:col-span-5 flex flex-row items-end gap-24 pl-0 py-16">
+              <Button
+                appearance="outline"
+                variant="neutral"
+                hasIcon
+                {...(filtersOpen
+                  ? { leadingIcon: "agora-line-chevron-left", leadingIconHover: "agora-solid-chevron-left" }
+                  : { trailingIcon: "agora-line-chevron-right", trailingIconHover: "agora-solid-chevron-right" }
+                )}
+                onClick={() => setFiltersOpen(!filtersOpen)}
+              >
+                {filtersOpen ? "Ocultar filtros" : "Abrir filtros"}
+              </Button>
+              <span className="text-neutral-900 text-l-regular whitespace-nowrap">
                 {total.toLocaleString('pt-PT')} Resultados
               </span>
             </div>
@@ -202,16 +215,26 @@ export default function DatasetsClient({
           </div>
           <div className="divider-neutral-200 mb-24" />
 
-          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
+          <div className={`grid grid-filters gap-x-[32px] ${filtersOpen ? "md:grid-cols-3 xl:grid-cols-12" : ""}`}>
             {/* Sidebar */}
-            <div className="xl:col-span-5 xl:block">
-              <DatasetsFilters siteMetrics={siteMetrics} searchQuery={currentQuery} />
-            </div>
+            {filtersOpen && (
+              <div className="xl:col-span-5 xl:block">
+                <DatasetsFilters siteMetrics={siteMetrics} searchQuery={currentQuery} />
+              </div>
+            )}
 
             {/* Results Area */}
-            <div className="xl:col-span-7">
+            <div className={filtersOpen ? "xl:col-span-7" : "col-span-full"}>
               <div>
-                <div className="grid xs:grid-cols-1 sm:grid-cols-2 gap-32">
+                <div
+                  className="gap-32"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: filtersOpen
+                      ? "repeat(2, minmax(0, 1fr))"
+                      : "repeat(3, minmax(0, 1fr))",
+                  }}
+                >
                   {datasets.length > 0 ? (
                     datasets.map((dataset) => {
                       const qualityScore = dataset.quality?.score != null
