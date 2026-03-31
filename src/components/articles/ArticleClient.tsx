@@ -134,7 +134,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                           {post.headline}
                         </p>
                       }
-                      date={<span className="font-[300]">{formatPostDate(post)}</span>}
+                      date={undefined}
                       links={[
                         {
                           href: "#",

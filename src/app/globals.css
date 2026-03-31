@@ -118,6 +118,12 @@ body {
    [03] HEADER & NAVIGATION
    ========================================================================== */
 
+/* Breadcrumb — increase underline offset on links */
+.agora-breadcrumb-desktop ol li .agora-anchor-text-neutral {
+  text-underline-offset: 0.75rem !important;
+  text-decoration-thickness: 2px !important;
+}
+
 /* Hide languages selector (temporarily) */
 header.sticky .languages-panel-menu {
   display: none !important;
