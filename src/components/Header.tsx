@@ -418,65 +418,20 @@ export const Header = () => {
           modalAriaLabel="Menu de navegação"
           modalCloseLabel="Fechar"
         >
-          <NavigationRoot label="Contribuir">
-            {[
-              {
-                iconDefault: "agora-line-layers-menu",
-                iconHover: "agora-solid-layers-menu",
-                title: "Novo Conjunto de Dados",
-                description: "Pesquisar e explorar dados",
-                href: "/pages/admin/datasets/new",
-              },
-              {
-                iconDefault: "/Icons/bar_char_white.svg",
-                iconHover: "/Icons/bar_char_white.svg",
-                title: "Nova Reutilização",
-                description: "Casos de uso",
-                href: "/pages/admin/reuses/new",
-              },
-              {
-                iconDefault: "agora-line-buildings",
-                iconHover: "agora-solid-buildings",
-                title: "Nova Organização",
-                description: "Entidades",
-                href: "/pages/admin/organizations/new?step=1",
-              },
-            ].map((card) => (
-              <NavigationLink key={card.title} appearance="link">
-                <HeaderCard {...card} onLinkClick={handleLinkClick} />
-              </NavigationLink>
-            ))}
-          </NavigationRoot>
+          <NavigationLink appearance="link">
+            <Link href="/pages/datasets" onClick={(e) => handleLinkClick(e, '/pages/datasets')}>
+              Conjuntos de dados
+            </Link>
+          </NavigationLink>
 
-          <NavigationRoot label="Explorar">
+          <NavigationRoot label="Reutilizações">
             {[
-              {
-                iconDefault: "agora-line-layers-menu",
-                iconHover: "agora-solid-layers-menu",
-                title: "Conjuntos de dados",
-                description: "Explore os dados",
-                href: "/pages/datasets",
-              },
-              {
-                iconDefault: "agora-line-health",
-                iconHover: "agora-solid-health",
-                title: "HVDs",
-                description: "High Value Datasets",
-                href: "/pages/datasets?tag=hvd",
-              },
               {
                 iconDefault: "/Icons/bar_char_white.svg",
                 iconHover: "/Icons/bar_char_white.svg",
-                title: "Reutilizações",
+                title: "Consultar Reutilizações",
                 description: "Casos de uso",
                 href: "/pages/reuses",
-              },
-              {
-                iconDefault: "agora-line-buildings",
-                iconHover: "agora-solid-buildings",
-                title: "Organizações",
-                description: "Entidades públicas",
-                href: "/pages/organizations",
               },
               {
                 iconDefault: "agora-line-bell",
@@ -491,6 +446,12 @@ export const Header = () => {
               </NavigationLink>
             ))}
           </NavigationRoot>
+
+          <NavigationLink appearance="link">
+            <Link href="/pages/organizations" onClick={(e) => handleLinkClick(e, '/pages/organizations')}>
+              Organizações
+            </Link>
+          </NavigationLink>
 
           <NavigationRoot label="Conhecimento">
             {conhecimentoItems.map((item) => {
@@ -620,6 +581,43 @@ export const Header = () => {
 
             })}
 
+          </NavigationRoot>
+
+          <NavigationRoot label="Publicar">
+            {[
+              {
+                iconDefault: "agora-line-layers-menu",
+                iconHover: "agora-solid-layers-menu",
+                title: "Novo Conjunto de Dados",
+                description: "Publicar dados",
+                href: "/pages/admin/datasets/new",
+              },
+              {
+                iconDefault: "/Icons/bar_char_white.svg",
+                iconHover: "/Icons/bar_char_white.svg",
+                title: "Nova Reutilização",
+                description: "Casos de uso",
+                href: "/pages/admin/reuses/new",
+              },
+              {
+                iconDefault: "agora-line-buildings",
+                iconHover: "agora-solid-buildings",
+                title: "Nova Organização",
+                description: "Entidades",
+                href: "/pages/admin/organizations/new?step=1",
+              },
+              {
+                iconDefault: "agora-line-question-mark",
+                iconHover: "agora-solid-question-mark",
+                title: "Novo Harvester",
+                description: "Recolha automática",
+                href: "/pages/admin/harvesters/new",
+              },
+            ].map((card) => (
+              <NavigationLink key={card.title} appearance="link">
+                <HeaderCard {...card} onLinkClick={handleLinkClick} />
+              </NavigationLink>
+            ))}
           </NavigationRoot>
         </NavigationBar>
       </AgoraHeader>

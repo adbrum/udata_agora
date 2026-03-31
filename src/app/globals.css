@@ -520,6 +520,22 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   fill: currentColor;
 }
 
+.stats-icon-square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+}
+
+.stats-icon-square svg,
+.stats-icon-square svg path,
+.stats-icon-square [class*="agora-icon"] {
+  fill: currentColor;
+}
+
 /* 5.3 Tabs Overrides */
 .agora-tabs.desktop .tab-panel.current-neutral,
 .agora-tabs.desktop .tab-list.desktop .tab-list-item.active.current-neutral {

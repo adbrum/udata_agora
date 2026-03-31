@@ -158,134 +158,111 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
           </div>
         </div>
 
-        {/* Stats Section / Communities */}
-        <div className="py-64 bg-primary-900 text-white -mt-8 relative z-20 rounded-t-3xl shadow-top-low md:mt-0 md:border-none md:shadow-none">
+        {/* Stats Section */}
+        <div className="py-32 bg-primary-900 text-white -mt-8 relative z-20 rounded-t-3xl shadow-top-low md:mt-0 md:border-none md:shadow-none">
           <div className="container mx-auto px-4">
-            <div className="grid xs:grid-cols-1 xl:grid-cols-12 gap-64 items-center">
-              {/* Left: title + description */}
-              <div className="xl:col-span-5 flex flex-col gap-24">
-                <h2 className="text-white">
-                  <span className="text-l-bold">Uma comunidade</span>
-                  <br />
-                  <span className="xs:text-xl-light md:text-2xl-light xl:text-2xl-light whitespace-nowrap">
-                    Dinâmica e empenhada
-                  </span>
-                </h2>
-                <p className="text-m-regular max-w-sm">
-                  Partilhe a utilização e a troca de dados entre produtores e reutilizadores de
-                  dados.
-                </p>
+            <div className="grid xs:grid-cols-4 lg:grid-cols-4 gap-24">
+              {/* Reutilizações */}
+              <div className="flex items-center gap-16">
+                <div className="stats-icon-square border-2 border-[#D600FF] text-[#D600FF]">
+                  <svg
+                    width="15"
+                    height="24"
+                    viewBox="0 0 15 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-[15px] h-[24px]"
+                  >
+                    <path
+                      d="M0 22.9091V15.2727C0 14.6702 0.479695 14.1818 1.07143 14.1818C1.66316 14.1818 2.14286 14.6702 2.14286 15.2727V22.9091C2.14286 23.5116 1.66316 24 1.07143 24C0.479695 24 0 23.5116 0 22.9091ZM6.42857 22.9091V1.09091C6.42857 0.488417 6.90827 0 7.5 0C8.09173 0 8.57143 0.488417 8.57143 1.09091V22.9091C8.57143 23.5116 8.09173 24 7.5 24C6.90827 24 6.42857 23.5116 6.42857 22.9091ZM12.8571 22.9091V9.81818C12.8571 9.21569 13.3368 8.72727 13.9286 8.72727C14.5203 8.72727 15 9.21569 15 9.81818V22.9091C15 23.5116 14.5203 24 13.9286 24C13.3368 24 12.8571 23.5116 12.8571 22.9091Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-baseline gap-[6px]">
+                    <span className="text-xl-bold">
+                      {formatStatNumber(stats?.reuses ?? 0).number}
+                    </span>
+                    {formatStatNumber(stats?.reuses ?? 0).suffix && (
+                      <span className="text-m-bold">
+                        {formatStatNumber(stats?.reuses ?? 0).suffix}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-s-regular">Reutilizações</span>
+                </div>
               </div>
 
-              {/* Right: 2x2 stats grid */}
-              <div className="xl:col-span-7 grid xs:grid-cols-1 sm:grid-cols-2 gap-x-64 gap-y-48">
-                <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32">
-                  <div className="xl:col-span-6 flex flex-col gap-48">
-                    {/* Conjuntos de Dados */}
-                    <div className="flex items-center gap-24">
-                      <div className="stats-icon-wrapper text-[#A6D5FF] border-[#A6D5FF]">
-                        <Icon
-                          name="agora-line-layers-menu"
-                          aria-hidden="true"
-                          className="w-[24px] h-[24px]"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="flex items-baseline gap-[6px]">
-                          <span className="text-2xl-semibold">
-                            {formatStatNumber(stats?.datasets ?? 0).number}
-                          </span>
-                          {formatStatNumber(stats?.datasets ?? 0).suffix && (
-                            <span className="text-l-bold">
-                              {formatStatNumber(stats?.datasets ?? 0).suffix}
-                            </span>
-                          )}
-                        </div>
-                        <span>Conjuntos de Dados</span>
-                      </div>
-                    </div>
-
-                    {/* Reutilizações */}
-                    <div className="flex items-center gap-24">
-                      <div className="stats-icon-wrapper text-[#D600FF] border-[#D600FF]">
-                        <svg
-                          width="15"
-                          height="24"
-                          viewBox="0 0 15 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-[15px] h-[24px]"
-                        >
-                          <path
-                            d="M0 22.9091V15.2727C0 14.6702 0.479695 14.1818 1.07143 14.1818C1.66316 14.1818 2.14286 14.6702 2.14286 15.2727V22.9091C2.14286 23.5116 1.66316 24 1.07143 24C0.479695 24 0 23.5116 0 22.9091ZM6.42857 22.9091V1.09091C6.42857 0.488417 6.90827 0 7.5 0C8.09173 0 8.57143 0.488417 8.57143 1.09091V22.9091C8.57143 23.5116 8.09173 24 7.5 24C6.90827 24 6.42857 23.5116 6.42857 22.9091ZM12.8571 22.9091V9.81818C12.8571 9.21569 13.3368 8.72727 13.9286 8.72727C14.5203 8.72727 15 9.21569 15 9.81818V22.9091C15 23.5116 14.5203 24 13.9286 24C13.3368 24 12.8571 23.5116 12.8571 22.9091Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="flex items-baseline gap-[6px]">
-                          <span className="text-2xl-semibold">
-                            {formatStatNumber(stats?.reuses ?? 0).number}
-                          </span>
-                          {formatStatNumber(stats?.reuses ?? 0).suffix && (
-                            <span className="text-l-bold">
-                              {formatStatNumber(stats?.reuses ?? 0).suffix}
-                            </span>
-                          )}
-                        </div>
-                        <span>Reutilizações</span>
-                      </div>
-                    </div>
+              {/* Utilizadores */}
+              <div className="flex items-center gap-16">
+                <div className="stats-icon-square border-2 border-[#FFD700] text-[#FFD700]">
+                  <Icon
+                    name="agora-line-user-group"
+                    aria-hidden="true"
+                    className="w-[24px] h-[24px]"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-baseline gap-[6px]">
+                    <span className="text-xl-bold">
+                      {formatStatNumber(stats?.users ?? 0).number}
+                    </span>
+                    {formatStatNumber(stats?.users ?? 0).suffix && (
+                      <span className="text-m-bold">
+                        {formatStatNumber(stats?.users ?? 0).suffix}
+                      </span>
+                    )}
                   </div>
-                  <div className="xl:col-span-6 flex flex-col gap-48">
-                    {/* Organizações */}
-                    <div className="flex items-center gap-24">
-                      <div className="stats-icon-wrapper text-[#CBFF3F] border-[#CBFF3F]">
-                        <Icon
-                          name="agora-line-buildings"
-                          aria-hidden="true"
-                          className="w-[24px] h-[24px]"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="flex items-baseline gap-[6px]">
-                          <span className="text-2xl-semibold">
-                            {formatStatNumber(stats?.organizations ?? 0).number}
-                          </span>
-                          {formatStatNumber(stats?.organizations ?? 0).suffix && (
-                            <span className="text-l-bold">
-                              {formatStatNumber(stats?.organizations ?? 0).suffix}
-                            </span>
-                          )}
-                        </div>
-                        <span>Organizações</span>
-                      </div>
-                    </div>
+                  <span className="text-s-regular">Utilizadores</span>
+                </div>
+              </div>
 
-                    {/* Utilizadores */}
-                    <div className="flex items-center gap-24">
-                      <div className="stats-icon-wrapper text-[#FFD700] border-[#FFD700]">
-                        <Icon
-                          name="agora-line-user-group"
-                          aria-hidden="true"
-                          className="w-[24px] h-[24px]"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="flex items-baseline gap-[6px]">
-                          <span className="text-2xl-semibold">
-                            {formatStatNumber(stats?.users ?? 0).number}
-                          </span>
-                          {formatStatNumber(stats?.users ?? 0).suffix && (
-                            <span className="text-l-bold">
-                              {formatStatNumber(stats?.users ?? 0).suffix}
-                            </span>
-                          )}
-                        </div>
-                        <span>Utilizadores</span>
-                      </div>
-                    </div>
+              {/* Conjuntos de Dados */}
+              <div className="flex items-center gap-16">
+                <div className="stats-icon-square border-2 border-[#A6D5FF] text-[#A6D5FF]">
+                  <Icon
+                    name="agora-line-layers-menu"
+                    aria-hidden="true"
+                    className="w-[24px] h-[24px]"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-baseline gap-[6px]">
+                    <span className="text-xl-bold">
+                      {formatStatNumber(stats?.datasets ?? 0).number}
+                    </span>
+                    {formatStatNumber(stats?.datasets ?? 0).suffix && (
+                      <span className="text-m-bold">
+                        {formatStatNumber(stats?.datasets ?? 0).suffix}
+                      </span>
+                    )}
                   </div>
+                  <span className="text-s-regular">Conjuntos de Dados</span>
+                </div>
+              </div>
+
+              {/* Organizações */}
+              <div className="flex items-center gap-16">
+                <div className="stats-icon-square border-2 border-[#CBFF3F] text-[#CBFF3F]">
+                  <Icon
+                    name="agora-line-buildings"
+                    aria-hidden="true"
+                    className="w-[24px] h-[24px]"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-baseline gap-[6px]">
+                    <span className="text-xl-bold">
+                      {formatStatNumber(stats?.organizations ?? 0).number}
+                    </span>
+                    {formatStatNumber(stats?.organizations ?? 0).suffix && (
+                      <span className="text-m-bold">
+                        {formatStatNumber(stats?.organizations ?? 0).suffix}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-s-regular">Organizações</span>
                 </div>
               </div>
             </div>
