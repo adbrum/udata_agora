@@ -219,18 +219,18 @@ export const Header = () => {
         : [
           {
             type: "card",
-            key: "sobre",
+            key: "dados-gov",
             iconDefault: "agora-line-info-mark",
             iconHover: "agora-solid-info-mark",
-            title: "Sobre dados abertos",
-            description: "Informação geral",
-            href: "/pages/about-open-data",
+            title: "O que é o dados.gov",
+            description: "Sobre o portal",
+            href: "/pages/faqs/about_dadosgov",
           },
           {
             type: "card",
             key: "publicar",
-            iconDefault: "agora-line-layers-menu",
-            iconHover: "agora-solid-layers-menu",
+            iconDefault: "agora-line-info-mark",
+            iconHover: "agora-solid-info-mark",
             title: "Publicar dados",
             description: "Guia de publicação",
             href: "/pages/faqs/publish",
@@ -238,20 +238,20 @@ export const Header = () => {
           {
             type: "card",
             key: "reutilizar",
-            iconDefault: "agora-line-layers-menu",
-            iconHover: "agora-solid-layers-menu",
+            iconDefault: "/Icons/bar_char_white.svg",
+            iconHover: "/Icons/bar_char_white.svg",
             title: "Reutilizar dados",
             description: "Guia de reutilização",
             href: "/pages/faqs/reuse",
           },
           {
             type: "card",
-            key: "dados-gov",
-            iconDefault: "agora-line-question-mark",
-            iconHover: "agora-solid-question-mark",
-            title: "O que é o dados.gov",
-            description: "Sobre o portal",
-            href: "/pages/faqs/about_dadosgov",
+            key: "sobre",
+            iconDefault: "agora-line-info-mark",
+            iconHover: "agora-solid-info-mark",
+            title: "Sobre dados abertos",
+            description: "Informação geral",
+            href: "/pages/about-open-data",
           },
           {
             type: "card",
@@ -310,7 +310,7 @@ export const Header = () => {
   return (
     <>
     <header className="sticky top-0 z-sticky" data-auth-page={isAuthPage || undefined} data-no-user={!user || undefined} onClickCapture={handleHeaderClickCapture}>
-      <AgoraHeader ref={headerRef}>
+      <AgoraHeader ref={headerRef} maxNavigationItems={6}>
         <Brand>
           <Logo>
             <Link href="/" className="flex items-center">
@@ -419,33 +419,22 @@ export const Header = () => {
           modalCloseLabel="Fechar"
         >
           <NavigationLink appearance="link">
+            <Link href="/pages/datastories" onClick={(e) => handleLinkClick(e, '/pages/datastories')}>
+              Data Stories
+            </Link>
+          </NavigationLink>
+
+          <NavigationLink appearance="link">
             <Link href="/pages/datasets" onClick={(e) => handleLinkClick(e, '/pages/datasets')}>
               Conjuntos de dados
             </Link>
           </NavigationLink>
 
-          <NavigationRoot label="Reutilizações">
-            {[
-              {
-                iconDefault: "/Icons/bar_char_white.svg",
-                iconHover: "/Icons/bar_char_white.svg",
-                title: "Consultar Reutilizações",
-                description: "Casos de uso",
-                href: "/pages/reuses",
-              },
-              {
-                iconDefault: "agora-line-bell",
-                iconHover: "agora-solid-bell",
-                title: "Data Stories",
-                description: "Histórias com dados",
-                href: "/pages/datastories",
-              },
-            ].map((card) => (
-              <NavigationLink key={card.title} appearance="link">
-                <HeaderCard {...card} onLinkClick={handleLinkClick} />
-              </NavigationLink>
-            ))}
-          </NavigationRoot>
+          <NavigationLink appearance="link">
+            <Link href="/pages/reuses" onClick={(e) => handleLinkClick(e, '/pages/reuses')}>
+              Reutilizações
+            </Link>
+          </NavigationLink>
 
           <NavigationLink appearance="link">
             <Link href="/pages/organizations" onClick={(e) => handleLinkClick(e, '/pages/organizations')}>
@@ -607,8 +596,8 @@ export const Header = () => {
                 href: "/pages/admin/organizations/new?step=1",
               },
               {
-                iconDefault: "agora-line-question-mark",
-                iconHover: "agora-solid-question-mark",
+                iconDefault: "/Icons/harvester.svg",
+                iconHover: "/Icons/harvester-solid.svg",
                 title: "Novo Harvester",
                 description: "Recolha automática",
                 href: "/pages/admin/harvesters/new",
