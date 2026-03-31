@@ -226,7 +226,7 @@ export default function OrganizationsClient({
                             image={{
                               src: org.logo || "/images/placeholders/organization.png",
                               alt: org.name,
-                              height: "88px",
+                              height: "56px",
                               className: "bg-primary-100 !object-contain !h-[56px]",
                             }}
                             subtitleText={

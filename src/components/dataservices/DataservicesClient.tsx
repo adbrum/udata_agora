@@ -565,7 +565,7 @@ export default function DataservicesClient({
                             image={{
                               src: ds.organization?.logo || "/images/placeholders/organization.png",
                               alt: ds.organization?.name || "Organização",
-                              height: "88px",
+                              height: "56px",
                               className: "bg-primary-100 !object-contain !h-[56px]",
                             }}
                             subtitleText={
