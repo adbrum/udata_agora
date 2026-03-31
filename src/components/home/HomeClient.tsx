@@ -306,7 +306,7 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
                         image={{
                           src: dataset.organization?.logo || "/images/placeholders/organization.png",
                           alt: dataset.organization?.name || "Organização",
-                          height: "88px",
+                          height: "56px",
                           className: "bg-primary-100 !object-contain !h-[56px]",
                         }}
                         subtitleText={

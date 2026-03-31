@@ -193,7 +193,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                         image={{
                           src: post.image_thumbnail || post.image || "/laptop.png",
                           alt: post.name,
-                          height: "88px",
+                          height: "56px",
                           className: "bg-primary-100 !object-contain !h-[56px]",
                         }}
                         subtitleText={

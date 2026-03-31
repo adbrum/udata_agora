@@ -636,7 +636,7 @@ export default function ReusesClient({
                         image={{
                           src: reuse.image_thumbnail || reuse.image || "/laptop.png",
                           alt: reuse.title,
-                          height: "88px",
+                          height: "56px",
                           className: "bg-primary-100 !object-contain !h-[56px]",
                         }}
                         subtitleText={
