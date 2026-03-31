@@ -56,7 +56,7 @@ const buildItems = (siteMetrics: SiteMetrics): CategoryToggleItem[] => [
     href: '/pages/reuses',
     count: siteMetrics.reuses,
     leadingIcon: (active: boolean) =>
-      active ? '/Icons/bar_char_white.svg' : '/Icons/bar_chart.svg',
+      active ? '/Icons/bar_char_white.svg' : '/Icons/bar_chart_primary.svg',
     leadingIconHover: '/Icons/bar_char_white.svg',
     className: 'w-full agora-toggle agora-toggle-icon agora-toggle-icon-primary full-width has-icon',
   },
