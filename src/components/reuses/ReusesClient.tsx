@@ -13,6 +13,7 @@ import {
   Icon,
   CardNoResults,
   Toggle,
+  ToggleGroup,
   Pill,
   Sidebar,
   SidebarItem,
@@ -38,77 +39,12 @@ const SORT_OPTIONS: Record<string, string> = {
   subscritores: '-followers',
 };
 
-function SortSelect({
-  currentSortKey,
-  onSortChange,
-}: {
-  currentSortKey: string;
-  onSortChange: (value: string) => void;
-}) {
-  const [mounted, setMounted] = React.useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const selectRef = React.useRef<any>(null);
-  const lastValue = React.useRef(currentSortKey);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  React.useEffect(() => {
-    if (!mounted) return;
-    const interval = setInterval(() => {
-      const selected = selectRef.current?.selectedOptions?.[0]?.value;
-      if (selected && selected !== lastValue.current) {
-        lastValue.current = selected;
-        onSortChange(selected);
-      }
-    }, 150);
-    return () => clearInterval(interval);
-  }, [mounted, onSortChange]);
-
-  if (!mounted) {
-    return (
-      <div className="selectReuse">
-        <label className="text-s-regular text-neutral-700 mb-4 block">
-          Ordenar por :
-        </label>
-        <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
-          {currentSortKey === 'recentes'
-            ? 'Mais recente'
-            : currentSortKey === 'antigos'
-              ? 'Mais antigo'
-              : currentSortKey === 'subscritores'
-                ? 'Número de seguidores'
-                : 'Relevância'}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <InputSelect
-      label="Ordenar por :"
-      id="sort-reuses"
-      className="selectReuse"
-      ref={selectRef}
-    >
-      <DropdownSection name="order">
-        <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
-          Relevância
-        </DropdownOption>
-        <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
-          Mais recente
-        </DropdownOption>
-        <DropdownOption value="antigos" selected={currentSortKey === 'antigos'}>
-          Mais antigo
-        </DropdownOption>
-        <DropdownOption value="subscritores" selected={currentSortKey === 'subscritores'}>
-          Número de seguidores
-        </DropdownOption>
-      </DropdownSection>
-    </InputSelect>
-  );
-}
+const SORT_LABELS: Record<string, string> = {
+  relevancia: 'Relevância',
+  recentes: 'Mais recente',
+  antigos: 'Mais antigo',
+  subscritores: 'Seguidores',
+};
 
 function TypeSelect({
   currentType,
@@ -453,9 +389,40 @@ export default function ReusesClient({
         </div>
 
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
+          {/* Results count + Sort toggles */}
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
+            <div className="xl:col-span-5 flex items-center py-16">
+              <span className="text-neutral-900 font-medium text-base">
+                {total.toLocaleString('pt-PT')} Resultados
+              </span>
+            </div>
+            <div className="xl:col-span-7 flex items-center justify-end py-16">
+              <ToggleGroup
+                multiple={false}
+                onChange={(val) => {
+                  const selected = val.length > 0 ? val[0] : 'relevancia';
+                  if (selected !== sortDefault) {
+                    handleSortChange(selected);
+                  }
+                }}
+              >
+                {Object.entries(SORT_LABELS).map(([key, label]) => (
+                  <Toggle
+                    key={key}
+                    value={key}
+                    selected={sortDefault === key}
+                  >
+                    {label}
+                  </Toggle>
+                ))}
+              </ToggleGroup>
+            </div>
+          </div>
+          <div className="divider-neutral-200 mb-24" />
+
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
             {/* Sidebar */}
-            <div className="xl:col-span-5 xl:block p-32 pl-0">
+            <div className="xl:col-span-5 xl:block">
               {siteMetrics && (
                 <div>
                   <CategoryToggles siteMetrics={siteMetrics} searchQuery={initialFilters?.q} />
@@ -638,22 +605,6 @@ export default function ReusesClient({
             {/* Results Area */}
             <div className="xl:col-span-7">
               <div>
-            <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
-              <span className="text-neutral-900 font-medium text-base xl:col-span-7 mt-[32px]">
-                {total.toLocaleString('pt-PT')} Resultados
-              </span>
-              <div className="w-full md:w-auto xl:col-span-5 flex items-end gap-16 justify-end">
-                <div className="flex-grow max-w-[240px]">
-                  <SortSelect
-                    currentSortKey={sortDefault}
-                    onSortChange={handleSortChange}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="divider-neutral-200 mt-[14px] mb-24" />
-
             <div className="grid grid-cols-1 agora-card-links-datasets-px0 gap-32">
               {reuses.length > 0 ? (
                 reuses.map((reuse) => (

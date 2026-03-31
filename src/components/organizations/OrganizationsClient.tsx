@@ -8,9 +8,8 @@ import {
   InputSearch,
   Icon,
   CardLinks,
-  InputSelect,
-  DropdownSection,
-  DropdownOption,
+  ToggleGroup,
+  Toggle,
   CardNoResults
 } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
@@ -39,68 +38,13 @@ const SORT_OPTIONS: Record<string, string> = {
   reutilizacoes: '-reuses',
 };
 
-function SortSelect({
-  currentSortKey,
-  onSortChange,
-}: {
-  currentSortKey: string;
-  onSortChange: (value: string) => void;
-}) {
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <div className="selectOrganization">
-        <label className="text-s-regular text-neutral-700 mb-4 block">
-          Ordenar por:
-        </label>
-        <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
-          {currentSortKey === 'recentes' ? 'Mais recente'
-            : currentSortKey === 'antigos' ? 'Mais antigo'
-            : currentSortKey === 'subscritores' ? 'Subscritores'
-            : currentSortKey === 'reutilizacoes' ? 'Reutilizações'
-            : 'Relevância'}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <InputSelect
-      label="Ordenar por:"
-      id="sort-organizations"
-      className="selectOrganization"
-      onChange={(options) => {
-        const selected = options?.[0]?.value;
-        if (selected && selected !== currentSortKey) {
-          onSortChange(selected as string);
-        }
-      }}
-    >
-      <DropdownSection name="order">
-        <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
-          Relevância
-        </DropdownOption>
-        <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
-          Mais recente
-        </DropdownOption>
-        <DropdownOption value="antigos" selected={currentSortKey === 'antigos'}>
-          Mais antigo
-        </DropdownOption>
-        <DropdownOption value="subscritores" selected={currentSortKey === 'subscritores'}>
-          Subscritores
-        </DropdownOption>
-        <DropdownOption value="reutilizacoes" selected={currentSortKey === 'reutilizacoes'}>
-          Reutilizações
-        </DropdownOption>
-      </DropdownSection>
-    </InputSelect>
-  );
-}
+const SORT_LABELS: Record<string, string> = {
+  relevancia: 'Relevância',
+  recentes: 'Mais recente',
+  antigos: 'Mais antigo',
+  subscritores: 'Subscritores',
+  reutilizacoes: 'Reutilizações',
+};
 
 export default function OrganizationsClient({
   initialData,
@@ -214,25 +158,46 @@ export default function OrganizationsClient({
 
         {/* Main Content */}
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
+          {/* Results count + Sort toggles */}
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
+            <div className="xl:col-span-5 flex items-center py-16">
+              <span className="text-neutral-900 font-medium text-base">
+                {total.toLocaleString('pt-PT')} Resultados
+              </span>
+            </div>
+            <div className="xl:col-span-7 flex items-center justify-end py-16">
+              <ToggleGroup
+                multiple={false}
+                onChange={(val) => {
+                  const selected = val.length > 0 ? val[0] : 'relevancia';
+                  if (selected !== currentSortKey) {
+                    handleSort(selected);
+                  }
+                }}
+              >
+                {Object.entries(SORT_LABELS).map(([key, label]) => (
+                  <Toggle
+                    key={key}
+                    value={key}
+                    selected={currentSortKey === key}
+                  >
+                    {label}
+                  </Toggle>
+                ))}
+              </ToggleGroup>
+            </div>
+          </div>
+          <div className="divider-neutral-200 mb-24" />
+
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
             {/* Sidebar */}
-            <div className="xl:col-span-5 xl:block p-32 pl-0">
+            <div className="xl:col-span-5 xl:block">
               <OrganizationsFilters siteMetrics={siteMetrics} orgBadges={orgBadges} orgBadgeCounts={orgBadgeCounts} initialFilters={initialFilters} />
             </div>
 
             {/* Results Area */}
             <div className="xl:col-span-7">
               <div>
-                <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
-                  <span className="text-neutral-900 font-medium text-base xl:col-span-6 mt-[32px]">
-                    {total.toLocaleString('pt-PT')} Resultados
-                  </span>
-                  <div className="w-full md:w-auto xl:col-span-6">
-                    <SortSelect currentSortKey={currentSortKey} onSortChange={handleSort} />
-                  </div>
-                </div>
-
-                <div className="divider-neutral-200 mt-[14px] mb-24" />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets-px0">
                   {organizations.length > 0 ? (
