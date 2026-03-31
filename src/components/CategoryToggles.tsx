@@ -194,8 +194,8 @@ export const CategoryToggles = ({ siteMetrics, searchQuery }: CategoryTogglesPro
   };
 
   return (
-    <div className="mb-64 pr-32 max-w-[592px] flex flex-col gap-16 mt-[32px]">
-      <h2 className="font-bold text-xl text-neutral-900 mb-16">Tipo</h2>
+    <div className="mb-64 pr-32 max-w-[592px] flex flex-col gap-16">
+      <h2 className="font-bold text-xl text-neutral-900 mb-16 mt-[12px]">Tipo</h2>
       {items.map((item) => {
         const isActive = item.id === activeId;
         const icon =
