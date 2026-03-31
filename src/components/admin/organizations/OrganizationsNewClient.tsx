@@ -197,7 +197,7 @@ export default function OrganizationsNewClient() {
                 type="info"
                 description={
                   <>
-                    <strong>Ingressar em uma organização</strong>
+                    <strong>Inscreva-se numa organização</strong>
                     <br />
                     Uma organização é uma entidade na qual os utilizadores podem
                     colaborar. Conjuntos de dados publicados dentro de uma
