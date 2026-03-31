@@ -3,7 +3,6 @@
 import React from "react";
 import {
   Accordion,
-  AccordionGroup,
   Icon,
   ToggleGroup,
   Toggle,
@@ -258,19 +257,19 @@ const SupportPage = () => {
                     <h3 className="text-[20px] font-bold text-[#021C51] mb-[16px]">
                       {category.category}
                     </h3>
-                    <AccordionGroup>
+                    <div>
                       {category.items.map((item, itemIdx) => {
                         const currentId = `${idx}-${itemIdx}`;
                         return (
                           <Accordion
-                            key={itemIdx}
+                            key={`${currentId}-${expandedId === currentId}`}
                             headingTitle={
                               <span className="text-[#2B363C] font-bold mr-[16px]">
                                 {item.question}
                               </span>
                             }
                             headingLevel="h4"
-                            expanded={expandedId === currentId}
+                            defaultExpanded={expandedId === currentId}
                             onExpanded={() => setExpandedId(currentId)}
                             onCollapsed={() => {
                               if (expandedId === currentId) {
@@ -296,7 +295,7 @@ const SupportPage = () => {
                                         rel="noopener noreferrer"
                                         className="text-primary-900 underline"
                                       >
-                                        (Como publicar dados)
+                                        Como publicar dados
                                       </a>
                                     </p>
                                   </div>
@@ -382,7 +381,7 @@ const SupportPage = () => {
                                         rel="noopener noreferrer"
                                         className="text-primary-900 underline"
                                       >
-                                        (Licenças)
+                                        Licenças
                                       </a>
                                     </p>
                                   </div>
@@ -414,7 +413,7 @@ const SupportPage = () => {
                                         rel="noopener noreferrer"
                                         className="text-primary-900 underline"
                                       >
-                                        (API)
+                                        API
                                       </a>
                                     </p>
                                   </div>
@@ -438,7 +437,7 @@ const SupportPage = () => {
                                         rel="noopener noreferrer"
                                         className="text-primary-900 underline"
                                       >
-                                        (API tutorial)
+                                        API tutorial
                                       </a>
                                     </p>
                                   </div>
@@ -544,7 +543,7 @@ const SupportPage = () => {
                                         rel="noopener noreferrer"
                                         className="text-primary-900 underline"
                                       >
-                                        (formulário e orientação disponíveis na página de contato)
+                                        formulário e orientação disponíveis na página de contato
                                       </a>
                                     </p>
                                     <p>
@@ -562,7 +561,17 @@ const SupportPage = () => {
                                     <p className="font-bold">
                                       Ver pedidos existentes de abertura de dados
                                     </p>
-                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Consultar lista pública de pedidos no portal</p>
+                                    <p>
+                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Consultar lista pública de pedidos no portal{" "}
+                                      <a
+                                        href="https://dados.gov.pt/pt/organizations/comissao-de-acesso-aos-documentos-administrativos/#/presentation"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-900 underline"
+                                      >
+                                        Comissão de Acesso aos Documentos Administrativos
+                                      </a>
+                                    </p>
                                   </div>
                                 </div>
                               ) : "richAnswer" in item &&
@@ -626,7 +635,7 @@ const SupportPage = () => {
                                         rel="noopener noreferrer"
                                         className="text-primary-900 underline"
                                       >
-                                        (SNIG)
+                                        SNIG
                                       </a>
                                     </p>
                                   </div>
@@ -691,7 +700,7 @@ const SupportPage = () => {
                           </Accordion>
                         );
                       })}
-                    </AccordionGroup>
+                    </div>
                   </section>
                 ))}
               </div>
