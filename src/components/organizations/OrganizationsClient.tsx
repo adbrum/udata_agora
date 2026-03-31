@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Button,
-  InputSearchBar,
+  InputSearch,
   Icon,
   CardLinks,
   InputSelect,
@@ -16,6 +16,7 @@ import {
 import { Pagination } from '@/components/Pagination';
 import { OrganizationsFilters } from './OrganizationsFilters';
 import { APIResponse, OrgBadges, Organization, OrganizationFilters, SiteMetrics } from '@/types/api';
+import PublishDropdown from "@/components/admin/PublishDropdown";
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -184,25 +185,32 @@ export default function OrganizationsClient({
             { label: 'Home', url: '/' },
             { label: 'Organizações', url: '/pages/organizations' }
           ]}
+          subtitle={
+            <p className="text-primary-100 max-w-[592px]">
+              Pesquise através de {total.toLocaleString('pt-PT')} organizações
+              em dados.gov
+            </p>
+          }
         >
-          <InputSearchBar
-            label="O que procura nas organizações?"
-            placeholder="Pesquisar organizações..."
-            id="organizations-search"
-            hasVoiceActionButton={false}
-            voiceActionAltText="Pesquisar por voz"
-            searchActionAltText="Pesquisar"
-            darkMode={true}
-            value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-            onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSearch(); }}
-            onSearchActivate={() => handleSearch()}
-          />
-          <div className="mt-8 text-s-regular text-neutral-200">
-            Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
-          </div>
-          <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
+          <PublishDropdown darkMode={true} />
         </PageBanner>
+
+        {/* Search Section */}
+        <div className="container mx-auto pt-32 pb-16 px-4">
+          <div className="max-w-[592px]">
+            <InputSearch
+              label="Pesquisar"
+              placeholder="Pesquisar organizações..."
+              id="organizations-search"
+              value={searchQuery}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSearch(); }}
+            />
+            <div className="mt-8 text-s-regular text-neutral-900">
+              Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
+            </div>
+          </div>
+        </div>
 
         {/* Main Content */}
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
@@ -213,7 +221,7 @@ export default function OrganizationsClient({
             </div>
 
             {/* Results Area */}
-            <div className="xl:col-span-7 mt-[36px]">
+            <div className="xl:col-span-7">
               <div>
                 <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
                   <span className="text-neutral-900 font-medium text-base xl:col-span-6 mt-[32px]">

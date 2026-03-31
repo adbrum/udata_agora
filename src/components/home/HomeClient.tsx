@@ -9,7 +9,6 @@ import {
   CardGeneral,
 } from "@ama-pt/agora-design-system";
 import Link from "next/link";
-import SearchDropdown from "@/components/search/SearchDropdown";
 import { Dataset, Post, Reuse, SiteMetrics } from "@/types/api";
 import { formatDistanceToNow, format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -71,7 +70,7 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
             backgroundImage: 'url("/Banner/hero-bg.png")',
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
-            backgroundPosition: "center right",
+            backgroundPosition: "right top 40%",
           }}
         >
           <div className="card-container">
@@ -101,20 +100,8 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
               <div className="email-bar">
                 <div className="container mx-auto grid xs:grid-cols-4 md:grid-cols-8 xl:grid-cols-12 gap-32 ">
                   <div className="xs:col-span-4 md:col-span-7 xl:col-span-7">
-                    <SearchDropdown
-                      id="portal-search"
-                      darkMode={true}
-                      hasVoiceActionButton={false}
-                      label="O que procura no Portal?"
-                      placeholder="Pesquisar conjunto de dados, organizações, temas..."
-                      excludeTypes={["dataservices"]}
-                    />
-                    <div className="mt-8 text-s-regular text-neutral-200">
-                      Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;,
-                      &quot;ambiente&quot;
-                    </div>
                     <div
-                      className="mt-64 relative inline-block publish-dropdown-wrapper"
+                      className="relative inline-block publish-dropdown-wrapper publish-dropdown-hero"
                       ref={publishDropdownWrapperRef}
                     >
                       <Button
@@ -123,7 +110,8 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
                         hasIcon={true}
                         trailingIcon={showPublishDropdown ? "agora-line-chevron-up" : "agora-line-chevron-down"}
                         trailingIconHover={showPublishDropdown ? "agora-solid-chevron-up" : "agora-solid-chevron-down"}
-                        className="px-24 py-16 rounded-8 h-auto relative z-10"
+                        className="px-24 py-16 h-auto relative z-10"
+                        style={{ borderRadius: "4px" }}
                         onClick={() => {
                           if (!user) {
                             router.push("/pages/login");
@@ -385,14 +373,14 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
         {/* Utilizado diariamente por */}
         <div className="xl:pb-64 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="mb-48 text-gray-medium mt-32 text-m-bold">Utilizado diariamente por:</h2>
+            <h2 className="mb-8 text-gray-medium mt-32 text-m-bold">Utilizado diariamente por:</h2>
             <div className="flex flex-wrap items-center justify-between gap-x-32 gap-y-32">
               {["arte_black.svg", "ADC.svg", "IMPIC.svg", "DSPA.svg", "apa.svg"].map((logo, i) => (
                 <div key={i} className="flex items-center justify-center">
                   <img
                     src={`/Logos/${logo}`}
                     alt={`Logo ${logo.replace(".svg", "")}`}
-                    className="h-12 md:h-14 xl:h-16 w-auto object-contain"
+                    className={`${logo === "arte_black.svg" ? "h-[36px]" : "h-[48px]"} w-auto object-contain`}
                   />
                 </div>
               ))}

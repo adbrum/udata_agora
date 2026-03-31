@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   CardLinks,
-  InputSearchBar,
+  InputSearch,
   Button,
   InputSelect,
   DropdownSection,
@@ -17,7 +17,6 @@ import {
   Sidebar,
   SidebarItem,
   Checkbox,
-  InputSearch,
 } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { CategoryToggles } from '@/components/CategoryToggles';
@@ -30,6 +29,7 @@ import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
 import PageBanner from '@/components/PageBanner';
+import PublishDropdown from "@/components/admin/PublishDropdown";
 
 const SORT_OPTIONS: Record<string, string> = {
   relevancia: '',
@@ -423,27 +423,34 @@ export default function ReusesClient({
             { label: 'Home', url: '/' },
             { label: 'Reutilizações', url: '/pages/reuses' },
           ]}
+          subtitle={
+            <p className="text-primary-100 max-w-[592px]">
+              Pesquise através de {total.toLocaleString('pt-PT')} reutilizações
+              em dados.gov
+            </p>
+          }
         >
-          <InputSearchBar
-            label="O que procura nas reutilizações?"
-            placeholder="Pesquisar reutilizações..."
-            id="reuses-search"
-            hasVoiceActionButton={false}
-            voiceActionAltText="Pesquisar por voz"
-            searchActionAltText="Pesquisar"
-            darkMode={true}
-            defaultValue={initialFilters?.q || ''}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-            onKeyDown={(e: React.KeyboardEvent) => {
-              if (e.key === 'Enter') handleSearch();
-            }}
-            onSearchActivate={() => handleSearch()}
-          />
-          <div className="mt-8 text-s-regular text-neutral-200">
-            Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
-          </div>
-          <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
+          <PublishDropdown darkMode={true} />
         </PageBanner>
+
+        {/* Search Section */}
+        <div className="container mx-auto pt-32 pb-16 px-4">
+          <div className="max-w-[592px]">
+            <InputSearch
+              label="Pesquisar"
+              placeholder="Pesquisar reutilizações..."
+              id="reuses-search"
+              defaultValue={initialFilters?.q || ''}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent) => {
+                if (e.key === 'Enter') handleSearch();
+              }}
+            />
+            <div className="mt-8 text-s-regular text-neutral-900">
+              Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
+            </div>
+          </div>
+        </div>
 
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
@@ -629,7 +636,7 @@ export default function ReusesClient({
             </div>
 
             {/* Results Area */}
-            <div className="xl:col-span-7 mt-[36px]">
+            <div className="xl:col-span-7">
               <div>
             <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
               <span className="text-neutral-900 font-medium text-base xl:col-span-7 mt-[32px]">
