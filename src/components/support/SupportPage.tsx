@@ -118,7 +118,7 @@ const SupportPage = () => {
   const TOGGLE_TITLE_MAP: Record<string, string> = {
     question: "Qual o problema que está a enfrentar?",
     bug: "Qual o problema que está a enfrentar?",
-    feedback: "Envie seu feedback",
+    feedback: "Envie o seu feedback",
   };
 
   const TOGGLE_SUBJECT_LABEL_MAP: Record<string, string> = {
@@ -285,27 +285,28 @@ const SupportPage = () => {
                                       Informação oficial sobre publicação
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Página &ldquo;Publicar Dados&rdquo; no portal português:
+                                      Página &ldquo;Publicar Dados&rdquo; no portal português:
                                     </p>
                                     <p>
                                       Como publicar dados — explicação passo-a-passo no portal{" "}
-                                      <a
-                                        href="https://dados.gov.pt/pt/pages/faqs/publish"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pt/pages/faqs/publish", "_blank")}
                                       >
                                         Como publicar dados
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Tópicos incluídos:</p>
-                                    <p><Icon name="agora-line-check" className="inline w-16 h-16" /> Quem pode publicar (AP e outros participantes)</p>
-                                    <p><Icon name="agora-line-check" className="inline w-16 h-16" /> Criar conta / associar organização</p>
-                                    <p><Icon name="agora-line-check" className="inline w-16 h-16" /> Carregar datasets ou referenciar URL</p>
-                                    <p><Icon name="agora-line-check" className="inline w-16 h-16" /> Usar API ou harvester</p>
-                                    <p><Icon name="agora-line-check" className="inline w-16 h-16" /> Certificação de fornecedores oficiais</p>
+                                    <p>Quem pode publicar (AP e outros participantes)</p>
+                                    <p>Criar conta / associar organização</p>
+                                    <p>Carregar datasets ou referenciar URL</p>
+                                    <p>Usar API ou harvester</p>
+                                    <p>Certificação de fornecedores oficiais</p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Tornar-me publicador</p>
@@ -316,23 +317,24 @@ const SupportPage = () => {
                                   <div>
                                     <p className="font-bold">Atualizar um dataset</p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Pode editar o conjunto de dados e substituir ou acrescentar
+                                      Pode editar o conjunto de dados e substituir ou acrescentar
                                       recursos a qualquer momento.
                                     </p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Dados pessoais ou sensíveis</p>
-                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Apenas dados anonimizados podem ser publicados.</p>
+                                    <p>Apenas dados anonimizados podem ser publicados.</p>
                                     <p>Para questões sobre proteção de dados:</p>
                                     <p>
-                                      <a
-                                        href="https://www.cnpd.pt"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://www.cnpd.pt", "_blank")}
                                       >
                                         Comissão Nacional de Proteção de Dados
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                 </div>
@@ -343,59 +345,62 @@ const SupportPage = () => {
                                       Pesquisa de dados aberta do portal
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Página principal do portal:{" "}
-                                      <a
-                                        href="https://dados.gov.pt/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Página principal do portal:{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/", "_blank")}
                                       >
                                         Dados.gov
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Como reutilizar dados</p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Consultar secções de exemplos de reutilização e licenças
+                                      Consultar secções de exemplos de reutilização e licenças
                                       no portal (ex:{" "}
-                                      <a
-                                        href="https://dados.gov.pt/pt/pages/faqs/reuse/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pt/pages/faqs/reuse/", "_blank")}
                                       >
                                         Como reutilizar dados?
-                                      </a>
+                                      </Button>
                                       {" "})
                                     </p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Licenças de dados abertos</p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Licenças padrão (ex.: Creative Commons CC BY 4.0
+                                      Licenças padrão (ex.: Creative Commons CC BY 4.0
                                       utilizado no portal){" "}
-                                      <a
-                                        href="https://dados.gov.pt/pt/pages/faqs/terms"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pt/pages/faqs/terms", "_blank")}
                                       >
                                         Licenças
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Citar dados corretamente</p>
-                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Ver informação de metadados em cada conjunto de dados</p>
-                                    <p className="ml-[16px]">
+                                    <p>Ver informação de metadados em cada conjunto de dados</p>
+                                    <p>
                                       Indicar: nome do dataset, entidade publicadora, link
                                       original, data de acesso
                                     </p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Casos de reutilização</p>
-                                    <p className="ml-[16px]">
+                                    <p>
                                       Consultar exemplos de projetos baseados em dados abertos no
                                       portal
                                     </p>
@@ -406,21 +411,22 @@ const SupportPage = () => {
                                   <div>
                                     <p className="font-bold">Documentação da API</p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Endpoint de API do portal{" "}
-                                      <a
-                                        href="https://dados.gov.pt/api"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Endpoint de API do portal{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/api", "_blank")}
                                       >
                                         API
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Autenticação / chave API</p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> A API permite leitura aberta. Para escrita/autenticação é
+                                      A API permite leitura aberta. Para escrita/autenticação é
                                       necessário gerar o token na área de administração do
                                       utilizador.
                                     </p>
@@ -430,15 +436,16 @@ const SupportPage = () => {
                                       Limites de pedidos / uso responsável
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Política de uso do API nos termos do portal{" "}
-                                      <a
-                                        href="https://dados.gov.pt/pt/pages/api-tutorial/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Política de uso do API nos termos do portal{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pt/pages/api-tutorial/", "_blank")}
                                       >
                                         API tutorial
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                 </div>
@@ -449,15 +456,16 @@ const SupportPage = () => {
                                       Proteção de Dados Pessoais / RGPD
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Contactar a{" "}
-                                      <a
-                                        href="https://www.cnpd.pt"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Contactar a{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://www.cnpd.pt", "_blank")}
                                       >
                                         Comissão Nacional de Proteção de Dados
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                   <div>
@@ -465,15 +473,16 @@ const SupportPage = () => {
                                       Pedido de remoção de dados pessoais
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Contactar a equipa do dados.gov na página de{" "}
-                                      <a
-                                        href="https://dados.gov.pt/pages/support"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Contactar a equipa do dados.gov na página de{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pages/support", "_blank")}
                                       >
                                         Suporte
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                 </div>
@@ -485,15 +494,16 @@ const SupportPage = () => {
                                       Erros de login / publicação / upload / pesquisa / comentários
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Contactar a equipa do dados.gov na página de{" "}
-                                      <a
-                                        href="https://dados.gov.pt/pages/support"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Contactar a equipa do dados.gov na página de{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pages/support", "_blank")}
                                       >
                                         Suporte
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                   <div>
@@ -501,15 +511,16 @@ const SupportPage = () => {
                                       Página ou funcionalidade indisponível
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Contactar a equipa do dados.gov na página de{" "}
-                                      <a
-                                        href="https://dados.gov.pt/pages/support"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Contactar a equipa do dados.gov na página de{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pages/support", "_blank")}
                                       >
                                         suporte
-                                      </a>
+                                      </Button>
                                       {" "}escolhendo &ldquo;Reportar um bug&rdquo;.
                                     </p>
                                   </div>
@@ -519,42 +530,45 @@ const SupportPage = () => {
                                 <div className="space-y-[16px]">
                                   <div>
                                     <p className="font-bold">Sugerir conjunto de dados</p>
-                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Formulário de sugestão no portal</p>
+                                    <p>Formulário de sugestão no portal</p>
                                   </div>
                                   <div>
                                     <p className="font-bold">
                                       Pedido formal de dados a uma entidade pública
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Pode dirigir pedidos à{" "}
-                                      <a
-                                        href="https://www.cada.pt"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Pode dirigir pedidos à{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://www.cada.pt", "_blank")}
                                       >
                                         Comissão de Acesso a Documentos Administrativos
-                                      </a>
+                                      </Button>
                                     </p>
                                     <p>
-                                      <a
-                                        href="https://dados.gov.pt/en/contact/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/en/contact/", "_blank")}
                                       >
                                         formulário e orientação disponíveis na página de contato
-                                      </a>
+                                      </Button>
                                     </p>
                                     <p>
-                                      <a
-                                        href="https://dados.gov.pt/pt/organizations/comissao-de-acesso-aos-documentos-administrativos/#/presentation"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pt/organizations/comissao-de-acesso-aos-documentos-administrativos/#/presentation", "_blank")}
                                       >
                                         Comissão de Acesso a Documentos Administrativos
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                   <div>
@@ -562,15 +576,16 @@ const SupportPage = () => {
                                       Ver pedidos existentes de abertura de dados
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Consultar lista pública de pedidos no portal{" "}
-                                      <a
-                                        href="https://dados.gov.pt/pt/organizations/comissao-de-acesso-aos-documentos-administrativos/#/presentation"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Consultar lista pública de pedidos no portal{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pt/organizations/comissao-de-acesso-aos-documentos-administrativos/#/presentation", "_blank")}
                                       >
                                         Comissão de Acesso aos Documentos Administrativos
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                 </div>
@@ -579,22 +594,22 @@ const SupportPage = () => {
                                 <div className="space-y-[16px]">
                                   <div>
                                     <p className="font-bold">Dar feedback ao portal</p>
-                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Formulário de feedback</p>
+                                    <p>Formulário de feedback</p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Sugerir melhorias do sistema</p>
-                                    <p><Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Formulário de sugestões</p>
+                                    <p>Formulário de sugestões</p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Reportar conteúdo impróprio</p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Usar funcionalidades de sinalização do portal
+                                      Usar funcionalidades de sinalização do portal
                                     </p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Eventos, formação e comunidade</p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Consultar secções de iniciativas e casos de reutilização
+                                      Consultar secções de iniciativas e casos de reutilização
                                     </p>
                                   </div>
                                 </div>
@@ -603,54 +618,58 @@ const SupportPage = () => {
                                   <div>
                                     <p className="font-bold">Estatísticas oficiais</p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Visitar o Instituto Nacional de Estatística no{" "}
-                                      <a
-                                        href="https://dados.gov.pt/pt/organizations/instituto-nacional-de-estatistica/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Visitar o Instituto Nacional de Estatística no{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pt/organizations/instituto-nacional-de-estatistica/", "_blank")}
                                       >
                                         dados.gov.
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Dados geográficos / cartografia</p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Direção-Geral do Território no{" "}
-                                      <a
-                                        href="https://dados.gov.pt/pt/organizations/direcao-geral-do-territorio/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Direção-Geral do Território no{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pt/organizations/direcao-geral-do-territorio/", "_blank")}
                                       >
                                         dados.gov.
-                                      </a>
+                                      </Button>
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Sistema Nacional de Informação Geográfica{" "}
-                                      <a
-                                        href="https://snig.dgterritorio.gov.pt/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Sistema Nacional de Informação Geográfica{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://snig.dgterritorio.gov.pt/", "_blank")}
                                       >
                                         SNIG
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                   <div>
                                     <p className="font-bold">Dados bibliográficos / culturais</p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Biblioteca Nacional de Portugal -{" "}
-                                      <a
-                                        href="https://opendata.bnportugal.gov.pt/eng_index.htm"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      Biblioteca Nacional de Portugal -{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://opendata.bnportugal.gov.pt/eng_index.htm", "_blank")}
                                       >
                                         OpenData BNP
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                   <div>
@@ -659,27 +678,29 @@ const SupportPage = () => {
                                       Balcão Único do Prédio
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> eBUPI no{" "}
-                                      <a
-                                        href="https://dados.gov.pt/pt/organizations/ebupi-estrutura-de-missao-para-a-expansao-do-sistema-de-informacao-cadastral-simplificado/#/presentation"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      eBUPI no{" "}
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://dados.gov.pt/pt/organizations/ebupi-estrutura-de-missao-para-a-expansao-do-sistema-de-informacao-cadastral-simplificado/#/presentation", "_blank")}
                                       >
                                         dados.gov
-                                      </a>
+                                      </Button>
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Estrutura de Missão Para a Expansão do Sistema de
+                                      Estrutura de Missão Para a Expansão do Sistema de
                                       Informação Cadastral Simplificado no{" "}
-                                      <a
-                                        href="https://www.gov.pt/entidades/estrutura-de-missao-para-a-expansao-do-sistema-de-informacao-cadastral-simplificado"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-900 underline"
+                                      <Button
+                                        appearance="link"
+                                        variant="neutral"
+                                        className="inline !p-0 [text-decoration-color:var(--color-neutral-900)]"
+                                        style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
+                                        onClick={() => window.open("https://www.gov.pt/entidades/estrutura-de-missao-para-a-expansao-do-sistema-de-informacao-cadastral-simplificado", "_blank")}
                                       >
                                         gov.pt
-                                      </a>
+                                      </Button>
                                     </p>
                                   </div>
                                   <div>
@@ -687,7 +708,7 @@ const SupportPage = () => {
                                       Questões sobre um dataset no dados.gov
                                     </p>
                                     <p>
-                                      <Icon name="agora-line-arrow-right-anchor" className="inline w-16 h-16" /> Abrir o separador{" "}
+                                      Abrir o separador{" "}
                                       <strong>&ldquo;Discussões&rdquo;</strong> na página do
                                       conjunto de dados.
                                     </p>
@@ -750,7 +771,7 @@ const SupportPage = () => {
                 <li className="cursor-pointer" onClick={() => setActiveItem("Ajuda")}>
                   <a
                     href="#ajuda"
-                    className={`text-primary-900 ${activeItem === "Ajuda" ? "text-m-bold font-bold" : "text-m-regular"}`}
+                    className={`text-neutral-900 ${activeItem === "Ajuda" ? "text-m-bold font-bold" : "text-m-regular"}`}
                     style={activeItem === "Ajuda" ? { fontWeight: 700 } : {}}
                   >
                     Ajuda
@@ -797,7 +818,7 @@ const SupportPage = () => {
               leadingIconHover="agora-solid-chat"
               hasIcon={true}
             >
-              Envie seu feedback
+              Envie o seu feedback
             </Toggle>
           </ToggleGroup>
 
@@ -810,7 +831,7 @@ const SupportPage = () => {
               <div>
                 <div className="mt-[20px]">
                   <InputText
-                    label="Seu endereço de e-mail *"
+                    label="O seu e-mail *"
                     type="email"
                     required
                   />
@@ -842,7 +863,7 @@ const SupportPage = () => {
 
                 <div className="mt-[20px]">
                   <InputTextArea
-                    label="Sua pergunta *"
+                    label="A sua pergunta *"
                     required
                     rows={5}
                   />
