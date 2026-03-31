@@ -37,7 +37,7 @@ const usefulLinksData = [
   { href: 'https://www.portugal.gov.pt/pt/gc25', label: 'República Portuguesa' },
   { href: 'https://www.compete2020.gov.pt/', label: 'Compete 2020' },
   { href: 'https://portugal2020.pt/', label: 'Portugal 2020' },
-  { href: 'https://commission.europa.eu/funding-tenders/find-funding/funding-management-mode/2014-2020-european-structural-and-investment-funds_en?prefLang=pt', label: 'Comissão Europeia' },
+  { href: 'https://eur-lex.europa.eu/legal-content/PT/LSU/?uri=CELEX:32019L1024', label: 'Comissão Europeia' },
 ];
 
 // Element 1: Links Navigation
