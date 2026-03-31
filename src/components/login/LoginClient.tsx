@@ -229,9 +229,10 @@ export default function LoginClient() {
                           rel="noopener noreferrer"
                           className="text-primary-600 underline hover:text-primary-800"
                         >
-                          termos e condições para o tratamento dos dados pessoais
+                          termos e condições relativos ao tratamento de dados
+                          pessoais
                         </a>{" "}
-                        no acesso e utilização da Área Reservada do portal gov.pt
+                        para a criação de conta e acesso ao portal dados.gov
                       </Checkbox>
                     </div>
                   </div>
@@ -312,9 +313,10 @@ export default function LoginClient() {
                           rel="noopener noreferrer"
                           className="text-primary-600 underline hover:text-primary-800"
                         >
-                          termos e condições para o tratamento dos dados pessoais
+                          termos e condições relativos ao tratamento de dados
+                          pessoais
                         </a>{" "}
-                        no acesso e utilização da Área Reservada do portal gov.pt
+                        para a criação de conta e acesso ao portal dados.gov
                       </Checkbox>
                     </div>
                   </div>
