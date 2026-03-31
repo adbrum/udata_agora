@@ -4,7 +4,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button, InputSearchBar, Icon, CardGeneral, CardLinks, InputSelect, DropdownSection, DropdownOption, Pill, CardNoResults } from '@ama-pt/agora-design-system';
+import { Button, InputSearch, Icon, CardGeneral, CardLinks, InputSelect, DropdownSection, DropdownOption, Pill, CardNoResults } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { DatasetsFilters } from '@/components/datasets/DatasetsFilters';
 import { APIResponse, Dataset, DatasetFilters, SiteMetrics } from '@/types/api';
@@ -204,31 +204,26 @@ export default function DatasetsClient({
             </p>
           }
         >
-          <InputSearchBar
-            label="O que procura nos conjuntos de dados?"
-            placeholder="Pesquisar conjunto de dados, organizações, temas..."
-            id="datasets-search"
-            hasVoiceActionButton={false}
-            voiceActionAltText="Pesquisar por voz"
-            searchActionAltText="Pesquisar"
-            darkMode={true}
-            value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-            onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSearch(); }}
-            onSearchActivate={() => handleSearch()}
-          />
-          <div className="mt-8 text-s-regular text-neutral-200">
-            Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
-          </div>
-          <div className="mt-[32px]">
-            <PublishDropdown darkMode={true} />
-          </div>
-          <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
+          <PublishDropdown darkMode={true} />
         </PageBanner>
 
-        {/* Main Content */}
-        {/* Main Content - Full Width Layout */}
-        {/* Main Content - Full Width Layout Wrapper */}
+        {/* Search Section */}
+        <div className="container mx-auto pt-32 pb-16 px-4">
+          <div className="max-w-[592px]">
+            <InputSearch
+              label="Pesquisar"
+              placeholder="Pesquisar conjunto de dados, organizações, temas..."
+              id="datasets-search"
+              value={searchQuery}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSearch(); }}
+            />
+            <div className="mt-8 text-s-regular text-neutral-900">
+              Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
+            </div>
+          </div>
+        </div>
+
         {/* Main Content */}
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
@@ -238,7 +233,7 @@ export default function DatasetsClient({
             </div>
 
             {/* Results Area */}
-            <div className="xl:col-span-7 mt-[36px]">
+            <div className="xl:col-span-7">
               <div>
                 <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
                   <span className="text-neutral-900 font-medium text-base xl:col-span-6 mt-[32px]">

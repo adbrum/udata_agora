@@ -14,6 +14,8 @@ import {
   Area,
   Languages,
   Language,
+  Search,
+  CustomSearch,
   Unauthenticated,
   UnauthenticatedLink,
   Icon,
@@ -378,13 +380,19 @@ export const Header = () => {
             />
           </Languages>
 
-          <div className="header-search-wrapper flex items-center">
-            <SearchDropdown
-              id="header-search"
-              placeholder="Pesquisar"
-              label="Pesquisar"
-            />
-          </div>
+          <Search label="Pesquisar">
+            <CustomSearch>
+              <div className="header-search-content">
+                <SearchDropdown
+                  id="header-search"
+                  hasVoiceActionButton={false}
+                  label="O que procura no Portal?"
+                  placeholder="Pesquisar conjunto de dados, organizações, temas..."
+                  excludeTypes={["dataservices"]}
+                />
+              </div>
+            </CustomSearch>
+          </Search>
 
           <Unauthenticated
             label={user ? `${user.first_name} ${user.last_name}` : "Autenticar"}

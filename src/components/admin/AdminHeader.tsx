@@ -13,6 +13,7 @@ import {
   Button,
   usePopupContext,
 } from "@ama-pt/agora-design-system";
+import SearchDropdown from "@/components/search/SearchDropdown";
 import { useAuth } from "@/context/AuthContext";
 import { logout } from "@/services/api";
 
@@ -88,16 +89,15 @@ export function AdminHeader() {
         : { style: { "--admin-initials": `"${initials}"` } as React.CSSProperties })}
     >
       <Header darkMode>
+        <div className="admin-header__search-left">
+          <SearchDropdown
+            id="admin-header-search"
+            placeholder="Pesquisar"
+            label="Pesquisar"
+          />
+        </div>
         <GeneralBar aria-label="Barra de opções do administrador">
           {/* Idioma oculto temporariamente */}
-          {/* Pesquisar oculto temporariamente */}
-          {/* <Search label="Pesquisar">
-            <DefaultSearch>
-              <SearchInputContainer>
-                <InputSearchBar hasVoiceActionButton={false} label="Diga-nos o que procura que nos ajudamos" placeholder="Pesquisar" aria-label="Pesquisar" />
-              </SearchInputContainer>
-            </DefaultSearch>
-          </Search> */}
           <Authenticated
             avatarType={user?.avatar_thumbnail ? "image" : "icon"}
             srcPath={
