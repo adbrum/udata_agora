@@ -943,8 +943,10 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   padding-bottom: 16px;
 }
 
-.dataset-card-home .card-general .image-overlay {
+.dataset-card-home .image-overlay {
   display: none !important;
+  background-color: transparent !important;
+  opacity: 0 !important;
 }
 
 .dataset-card-home .card-general>.image img {
