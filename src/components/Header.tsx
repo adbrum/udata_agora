@@ -607,8 +607,8 @@ export const Header = () => {
                 href: "/pages/admin/organizations/new?step=1",
               },
               {
-                iconDefault: "agora-line-hardware-settings",
-                iconHover: "agora-solid-hardware-settings",
+                iconDefault: "agora-line-question-mark",
+                iconHover: "agora-solid-question-mark",
                 title: "Novo Harvester",
                 description: "Recolha automática",
                 href: "/pages/admin/harvesters/new",
