@@ -4,6 +4,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
+  CardGeneral,
   CardLinks,
   InputSearch,
   Button,
@@ -26,7 +27,7 @@ import {
   suggestTags,
 } from '@/services/api';
 import { APIResponse, Organization, Reuse, ReuseFilters, ReuseType, SiteMetrics } from '@/types/api';
-import { format } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
 import PageBanner from '@/components/PageBanner';
@@ -605,101 +606,113 @@ export default function ReusesClient({
             {/* Results Area */}
             <div className="xl:col-span-7">
               <div>
-            <div className="grid grid-cols-1 agora-card-links-datasets-px0 gap-32">
+            <div className="grid xs:grid-cols-1 sm:grid-cols-2 gap-32">
               {reuses.length > 0 ? (
-                reuses.map((reuse) => (
-                  <div key={reuse.id} className="h-full">
-                    <CardLinks
-                      onClick={() => router.push(`/pages/reuses/${reuse.slug}`)}
-                      className="cursor-pointer text-neutral-900"
-                      variant="transparent"
-                      image={{
-                        src: reuse.image_thumbnail || reuse.image || '/laptop.png',
-                        alt: reuse.title,
-                      }}
-                      category={reuse.organization?.name || (reuse.owner ? `${reuse.owner.first_name} ${reuse.owner.last_name}`.trim() : 'Reutilização')}
-                      title={<div className="underline text-xl-bold">{reuse.title}</div>}
-                      description={
-                        reuse.description ? (
-                          <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
-                            {reuse.description}
-                          </p>
-                        ) : undefined
-                      }
-                      date={
-                        <span className="font-[300]">
-                          Atualizado{' '}
-                          {format(
-                            new Date(reuse.last_modified || reuse.created_at),
-                            'dd MM yyyy',
-                            { locale: pt }
-                          )}
-                        </span>
-                      }
-                      links={[
-                        {
-                          href: '#',
-                          hasIcon: true,
-                          leadingIcon: 'agora-line-eye',
-                          leadingIconHover: 'agora-solid-eye',
-                          trailingIcon: '',
-                          trailingIconHover: '',
-                          trailingIconActive: '',
-                          children: reuse.metrics?.views?.toLocaleString('pt-PT') || '0',
-                          title: 'Visualizações',
-                          onClick: (e: React.MouseEvent) => e.preventDefault(),
-                          className: 'text-[#034AD8]',
-                        },
-                        {
-                          href: '#',
-                          hasIcon: true,
-                          leadingIcon: 'agora-line-calendar',
-                          leadingIconHover: 'agora-solid-calendar',
-                          trailingIcon: '',
-                          trailingIconHover: '',
-                          trailingIconActive: '',
-                          children: `${reuse.datasets?.length || 0} datasets`,
-                          title: 'Datasets',
-                          onClick: (e: React.MouseEvent) => e.preventDefault(),
-                          className: 'text-[#034AD8]',
-                        },
-                        {
-                          href: '#',
-                          hasIcon: false,
-                          children: (
-                            <span className="flex items-center gap-8">
-                              <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
-                              <span>{reuse.metrics?.reuses || 0}</span>
-                            </span>
-                          ),
-                          title: 'Métricas',
-                          onClick: (e: React.MouseEvent) => e.preventDefault(),
-                        },
-                        {
-                          href: '#',
-                          hasIcon: true,
-                          leadingIcon: 'agora-line-star',
-                          leadingIconHover: 'agora-solid-star',
-                          trailingIcon: '',
-                          trailingIconHover: '',
-                          trailingIconActive: '',
-                          children: reuse.metrics?.followers || 0,
-                          title: 'Favoritos',
-                          onClick: (e: React.MouseEvent) => e.preventDefault(),
-                          className: 'text-[#034AD8]',
-                        },
-                      ]}
-                      mainLink={
-                        <Link href={`/pages/reuses/${reuse.slug}`}>
-                          <span className="underline">{reuse.title}</span>
-                        </Link>
-                      }
-                      blockedLink={true}
-                    />
-                  </div>
-                ))
+                reuses.map((reuse) => {
+                  const formatMetric = (value: number | undefined) => {
+                    if (!value) return "0";
+                    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(".", ",") + " M";
+                    if (value >= 1_000) return (value / 1_000).toFixed(0) + " mil";
+                    return String(value);
+                  };
+                  const timeAgo = reuse.last_modified || reuse.created_at
+                    ? formatDistanceToNow(new Date(reuse.last_modified || reuse.created_at), { locale: pt })
+                        .replace("aproximadamente ", "")
+                        .replace("quase ", "")
+                        .replace("menos de ", "")
+                        .replace("cerca de ", "")
+                    : "Desconhecido";
+                  const ownerName = reuse.organization?.name
+                    || (reuse.owner ? `${reuse.owner.first_name} ${reuse.owner.last_name}`.trim() : "Sem Organização");
+
+                  return (
+                    <Link
+                      key={reuse.id}
+                      href={`/pages/reuses/${reuse.slug}`}
+                      className="card-general-listing rounded-[4px] overflow-hidden h-full flex flex-col"
+                    >
+                      <CardGeneral
+                        variant="neutral-100"
+                        image={{
+                          src: reuse.image_thumbnail || reuse.image || "/laptop.png",
+                          alt: reuse.title,
+                          height: "88px",
+                          className: "bg-primary-100 !object-contain !h-[56px]",
+                        }}
+                        subtitleText={
+                          (
+                            <div className="flex flex-col">
+                              <span style={{ fontSize: "16px" }} className="text-neutral-900">{timeAgo}</span>
+                              <span style={{ fontSize: "16px", fontWeight: 300 }} className="text-neutral-900 mt-4">
+                                {ownerName}
+                              </span>
+                            </div>
+                          ) as unknown as string
+                        }
+                        titleText={reuse.title}
+                        descriptionText={
+                          (
+                            <div className="flex flex-col grow">
+                              {reuse.description && (
+                                <p className="text-m-regular text-neutral-800 line-clamp-3 mb-16">
+                                  {reuse.description}
+                                </p>
+                              )}
+                              <div className="mt-auto">
+                                <div className="flex items-center flex-wrap gap-8 text-xs mt-12 text-neutral-700">
+                                  <div className="flex items-center gap-8" title="Visualizações">
+                                    <Icon
+                                      name={reuse.metrics?.views ? "agora-solid-eye" : "agora-line-eye"}
+                                      dimensions="xs"
+                                      className="fill-neutral-700"
+                                      aria-hidden="true"
+                                    />
+                                    <span>{formatMetric(reuse.metrics?.views)}</span>
+                                  </div>
+                                  <div className="flex items-center gap-8" title="Datasets">
+                                    <Icon
+                                      name={reuse.datasets?.length ? "agora-solid-calendar" : "agora-line-calendar"}
+                                      dimensions="xs"
+                                      className="fill-neutral-700"
+                                      aria-hidden="true"
+                                    />
+                                    <span>{reuse.datasets?.length || 0} datasets</span>
+                                  </div>
+                                  <div className="flex items-center gap-8" title="Reutilizações">
+                                    <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                    <span>{reuse.metrics?.reuses || 0}</span>
+                                  </div>
+                                  <div className="flex items-center gap-8" title="Favoritos">
+                                    <Icon
+                                      name={reuse.metrics?.followers ? "agora-solid-star" : "agora-line-star"}
+                                      dimensions="xs"
+                                      className="fill-neutral-700"
+                                      aria-hidden="true"
+                                    />
+                                    <span>{formatMetric(reuse.metrics?.followers)}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-8 text-primary-600 mt-16">
+                                  <Icon
+                                    name="agora-line-arrow-right-circle"
+                                    className="w-32 h-32"
+                                    aria-hidden="true"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ) as unknown as string
+                        }
+                        isBlockedLink={true}
+                        anchor={{
+                          href: `/pages/reuses/${reuse.slug}`,
+                        }}
+                      />
+                    </Link>
+                  );
+                })
               ) : (
-                <div className="col-span-2">
+                <div className="col-span-full">
                   <CardNoResults
                     icon={
                       <Icon

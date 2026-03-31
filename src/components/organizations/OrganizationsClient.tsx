@@ -4,10 +4,9 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Button,
   InputSearch,
   Icon,
-  CardLinks,
+  CardGeneral,
   ToggleGroup,
   Toggle,
   CardNoResults
@@ -199,99 +198,111 @@ export default function OrganizationsClient({
             <div className="xl:col-span-7">
               <div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets-px0">
+                <div className="grid xs:grid-cols-1 sm:grid-cols-2 gap-32">
                   {organizations.length > 0 ? (
-                    organizations.map((org) => (
-                      <div key={org.id} className="h-full">
-                        <CardLinks
-                          onClick={() => router.push(`/pages/organizations/${org.slug}`)}
-                          className="cursor-pointer text-neutral-900"
-                          variant="transparent"
-                          {...(org.logo ? { image: { src: org.logo, alt: org.name } } : {})}
-                          category="Organização"
-                          title={<div className="underline text-xl-bold">{org.name}</div>}
-                          description={
-                            org.description ? (
-                              <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
-                                {org.description}
-                              </p>
-                            ) : undefined
-                          }
-                          date={
-                            <span className="font-[300]">
-                              {`Atualizado há ${formatDistanceToNow(new Date(org.last_modified), { locale: pt })}`}
-                            </span>
-                          }
-                          links={[
-                            {
-                              href: '#',
-                              hasIcon: true,
-                              leadingIcon: 'agora-line-eye',
-                              leadingIconHover: 'agora-solid-eye',
-                              trailingIcon: '',
-                              trailingIconHover: '',
-                              trailingIconActive: '',
-                              children: org.metrics?.views
-                                ? org.metrics.views >= 1000000
-                                  ? (org.metrics.views / 1000000).toFixed(1).replace('.', ',') + ' M'
-                                  : org.metrics.views >= 1000
-                                    ? (org.metrics.views / 1000).toFixed(0) + ' mil'
-                                    : String(org.metrics.views)
-                                : '0',
-                              title: 'Visualizações',
-                              onClick: (e: React.MouseEvent) => e.preventDefault(),
-                              className: 'text-[#034AD8]',
-                            },
-                            {
-                              href: '#',
-                              hasIcon: true,
-                              leadingIcon: 'agora-line-calendar',
-                              leadingIconHover: 'agora-solid-calendar',
-                              trailingIcon: '',
-                              trailingIconHover: '',
-                              trailingIconActive: '',
-                              children: String(org.metrics?.datasets || 0),
-                              title: 'Datasets',
-                              onClick: (e: React.MouseEvent) => e.preventDefault(),
-                              className: 'text-[#034AD8]',
-                            },
-                            {
-                              href: '#',
-                              hasIcon: false,
-                              children: (
-                                <span className="flex items-center gap-8">
-                                  <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
-                                  <span>{org.metrics?.reuses || 0}</span>
-                                </span>
-                              ),
-                              title: 'Reutilizações',
-                              onClick: (e: React.MouseEvent) => e.preventDefault(),
-                            },
-                            {
-                              href: '#',
-                              hasIcon: true,
-                              leadingIcon: 'agora-line-star',
-                              leadingIconHover: 'agora-solid-star',
-                              trailingIcon: '',
-                              trailingIconHover: '',
-                              trailingIconActive: '',
-                              children: String(org.metrics?.followers || 0),
-                              title: 'Favoritos',
-                              onClick: (e: React.MouseEvent) => e.preventDefault(),
-                              className: 'text-[#034AD8]',
-                            },
-                          ]}
-                          mainLink={
-                            <Link href={`/pages/organizations/${org.slug}`}>
-                              <span className="underline">{org.name}</span>
-                            </Link>
-                          }
-                          blockedLink={true}
-                        />
-                      </div>
-                    ))
+                    organizations.map((org) => {
+                      const formatMetric = (value: number | undefined) => {
+                        if (!value) return "0";
+                        if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(".", ",") + " M";
+                        if (value >= 1_000) return (value / 1_000).toFixed(0) + " mil";
+                        return String(value);
+                      };
+                      const timeAgo = org.last_modified
+                        ? formatDistanceToNow(new Date(org.last_modified), { locale: pt })
+                            .replace("aproximadamente ", "")
+                            .replace("quase ", "")
+                            .replace("menos de ", "")
+                            .replace("cerca de ", "")
+                        : "Desconhecido";
+
+                      return (
+                        <Link
+                          key={org.id}
+                          href={`/pages/organizations/${org.slug}`}
+                          className="card-general-listing rounded-[4px] overflow-hidden h-full flex flex-col"
+                        >
+                          <CardGeneral
+                            variant="neutral-100"
+                            image={{
+                              src: org.logo || "/images/placeholders/organization.png",
+                              alt: org.name,
+                              height: "88px",
+                              className: "bg-primary-100 !object-contain !h-[56px]",
+                            }}
+                            subtitleText={
+                              (
+                                <div className="flex flex-col">
+                                  <span style={{ fontSize: "16px" }} className="text-neutral-900">{timeAgo}</span>
+                                  <span style={{ fontSize: "16px", fontWeight: 300 }} className="text-neutral-900 mt-4">
+                                    Organização
+                                  </span>
+                                </div>
+                              ) as unknown as string
+                            }
+                            titleText={org.name}
+                            descriptionText={
+                              (
+                                <div className="flex flex-col grow">
+                                  {org.description && (
+                                    <p className="text-m-regular text-neutral-800 line-clamp-3 mb-16">
+                                      {org.description}
+                                    </p>
+                                  )}
+                                  <div className="mt-auto">
+                                    <div className="flex items-center flex-wrap gap-8 text-xs mt-12 text-neutral-700">
+                                      <div className="flex items-center gap-8" title="Visualizações">
+                                        <Icon
+                                          name={org.metrics?.views ? "agora-solid-eye" : "agora-line-eye"}
+                                          dimensions="xs"
+                                          className="fill-neutral-700"
+                                          aria-hidden="true"
+                                        />
+                                        <span>{formatMetric(org.metrics?.views)}</span>
+                                      </div>
+                                      <div className="flex items-center gap-8" title="Datasets">
+                                        <Icon
+                                          name={org.metrics?.datasets ? "agora-solid-calendar" : "agora-line-calendar"}
+                                          dimensions="xs"
+                                          className="fill-neutral-700"
+                                          aria-hidden="true"
+                                        />
+                                        <span>{org.metrics?.datasets || 0}</span>
+                                      </div>
+                                      <div className="flex items-center gap-8" title="Reutilizações">
+                                        <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                        <span>{org.metrics?.reuses || 0}</span>
+                                      </div>
+                                      <div className="flex items-center gap-8" title="Favoritos">
+                                        <Icon
+                                          name={org.metrics?.followers ? "agora-solid-star" : "agora-line-star"}
+                                          dimensions="xs"
+                                          className="fill-neutral-700"
+                                          aria-hidden="true"
+                                        />
+                                        <span>{formatMetric(org.metrics?.followers)}</span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-8 text-primary-600 mt-16">
+                                      <Icon
+                                        name="agora-line-arrow-right-circle"
+                                        className="w-32 h-32"
+                                        aria-hidden="true"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              ) as unknown as string
+                            }
+                            isBlockedLink={true}
+                            anchor={{
+                              href: `/pages/organizations/${org.slug}`,
+                            }}
+                          />
+                        </Link>
+                      );
+                    })
                   ) : (
-                    <div className="col-span-2">
+                    <div className="col-span-full">
                       <CardNoResults
                         icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />}
                         title="Nenhuma organização encontrada"

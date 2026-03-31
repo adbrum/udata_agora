@@ -299,14 +299,14 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
                     <Link
                       key={dataset.id}
                       href={`/pages/datasets/${dataset.slug}`}
-                      className="dataset-card-home rounded-[4px] overflow-hidden h-full flex flex-col"
+                      className="card-general-listing rounded-[4px] overflow-hidden h-full flex flex-col"
                     >
                       <CardGeneral
                         variant="neutral-100"
                         image={{
                           src: dataset.organization?.logo || "/images/placeholders/organization.png",
                           alt: dataset.organization?.name || "Organização",
-                          height: "56",
+                          height: "88px",
                           className: "bg-primary-100 !object-contain !h-[56px]",
                         }}
                         subtitleText={
