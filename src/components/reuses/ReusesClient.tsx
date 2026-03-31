@@ -636,18 +636,6 @@ export default function ReusesClient({
                 {total.toLocaleString('pt-PT')} Resultados
               </span>
               <div className="w-full md:w-auto xl:col-span-5 flex items-end gap-16 justify-end">
-                {hasActiveFilters && (
-                  <Button
-                    variant="primary"
-                    appearance="link"
-                    hasIcon={true}
-                    trailingIcon="agora-line-close"
-                    trailingIconHover="agora-solid-close"
-                    onClick={handleClearFilters}
-                  >
-                    Limpar filtros
-                  </Button>
-                )}
                 <div className="flex-grow max-w-[240px]">
                   <SortSelect
                     currentSortKey={sortDefault}
@@ -761,31 +749,19 @@ export default function ReusesClient({
                         className="w-12 h-12 text-primary-500"
                       />
                     }
-                    title="Não encontrou nenhuma reutilização?"
+                    title="Não encontrámos reutilizações"
                     subtitle={
                       <span className="font-bold">
-                        Tente redefinir os filtros para ampliar a sua pesquisa.
+                        Não existem resultados com os filtros ou termos de pesquisa atuais.
                       </span>
                     }
                     description={
                       <div className="max-w-[592px] mx-auto">
-                        Explore a nossa lista completa de reutilizações de dados abertos.
+                        Tente ajustar ou remover alguns filtros para ampliar a pesquisa.
                       </div>
                     }
                     position="center"
                     hasAnchor={false}
-                    extraDescription={
-                      <div className="mt-24">
-                        <Button
-                          variant="primary"
-                          onClick={handleClearFilters}
-                          trailingIcon="agora-line-arrow-right-circle"
-                          trailingIconHover="agora-solid-arrow-right-circle"
-                        >
-                          Limpar filtros
-                        </Button>
-                      </div>
-                    }
                   />
                 </div>
               )}

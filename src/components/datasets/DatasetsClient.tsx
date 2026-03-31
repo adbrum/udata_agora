@@ -347,23 +347,11 @@ export default function DatasetsClient({
                     <div className="col-span-2">
                       <CardNoResults
                         icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500 icon-xl" />}
-                        title="Não encontrou o que procurava?"
-                        subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar a sua pesquisa.</span>}
-                        description={<div className="max-w-[592px] mx-auto">Também pode visualizar os pedidos atuais e enviar os seus próprios no nosso fórum dedicado à pesquisa de dados e ao acesso aberto.</div>}
+                        title="Não encontrámos o que procura"
+                        subtitle={<span className="font-bold">A sua pesquisa não devolveu resultados.</span>}
+                        description={<div className="max-w-[592px] mx-auto">Verifique os termos introduzidos ou ajuste os filtros para ver mais resultados.</div>}
                         position="center"
                         hasAnchor={false}
-                        extraDescription={
-                          <div className="mt-24">
-                            <Button
-                              variant="primary"
-                              onClick={() => router.push('/pages/datasets')}
-                              trailingIcon="agora-line-arrow-right-circle"
-                              trailingIconHover="agora-solid-arrow-right-circle"
-                            >
-                              Limpar filtros
-                            </Button>
-                          </div>
-                        }
                       />
                     </div>
                   )}
