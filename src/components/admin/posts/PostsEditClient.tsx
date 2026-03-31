@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import {
   Breadcrumb,
   Button,
@@ -19,12 +19,22 @@ import {
   TabHeader,
   TabBody,
 } from "@ama-pt/agora-design-system";
-import { fetchPost, updatePost, suggestTags } from "@/services/api";
+import {
+  fetchPost,
+  updatePost,
+  uploadPostImage,
+  suggestTags,
+} from "@/services/api";
 import type { Post, PostUpdatePayload, TagSuggestion } from "@/types/api";
+import dynamic from "next/dynamic";
+
+const RichTextEditor = dynamic(() => import("./RichTextEditor"), {
+  ssr: false,
+  loading: () => <p>A carregar editor...</p>,
+});
 
 export default function PostsEditClient() {
   const params = useParams();
-  const router = useRouter();
   const postId = params.postId as string;
 
   const [post, setPost] = useState<Post | null>(null);
@@ -127,25 +137,50 @@ export default function PostsEditClient() {
     }
   };
 
-  const handlePublish = async () => {
+  const handleUnpublish = async () => {
     setIsSaving(true);
     setApiError(null);
     setApiSuccess(null);
 
     try {
       const payload: PostUpdatePayload = {
-        published: new Date().toISOString(),
+        published: "",
       };
 
       const result = await updatePost(postId, payload);
       if (result) {
         setPost(result);
-        setApiSuccess("Artigo publicado com sucesso.");
+        setApiSuccess("Artigo despublicado com sucesso.");
       } else {
-        setApiError("Erro ao publicar. Verifique a autenticação.");
+        setApiError("Erro ao despublicar. Verifique a autenticação.");
       }
     } catch {
-      setApiError("Erro ao publicar o artigo.");
+      setApiError("Erro ao despublicar o artigo.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = e.target.files;
+    if (!files || !files.length) return;
+
+    setIsSaving(true);
+    setApiError(null);
+    setApiSuccess(null);
+
+    try {
+      const result = await uploadPostImage(postId, files[0]);
+      if (result) {
+        setPost(result);
+        setApiSuccess("Imagem carregada com sucesso.");
+      } else {
+        setApiError("Erro ao carregar a imagem.");
+      }
+    } catch {
+      setApiError("Erro ao carregar a imagem.");
     } finally {
       setIsSaving(false);
     }
@@ -218,10 +253,10 @@ export default function PostsEditClient() {
               <div className="admin-page__form-area">
                 <form className="admin-page__form mt-[24px]">
                   <p className="text-neutral-900 text-base leading-7">
-                    Os campos marcados com um asterisco ( * ) são obrigatórios.
+                    Campos precedidos por uma estrela (*) são obrigatórios.
                   </p>
 
-                  <h2 className="admin-page__section-title mt-8">Descrição</h2>
+                  <h2 className="admin-page__section-title mt-8">DESCRIÇÃO</h2>
 
                   <div className="admin-page__fields-group">
                     <InputText
@@ -247,7 +282,7 @@ export default function PostsEditClient() {
 
                     <div className="flex flex-col gap-[8px]">
                       <span className="text-primary-900 text-base font-medium leading-7">
-                        Tipo de artigo
+                        Tipo de Item
                       </span>
                       <div className="flex flex-row gap-4">
                         <RadioButton
@@ -258,7 +293,7 @@ export default function PostsEditClient() {
                           onChange={() => setArticleType("news")}
                         />
                         <RadioButton
-                          label="Página"
+                          label="Page"
                           id="article-type-page"
                           name="article-type"
                           checked={articleType === "page"}
@@ -286,12 +321,19 @@ export default function PostsEditClient() {
                           checked={contentType === "markdown"}
                           onChange={() => setContentType("markdown")}
                         />
+                        <RadioButton
+                          label="Blocos"
+                          id="content-blocks"
+                          name="content-type"
+                          checked={contentType === "blocks"}
+                          onChange={() => setContentType("blocks")}
+                        />
                       </div>
                     </div>
 
                     <InputSelect
-                      label="Palavras-chave"
-                      placeholder="Pesquise por uma palavra-chave..."
+                      label="Tags"
+                      placeholder="Procure uma palavra-chave..."
                       id="article-keywords"
                       type="checkbox"
                       searchable
@@ -326,17 +368,24 @@ export default function PostsEditClient() {
                           accept=".jpg,.jpeg,.png"
                           maxSize={4194304}
                           maxCount={1}
+                          onChange={handleImageUpload}
                         />
                       </div>
+                      {post.image && (
+                        <div className="mt-4 flex justify-center">
+                          <img
+                            src={post.image}
+                            alt="Cobertura do artigo"
+                            className="max-w-[200px] max-h-[150px] object-contain border border-neutral-200 rounded"
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   <div className="admin-page__actions">
                     <Button
                       variant="primary"
-                      hasIcon
-                      leadingIcon="agora-line-check-circle"
-                      leadingIconHover="agora-solid-check-circle"
                       onClick={handleSaveMetadata}
                       disabled={isSaving}
                     >
@@ -347,24 +396,23 @@ export default function PostsEditClient() {
               </div>
             </div>
 
-            {!post.published && (
+            {post.published && (
               <div className="mt-8 p-6 bg-danger-50 border border-danger-200 rounded-lg flex items-center justify-between">
                 <div>
                   <p className="text-primary-900 font-bold">
-                    &apos;Publique o artigo&apos;
+                    Despublicar o artigo
                   </p>
                   <p className="text-warning-700 text-sm">
-                    Atenção: o artigo ficará visível para todos assim que for
-                    publicado.
+                    Por favor, note que o item não será mais visível.
                   </p>
                 </div>
                 <Button
                   variant="danger"
                   appearance="outline"
-                  onClick={handlePublish}
+                  onClick={handleUnpublish}
                   disabled={isSaving}
                 >
-                  Publicar
+                  Despublicar
                 </Button>
               </div>
             )}
@@ -379,24 +427,20 @@ export default function PostsEditClient() {
               <div className="admin-page__form-area">
                 <form className="admin-page__form mt-[24px]">
                   <div className="admin-page__fields-group">
-                    <InputTextArea
-                      label="Conteúdo *"
-                      placeholder="Insira aqui"
-                      id="article-content"
-                      rows={12}
-                      value={articleContent}
-                      onChange={(
-                        e: React.ChangeEvent<HTMLTextAreaElement>
-                      ) => setArticleContent(e.target.value)}
-                    />
+                    <div className="flex flex-col gap-[8px]">
+                      <span className="text-primary-900 text-base font-medium leading-7">
+                        Conteúdo *
+                      </span>
+                      <RichTextEditor
+                        content={articleContent}
+                        onChange={(html) => setArticleContent(html)}
+                      />
+                    </div>
                   </div>
 
                   <div className="admin-page__actions">
                     <Button
                       variant="primary"
-                      hasIcon
-                      leadingIcon="agora-line-check-circle"
-                      leadingIconHover="agora-solid-check-circle"
                       onClick={handleSaveContent}
                       disabled={isSaving}
                     >

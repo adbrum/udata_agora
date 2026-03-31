@@ -376,20 +376,6 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                     </div>
                   </div>
 
-                  <div className="mt-auto pt-24">
-                    <a
-                      href={reuse.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#034AD8] text-lg hover:underline inline-flex items-center gap-8"
-                    >
-                      Veja reutilização
-                      <Icon
-                        name="agora-line-external-link"
-                        className="w-24 h-24 fill-[#034AD8]"
-                      />
-                    </a>
-                  </div>
                 </div>
               </CardArticle>
             </div>
