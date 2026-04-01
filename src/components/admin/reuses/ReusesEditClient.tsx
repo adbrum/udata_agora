@@ -586,26 +586,6 @@ export default function ReusesEditClient() {
                         ))}
                       </DropdownSection>
                     </InputSelect>
-                    <div className="flex items-center justify-between">
-                      <Button
-                        appearance="outline"
-                        variant="primary"
-                        hasIcon
-                        leadingIcon="agora-line-edit"
-                        leadingIconHover="agora-solid-edit"
-                      >
-                        Sugira palavras-chave
-                      </Button>
-                      <a
-                        href="https://dados.gov.pt"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary-600 text-sm underline inline-flex items-center gap-[8px] hover:text-primary-800"
-                      >
-                        O que achou desta sugestão? <Icon name="agora-line-external-link" className="w-4 h-4" />
-                      </a>
-                    </div>
-
                     <div>
                       <span className="text-primary-900 text-base font-medium leading-7">
                         Imagem de capa *

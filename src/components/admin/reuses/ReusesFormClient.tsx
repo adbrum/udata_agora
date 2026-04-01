@@ -488,29 +488,6 @@ export default function ReusesFormClient({
                       ))}
                     </DropdownSection>
                   </IsolatedSelect>
-                  <div className="flex items-center gap-16">
-                    <div className="w-1/2">
-                      <Button
-                        appearance="outline"
-                        variant="primary"
-                        hasIcon
-                        leadingIcon="agora-line-edit"
-                        leadingIconHover="agora-solid-edit"
-                        fullWidth
-                      >
-                        Sugira palavras-chave
-                      </Button>
-                    </div>
-                    <Button
-                      appearance="link"
-                      variant="primary"
-                      hasIcon
-                      trailingIcon="agora-line-external-link"
-                      trailingIconHover="agora-solid-external-link"
-                    >
-                      O que achou desta sugestão?
-                    </Button>
-                  </div>
 
                   <div>
                     <span className="text-primary-900 text-base font-medium leading-7">

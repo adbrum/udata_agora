@@ -80,13 +80,6 @@ export default function DatasetsNewClient() {
 
       {currentStep === 1 && (
         <>
-          <h2 className="admin-page__section-title mb-[16px]">Tipo de publicação</h2>
-
-          <StatusCard
-            type="info"
-            description="Se desejar realizar testes, utilize demo.dados.gov"
-          />
-
           <div className="datasets-new-page__cards mb-[32px]" style={{ maxWidth: "50%" }}>
             <CardAction
               variant="neutral-100"
@@ -123,17 +116,7 @@ export default function DatasetsNewClient() {
                 >
                   Consulte a documentação da API.
                 </Button>
-                <Button
-                  appearance="link"
-                  variant="primary"
-                  hasIcon
-                  trailingIcon="agora-line-external-link"
-                  trailingIconHover="agora-solid-external-link"
-                  onClick={() => router.push("/pages/faqs/reuse")}
-                >
-                  Saiba mais sobre o harvester.
-                </Button>
-                <Button
+<Button
                   appearance="link"
                   variant="primary"
                   hasIcon
