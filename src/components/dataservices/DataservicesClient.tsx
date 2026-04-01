@@ -11,7 +11,7 @@ import {
   Icon,
   CardNoResults,
   Button,
-  CardLinks,
+  CardGeneral,
   Toggle,
   Pill,
   Sidebar,
@@ -536,53 +536,97 @@ export default function DataservicesClient({
 
                 <div className="divider-neutral-200 mt-[14px] mb-24" />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets">
+                <div className="grid xs:grid-cols-1 sm:grid-cols-2 gap-32">
                   {dataservices.length > 0 ? (
-                    dataservices.map((ds) => (
-                      <div key={ds.id} className="h-full">
-                        <CardLinks
-                          onClick={() => router.push(`/pages/dataservices/preview?title=${encodeURIComponent(ds.title)}&description=${encodeURIComponent(ds.description || '')}`)}
-                          className="cursor-pointer text-neutral-900"
-                          variant="white"
-                          image={{
-                            src: ds.organization?.logo || '/images/placeholders/organization.png',
-                            alt: ds.organization?.name || 'Organização sem logo',
-                          }}
-                          category={ds.organization?.name}
-                          title={ds.title}
-                          description={
-                            <div className="flex flex-col gap-12">
-                              <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
-                                {ds.description}
-                              </p>
-                              <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
-                                <div className="flex items-center gap-8" title="Visualizações">
-                                  <Icon name="agora-line-eye" className="" aria-hidden="true" />
-                                  <span>{ds.metrics?.views || 0}</span>
+                    dataservices.map((ds) => {
+                      const formatMetric = (value: number | undefined) => {
+                        if (!value) return "0";
+                        if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(".", ",") + " M";
+                        if (value >= 1_000) return (value / 1_000).toFixed(0) + " mil";
+                        return String(value);
+                      };
+                      const timeAgo = ds.last_modified
+                        ? formatDistanceToNow(new Date(ds.last_modified), { locale: pt })
+                            .replace("aproximadamente ", "")
+                            .replace("quase ", "")
+                            .replace("menos de ", "")
+                            .replace("cerca de ", "")
+                        : "Desconhecido";
+                      const dsUrl = `/pages/dataservices/preview?title=${encodeURIComponent(ds.title)}&description=${encodeURIComponent(ds.description || '')}`;
+
+                      return (
+                        <Link
+                          key={ds.id}
+                          href={dsUrl}
+                          className="card-general-listing rounded-[4px] overflow-hidden h-full flex flex-col"
+                        >
+                          <CardGeneral
+                            variant="neutral-100"
+                            image={{
+                              src: ds.organization?.logo || "/images/placeholders/organization.png",
+                              alt: ds.organization?.name || "Organização",
+                              height: "56px",
+                              className: "bg-primary-100 !object-contain !h-[56px]",
+                            }}
+                            subtitleText={
+                              (
+                                <div className="flex flex-col">
+                                  <span style={{ fontSize: "16px" }} className="text-neutral-900">{timeAgo}</span>
+                                  <span style={{ fontSize: "16px", fontWeight: 300 }} className="text-neutral-900 mt-4">
+                                    {ds.organization?.name || "Sem Organização"}
+                                  </span>
                                 </div>
-                                <div className="flex items-center gap-8" title="Favoritos">
-                                  <img src="/Icons/favorite.svg" className="" alt="" aria-hidden="true" />
-                                  <span>{ds.metrics?.followers || 0}</span>
+                              ) as unknown as string
+                            }
+                            titleText={ds.title}
+                            descriptionText={
+                              (
+                                <div className="flex flex-col grow">
+                                  {ds.description && (
+                                    <p className="text-m-regular text-neutral-800 line-clamp-3 mb-16">
+                                      {ds.description}
+                                    </p>
+                                  )}
+                                  <div className="mt-auto">
+                                    <div className="flex items-center flex-wrap gap-8 text-xs mt-12 text-neutral-700">
+                                      <div className="flex items-center gap-8" title="Visualizações">
+                                        <Icon
+                                          name={ds.metrics?.views ? "agora-solid-eye" : "agora-line-eye"}
+                                          dimensions="xs"
+                                          className="fill-neutral-700"
+                                          aria-hidden="true"
+                                        />
+                                        <span>{formatMetric(ds.metrics?.views)}</span>
+                                      </div>
+                                      <div className="flex items-center gap-8" title="Favoritos">
+                                        <Icon
+                                          name={ds.metrics?.followers ? "agora-solid-star" : "agora-line-star"}
+                                          dimensions="xs"
+                                          className="fill-neutral-700"
+                                          aria-hidden="true"
+                                        />
+                                        <span>{formatMetric(ds.metrics?.followers)}</span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-8 text-primary-600 mt-16">
+                                      <Icon
+                                        name="agora-line-arrow-right-circle"
+                                        className="w-32 h-32"
+                                        aria-hidden="true"
+                                      />
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          }
-                          date={
-                            <span className="font-[300]">
-                              {`Atualizado há ${formatDistanceToNow(new Date(ds.last_modified), { locale: pt })}`}
-                            </span>
-                          }
-                          mainLink={
-                            <Link href={`/pages/dataservices/preview?title=${encodeURIComponent(ds.title)}&description=${encodeURIComponent(ds.description || '')}`}>
-                              <span className="underline">{ds.title}</span>
-                            </Link>
-                          }
-                          blockedLink={true}
-                        />
-                      </div>
-                    ))
+                              ) as unknown as string
+                            }
+                            isBlockedLink={true}
+                            anchor={{ href: dsUrl }}
+                          />
+                        </Link>
+                      );
+                    })
                   ) : (
-                    <div>
+                    <div className="col-span-full">
                       <CardNoResults
                         icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500 icon-xl" />}
                         title="Não encontrou o que procurava?"

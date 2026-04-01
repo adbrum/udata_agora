@@ -278,7 +278,9 @@ export default function SystemDatasetsClient() {
                     className={
                       calculateQualityScore(dataset.quality) <= 45
                         ? "quality-progress-warning"
-                        : ""
+                        : calculateQualityScore(dataset.quality) > 50
+                          ? "quality-progress-success"
+                          : ""
                     }
                   >
                     <ProgressBar
