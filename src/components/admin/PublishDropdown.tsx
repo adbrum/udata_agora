@@ -3,26 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Icon } from "@ama-pt/agora-design-system";
-
-const PUBLISH_ITEMS = [
-  {
-    icon: "agora-line-layers-menu",
-    label: "Um conjunto de dados",
-    href: "/pages/admin/me/datasets/new",
-  },
-  {
-    icon: null,
-    customIcon: "/Icons/bar_chart.svg",
-    label: "Uma reutilização",
-    href: "/pages/admin/me/reuses/new",
-  },
-  { icon: "agora-line-award", label: "Um harvester", href: "/pages/admin/harvesters/new" },
-  {
-    icon: "agora-line-buildings",
-    label: "Uma organização",
-    href: "/pages/admin/organizations/new",
-  },
-];
+import { useAuth } from "@/context/AuthContext";
 
 interface PublishDropdownProps {
   darkMode?: boolean;
@@ -30,8 +11,29 @@ interface PublishDropdownProps {
 
 export default function PublishDropdown({ darkMode = false }: PublishDropdownProps) {
   const router = useRouter();
+  const { hasOrganization } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const PUBLISH_ITEMS = [
+    {
+      icon: "agora-line-layers-menu",
+      label: "Um conjunto de dados",
+      href: "/pages/admin/datasets/new",
+    },
+    {
+      icon: null as string | null,
+      customIcon: "/Icons/bar_chart.svg",
+      label: "Uma reutilização",
+      href: "/pages/admin/reuses/new",
+    },
+    { icon: "agora-line-award", label: "Um harvester", href: "/pages/admin/harvesters/new" },
+    {
+      icon: "agora-line-buildings",
+      label: "Uma organização",
+      href: "/pages/admin/organizations/new?step=1",
+    },
+  ];
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -53,7 +55,8 @@ export default function PublishDropdown({ darkMode = false }: PublishDropdownPro
         hasIcon={true}
         trailingIcon={showDropdown ? "agora-line-chevron-up" : "agora-line-chevron-down"}
         trailingIconHover={showDropdown ? "agora-solid-chevron-up" : "agora-solid-chevron-down"}
-        className="px-24 py-16 rounded-8 h-auto relative z-10"
+        className="px-24 py-16 h-auto relative z-10"
+        style={{ borderRadius: "4px" }}
         onClick={() => setShowDropdown((v) => !v)}
       >
         <span className="text-lg font-medium">

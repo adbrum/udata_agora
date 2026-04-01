@@ -15,9 +15,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
   Button,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchMyReuses } from "@/services/api";
 import { Reuse } from "@/types/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -51,8 +51,8 @@ export default function ReusesClient() {
   }, []);
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -62,8 +62,8 @@ export default function ReusesClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Reutilizações</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Reutilizações</h1>
         <PublishDropdown />
       </div>
 
@@ -72,14 +72,14 @@ export default function ReusesClient() {
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
-        <div className="w-[60%]">
+        <div className="admin-search-wrapper">
           <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome da reutilização"
             aria-label="Pesquisar reutilizações"
           />
         </div>
-        <InputSelect
+        {/* <InputSelect
           label=""
           hideLabel
           placeholder="Filtrar por estado"
@@ -91,7 +91,7 @@ export default function ReusesClient() {
             <DropdownOption value="draft">Rascunho</DropdownOption>
             <DropdownOption value="deleted">Excluído</DropdownOption>
           </DropdownSection>
-        </InputSelect>
+        </InputSelect> */}
       </div>
 
       {!isLoading && reuses.length > 0 ? (
@@ -110,14 +110,14 @@ export default function ReusesClient() {
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
+              <TableHeaderCell sortType="date" sortOrder="none">
                 Título da reutilização
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
               <TableHeaderCell sortType="date" sortOrder="none">
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell sortType="numeric" sortOrder="descending">
+              <TableHeaderCell sortType="date" sortOrder="none">
                 Conjuntos de dados
               </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
@@ -135,17 +135,26 @@ export default function ReusesClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant="success">Público</Pill>
+                  {reuse.private ? (
+                    <StatusDot variant="warning">Rascunho</StatusDot>
+                  ) : (
+                    <StatusDot variant="success">Público</StatusDot>
+                  )}
                 </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(reuse.created_at)}
                   <br />
                   <span className="text-sm text-neutral-500">
-                    sobre{" "}
-                    <span className="text-success-600">●</span>{" "}
-                    {reuse.owner
-                      ? `${reuse.owner.first_name} ${reuse.owner.last_name}`
-                      : "—"}
+                    {reuse.owner ? (
+                      <a
+                        href={`/pages/users/${reuse.owner.slug}`}
+                        className="text-primary-600 text-xs underline"
+                      >
+                        {reuse.owner.first_name} {reuse.owner.last_name}
+                      </a>
+                    ) : (
+                      "—"
+                    )}
                   </span>
                 </TableCell>
                 <TableCell headerLabel="Conjuntos de dados">
@@ -156,7 +165,7 @@ export default function ReusesClient() {
                     <a href={`/pages/reuses/${reuse.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/me/reuses/edit?slug=${reuse.slug}`}>
+                    <a href={`/pages/admin/me/reuses/edit?id=${reuse.id}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
@@ -182,7 +191,7 @@ export default function ReusesClient() {
                   <Button
                     variant="primary"
                     appearance="outline"
-                    onClick={() => window.location.href = '/pages/admin/me/reuses/new'}
+                    onClick={() => window.location.href = '/pages/admin/reuses/new'}
                   >
                     Publique no portal
                   </Button>

@@ -19,20 +19,23 @@ interface SearchDropdownProps {
   placeholder?: string;
   label?: string;
   hasVoiceActionButton?: boolean;
+  excludeTypes?: SearchType[];
 }
 
 export default function SearchDropdown({
   id,
   darkMode = false,
-  placeholder = "Pesquisar datasets, organizações, reutilizações...",
+  placeholder = "Pesquisar conjunto de dados, organizações, reutilizações...",
   label = "Pesquisar",
   hasVoiceActionButton = false,
+  excludeTypes = [],
 }: SearchDropdownProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const options = SEARCH_OPTIONS.filter((o) => !excludeTypes.includes(o.type));
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -69,7 +72,7 @@ export default function SearchDropdown({
   const navigateToSearch = (type: SearchType) => {
     const q = query.trim();
     if (q) {
-      const option = SEARCH_OPTIONS.find((o) => o.type === type);
+      const option = options.find((o) => o.type === type);
       const path = option?.path || "/pages/datasets";
       router.push(`${path}?q=${encodeURIComponent(q)}`);
       setIsOpen(false);
@@ -91,19 +94,19 @@ export default function SearchDropdown({
       case "ArrowDown":
         e.preventDefault();
         setActiveIndex((prev) =>
-          prev < SEARCH_OPTIONS.length - 1 ? prev + 1 : 0
+          prev < options.length - 1 ? prev + 1 : 0
         );
         break;
       case "ArrowUp":
         e.preventDefault();
         setActiveIndex((prev) =>
-          prev > 0 ? prev - 1 : SEARCH_OPTIONS.length - 1
+          prev > 0 ? prev - 1 : options.length - 1
         );
         break;
       case "Enter":
         e.preventDefault();
         if (activeIndex >= 0) {
-          navigateToSearch(SEARCH_OPTIONS[activeIndex].type);
+          navigateToSearch(options[activeIndex].type);
         } else {
           navigateToSearch("datasets");
         }
@@ -151,7 +154,7 @@ export default function SearchDropdown({
           }}
         >
           <ul className="list-none m-0 p-0" role="listbox">
-            {SEARCH_OPTIONS.map((option, index) => (
+            {options.map((option, index) => (
               <li
                 key={option.type}
                 role="option"

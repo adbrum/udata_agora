@@ -1,12 +1,21 @@
-import type { Metadata } from "next";
-import OrgCommunityResourcesClient from "@/components/admin/community-resources/OrgCommunityResourcesClient";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Recursos comunitários - Organização - Admin - dados.gov",
-  description:
-    "Gestão de recursos comunitários da organização no portal dados.gov.",
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
-export default function OrgCommunityResourcesPage() {
-  return <OrgCommunityResourcesClient />;
+export default function OrgCommunityResourcesRedirect() {
+  const router = useRouter();
+  const { activeOrg, isLoading } = useActiveOrganization();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (activeOrg) {
+      router.replace(`/pages/admin/org/${activeOrg.id}/community-resources`);
+    } else {
+      router.replace("/pages/admin");
+    }
+  }, [activeOrg, isLoading, router]);
+
+  return null;
 }

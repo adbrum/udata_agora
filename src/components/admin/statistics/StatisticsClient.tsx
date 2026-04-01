@@ -27,18 +27,18 @@ import PublishDropdown from "@/components/admin/PublishDropdown";
 export default function StatisticsClient() {
   const { displayName } = useCurrentUser();
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "Estatísticas", url: "/pages/admin/statistics" },
+            { label: "Estatísticas", url: "/pages/admin/me/statistics" },
           ]}
         />
       </div>
 
-      <h1 className="datasets-admin-page__title mt-[64px] mb-[16px]">Estatísticas</h1>
+      <h1 className="admin-page__title mt-[64px] mb-[16px]">Estatísticas</h1>
 
       <p className="text-neutral-700 text-sm leading-relaxed mb-[24px]">
         As estatísticas foram compiladas a partir de julho de 2022
@@ -76,7 +76,7 @@ export default function StatisticsClient() {
           <TabBody>
             <div className="mt-[24px]">
               <div className="flex items-end gap-[16px] mb-[24px]">
-                <div className="w-[60%]">
+                <div className="admin-search-wrapper">
                   <InputSearchBar hasVoiceActionButton={false}
                     label="Pesquisar"
                     placeholder="Pesquise o nome do conjunto de dados"
@@ -100,19 +100,19 @@ export default function StatisticsClient() {
                 <TableHeader>
                   <TableRow>
                     <TableHeaderCell>TÍTULO DO CONJUNTO DE DADOS</TableHeaderCell>
-                    <TableHeaderCell sortType="numeric" sortOrder="none">
+                    <TableHeaderCell sortType="date" sortOrder="none">
                       <Icon name="agora-line-chat" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
-                    <TableHeaderCell sortType="numeric" sortOrder="none">
+                    <TableHeaderCell sortType="date" sortOrder="none">
                       <Icon name="agora-line-eye" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
-                    <TableHeaderCell sortType="numeric" sortOrder="none">
+                    <TableHeaderCell sortType="date" sortOrder="none">
                       <Icon name="agora-line-download" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
-                    <TableHeaderCell sortType="numeric" sortOrder="none">
+                    <TableHeaderCell sortType="date" sortOrder="none">
                       <img src="/Icons/bar_chart.svg" alt="Reutilizações" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
-                    <TableHeaderCell sortType="numeric" sortOrder="none">
+                    <TableHeaderCell sortType="date" sortOrder="none">
                       <Icon name="agora-line-star" className="w-[16px] h-[16px]" />
                     </TableHeaderCell>
                     <TableHeaderCell>{""}</TableHeaderCell>
@@ -147,7 +147,7 @@ export default function StatisticsClient() {
               </p>
 
               <div className="flex items-end gap-[16px] mb-[24px]">
-                <div className="w-[60%]">
+                <div className="admin-search-wrapper">
                   <InputSearchBar hasVoiceActionButton={false}
                     label="Pesquisar"
                     placeholder="Pesquise o nome da API"
@@ -202,7 +202,7 @@ export default function StatisticsClient() {
               </p>
 
               <div className="flex items-end gap-[16px] mb-[24px]">
-                <div className="w-[60%]">
+                <div className="admin-search-wrapper">
                   <InputSearchBar hasVoiceActionButton={false}
                     label="Pesquisar"
                     placeholder="Pesquise o nome da reutilização"
@@ -237,7 +237,7 @@ export default function StatisticsClient() {
                     <Button
                       variant="primary"
                       appearance="outline"
-                      onClick={() => window.location.href = '/pages/admin/me/reuses/new'}
+                      onClick={() => window.location.href = '/pages/admin/reuses/new'}
                     >
                       Publique no portal
                     </Button>

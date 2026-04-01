@@ -5,17 +5,17 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Button,
-  InputSearchBar,
+  InputSearch,
   Icon,
-  CardLinks,
-  InputSelect,
-  DropdownSection,
-  DropdownOption,
+  CardGeneral,
+  ToggleGroup,
+  Toggle,
   CardNoResults
 } from '@ama-pt/agora-design-system';
 import { Pagination } from '@/components/Pagination';
 import { OrganizationsFilters } from './OrganizationsFilters';
 import { APIResponse, OrgBadges, Organization, OrganizationFilters, SiteMetrics } from '@/types/api';
+import PublishDropdown from "@/components/admin/PublishDropdown";
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -32,64 +32,19 @@ interface OrganizationsClientProps {
 
 const SORT_OPTIONS: Record<string, string> = {
   relevancia: '',
-  alfabetica: 'name',
   recentes: '-last_modified',
+  antigos: 'last_modified',
+  subscritores: '-followers',
+  reutilizacoes: '-reuses',
 };
 
-function SortSelect({
-  currentSortKey,
-  onSortChange,
-}: {
-  currentSortKey: string;
-  onSortChange: (value: string) => void;
-}) {
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <div className="selectOrganization">
-        <label className="text-s-regular text-neutral-700 mb-4 block">
-          Ordenar por:
-        </label>
-        <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
-          {currentSortKey === 'alfabetica' ? 'Ordem alfabética'
-            : currentSortKey === 'recentes' ? 'Mais recentes'
-            : 'Relevância'}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <InputSelect
-      label="Ordenar por:"
-      id="sort-organizations"
-      className="selectOrganization"
-      onChange={(options) => {
-        const selected = options?.[0]?.value;
-        if (selected && selected !== currentSortKey) {
-          onSortChange(selected as string);
-        }
-      }}
-    >
-      <DropdownSection name="order">
-        <DropdownOption value="relevancia" selected={currentSortKey === 'relevancia'}>
-          Relevância
-        </DropdownOption>
-        <DropdownOption value="alfabetica" selected={currentSortKey === 'alfabetica'}>
-          Ordem alfabética
-        </DropdownOption>
-        <DropdownOption value="recentes" selected={currentSortKey === 'recentes'}>
-          Mais recentes
-        </DropdownOption>
-      </DropdownSection>
-    </InputSelect>
-  );
-}
+const SORT_LABELS: Record<string, string> = {
+  relevancia: 'Relevância',
+  recentes: 'Mais recente',
+  antigos: 'Mais antigo',
+  subscritores: 'Subscritores',
+  reutilizacoes: 'Reutilizações',
+};
 
 export default function OrganizationsClient({
   initialData,
@@ -105,6 +60,7 @@ export default function OrganizationsClient({
   const currentQuery = initialFilters.q || '';
   const currentSort = initialFilters.sort || '';
   const [searchQuery, setSearchQuery] = React.useState(currentQuery);
+  const [filtersOpen, setFiltersOpen] = React.useState(false);
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const currentSortKey = Object.entries(SORT_OPTIONS).find(
@@ -174,163 +130,210 @@ export default function OrganizationsClient({
             { label: 'Home', url: '/' },
             { label: 'Organizações', url: '/pages/organizations' }
           ]}
+          subtitle={
+            <p className="text-primary-100 max-w-[592px]">
+              Pesquise através de {total.toLocaleString('pt-PT')} organizações
+              em dados.gov
+            </p>
+          }
         >
-          <InputSearchBar
-            label="O que procura nas organizações?"
-            placeholder="Pesquisar organizações..."
-            id="organizations-search"
-            hasVoiceActionButton={false}
-            voiceActionAltText="Pesquisar por voz"
-            searchActionAltText="Pesquisar"
-            darkMode={true}
-            value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-            onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSearch(); }}
-            onSearchActivate={() => handleSearch()}
-          />
-          <div className="mt-8 text-s-regular text-neutral-200">
-            Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
-          </div>
-          <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
+          <PublishDropdown darkMode={true} />
         </PageBanner>
+
+        {/* Search Section */}
+        <div className="container mx-auto pt-32 pb-16 px-4">
+          <div className="max-w-[592px]">
+            <InputSearch
+              label="Pesquisar"
+              placeholder="Pesquisar organizações..."
+              id="organizations-search"
+              value={searchQuery}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSearch(); }}
+            />
+            <div className="mt-8 text-s-regular text-neutral-900">
+              Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
+            </div>
+          </div>
+        </div>
 
         {/* Main Content */}
         <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
+          {/* Results count + Sort toggles */}
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
-            {/* Sidebar */}
-            <div className="xl:col-span-5 xl:block p-32 pl-0">
-              <OrganizationsFilters siteMetrics={siteMetrics} orgBadges={orgBadges} orgBadgeCounts={orgBadgeCounts} initialFilters={initialFilters} />
+            <div className="xl:col-span-5 flex flex-row items-end gap-24 pl-0 py-16">
+              <Button
+                appearance="outline"
+                variant="neutral"
+                hasIcon
+                {...(filtersOpen
+                  ? { leadingIcon: "agora-line-chevron-left", leadingIconHover: "agora-solid-chevron-left" }
+                  : { trailingIcon: "agora-line-chevron-right", trailingIconHover: "agora-solid-chevron-right" }
+                )}
+                onClick={() => setFiltersOpen(!filtersOpen)}
+              >
+                {filtersOpen ? "Ocultar filtros" : "Abrir filtros"}
+              </Button>
+              <span className="text-neutral-900 text-l-regular whitespace-nowrap">
+                {total.toLocaleString('pt-PT')} Resultados
+              </span>
             </div>
+            <div className="xl:col-span-7 flex items-center justify-end py-16">
+              <ToggleGroup
+                multiple={false}
+                onChange={(val) => {
+                  const selected = val.length > 0 ? val[0] : 'relevancia';
+                  if (selected !== currentSortKey) {
+                    handleSort(selected);
+                  }
+                }}
+              >
+                {Object.entries(SORT_LABELS).map(([key, label]) => (
+                  <Toggle
+                    key={key}
+                    value={key}
+                    selected={currentSortKey === key}
+                  >
+                    {label}
+                  </Toggle>
+                ))}
+              </ToggleGroup>
+            </div>
+          </div>
+          <div className="divider-neutral-200 mb-24" />
+
+          <div className={`grid grid-filters gap-x-[32px] ${filtersOpen ? "md:grid-cols-3 xl:grid-cols-12" : ""}`}>
+            {/* Sidebar */}
+            {filtersOpen && (
+              <div className="xl:col-span-5 xl:block">
+                <OrganizationsFilters siteMetrics={siteMetrics} orgBadges={orgBadges} orgBadgeCounts={orgBadgeCounts} initialFilters={initialFilters} />
+              </div>
+            )}
 
             {/* Results Area */}
-            <div className="xl:col-span-7 mt-[36px]">
+            <div className={filtersOpen ? "xl:col-span-7" : "col-span-full"}>
               <div>
-                <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
-                  <span className="text-neutral-900 font-medium text-base xl:col-span-6 mt-[32px]">
-                    {total.toLocaleString('pt-PT')} Resultados
-                  </span>
-                  <div className="w-full md:w-auto xl:col-span-6">
-                    <SortSelect currentSortKey={currentSortKey} onSortChange={handleSort} />
-                  </div>
-                </div>
 
-                <div className="divider-neutral-200 mt-[14px] mb-24" />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 agora-card-links-datasets-px0">
+                <div
+                  className="gap-32"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: filtersOpen
+                      ? "repeat(2, minmax(0, 1fr))"
+                      : "repeat(3, minmax(0, 1fr))",
+                  }}
+                >
                   {organizations.length > 0 ? (
-                    organizations.map((org) => (
-                      <div key={org.id} className="h-full">
-                        <CardLinks
-                          onClick={() => router.push(`/pages/organizations/${org.slug}`)}
-                          className="cursor-pointer text-neutral-900"
-                          variant="transparent"
-                          image={{
-                            src: org.logo || '/images/placeholders/organization.png',
-                            alt: org.name,
-                          }}
-                          category="Organização"
-                          title={<div className="underline text-xl-bold">{org.name}</div>}
-                          description={
-                            org.description ? (
-                              <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
-                                {org.description}
-                              </p>
-                            ) : undefined
-                          }
-                          date={
-                            <span className="font-[300]">
-                              {`Atualizado há ${formatDistanceToNow(new Date(org.last_modified), { locale: pt })}`}
-                            </span>
-                          }
-                          links={[
-                            {
-                              href: '#',
-                              hasIcon: true,
-                              leadingIcon: 'agora-line-eye',
-                              leadingIconHover: 'agora-solid-eye',
-                              trailingIcon: '',
-                              trailingIconHover: '',
-                              trailingIconActive: '',
-                              children: org.metrics?.views
-                                ? org.metrics.views >= 1000000
-                                  ? (org.metrics.views / 1000000).toFixed(1).replace('.', ',') + ' M'
-                                  : org.metrics.views >= 1000
-                                    ? (org.metrics.views / 1000).toFixed(0) + ' mil'
-                                    : String(org.metrics.views)
-                                : '0',
-                              title: 'Visualizações',
-                              onClick: (e: React.MouseEvent) => e.preventDefault(),
-                              className: 'text-[#034AD8]',
-                            },
-                            {
-                              href: '#',
-                              hasIcon: true,
-                              leadingIcon: 'agora-line-calendar',
-                              leadingIconHover: 'agora-solid-calendar',
-                              trailingIcon: '',
-                              trailingIconHover: '',
-                              trailingIconActive: '',
-                              children: String(org.metrics?.datasets || 0),
-                              title: 'Datasets',
-                              onClick: (e: React.MouseEvent) => e.preventDefault(),
-                              className: 'text-[#034AD8]',
-                            },
-                            {
-                              href: '#',
-                              hasIcon: false,
-                              children: (
-                                <span className="flex items-center gap-8">
-                                  <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
-                                  <span>{org.metrics?.reuses || 0}</span>
-                                </span>
-                              ),
-                              title: 'Reutilizações',
-                              onClick: (e: React.MouseEvent) => e.preventDefault(),
-                            },
-                            {
-                              href: '#',
-                              hasIcon: true,
-                              leadingIcon: 'agora-line-star',
-                              leadingIconHover: 'agora-solid-star',
-                              trailingIcon: '',
-                              trailingIconHover: '',
-                              trailingIconActive: '',
-                              children: String(org.metrics?.followers || 0),
-                              title: 'Favoritos',
-                              onClick: (e: React.MouseEvent) => e.preventDefault(),
-                              className: 'text-[#034AD8]',
-                            },
-                          ]}
-                          mainLink={
-                            <Link href={`/pages/organizations/${org.slug}`}>
-                              <span className="underline">{org.name}</span>
-                            </Link>
-                          }
-                          blockedLink={true}
-                        />
-                      </div>
-                    ))
+                    organizations.map((org) => {
+                      const formatMetric = (value: number | undefined) => {
+                        if (!value) return "0";
+                        if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(".", ",") + " M";
+                        if (value >= 1_000) return (value / 1_000).toFixed(0) + " mil";
+                        return String(value);
+                      };
+                      const timeAgo = org.last_modified
+                        ? formatDistanceToNow(new Date(org.last_modified), { locale: pt })
+                            .replace("aproximadamente ", "")
+                            .replace("quase ", "")
+                            .replace("menos de ", "")
+                            .replace("cerca de ", "")
+                        : "Desconhecido";
+
+                      return (
+                        <Link
+                          key={org.id}
+                          href={`/pages/organizations/${org.slug}`}
+                          className="card-general-listing rounded-[4px] overflow-hidden h-full flex flex-col"
+                        >
+                          <CardGeneral
+                            variant="neutral-100"
+                            image={{
+                              src: org.logo || "/images/placeholders/organization.png",
+                              alt: org.name,
+                              height: "56px",
+                              className: "bg-primary-100 !object-contain !h-[56px]",
+                            }}
+                            subtitleText={
+                              (
+                                <div className="flex flex-col">
+                                  <span style={{ fontSize: "16px" }} className="text-neutral-900">{timeAgo}</span>
+                                  <span style={{ fontSize: "16px", fontWeight: 300 }} className="text-neutral-900 mt-4">
+                                    Organização
+                                  </span>
+                                </div>
+                              ) as unknown as string
+                            }
+                            titleText={org.name}
+                            descriptionText={
+                              (
+                                <div className="flex flex-col grow">
+                                  {org.description && (
+                                    <p className="text-m-regular text-neutral-800 line-clamp-3 mb-16">
+                                      {org.description}
+                                    </p>
+                                  )}
+                                  <div className="mt-auto">
+                                    <div className="flex items-center flex-wrap gap-8 text-xs mt-12 text-neutral-700">
+                                      <div className="flex items-center gap-8" title="Visualizações">
+                                        <Icon
+                                          name={org.metrics?.views ? "agora-solid-eye" : "agora-line-eye"}
+                                          dimensions="xs"
+                                          className="fill-neutral-700"
+                                          aria-hidden="true"
+                                        />
+                                        <span>{formatMetric(org.metrics?.views)}</span>
+                                      </div>
+                                      <div className="flex items-center gap-8" title="Datasets">
+                                        <Icon
+                                          name={org.metrics?.datasets ? "agora-solid-calendar" : "agora-line-calendar"}
+                                          dimensions="xs"
+                                          className="fill-neutral-700"
+                                          aria-hidden="true"
+                                        />
+                                        <span>{org.metrics?.datasets || 0}</span>
+                                      </div>
+                                      <div className="flex items-center gap-8" title="Reutilizações">
+                                        <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                        <span>{org.metrics?.reuses || 0}</span>
+                                      </div>
+                                      <div className="flex items-center gap-8" title="Favoritos">
+                                        <Icon
+                                          name={org.metrics?.followers ? "agora-solid-star" : "agora-line-star"}
+                                          dimensions="xs"
+                                          className="fill-neutral-700"
+                                          aria-hidden="true"
+                                        />
+                                        <span>{formatMetric(org.metrics?.followers)}</span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-8 text-primary-600 mt-16">
+                                      <Icon
+                                        name="agora-line-arrow-right-circle"
+                                        className="w-32 h-32"
+                                        aria-hidden="true"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              ) as unknown as string
+                            }
+                            isBlockedLink={true}
+                            anchor={{
+                              href: `/pages/organizations/${org.slug}`,
+                            }}
+                          />
+                        </Link>
+                      );
+                    })
                   ) : (
-                    <div className="col-span-2">
+                    <div className="col-span-full">
                       <CardNoResults
                         icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />}
-                        title="Não encontrou nenhuma organização?"
-                        subtitle={<span className="font-bold">Tente redefinir os filtros para ampliar a sua pesquisa.</span>}
-                        description={<div className="max-w-[592px] mx-auto">Explore a nossa lista completa de publicadores de dados abertos.</div>}
+                        title="Nenhuma organização encontrada"
+                        subtitle={<span className="font-bold">Não existem organizações que correspondam aos filtros aplicados.</span>}
+                        description={<div className="max-w-[592px] mx-auto">Experimente remover filtros ou usar outros termos de pesquisa.</div>}
                         position="center"
                         hasAnchor={false}
-                        extraDescription={
-                          <div className="mt-32">
-                            <Button
-                              variant="primary"
-                              onClick={() => router.push('/pages/organizations')}
-                              trailingIcon="agora-line-arrow-right-circle"
-                              trailingIconHover="agora-solid-arrow-right-circle"
-                            >
-                              Limpar filtros
-                            </Button>
-                          </div>
-                        }
                       />
                     </div>
                   )}

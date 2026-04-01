@@ -15,9 +15,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
   Button,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchOrgDataservices } from "@/services/api";
 import { Dataservice } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
@@ -56,14 +56,14 @@ export default function OrgDataservicesClient() {
   if (isOrgLoading) return <p>A carregar...</p>;
   if (!activeOrg) {
     return (
-      <div className="datasets-admin-page">
+      <div className="admin-page">
         <CardNoResults
           className="datasets-page__empty"
           position="center"
           icon={
-            <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
+            <Icon name="agora-line-buildings" className="w-12 h-12 text-primary-500 icon-xl" />
           }
-          title="Sem publicações"
+          title="Sem organizações"
           description="Não pertence a nenhuma organização."
           hasAnchor={false}
         />
@@ -72,8 +72,8 @@ export default function OrgDataservicesClient() {
   }
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -83,8 +83,8 @@ export default function OrgDataservicesClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">API</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">API</h1>
         <PublishDropdown />
       </div>
 
@@ -93,7 +93,7 @@ export default function OrgDataservicesClient() {
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
-        <div className="w-[60%]">
+        <div className="admin-search-wrapper">
           <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome da API"
@@ -133,7 +133,7 @@ export default function OrgDataservicesClient() {
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
+              <TableHeaderCell sortType="date" sortOrder="none">
                 Título da API
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
@@ -158,9 +158,9 @@ export default function OrgDataservicesClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant={api.private ? "warning" : "success"}>
+                  <StatusDot variant={api.private ? "warning" : "success"}>
                     {api.private ? "Rascunho" : "Público"}
-                  </Pill>
+                  </StatusDot>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(api.created_at)}

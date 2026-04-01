@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import {
   Avatar,
   Breadcrumb,
@@ -16,7 +17,11 @@ import { Organization } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
 export default function OrgProfileClient() {
+  const params = useParams();
+  const routeOrgId = params?.orgId as string | undefined;
   const { activeOrg, isLoading: isOrgLoading } = useActiveOrganization();
+
+  const orgId = routeOrgId || activeOrg?.id;
 
   const [org, setOrg] = useState<Organization | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,14 +32,14 @@ export default function OrgProfileClient() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (!activeOrg) {
+    if (!orgId) {
       setIsLoading(false);
       return;
     }
     async function loadOrg() {
       setIsLoading(true);
       try {
-        const data = await fetchOrganization(activeOrg!.id);
+        const data = await fetchOrganization(orgId!);
         if (data) {
           setOrg(data);
           setName(data.name);
@@ -49,7 +54,7 @@ export default function OrgProfileClient() {
       }
     }
     loadOrg();
-  }, [activeOrg]);
+  }, [orgId]);
 
   const handleSave = async () => {
     if (!org) return;
@@ -68,8 +73,9 @@ export default function OrgProfileClient() {
     }
   };
 
-  const handleLogoUpload = async (files: File[]) => {
-    if (!org || files.length === 0) return;
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!org || !files || files.length === 0) return;
     try {
       await uploadOrgLogo(org.id, files[0]);
       const updated = await fetchOrganization(org.id);
@@ -80,24 +86,26 @@ export default function OrgProfileClient() {
   };
 
   if (isOrgLoading || isLoading) return <p>A carregar...</p>;
-  if (!activeOrg) {
+  if (!orgId) {
     return (
-      <div className="datasets-admin-page">
+      <div className="admin-page">
         <CardNoResults
           className="datasets-page__empty"
           position="center"
           icon={
-            <Icon name="agora-line-buildings" className="datasets-page__empty-icon" />
+            <Icon name="agora-line-buildings" className="w-12 h-12 text-primary-500 icon-xl" />
           }
+          title="Sem organizações"
           description="Não pertence a nenhuma organização."
+          hasAnchor={false}
         />
       </div>
     );
   }
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -107,7 +115,7 @@ export default function OrgProfileClient() {
         />
       </div>
 
-      <h1 className="datasets-admin-page__title mt-[64px] mb-[32px]">
+      <h1 className="admin-page__title mt-[64px] mb-[32px]">
         Perfil da organização
       </h1>
 
@@ -134,77 +142,93 @@ export default function OrgProfileClient() {
                   {org.acronym}
                 </p>
               )}
-              <p className="text-neutral-700 text-sm">
-                {org.metrics.members} membros · {org.metrics.datasets} conjuntos de dados
-                · {org.metrics.reuses} reutilizações
-              </p>
+              <div className="flex items-center gap-[16px] text-neutral-900 text-sm">
+                <span className="flex items-center gap-[4px]">
+                  <Icon name="agora-line-user-group" className="w-[16px] h-[16px]" />
+                  {org.metrics.members} membros
+                </span>
+                <span className="flex items-center gap-[4px]">
+                  <Icon name="agora-line-layers-menu" className="w-[16px] h-[16px]" />
+                  {org.metrics.datasets} conjuntos de dados
+                </span>
+                <span className="flex items-center gap-[4px]">
+                  <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" className="w-[16px] h-[16px]" />
+                  {org.metrics.reuses} reutilizações
+                </span>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      <div className="datasets-admin-page__form mt-[32px]">
-        <h2 className="datasets-admin-page__section-title">EDITAR ORGANIZAÇÃO</h2>
+      <div className="admin-page__body">
+        <div className="admin-page__form-area">
+          <div className="admin-page__form">
+            <h2 className="admin-page__section-title">EDITAR ORGANIZAÇÃO</h2>
 
-        <div className="datasets-admin-page__fields-group">
-          <InputText
-            label="Nome *"
-            placeholder="Insira o nome aqui"
-            id="org-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-
-          <InputText
-            label="Sigla"
-            placeholder="Insira a sigla aqui"
-            id="org-acronym"
-            value={acronym}
-            onChange={(e) => setAcronym(e.target.value)}
-          />
-
-          <InputTextArea
-            label="Descrição"
-            placeholder="Insira a descrição aqui"
-            id="org-description"
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-
-          <InputText
-            label="Website"
-            placeholder="Insira o URL aqui"
-            id="org-url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-
-          <div>
-            <span className="text-primary-900 text-base font-medium leading-7">
-              Logotipo
-            </span>
-            <div className="mt-2">
-              <ButtonUploader
-                label="Ficheiros"
-                inputLabel="Selecione ou arraste o ficheiro"
-                removeFileButtonLabel="Remover ficheiro"
-                replaceFileButtonLabel="Substituir ficheiro"
-                extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
-                accept=".jpg,.jpeg,.png"
-                maxSize={4194304}
-                maxCount={1}
-                onChange={handleLogoUpload}
+            <div className="admin-page__fields-group">
+              <InputText
+                label="Nome *"
+                placeholder="Insira o nome aqui"
+                id="org-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
+
+              <InputText
+                label="Sigla"
+                placeholder="Insira a sigla aqui"
+                id="org-acronym"
+                value={acronym}
+                onChange={(e) => setAcronym(e.target.value)}
+              />
+
+              <InputTextArea
+                label="Descrição"
+                placeholder="Insira a descrição aqui"
+                id="org-description"
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+
+              <InputText
+                label="Website"
+                placeholder="Insira o URL aqui"
+                id="org-url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+              />
+
+              <div>
+                <span className="text-primary-900 text-base font-medium leading-7">
+                  Logotipo
+                </span>
+                <div className="mt-2">
+                  <ButtonUploader
+                    label="Ficheiros"
+                    inputLabel="Selecione ou arraste o ficheiro"
+                    removeFileButtonLabel="Remover ficheiro"
+                    replaceFileButtonLabel="Substituir ficheiro"
+                    extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                    accept=".jpg,.jpeg,.png"
+                    maxSize={4194304}
+                    maxCount={1}
+                    onChange={handleLogoUpload}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end mt-[16px]">
+                <Button variant="primary" onClick={handleSave} disabled={isSaving}>
+                  {isSaving ? "A guardar..." : "Guardar"}
+                </Button>
+              </div>
             </div>
           </div>
-
-          <div className="flex justify-end mt-[16px]">
-            <Button variant="primary" onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "A guardar..." : "Guardar"}
-            </Button>
-          </div>
         </div>
+
+        <aside className="admin-page__auxiliar" />
       </div>
     </div>
   );

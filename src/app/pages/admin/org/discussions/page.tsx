@@ -1,11 +1,21 @@
-import type { Metadata } from "next";
-import DiscussionsClient from "@/components/admin/discussions/DiscussionsClient";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Discussões - Admin - dados.gov",
-  description: "Gestão de discussões no portal dados.gov.",
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
-export default function DiscussionsPage() {
-  return <DiscussionsClient />;
+export default function OrgDiscussionsRedirect() {
+  const router = useRouter();
+  const { activeOrg, isLoading } = useActiveOrganization();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (activeOrg) {
+      router.replace(`/pages/admin/org/${activeOrg.id}/discussions`);
+    } else {
+      router.replace("/pages/admin");
+    }
+  }, [activeOrg, isLoading, router]);
+
+  return null;
 }

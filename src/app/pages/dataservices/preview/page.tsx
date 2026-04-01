@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button, Breadcrumb, Pill } from "@ama-pt/agora-design-system";
 
-export default function DataservicePreviewPage() {
+function DataservicePreviewContent() {
   const searchParams = useSearchParams();
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -18,7 +18,7 @@ export default function DataservicePreviewPage() {
           <Breadcrumb
             items={[
               { label: "Home", url: "/" },
-              { label: "API", url: "/pages/admin/me/dataservices" },
+              { label: "API", url: "/pages/admin/dataservices" },
               { label: title, url: "#" },
             ]}
           />
@@ -47,5 +47,13 @@ export default function DataservicePreviewPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function DataservicePreviewPage() {
+  return (
+    <Suspense>
+      <DataservicePreviewContent />
+    </Suspense>
   );
 }

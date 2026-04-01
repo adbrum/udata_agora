@@ -1,132 +1,68 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Breadcrumb,
+  CardNoResults,
   Icon,
-  InputSelect,
-  InputSearchBar,
-  DropdownSection,
-  DropdownOption,
   Table,
   TableHeader,
   TableHeaderCell,
   TableBody,
   TableRow,
   TableCell,
-  Pill,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import PublishDropdown from "@/components/admin/PublishDropdown";
+import { fetchAllCommunityResources } from "@/services/api";
+import { CommunityResource } from "@/types/api";
+import CommunityResourceEditClient from "./CommunityResourceEditClient";
 
-interface MockCommunityResource {
-  title: string;
-  slug: string;
-  dataset: string;
-  datasetSlug: string;
-  status: string;
-  format: string;
-  createdAt: string;
-  modifiedAt: string;
-}
-
-const mockResources: MockCommunityResource[] = [
-  {
-    title: "valeurs-foncieres-2019-2023.parquet",
-    slug: "valeurs-foncieres-2019-2023",
-    dataset: "Demandes de valeurs foncières",
-    datasetSlug: "demandes-valeurs-foncieres",
-    status: "Ainda não verificado",
-    format: "parquet",
-    createdAt: "25 de julho de 2024",
-    modifiedAt: "25 de julho de 2024",
-  },
-  {
-    title: "Sirene : Fichier StockEtablissement du 01 Juillet 2024 au format parquet",
-    slug: "sirene-stock-etablissement-jul-2024",
-    dataset: "Base Sirene des entreprises et de leurs établissements (SIREN, SIRET)",
-    datasetSlug: "base-sirene",
-    status: "Ainda não verificado",
-    format: "parquet",
-    createdAt: "17 de julho de 2024",
-    modifiedAt: "17 de julho de 2024",
-  },
-  {
-    title: "Sirene : Fichier StockUniteLegale du 01 Juillet 2024 au format parquet",
-    slug: "sirene-stock-unite-legale-jul-2024",
-    dataset: "Base Sirene des entreprises et de leurs établissements (SIREN, SIRET)",
-    datasetSlug: "base-sirene",
-    status: "Ainda não verificado",
-    format: "parquet",
-    createdAt: "17 de julho de 2024",
-    modifiedAt: "17 de julho de 2024",
-  },
-  {
-    title: "Sirene : Fichier StockUniteLegale du 01 Decembre 2023 au format parquet",
-    slug: "sirene-stock-unite-legale-dec-2023",
-    dataset: "Base Sirene des entreprises et de leurs établissements (SIREN, SIRET)",
-    datasetSlug: "base-sirene",
-    status: "Ainda não verificado",
-    format: "parquet",
-    createdAt: "14 de dezembro de 2023",
-    modifiedAt: "15 de dezembro de 2023",
-  },
-  {
-    title: "Sirene : Fichier StockEtablissement du 01 Decembre 2023 au format parquet",
-    slug: "sirene-stock-etablissement-dec-2023",
-    dataset: "Base Sirene des entreprises et de leurs établissements (SIREN, SIRET)",
-    datasetSlug: "base-sirene",
-    status: "Ainda não verificado",
-    format: "parquet",
-    createdAt: "14 de dezembro de 2023",
-    modifiedAt: "15 de dezembro de 2023",
-  },
-  {
-    title: "listagem-de-projetos-prr-por-distribuicao-geografica-20230615.xlsx",
-    slug: "listagem-projetos-prr-geo",
-    dataset: "de",
-    datasetSlug: "de",
-    status: "Ainda não verificado",
-    format: "xlsx",
-    createdAt: "16 de junho de 2023",
-    modifiedAt: "16 de junho de 2023",
-  },
-  {
-    title: "prr-listagem-de-contratualizacao-20230615.xlsx",
-    slug: "prr-listagem-contratualizacao",
-    dataset: "de",
-    datasetSlug: "de",
-    status: "Ainda não verificado",
-    format: "xlsx",
-    createdAt: "16 de junho de 2023",
-    modifiedAt: "16 de junho de 2023",
-  },
-  {
-    title: "listagem-de-entidades-prr-20230615.xlsx",
-    slug: "listagem-entidades-prr",
-    dataset: "de",
-    datasetSlug: "de",
-    status: "Ainda não verificado",
-    format: "xlsx",
-    createdAt: "16 de junho de 2023",
-    modifiedAt: "16 de junho de 2023",
-  },
-  {
-    title: "listagem-de-contratos-do-prr-20230615.xlsx",
-    slug: "listagem-contratos-prr",
-    dataset: "de",
-    datasetSlug: "de",
-    status: "Ainda não verificado",
-    format: "xlsx",
-    createdAt: "16 de junho de 2023",
-    modifiedAt: "16 de junho de 2023",
-  },
-];
+const formatDate = (dateStr: string) => {
+  try {
+    const d = new Date(dateStr);
+    return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+  } catch {
+    return dateStr;
+  }
+};
 
 export default function SystemCommunityResourcesClient() {
-  const resources = mockResources;
+  const searchParams = useSearchParams();
+  const resourceId = searchParams.get("resource_id");
+
+  const [resources, setResources] = useState<CommunityResource[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const loadData = useCallback(async () => {
+    if (resourceId) return;
+    setIsLoading(true);
+    try {
+      const response = await fetchAllCommunityResources(currentPage, pageSize);
+      setResources(response.data || []);
+      setTotalItems(response.total || 0);
+    } catch (error) {
+      console.error("Error loading community resources:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, pageSize, resourceId]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  if (resourceId) {
+    return <CommunityResourceEditClient />;
+  }
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -139,102 +75,126 @@ export default function SystemCommunityResourcesClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Recursos comunitários</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Recursos comunitários</h1>
         <PublishDropdown />
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {resources.length} resultados
+        {totalItems} resultados
       </p>
 
-      <div className="flex items-end gap-[16px] mb-[24px]">
-        <div className="w-[60%]">
-          <InputSearchBar hasVoiceActionButton={false}
-            label="Pesquisar"
-            placeholder="Pesquise o título do recurso"
-            aria-label="Pesquisar recursos comunitários"
-          />
-        </div>
-        <InputSelect
-          label=""
-          hideLabel
-          placeholder="Filtrar por estado"
-          id="filter-status"
+      {isLoading ? (
+        <p className="text-neutral-700 text-sm">A carregar...</p>
+      ) : resources.length > 0 ? (
+        <Table
+          paginationProps={{
+            itemsPerPageLabel: "Linhas por página",
+            itemsPerPage: pageSize,
+            totalItems: totalItems,
+            availablePageSizes: [5, 10, 20],
+            currentPage: currentPage,
+            buttonDropdownAriaLabel: "Selecionar linhas por página",
+            dropdownListAriaLabel: "Opções de linhas por página",
+            prevButtonAriaLabel: "Página anterior",
+            nextButtonAriaLabel: "Próxima página",
+            onPageChange: (page: number) => setCurrentPage(page),
+            onPageSizeChange: (size: number) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            },
+          }}
         >
-          <DropdownSection name="status">
-            <DropdownOption value="public">Público</DropdownOption>
-            <DropdownOption value="archived">Arquivo</DropdownOption>
-            <DropdownOption value="draft">Rascunho</DropdownOption>
-            <DropdownOption value="deleted">Excluído</DropdownOption>
-          </DropdownSection>
-        </InputSelect>
-      </div>
-
-      <Table
-        paginationProps={{
-          itemsPerPageLabel: "Linhas por página",
-          itemsPerPage: 10,
-          totalItems: resources.length,
-          availablePageSizes: [5, 10, 20],
-          currentPage: 1,
-          buttonDropdownAriaLabel: "Selecionar linhas por página",
-          dropdownListAriaLabel: "Opções de linhas por página",
-          prevButtonAriaLabel: "Página anterior",
-          nextButtonAriaLabel: "Próxima página",
-        }}
-      >
-        <TableHeader>
-          <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="descending">
-              Título do recurso
-            </TableHeaderCell>
-            <TableHeaderCell>Status</TableHeaderCell>
-            <TableHeaderCell>Formatar</TableHeaderCell>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Criado em
-            </TableHeaderCell>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Modificado em
-            </TableHeaderCell>
-            <TableHeaderCell>Ação</TableHeaderCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {resources.map((resource, index) => (
-            <TableRow key={index}>
-              <TableCell headerLabel="Título do recurso">
-                <div>
-                  <a href="#" className="text-primary-600 underline">
-                    {resource.title}
-                  </a>
-                  <div className="text-sm text-neutral-500 flex items-center gap-[4px]">
-                    <Icon name="agora-line-link" className="w-[14px] h-[14px]" />
-                    {resource.dataset}
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell headerLabel="Status">
-                <Pill variant="warning">{resource.status}</Pill>
-              </TableCell>
-              <TableCell headerLabel="Formatar">
-                <a href="#" className="text-primary-600 underline">
-                  {resource.format}
-                </a>
-              </TableCell>
-              <TableCell headerLabel="Criado em">{resource.createdAt}</TableCell>
-              <TableCell headerLabel="Modificado em">
-                {resource.modifiedAt}
-              </TableCell>
-              <TableCell headerLabel="Ação">
-                <a href="#">
-                  <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
-                </a>
-              </TableCell>
+          <TableHeader>
+            <TableRow>
+              <TableHeaderCell>Título do recurso</TableHeaderCell>
+              <TableHeaderCell>Estado</TableHeaderCell>
+              <TableHeaderCell>Formato</TableHeaderCell>
+              <TableHeaderCell>Criado em</TableHeaderCell>
+              <TableHeaderCell>Modificado em</TableHeaderCell>
+              <TableHeaderCell>Ação</TableHeaderCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {resources.map((resource) => {
+              const authorName = resource.organization
+                ? resource.organization.name
+                : resource.owner
+                  ? `${resource.owner.first_name} ${resource.owner.last_name}`.trim()
+                  : "—";
+
+              return (
+                <TableRow key={resource.id}>
+                  <TableCell headerLabel="Título do recurso">
+                    <div>
+                      <span className="text-neutral-900">{resource.title}</span>
+                      {resource.dataset && (
+                        <div className="text-sm text-neutral-700">
+                          <a
+                            href={`/pages/datasets/${resource.dataset.id}`}
+                            className="text-primary-600 underline"
+                          >
+                            {resource.dataset.title}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell headerLabel="Estado">
+                    <StatusDot
+                      variant={
+                        resource.deleted
+                          ? "danger"
+                          : resource.archived
+                            ? "warning"
+                            : "success"
+                      }
+                    >
+                      {resource.deleted
+                        ? "Eliminado"
+                        : resource.archived
+                          ? "Arquivado"
+                          : "Publicado"}
+                    </StatusDot>
+                  </TableCell>
+                  <TableCell headerLabel="Formato">
+                    {resource.format ? resource.format.toUpperCase() : "—"}
+                  </TableCell>
+                  <TableCell headerLabel="Criado em">
+                    {formatDate(resource.created_at)}
+                  </TableCell>
+                  <TableCell headerLabel="Modificado em">
+                    {formatDate(resource.last_modified)}
+                  </TableCell>
+                  <TableCell headerLabel="Ação">
+                    <a
+                      href={`/pages/admin/system/community-resources?resource_id=${resource.id}`}
+                    >
+                      <Icon
+                        name="agora-line-edit"
+                        className="w-[20px] h-[20px]"
+                      />
+                    </a>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      ) : (
+        <CardNoResults
+          position="center"
+          icon={
+            <Icon
+              name="agora-line-user-group"
+              className="w-12 h-12 text-primary-500 icon-xl"
+            />
+          }
+          title="Sem recursos comunitários"
+          description="Nenhum recurso comunitário encontrado."
+          hasAnchor={false}
+        />
+      )}
     </div>
   );
 }

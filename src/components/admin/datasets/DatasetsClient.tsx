@@ -16,13 +16,32 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
+  ProgressBar,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchMyDatasets } from "@/services/api";
 import { Dataset } from "@/types/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 
+const QUALITY_CRITERIA: [keyof NonNullable<Dataset["quality"]>, string][] = [
+  ["dataset_description_quality", "Descrição"],
+  ["has_resources", "Recursos"],
+  ["license", "Licença"],
+  ["has_open_format", "Formato aberto"],
+  ["all_resources_available", "Recursos disponíveis"],
+  ["resources_documentation", "Documentação"],
+  ["spatial", "Cobertura espacial"],
+  ["temporal_coverage", "Cobertura temporal"],
+  ["update_frequency", "Frequência de atualização"],
+];
+
+function calculateQualityScore(quality?: Dataset["quality"]): number {
+  if (!quality) return 0;
+  if (quality.score > 0) return Math.round(quality.score * 100);
+  const met = QUALITY_CRITERIA.filter(([key]) => quality[key] === true).length;
+  return Math.round((met / QUALITY_CRITERIA.length) * 100);
+}
 
 type SortOrder = "none" | "ascending" | "descending";
 type SortField = "title" | "created_at" | "last_modified" | "resources";
@@ -34,8 +53,8 @@ export default function DatasetsClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortField, setSortField] = useState<SortField>("last_modified");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("descending");
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>("none");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
@@ -134,8 +153,8 @@ export default function DatasetsClient() {
   };
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -145,8 +164,8 @@ export default function DatasetsClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Conjuntos de dados</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Conjuntos de dados</h1>
         <PublishDropdown />
       </div>
 
@@ -155,7 +174,7 @@ export default function DatasetsClient() {
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
-        <div className="w-[60%]">
+        <div className="admin-search-wrapper">
           <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome, código ou sigla da entidade"
@@ -207,7 +226,7 @@ export default function DatasetsClient() {
           <TableHeader>
             <TableRow>
               <TableHeaderCell
-                sortType="string"
+                sortType="date"
                 sortOrder={getSortOrder("title")}
                 onSortChange={handleSort("title")}
               >
@@ -229,12 +248,13 @@ export default function DatasetsClient() {
                 Última modificação
               </TableHeaderCell>
               <TableHeaderCell
-                sortType="numeric"
+                sortType="date"
                 sortOrder={getSortOrder("resources")}
                 onSortChange={handleSort("resources")}
               >
                 Ficheiros
               </TableHeaderCell>
+              <TableHeaderCell>Pontuações</TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
@@ -250,25 +270,55 @@ export default function DatasetsClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant={dataset.private ? "warning" : "success"}>
+                  <StatusDot variant={dataset.private ? "warning" : "success"}>
                     {dataset.private ? "Rascunho" : "Público"}
-                  </Pill>
+                  </StatusDot>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(dataset.created_at)}
                 </TableCell>
                 <TableCell headerLabel="Última modificação">
-                  {formatDate(dataset.last_modified)}
+                  <div>
+                    <div>{formatDate(dataset.last_modified)}</div>
+                    {dataset.owner && (
+                      <a
+                        href={`/pages/users/${dataset.owner.slug}`}
+                        className="text-primary-600 text-xs underline"
+                      >
+                        {dataset.owner.first_name} {dataset.owner.last_name}
+                      </a>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell headerLabel="Ficheiros">
                   {dataset.resources?.length || 0}
+                </TableCell>
+                <TableCell headerLabel="Pontuações">
+                  <div
+                    className={
+                      calculateQualityScore(dataset.quality) <= 45
+                        ? "quality-progress-warning"
+                        : calculateQualityScore(dataset.quality) > 50
+                          ? "quality-progress-success"
+                          : ""
+                    }
+                  >
+                    <ProgressBar
+                      value={calculateQualityScore(dataset.quality)}
+                      max={100}
+                      hidePercentageValue={true}
+                    />
+                  </div>
+                  <span className="text-xs text-neutral-700">
+                    {calculateQualityScore(dataset.quality)}%
+                  </span>
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">
                     <a href={`/pages/datasets/${dataset.slug}`}>
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
                     </a>
-                    <a href={`/pages/admin/me/datasets/edit?slug=${dataset.slug}`}>
+                    <a href={`/pages/admin/me/datasets/edit?id=${dataset.id}`}>
                       <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
                     </a>
                   </div>
@@ -294,7 +344,7 @@ export default function DatasetsClient() {
                   <Button
                     variant="primary"
                     appearance="outline"
-                    onClick={() => window.location.href = '/pages/admin/me/datasets/new'}
+                    onClick={() => window.location.href = '/pages/admin/datasets/new'}
                   >
                     Publique no portal
                   </Button>

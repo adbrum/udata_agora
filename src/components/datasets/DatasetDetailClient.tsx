@@ -1,15 +1,94 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { Button, Icon, Breadcrumb, Pill, ProgressBar } from '@ama-pt/agora-design-system';
+import {
+  Button,
+  Icon,
+  Breadcrumb,
+  Pill,
+  ProgressBar,
+  CardExpandable,
+} from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
 import { fetchDataset, followEntity, unfollowEntity } from '@/services/api';
+import { useAuth } from '@/context/AuthContext';
+import { useActiveOrganization } from '@/hooks/useActiveOrganization';
 
 import { DatasetTabs } from '@/components/datasets/DatasetTabs';
 
 interface DatasetDetailClientProps {
   slug: string;
+}
+
+const READMORE_BUTTON_HEIGHT = 48;
+
+function DescriptionWithReadMore({ text, sidebarRef, titleRef }: { text: string; sidebarRef: React.RefObject<HTMLDivElement | null>; titleRef: React.RefObject<HTMLDivElement | null> }) {
+  const [expanded, setExpanded] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const [availableHeight, setAvailableHeight] = useState<number | undefined>(undefined);
+  const measureRef = useRef<HTMLDivElement>(null);
+
+  const checkOverflow = useCallback(() => {
+    if (measureRef.current && sidebarRef.current && titleRef.current) {
+      const sidebarHeight = sidebarRef.current.offsetHeight;
+      const titleHeight = titleRef.current.offsetHeight;
+      const fullHeight = measureRef.current.offsetHeight;
+      const maxDescHeight = sidebarHeight - titleHeight;
+      const overflows = fullHeight > maxDescHeight;
+      if (overflows) {
+        const lineHeight = parseFloat(getComputedStyle(measureRef.current).lineHeight) || 24;
+        const usable = maxDescHeight - READMORE_BUTTON_HEIGHT;
+        const snapped = Math.floor(usable / lineHeight) * lineHeight;
+        setAvailableHeight(snapped);
+      } else {
+        setAvailableHeight(maxDescHeight);
+      }
+      setIsOverflowing(overflows);
+    }
+  }, [sidebarRef, titleRef]);
+
+  useEffect(() => {
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+
+    const observer = new ResizeObserver(checkOverflow);
+    if (sidebarRef.current) observer.observe(sidebarRef.current);
+    if (measureRef.current) observer.observe(measureRef.current);
+
+    return () => {
+      window.removeEventListener("resize", checkOverflow);
+      observer.disconnect();
+    };
+  }, [checkOverflow, text]);
+
+  return (
+    <div className="prose max-w-none max-w-ch text-neutral-700 text-lg leading-relaxed mb-12 relative">
+      {/* Hidden measure element to get full content height */}
+      <div ref={measureRef} className="absolute invisible pointer-events-none" style={{ top: 0, left: 0, right: 0 }} aria-hidden="true">
+        <p className="text-neutral-900 text-m-light mb-[24px]">{text}</p>
+      </div>
+      <div
+        className="overflow-hidden"
+        style={!expanded && isOverflowing && availableHeight ? { maxHeight: availableHeight } : undefined}
+      >
+        <p className="text-neutral-900 text-m-light mb-[24px]">{text}</p>
+      </div>
+      {isOverflowing && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="flex items-center gap-8 text-primary-600 cursor-pointer hover:underline mt-8"
+        >
+          {expanded ? "Ler menos" : "Ler mais"}
+          {expanded ? (
+            <Icon name="agora-line-arrow-up-circle" className="w-24 h-24" />
+          ) : (
+            <Icon name="agora-line-arrow-down-circle" className="w-24 h-24" />
+          )}
+        </button>
+      )}
+    </div>
+  );
 }
 
 function formatMetricValue(value: number | undefined): string {
@@ -53,10 +132,15 @@ function getQualityMissing(quality?: Dataset['quality']): string[] {
 }
 
 export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) {
+  const { user, isAdmin } = useAuth();
+  const { organizations } = useActiveOrganization();
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
+  const [qualityExpanded, setQualityExpanded] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function loadDataset() {
@@ -136,27 +220,41 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
           >
             {isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
           </Button>
+          {(isAdmin ||
+            (user && dataset.owner?.id === user.id) ||
+            (dataset.organization &&
+              organizations.some((org) => org.id === dataset.organization?.id))) && (
+            <Link href={`/pages/admin/me/datasets/edit?id=${dataset.id}`}>
+              <Button
+                variant="primary"
+                hasIcon={true}
+                leadingIcon="agora-line-edit"
+                leadingIconHover="agora-solid-edit"
+              >
+                Editar
+              </Button>
+            </Link>
+          )}
         </div>
+
 
         <div className="grid md:grid-cols-3 xl:grid-cols-12 gap-32 mb-[24px]">
           {/* Main Content Column */}
           <div className="xl:col-span-6 xl:block">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4" ref={titleRef}>
               <h1 className="text-xl-bold text-primary-900 leading-tight mb-24">
                 {dataset.title}
               </h1>
             </div>
 
             {/* Description */}
-            <div className="prose max-w-none text-neutral-700 text-lg leading-relaxed mb-12">
-              <p className="text-neutral-900 text-m-light mb-[24px]">{dataset.description}</p>
-            </div>
+            <DescriptionWithReadMore text={dataset.description} sidebarRef={sidebarRef} titleRef={titleRef} />
+
           </div>
 
           {/* Sidebar */}
           <div className="xl:col-span-6">
-            <div className="flex flex-col h-fit">
-              {/* Organization Info */}
+            <div className="flex flex-col h-fit" ref={sidebarRef}>
               <div className="flex flex-col gap-16 bg-[#F2F6FF] rounded-4 p-32 mb-16">
                 {dataset.organization?.logo ? (
                   <div className="w-fit h-[48px] card-article-3_2-img py-8 rounded-8 border-2 border-primary-300 flex items-center justify-center">
@@ -185,9 +283,6 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                       'Organização Desconhecida'
                     )}
                   </div>
-                  <div className="text-l-semibold text-neutral-900 leading-tight mb-[8px]">
-                    {dataset.title}
-                  </div>
                   <div className="text-neutral-900 text-sm mb-[16px]">
                     <span className="text-m-semibold">Última atualização:</span>{' '}
                     {new Date(dataset.last_modified).toLocaleDateString('pt-PT', {
@@ -197,10 +292,16 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                     })}
                   </div>
                   {dataset.license && (
-                    <div className="pt-8">
-                      <span className="text-primary-600 font-medium text-sm">
+                    <div className="text-sm">
+                      <a
+                        href={dataset.license_url || `https://dados.gov.pt/pt/licenses/${dataset.license}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary-600 underline"
+                      >
+                        <span className="text-m-semibold">Licença:</span>{' '}
                         {dataset.license}
-                      </span>
+                      </a>
                     </div>
                   )}
                 </div>
@@ -223,30 +324,43 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
               </div>
 
               {/* Quality */}
-              <div className="bg-[#F2F6FF] rounded-4 p-32 mb-16">
-                <div className="flex justify-between items-end mb-4">
-                  <h3 className="text-l-semibold font-bold text-neutral-900 mb-[8px]">
-                    Qualidade dos metadados
-                  </h3>
-                </div>
-                <div className={qualityScore <= 45 ? "quality-progress-warning" : ""}>
-                  <ProgressBar value={qualityScore} max={100} hidePercentageValue={true} />
-                </div>
-                <div className="text-xs text-neutral-700 mt-8">
-                  {qualityScore}%
-                  {qualityDetails.length > 0 && ` (${qualityDetails.join(', ')})`}
-                </div>
+              <CardExpandable
+                variant="primary-100"
+                cardTitle="Qualidade dos metadados"
+                cardHeadingLevel="h3"
+                cardSubtitle={
+                  <div className="flex flex-col gap-4 mt-8">
+                    <div className={qualityScore <= 45 ? "quality-progress-warning" : qualityScore > 50 ? "quality-progress-success" : ""}>
+                      <ProgressBar value={qualityScore} max={100} hidePercentageValue={true} />
+                    </div>
+                    <div className="text-xs text-neutral-700">
+                      {qualityScore}%
+                      {qualityDetails.length > 0 && ` (${qualityDetails.join(', ')})`}
+                    </div>
+                  </div>
+                }
+                accordionHeadingTitle={qualityExpanded ? "Fechar informação" : "Ver mais informação"}
+                accordionHeadingLevel="h4"
+                expanded={qualityExpanded}
+                onExpanded={() => setQualityExpanded(true)}
+                onCollapsed={() => setQualityExpanded(false)}
+              >
                 {qualityMissing.length > 0 && (
-                  <div className="flex flex-col gap-8 mt-16">
+                  <div className="flex flex-col gap-8">
                     {qualityMissing.map((label) => (
                       <div key={label} className="flex items-center gap-8">
-                        <Icon name="agora-line-alert-triangle" className="w-[20px] h-[20px] fill-[#B06112]" />
-                        <span className="text-neutral-900 text-base">{label} dos dados não preenchidos</span>
+                        <Icon
+                          name="agora-line-alert-triangle"
+                          className="w-[20px] h-[20px] fill-[#B06112]"
+                        />
+                        <span className="text-neutral-900 text-base">
+                          {label} dos dados não preenchidos
+                        </span>
                       </div>
                     ))}
                   </div>
                 )}
-              </div>
+              </CardExpandable>
             </div>
           </div>
         </div>

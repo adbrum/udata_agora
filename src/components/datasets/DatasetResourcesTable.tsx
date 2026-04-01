@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, type ReactElement } from "react";
 import {
   Accordion,
   AccordionGroup,
@@ -17,7 +17,7 @@ import {
   TabHeader,
   TabBody,
 } from "@ama-pt/agora-design-system";
-import { Resource } from "@/types/api";
+import { Resource, CommunityResource } from "@/types/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || "https://dados.gov.pt/api/1";
 
@@ -31,6 +31,7 @@ function downloadUrl(resource: Resource): string {
 
 interface DatasetResourcesTableProps {
   resources: Resource[];
+  communityResources?: CommunityResource[];
 }
 
 const formatBytes = (bytes?: number) => {
@@ -50,8 +51,8 @@ const formatDate = (dateStr: string) =>
   });
 
 const RESOURCE_TYPE_LABELS: Record<string, string> = {
-  main: "Arquivos principais",
-  file: "Arquivos principais",
+  main: "Ficheiros principais",
+  file: "Ficheiros principais",
   documentation: "Documentação",
 };
 
@@ -280,12 +281,15 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
     fetchData();
   }, [resource.url, resource.format, isTabular]);
 
+  // Cast Tabs to accept conditional children (the library type is overly strict)
+  const FlexTabs = Tabs as React.FC<Omit<React.ComponentProps<typeof Tabs>, "children"> & { children: React.ReactNode }>;
+
   return (
-    <div className="flex gap-16">
+    <div className="flex gap-16 overflow-hidden">
       <div className="w-[2px] bg-primary-600 shrink-0" />
       <div className="flex-1 min-w-0">
-        <Tabs>
-          {isTabular && (
+        <FlexTabs>
+          {isTabular && !isLoading && !error && tabularData && (
           <Tab>
             <TabHeader>Pré-visualização</TabHeader>
             <TabBody>
@@ -319,31 +323,33 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
                         Explore os dados
                       </Button>
                     </div>
-                    <Table desktopLayout="general">
-                      <TableHeader>
-                        <TableRow>
-                          {tabularData.headers.map((header, i) => (
-                            <TableHeaderCell key={i} sortType="string">
-                              {header}
-                            </TableHeaderCell>
-                          ))}
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {tabularData.rows.map((row, i) => (
-                          <TableRow key={i}>
-                            {row.map((cell, j) => (
-                              <TableCell
-                                key={j}
-                                headerLabel={tabularData.headers[j] || ""}
-                              >
-                                {cell}
-                              </TableCell>
+                    <div className="overflow-x-auto">
+                      <Table desktopLayout="table">
+                        <TableHeader>
+                          <TableRow>
+                            {tabularData.headers.map((header, i) => (
+                              <TableHeaderCell key={i} sortType="string">
+                                {header}
+                              </TableHeaderCell>
                             ))}
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {tabularData.rows.map((row, i) => (
+                            <TableRow key={i}>
+                              {row.map((cell, j) => (
+                                <TableCell
+                                  key={j}
+                                  headerLabel={tabularData.headers[j] || ""}
+                                >
+                                  {cell}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                     <p className="text-neutral-900 text-sm" style={{ marginTop: "24px" }}>
                       Última atualização da pré-visualização:{" "}
                       {tabularData.lastModified
@@ -361,7 +367,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
             </TabBody>
           </Tab>
           )}
-          {isTabular && (
+          {isTabular && !isLoading && !error && tabularData && (
           <Tab>
             <TabHeader>Estrutura de dados</TabHeader>
             <TabBody>
@@ -523,221 +529,7 @@ const ResourceExpandedContent: React.FC<{ resource: Resource }> = ({ resource })
               </div>
             </TabBody>
           </Tab>
-          <Tab>
-            <TabHeader>Swagger</TabHeader>
-            <TabBody>
-              <div style={{ padding: "16px 0", display: "flex", flexDirection: "column", gap: "24px" }}>
-                <div>
-                  <p className="text-sm text-neutral-900" style={{ marginBottom: "8px" }}>
-                    Esta API é gerada automaticamente por dados.gov.pt a partir do ficheiro.
-                  </p>
-                  <p className="text-sm text-neutral-900" style={{ marginBottom: "4px" }}>
-                    - Se o ficheiro for modificado, a API será atualizada e a sua estrutura poderá mudar.
-                  </p>
-                  <p className="text-sm text-neutral-900" style={{ marginBottom: "16px" }}>
-                    - Se o ficheiro for suprimido, a API será igualmente suprimida.
-                  </p>
-                  <p className="text-sm text-neutral-900">
-                    Para usos permanentes, tenha em conta que esta API depende diretamente do ficheiro fonte.
-                  </p>
-                </div>
-
-                <div>
-                  <div className="flex items-center" style={{ gap: "12px", marginBottom: "8px" }}>
-                    <h3 className="text-2xl font-bold text-neutral-900">API de dados</h3>
-                    <span
-                      style={{
-                        background: "#6b7280",
-                        color: "white",
-                        borderRadius: "999px",
-                        padding: "2px 10px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      1.0.0
-                    </span>
-                    <span
-                      style={{
-                        background: "#65a30d",
-                        color: "white",
-                        borderRadius: "999px",
-                        padding: "2px 10px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      OAS 3.0
-                    </span>
-                  </div>
-                  <a
-                    href={`https://dados.gov.pt/api/1/datasets/r/${resource.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary-600 text-sm hover:underline flex items-center"
-                    style={{ gap: "4px", marginBottom: "8px" }}
-                  >
-                    {`https://dados.gov.pt/api/1/datasets/r/${resource.id}`}
-                    <Icon name="agora-line-external-link" aria-hidden="true" />
-                  </a>
-                  <p className="text-sm text-neutral-900">
-                    Obtém dados de um recurso especificado com filtragem e ordenação opcionais.
-                  </p>
-                </div>
-
-                <div>
-                  <AccordionGroup>
-                    <Accordion
-                      headingTitle={
-                        <span className="flex items-center" style={{ gap: "8px" }}>
-                          <span className="font-bold text-neutral-900">Obtenção de dados</span>
-                          <span className="text-sm text-neutral-900 font-normal">
-                            Obtém dados de um recurso especificado
-                          </span>
-                        </span>
-                      }
-                      headingLevel="h4"
-                    >
-                      <div />
-                    </Accordion>
-                    <Accordion
-                      headingTitle={
-                        <span className="font-bold text-neutral-900">Padrão</span>
-                      }
-                      headingLevel="h5"
-                    >
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px", padding: "8px 0" }}>
-                        {[
-                          {
-                            path: `/api/resources/${resource.id}/data/`,
-                            desc: "Obter dados do recurso pelo ID",
-                          },
-                          {
-                            path: `/api/resources/${resource.id}/data/csv/`,
-                            desc: "Obter dados do recurso pelo ID em formato CSV",
-                          },
-                          {
-                            path: `/api/resources/${resource.id}/data/json/`,
-                            desc: "Obter dados do recurso pelo ID em formato JSON",
-                          },
-                        ].map((endpoint, i) => (
-                          <div
-                            key={i}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "12px",
-                              background: "#f3f4f6",
-                              padding: "12px 16px",
-                              borderRadius: "4px",
-                            }}
-                          >
-                            <span
-                              style={{
-                                background: "#1f2937",
-                                color: "white",
-                                borderRadius: "4px",
-                                padding: "4px 12px",
-                                fontSize: "12px",
-                                fontWeight: 700,
-                                fontFamily: "monospace",
-                                flexShrink: 0,
-                              }}
-                            >
-                              GET
-                            </span>
-                            <code className="text-sm text-neutral-900" style={{ fontFamily: "monospace" }}>
-                              {endpoint.path}
-                            </code>
-                            <span className="text-sm text-neutral-900" style={{ marginLeft: "auto", flexShrink: 0 }}>
-                              {endpoint.desc}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </Accordion>
-                    <Accordion
-                      headingTitle={
-                        <span className="font-bold text-neutral-900">Temas</span>
-                      }
-                      headingLevel="h4"
-                    >
-                      <div className="nested-accordions" style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "16px 0" }}>
-                        <AccordionGroup>
-                          <Accordion
-                            headingTitle={
-                              <span className="font-bold text-neutral-900">Recurso</span>
-                            }
-                            headingLevel="h5"
-                          >
-                            <div
-                              style={{
-                                background: "#f3f4f6",
-                                padding: "16px",
-                                borderRadius: "4px",
-                                fontFamily: "monospace",
-                                fontSize: "13px",
-                              }}
-                            >
-                              <p className="text-neutral-900">{"{"}</p>
-                              <div style={{ paddingLeft: "16px" }}>
-                                {[
-                                  { key: "detalhes de contato", type: "[...]" },
-                                  { key: "Número SIRET do comprador", type: "[...]" },
-                                  { key: "urlDCAT", type: "[...]" },
-                                  { key: "URL do perfil do comprador", type: "[...]" },
-                                ].map((field, i) => (
-                                  <p key={i} className="text-neutral-900">
-                                    <span className="text-neutral-900">{field.key}</span>
-                                    {" > "}
-                                    <span className="text-red-600">{field.type}</span>
-                                  </p>
-                                ))}
-                              </div>
-                              <p className="text-primary-600">{"}"}</p>
-                            </div>
-                          </Accordion>
-                          <Accordion
-                            headingTitle={
-                              <span className="font-bold text-neutral-900">Dados de recursos</span>
-                            }
-                            headingLevel="h5"
-                          >
-                            <div
-                              style={{
-                                background: "#f3f4f6",
-                                padding: "16px",
-                                borderRadius: "4px",
-                                fontFamily: "monospace",
-                                fontSize: "13px",
-                              }}
-                            >
-                              <p className="text-neutral-900">{"{"}</p>
-                              <div style={{ paddingLeft: "16px" }}>
-                                {[
-                                  { key: "dados", type: "[...]" },
-                                  { key: "link", type: "{ ... }" },
-                                  { key: "meta", type: "{ ... }" },
-                                ].map((field, i) => (
-                                  <p key={i} className="text-neutral-900">
-                                    <span className="text-neutral-900">{field.key}</span>
-                                    {" > "}
-                                    <span className="text-red-600">{field.type}</span>
-                                  </p>
-                                ))}
-                              </div>
-                              <p className="text-primary-600">{"}"}</p>
-                            </div>
-                          </Accordion>
-                        </AccordionGroup>
-                      </div>
-                    </Accordion>
-                  </AccordionGroup>
-                </div>
-              </div>
-            </TabBody>
-          </Tab>
-        </Tabs>
+        </FlexTabs>
       </div>
     </div>
   );
@@ -747,7 +539,10 @@ const ResourceCard: React.FC<{
   resource: Resource;
   isExpanded: boolean;
   onToggle: () => void;
-}> = ({ resource, isExpanded, onToggle }) => {
+  authorName?: string;
+  authorUrl?: string;
+  isOrganization?: boolean;
+}> = ({ resource, isExpanded, onToggle, authorName, authorUrl, isOrganization }) => {
   return (
     <div className="bg-white flex flex-col mx-[136px] mt-16">
       <div className="flex flex-col gap-16 p-32">
@@ -780,6 +575,18 @@ const ResourceCard: React.FC<{
         <p className="text-base text-neutral-900">
           Atualizado em {formatDate(resource.created_at)}
         </p>
+        {authorName && (
+          <p className="text-sm text-neutral-900">
+            Por{" "}
+            {authorUrl ? (
+              <a href={authorUrl} className="text-primary-600 hover:underline">
+                {authorName}
+              </a>
+            ) : (
+              <span>{authorName}</span>
+            )}
+          </p>
+        )}
         <div className="flex items-center">
           <a
             href={downloadUrl(resource)}
@@ -825,16 +632,36 @@ const ResourceCard: React.FC<{
   );
 };
 
-export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({ resources }) => {
+export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({
+  resources,
+  communityResources,
+}) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const principalFiles = resources.filter(
-    (r) => !r.type || r.type === "main" || r.type === "file"
-  );
   const documentationFiles = resources.filter((r) => r.type === "documentation");
+  const principalFiles = resources.filter((r) => r.type !== "documentation");
 
   const handleToggle = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
+  };
+
+  const getAuthorInfo = (cr: CommunityResource) => {
+    if (cr.organization) {
+      return {
+        name: cr.organization.name,
+        url: `/pages/organizations/${cr.organization.slug || cr.organization.id}`,
+        isOrg: true,
+      };
+    }
+    if (cr.owner) {
+      const fullName = `${cr.owner.first_name} ${cr.owner.last_name}`.trim();
+      return {
+        name: fullName || cr.owner.slug,
+        url: `/pages/users/${cr.owner.slug || cr.owner.id}`,
+        isOrg: false,
+      };
+    }
+    return null;
   };
 
   return (
@@ -859,7 +686,7 @@ export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({ re
       )}
 
       {documentationFiles.length > 0 && (
-        <div className="space-y-16">
+        <div className="space-y-16 mt-[16px] mb-[16px]">
           <h3 className="font-medium text-neutral-900 text-base">
             {documentationFiles.length} DOCUMENTAÇÃO
           </h3>
@@ -873,6 +700,25 @@ export const DatasetResourcesTable: React.FC<DatasetResourcesTableProps> = ({ re
               />
             ))}
           </div>
+        </div>
+      )}
+
+      {communityResources && communityResources.length > 0 && (
+        <div className="flex flex-col">
+          {communityResources.map((cr) => {
+            const author = getAuthorInfo(cr);
+            return (
+              <ResourceCard
+                key={cr.id}
+                resource={cr as unknown as Resource}
+                isExpanded={expandedId === cr.id}
+                onToggle={() => handleToggle(cr.id)}
+                authorName={author?.name}
+                authorUrl={author?.url}
+                isOrganization={author?.isOrg}
+              />
+            );
+          })}
         </div>
       )}
     </div>

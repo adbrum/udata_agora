@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  CardLinks,
+  CardGeneral,
   InputSearchBar,
-  Button,
   InputSelect,
   DropdownSection,
   DropdownOption,
+  Icon,
 } from "@ama-pt/agora-design-system";
 import PageBanner from "@/components/PageBanner";
 import { Pagination } from "@/components/Pagination";
@@ -21,16 +21,94 @@ import { pt } from "date-fns/locale";
 
 const PAGE_SIZE = 12;
 
+const SORT_OPTIONS: Record<string, string> = {
+  recentes: "-published",
+  antigos: "published",
+  visualizados: "-last_modified",
+};
+
+function SortSelect({
+  currentSortKey,
+  onSortChange,
+}: {
+  currentSortKey: string;
+  onSortChange: (value: string) => void;
+}) {
+  const [mounted, setMounted] = useState(false);
+  const selectRef = useRef<any>(null);
+  const lastValue = useRef(currentSortKey);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const interval = setInterval(() => {
+      const selected = selectRef.current?.selectedOptions?.[0]?.value;
+      if (selected && selected !== lastValue.current) {
+        lastValue.current = selected;
+        onSortChange(selected);
+      }
+    }, 150);
+    return () => clearInterval(interval);
+  }, [mounted, onSortChange]);
+
+  if (!mounted) {
+    const labels: Record<string, string> = {
+      recentes: "Mais recentes",
+      antigos: "Mais antigos",
+      visualizados: "Mais visualizados",
+    };
+    return (
+      <div className="selectArticle">
+        <label className="text-s-regular text-neutral-700 mb-4 block">Ordenar por :</label>
+        <div className="w-full border border-neutral-300 rounded-8 px-16 py-12 text-m-regular text-neutral-900 bg-white">
+          {labels[currentSortKey] || "Mais recentes"}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <InputSelect
+      label="Ordenar por :"
+      id="sort-articles"
+      className="selectArticle"
+      ref={selectRef}
+    >
+      <DropdownSection name="order">
+        <DropdownOption value="recentes" selected={currentSortKey === "recentes"}>
+          Mais recentes
+        </DropdownOption>
+        <DropdownOption value="antigos" selected={currentSortKey === "antigos"}>
+          Mais antigos
+        </DropdownOption>
+        <DropdownOption value="visualizados" selected={currentSortKey === "visualizados"}>
+          Mais visualizados
+        </DropdownOption>
+      </DropdownSection>
+    </InputSelect>
+  );
+}
+
 export default function ArticleClient({ currentPage }: { currentPage: number }) {
   const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortKey, setSortKey] = useState("recentes");
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     async function loadPosts() {
+      setIsLoading(true);
       try {
-        const response = await fetchPosts(currentPage, PAGE_SIZE);
+        const sort = SORT_OPTIONS[sortKey] || "-published";
+        const response = await fetchPosts(currentPage, PAGE_SIZE, sort);
         setPosts(response.data);
         setTotal(response.total);
       } catch (error) {
@@ -40,7 +118,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
       }
     }
     loadPosts();
-  }, [currentPage]);
+  }, [currentPage, sortKey]);
 
   const formatPostDate = (post: Post): string => {
     const dateStr = post.published || post.created_at;
@@ -61,7 +139,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
           backgroundPosition="center right"
           breadcrumbItems={[
             { label: "Home", url: "/" },
-            { label: "Últimas novidades", url: "/pages/article" },
+            { label: "Últimas novidades", url: "/pages/posts" },
           ]}
         >
           <InputSearchBar
@@ -86,18 +164,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
               </span>
               <div className="w-full md:w-auto xl:col-span-5 flex items-end gap-16 justify-end">
                 <div className="grow max-w-[240px]">
-                  <InputSelect
-                    label="Ordenar por :"
-                    id="sort-articles"
-                    defaultValue="recentes"
-                    className="selectArticle"
-                  >
-                    <DropdownSection name="order">
-                      <DropdownOption value="recentes">Mais recentes</DropdownOption>
-                      <DropdownOption value="antigos">Mais antigos</DropdownOption>
-                      <DropdownOption value="visualizados">Mais visualizados</DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
+                  <SortSelect currentSortKey={sortKey} onSortChange={setSortKey} />
                 </div>
               </div>
             </div>
@@ -109,52 +176,69 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                 <span className="text-neutral-600">Nenhum artigo encontrado.</span>
               </div>
             ) : (
-              <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-32 cardsnews">
-                {posts.map((post) => (
-                  <div
-                    key={post.id}
-                    className="cursor-pointer group flex flex-col h-full"
-                    onClick={() => router.push(`/pages/article/${post.slug}`)}
-                  >
-                    <CardLinks
-                      className="!w-full h-full text-neutral-900 transition-all group-hover:shadow-md"
-                      variant="transparent"
-                      image={{
-                        src: post.image_thumbnail || post.image || "/laptop.png",
-                        alt: post.name,
-                      }}
-                      category={post.owner ? `${post.owner.first_name} ${post.owner.last_name}` : ""}
-                      title={<div className="underline text-xl-bold">{post.name}</div>}
-                      description={
-                        <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px]">
-                          {post.headline}
-                        </p>
-                      }
-                      date={<span className="font-[300]">{formatPostDate(post)}</span>}
-                      links={[
-                        {
-                          href: "#",
-                          hasIcon: true,
-                          leadingIcon: "agora-line-calendar",
-                          leadingIconHover: "agora-solid-calendar",
-                          trailingIcon: "",
-                          trailingIconHover: "",
-                          trailingIconActive: "",
-                          children: formatPostDate(post),
-                          title: "Data",
-                          onClick: (e: React.MouseEvent) => e.preventDefault(),
-                          className: "text-[#034AD8]",
-                        },
-                      ]}
-                      mainLink={
-                        <Link href={`/pages/article/${post.slug}`}>
-                          <span className="underline">{post.name}</span>
-                        </Link>
-                      }
-                      blockedLink={true}
-                    />
-                  </div>
-                ))}
+              <div className="grid xs:grid-cols-1 sm:grid-cols-2 gap-32">
+                {posts.map((post) => {
+                  const authorName = post.owner
+                    ? `${post.owner.first_name} ${post.owner.last_name}`.trim()
+                    : "";
+
+                  return (
+                    <Link
+                      key={post.id}
+                      href={`/pages/posts/${post.slug}`}
+                      className="card-general-listing rounded-[4px] overflow-hidden h-full flex flex-col"
+                    >
+                      <CardGeneral
+                        variant="neutral-100"
+                        image={{
+                          src: post.image_thumbnail || post.image || "/laptop.png",
+                          alt: post.name,
+                          height: "56px",
+                          className: "bg-primary-100 !object-contain !h-[56px]",
+                        }}
+                        subtitleText={
+                          (
+                            <div className="flex flex-col">
+                              <span style={{ fontSize: "16px" }} className="text-neutral-900">
+                                {formatPostDate(post)}
+                              </span>
+                              {authorName && (
+                                <span style={{ fontSize: "16px", fontWeight: 300 }} className="text-neutral-900 mt-4">
+                                  {authorName}
+                                </span>
+                              )}
+                            </div>
+                          ) as unknown as string
+                        }
+                        titleText={post.name}
+                        descriptionText={
+                          (
+                            <div className="flex flex-col grow">
+                              {post.headline && (
+                                <p className="text-m-regular text-neutral-800 line-clamp-3 mb-16">
+                                  {post.headline}
+                                </p>
+                              )}
+                              <div className="mt-auto">
+                                <div className="flex items-center gap-8 text-primary-600 mt-16">
+                                  <Icon
+                                    name="agora-line-arrow-right-circle"
+                                    className="w-32 h-32"
+                                    aria-hidden="true"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ) as unknown as string
+                        }
+                        isBlockedLink={true}
+                        anchor={{
+                          href: `/pages/posts/${post.slug}`,
+                        }}
+                      />
+                    </Link>
+                  );
+                })}
               </div>
             )}
 
@@ -163,7 +247,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
                 currentPage={currentPage}
                 totalItems={total}
                 pageSize={PAGE_SIZE}
-                baseUrl="/pages/article"
+                baseUrl="/pages/posts"
               />
             </div>
           </div>

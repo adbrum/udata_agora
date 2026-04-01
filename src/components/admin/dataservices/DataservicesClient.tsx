@@ -15,9 +15,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
   Button,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchMyDataservices } from "@/services/api";
 import { Dataservice } from "@/types/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -61,19 +61,19 @@ export default function DataservicesClient() {
   };
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
             { label: displayName || "...", url: "#" },
-            { label: "API", url: "/pages/admin/me/dataservices" },
+            { label: "API", url: "/pages/admin/dataservices" },
           ]}
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">API</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">API</h1>
         <PublishDropdown />
       </div>
 
@@ -82,7 +82,7 @@ export default function DataservicesClient() {
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
-        <div className="w-[60%]">
+        <div className="admin-search-wrapper">
           <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome da API"
@@ -120,7 +120,7 @@ export default function DataservicesClient() {
         >
           <TableHeader>
             <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
+              <TableHeaderCell sortType="date" sortOrder="none">
                 Título da API
               </TableHeaderCell>
               <TableHeaderCell>Estado</TableHeaderCell>
@@ -145,9 +145,9 @@ export default function DataservicesClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <Pill variant={getStatusVariant(api)}>
+                  <StatusDot variant={getStatusVariant(api)}>
                     {getStatusLabel(api)}
-                  </Pill>
+                  </StatusDot>
                 </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(api.created_at)}

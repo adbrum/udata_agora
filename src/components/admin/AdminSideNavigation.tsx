@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar, SidebarItem, Icon } from "@ama-pt/agora-design-system";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
 interface NavChild {
   label: string;
@@ -30,33 +31,27 @@ const navGroups: NavGroup[] = [
       {
         label: "Conjunto de dados",
         href: "/pages/admin/me/datasets",
-        icon: "agora-line-layers-menu",
       },
       // API oculta temporariamente
       // {
       //   label: "API",
-      //   href: "/pages/admin/me/dataservices",
-      //   customIcon: "/Icons/reduce_white.svg",
+      //   href: "/pages/admin/dataservices",
       // },
       {
         label: "Reutilizações",
         href: "/pages/admin/me/reuses",
-        customIcon: "/Icons/bar_char_white.svg",
       },
       {
         label: "Recursos comunitários",
-        href: "/pages/admin/community-resources",
-        icon: "agora-line-user-group",
+        href: "/pages/admin/me/community-resources",
       },
       {
         label: "Perfil",
-        href: "/pages/admin/profile",
-        icon: "agora-line-user",
+        href: "/pages/admin/me/profile",
       },
       {
         label: "Estatísticas",
-        href: "/pages/admin/statistics",
-        customIcon: "/Icons/graphic_circle.svg",
+        href: "/pages/admin/me/statistics",
       },
     ],
   },
@@ -64,127 +59,121 @@ const navGroups: NavGroup[] = [
     key: "organization",
     label: "Organização",
     icon: "agora-line-user-group",
-    children: [
-      {
-        label: "Conjunto de dados",
-        href: "/pages/admin/org/datasets",
-        icon: "agora-line-layers-menu",
-      },
-      {
-        label: "API",
-        href: "/pages/admin/org/dataservices",
-        customIcon: "/Icons/reduce_white.svg",
-      },
-      {
-        label: "Reutilizações",
-        href: "/pages/admin/org/reuses",
-        customIcon: "/Icons/bar_char_white.svg",
-      },
-      {
-        label: "Discussões",
-        href: "/pages/admin/org/discussions",
-        icon: "agora-line-chat",
-      },
-      {
-        label: "Membros",
-        href: "/pages/admin/org/members",
-        icon: "agora-line-user-group",
-      },
-      {
-        label: "Harvesters",
-        href: "/pages/admin/org/harvesters",
-        icon: "agora-line-document",
-      },
-      {
-        label: "Recursos comunitários",
-        href: "/pages/admin/org/community-resources",
-        icon: "agora-line-user-group",
-      },
-      {
-        label: "Perfil",
-        href: "/pages/admin/org/profile",
-        icon: "agora-line-user",
-      },
-      {
-        label: "Estatísticas",
-        href: "/pages/admin/org/statistics",
-        customIcon: "/Icons/graphic_circle.svg",
-      },
-    ],
+    children: [],
   },
   {
     key: "system",
     label: "Sistema",
-    icon: "agora-line-settings",
+    icon: "agora-line-shield",
     children: [
       {
         label: "Conjunto de dados",
         href: "/pages/admin/system/datasets",
-        icon: "agora-line-layers-menu",
       },
-      {
-        label: "API",
-        href: "/pages/admin/system/dataservices",
-        customIcon: "/Icons/reduce_white.svg",
-      },
+      // API oculta temporariamente
+      // {
+      //   label: "API",
+      //   href: "/pages/admin/system/dataservices",
+      // },
       {
         label: "Reutilizações",
         href: "/pages/admin/system/reuses",
-        customIcon: "/Icons/bar_char_white.svg",
       },
       {
         label: "Organizações",
         href: "/pages/admin/system/organizations",
-        icon: "agora-line-buildings",
       },
       {
         label: "Utilizadores",
         href: "/pages/admin/system/users",
-        icon: "agora-line-user-group",
       },
       {
         label: "Harvesters",
         href: "/pages/admin/system/harvesters",
-        icon: "agora-line-document",
       },
       {
         label: "Recursos comunitários",
         href: "/pages/admin/system/community-resources",
-        icon: "agora-line-user-group",
       },
-      {
-        label: "Temas",
-        href: "/pages/admin/system/topics",
-        icon: "agora-line-bookmark-card",
-      },
+      // Temas oculto temporariamente
+      // {
+      //   label: "Temas",
+      //   href: "/pages/admin/system/topics",
+      // },
       {
         label: "Artigos",
         href: "/pages/admin/system/posts",
-        icon: "agora-line-document",
       },
       {
         label: "Editorial",
         href: "/pages/admin/system/editorial",
-        icon: "agora-line-edit",
       },
     ],
   },
 ];
 
+function toSentenceCase(str: string): string {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 export function AdminSideNavigation() {
   const pathname = usePathname();
   const { isAdmin, hasOrganization } = useAuth();
+  const { organizations } = useActiveOrganization();
 
-  const visibleGroups = useMemo(
-    () =>
-      navGroups.filter((group) => {
-        // Organização e Sistema ocultos temporariamente
-        if (group.key === "system") return false;
-        if (group.key === "organization") return false;
-        return true;
-      }),
-    [isAdmin, hasOrganization],
-  );
+  const orgChildren = (orgBase: string): NavChild[] => [
+    {
+      label: "Conjunto de dados",
+      href: `${orgBase}/datasets`,
+    },
+    {
+      label: "Reutilizações",
+      href: `${orgBase}/reuses`,
+    },
+    {
+      label: "Discussões",
+      href: `${orgBase}/discussions`,
+    },
+    {
+      label: "Membros",
+      href: `${orgBase}/members`,
+    },
+    {
+      label: "Harvesters",
+      href: `${orgBase}/harvesters`,
+    },
+    {
+      label: "Recursos comunitários",
+      href: `${orgBase}/community-resources`,
+    },
+    {
+      label: "Perfil",
+      href: `${orgBase}/profile`,
+    },
+    {
+      label: "Estatísticas",
+      href: `${orgBase}/statistics`,
+    },
+  ];
+
+  const visibleGroups = useMemo(() => {
+    const profileGroups = navGroups.filter((group) => {
+      return group.key !== "organization" && group.key !== "system";
+    });
+
+    const orgGroups: NavGroup[] = organizations.map((org) => ({
+      key: "organization" as const,
+      label: org.name,
+      children: orgChildren(`/pages/admin/org/${org.id}`),
+    }));
+
+    const systemGroups = isAdmin
+      ? navGroups.filter((group) => group.key === "system")
+      : [];
+
+    return [...profileGroups, ...orgGroups, ...systemGroups];
+  }, [isAdmin, hasOrganization, organizations]);
 
   return (
     <nav className="admin-side-nav">
@@ -208,8 +197,8 @@ export function AdminSideNavigation() {
             }}
           />,
           ...visibleGroups.map((group) => {
-          const hasActiveChild = group.children.some((child) =>
-            pathname?.startsWith(child.href),
+          const hasActiveChild = group.children.some(
+            (child) => pathname?.startsWith(child.href),
           );
 
           return (
@@ -227,7 +216,7 @@ export function AdminSideNavigation() {
                         className="admin-sidebar-nav__group-icon"
                       />
                     )}
-                    {group.label}
+                    <span className="admin-sidebar-nav__group-label-text">{toSentenceCase(group.label)}</span>
                   </span>
                 ),
                 hasIcon: true,

@@ -18,13 +18,18 @@ export default function DatasetsNewClient() {
   const { displayName } = useCurrentUser();
   const totalSteps = 4;
   const currentStep = Number(searchParams.get("step")) || 1;
+  const [createdDatasetId, setCreatedDatasetId] = useState<string | null>(null);
+
+  const buildStepUrl = (step: number) => {
+    return `/pages/admin/datasets/new?step=${step}`;
+  };
   const totalSegments = 12;
   const displayStep = currentStep;
   const filledSegments = Math.round((displayStep / totalSteps) * totalSegments);
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -34,20 +39,20 @@ export default function DatasetsNewClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">
-          {currentStep === 1 ? "Publicar em dados.gov" : "Formulário de inscrição"}
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">
+          {currentStep === 1 ? "Publique em dados.gov" : "Formulário de inscrição"}
         </h1>
         <PublishDropdown />
       </div>
 
       {/* Step indicator */}
-      <div className="datasets-admin-page__step-header">
-        <p className="datasets-admin-page__step-text">
+      <div className="admin-page__step-header">
+        <p className="admin-page__step-text">
           <span className="text-primary-600 font-bold">Passo {currentStep} - </span>
           <span className="text-primary-900 font-bold">
-            {currentStep === 1 && "Descreva o conjunto de dados"}
-            {currentStep === 2 && "Descreva o conjunto de dados"}
+            {currentStep === 1 && "Descreva o seu conjunto de dados"}
+            {currentStep === 2 && "Descreva o seu conjunto de dados"}
             {currentStep === 3 && "Adicionar ficheiros"}
             {currentStep === 4 && "Finalizar a publicação"}
           </span>
@@ -55,27 +60,28 @@ export default function DatasetsNewClient() {
       </div>
 
       {/* Progress bar */}
-      <div className="datasets-admin-page__stepper">
-        <div className="datasets-admin-page__stepper-bar">
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--start" />
+      <div className="admin-page__stepper">
+        <div className="admin-page__stepper-bar">
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--start" />
           {Array.from({ length: totalSegments }).map((_, i) => (
             <div
               key={i}
-              className={`datasets-admin-page__stepper-segment ${i < filledSegments
-                  ? "datasets-admin-page__stepper-segment--filled"
-                  : ""
-                }`}
+              className={`admin-page__stepper-segment ${
+                i < filledSegments ? "admin-page__stepper-segment--filled" : ""
+              }`}
             />
           ))}
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--end" />
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--end" />
         </div>
-        <span className="datasets-admin-page__stepper-label">
+        <span className="admin-page__stepper-label">
           Passo {displayStep}/{totalSteps}
         </span>
       </div>
 
       {currentStep === 1 && (
         <>
+          <h2 className="admin-page__section-title mb-[16px]">Tipo de publicação</h2>
+
           <StatusCard
             type="info"
             description="Se desejar realizar testes, utilize demo.dados.gov"
@@ -84,14 +90,14 @@ export default function DatasetsNewClient() {
           <div className="datasets-new-page__cards mb-[32px]" style={{ maxWidth: "50%" }}>
             <CardAction
               variant="neutral-100"
-              titleText="Publicar um conjunto de dados"
+              titleText="Publique um conjunto de dados"
               descriptionText="Seja uma administração pública ou uma empresa pública, todos podem publicar em dados.gov!"
               icon={{ name: "agora-line-edit" }}
               button={{
                 children: "Comece a publicar",
                 variant: "primary",
                 appearance: "outline",
-                onClick: () => router.push("/pages/admin/me/datasets/new?step=2"),
+                onClick: () => router.push("/pages/admin/datasets/new?step=2"),
               }}
             />
           </div>
@@ -113,6 +119,7 @@ export default function DatasetsNewClient() {
                   hasIcon
                   trailingIcon="agora-line-external-link"
                   trailingIconHover="agora-solid-external-link"
+                  onClick={() => router.push("/pages/faqs/api-documentation")}
                 >
                   Consulte a documentação da API.
                 </Button>
@@ -122,6 +129,7 @@ export default function DatasetsNewClient() {
                   hasIcon
                   trailingIcon="agora-line-external-link"
                   trailingIconHover="agora-solid-external-link"
+                  onClick={() => router.push("/pages/faqs/reuse")}
                 >
                   Saiba mais sobre o harvester.
                 </Button>
@@ -131,6 +139,7 @@ export default function DatasetsNewClient() {
                   hasIcon
                   trailingIcon="agora-line-external-link"
                   trailingIconHover="agora-solid-external-link"
+                  onClick={() => router.push("/pages/support")}
                 >
                   Contacte-nos
                 </Button>
@@ -164,8 +173,14 @@ export default function DatasetsNewClient() {
       {currentStep >= 2 && (
         <DatasetsAdminClient
           currentStep={currentStep}
-          onNextStep={() => router.push(`/pages/admin/me/datasets/new?step=${currentStep + 1}`)}
-          onPreviousStep={() => router.push(`/pages/admin/me/datasets/new?step=${currentStep - 1}`)}
+          datasetId={createdDatasetId}
+          onNextStep={() => router.push(buildStepUrl(currentStep + 1))}
+          onPreviousStep={() => router.push(buildStepUrl(currentStep - 1))}
+          onDatasetCreated={(id) => {
+            setCreatedDatasetId(id);
+            router.push(buildStepUrl(currentStep + 1));
+          }}
+          onComplete={() => router.push("/pages/admin/me/datasets")}
         />
       )}
     </div>

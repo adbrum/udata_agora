@@ -49,12 +49,22 @@ npm run lint
 ## API Integration
 
 - Base URL: `https://dados.gov.pt/api/1` (configured in `src/services/api.ts`)
-- All requests use `cache: 'no-store'` for fresh data
 - Error handling: graceful fallbacks returning empty states
 
-### Dynamic Data Fetching Pattern (Client Components)
+### Data Fetching — Server Components (preferred for public pages)
 
-When fetching dynamic data in a client component, enforce the following pattern using `useEffect` and `useState` with functions from `src/services/api.ts`:
+For public-facing pages, prefer async Server Components with ISR caching:
+
+1. Make `page.tsx` an async Server Component (no `"use client"`).
+2. Fetch data directly in the component body using functions from `src/services/api.ts`.
+3. Use `next: { revalidate: N }` on `fetch()` calls for ISR caching (homepage: 60s, posts: 120s, site metadata: 300s).
+4. Pass fetched data as props to a child `*Client.tsx` component for interactivity.
+5. Provide typed empty-state fallbacks in the catch block so the page still renders on error.
+6. When a page needs multiple data sources, prefer a single aggregated backend endpoint over multiple `Promise.all` calls.
+
+### Data Fetching — Client Components (for authenticated/dynamic pages)
+
+When fetching dynamic data in a client component (e.g., admin pages), use `useEffect` and `useState` with functions from `src/services/api.ts`:
 
 1. Define state for the data array/object and a loading boolean (`isLoading`).
 2. Inside `useEffect()`, wrap the API call in an `async function`.
@@ -62,7 +72,7 @@ When fetching dynamic data in a client component, enforce the following pattern 
    - `try`: `const response = await fetchDatasets(...)` and `setData(response.data)`.
    - `catch`: Log the error `console.error(...)`.
    - `finally`: `setIsLoading(false)`.
-4. Render conditionally based on `isLoading` (show loading state vs mapped data). 
+4. Render conditionally based on `isLoading` (show loading state vs mapped data).
 5. Provide a fallback empty state if no data is returned.
 
 ## Key Paths

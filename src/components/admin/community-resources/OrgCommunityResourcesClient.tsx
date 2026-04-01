@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Breadcrumb,
   CardNoResults,
@@ -15,8 +15,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
 import { fetchOrgCommunityResources } from "@/services/api";
 import { CommunityResource } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
@@ -32,6 +32,8 @@ export default function OrgCommunityResourcesClient() {
 
   const [resources, setResources] = useState<CommunityResource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     if (!activeOrg) {
@@ -52,25 +54,32 @@ export default function OrgCommunityResourcesClient() {
     loadResources();
   }, [activeOrg]);
 
+  const paginatedResources = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return resources.slice(start, start + itemsPerPage);
+  }, [resources, currentPage, itemsPerPage]);
+
   if (isOrgLoading) return <p>A carregar...</p>;
   if (!activeOrg) {
     return (
-      <div className="datasets-admin-page">
+      <div className="admin-page">
         <CardNoResults
           className="datasets-page__empty"
           position="center"
           icon={
-            <Icon name="agora-line-buildings" className="datasets-page__empty-icon" />
+            <Icon name="agora-line-buildings" className="w-12 h-12 text-primary-500 icon-xl" />
           }
+          title="Sem organizações"
           description="Não pertence a nenhuma organização."
+          hasAnchor={false}
         />
       </div>
     );
   }
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -83,8 +92,8 @@ export default function OrgCommunityResourcesClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Recursos comunitários</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Recursos comunitários</h1>
         <PublishDropdown />
       </div>
 
@@ -93,7 +102,7 @@ export default function OrgCommunityResourcesClient() {
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
-        <div className="w-[60%]">
+        <div className="admin-search-wrapper">
           <InputSearchBar hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquisar recursos comunitários"
@@ -118,66 +127,75 @@ export default function OrgCommunityResourcesClient() {
       {isLoading ? (
         <p>A carregar...</p>
       ) : resources.length > 0 ? (
-        <Table
-          paginationProps={{
-            itemsPerPageLabel: "Linhas por página",
-            itemsPerPage: 5,
-            totalItems: resources.length,
-            availablePageSizes: [5, 10, 20],
-            currentPage: 1,
-            buttonDropdownAriaLabel: "Selecionar linhas por página",
-            dropdownListAriaLabel: "Opções de linhas por página",
-            prevButtonAriaLabel: "Página anterior",
-            nextButtonAriaLabel: "Próxima página",
-          }}
-        >
-          <TableHeader>
-            <TableRow>
-              <TableHeaderCell sortType="string" sortOrder="descending">
-                Título
-              </TableHeaderCell>
-              <TableHeaderCell>Estado</TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Criado em
-              </TableHeaderCell>
-              <TableHeaderCell sortType="date" sortOrder="none">
-                Modificado em
-              </TableHeaderCell>
-              <TableHeaderCell>Ações</TableHeaderCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {resources.map((resource, index) => (
-              <TableRow key={index}>
-                <TableCell headerLabel="Título">
-                  <span className="text-primary-600">{resource.title}</span>
-                </TableCell>
-                <TableCell headerLabel="Estado">
-                  <Pill variant="success">Público</Pill>
-                </TableCell>
-                <TableCell headerLabel="Criado em">
-                  {formatDate(resource.created_at)}
-                </TableCell>
-                <TableCell headerLabel="Modificado em">
-                  {formatDate(resource.last_modified)}
-                  <br />
-                  <span className="text-sm text-neutral-500">
-                    sobre{" "}
-                    <span className="text-success-600">●</span>{" "}
-                    {resource.owner
-                      ? `${resource.owner.first_name} ${resource.owner.last_name}`
-                      : "—"}
-                  </span>
-                </TableCell>
-                <TableCell headerLabel="Ações">
-                  <div className="flex gap-[8px]">
-                    <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
-                  </div>
-                </TableCell>
+        <>
+          <Table
+            paginationProps={{
+              itemsPerPageLabel: "Itens por página",
+              itemsPerPage: itemsPerPage,
+              totalItems: resources.length,
+              availablePageSizes: [10, 20, 50],
+              currentPage: currentPage,
+              buttonDropdownAriaLabel: "Selecionar itens por página",
+              dropdownListAriaLabel: "Opções de itens por página",
+              prevButtonAriaLabel: "Página anterior",
+              nextButtonAriaLabel: "Próxima página",
+              onPageChange: (page: number) => setCurrentPage(page),
+              onPageSizeChange: (size: number) => {
+                setItemsPerPage(size);
+                setCurrentPage(1);
+              },
+            }}
+          >
+            <TableHeader>
+              <TableRow>
+                <TableHeaderCell sortType="date" sortOrder="none">
+                  Título
+                </TableHeaderCell>
+                <TableHeaderCell>Estado</TableHeaderCell>
+                <TableHeaderCell sortType="date" sortOrder="none">
+                  Criado em
+                </TableHeaderCell>
+                <TableHeaderCell sortType="date" sortOrder="none">
+                  Última modificação
+                </TableHeaderCell>
+                <TableHeaderCell>Ações</TableHeaderCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {paginatedResources.map((resource, index) => (
+                <TableRow key={index}>
+                  <TableCell headerLabel="Título">
+                    <span className="text-primary-600">{resource.title}</span>
+                  </TableCell>
+                  <TableCell headerLabel="Estado">
+                    <StatusDot variant="success">Público</StatusDot>
+                  </TableCell>
+                  <TableCell headerLabel="Criado em">
+                    {formatDate(resource.created_at)}
+                  </TableCell>
+                  <TableCell headerLabel="Última modificação">
+                    <div>
+                      <div>{formatDate(resource.last_modified)}</div>
+                      {resource.owner && (
+                        <a
+                          href={`/pages/users/${resource.owner.slug}`}
+                          className="text-primary-600 text-xs underline"
+                        >
+                          {resource.owner.first_name} {resource.owner.last_name}
+                        </a>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell headerLabel="Ações">
+                    <div className="flex gap-[8px]">
+                      <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </>
       ) : (
         <div className="datasets-page__body">
           <div className="datasets-page__content">
@@ -186,11 +204,13 @@ export default function OrgCommunityResourcesClient() {
               position="center"
               icon={
                 <Icon
-                  name="agora-line-user-group"
-                  className="datasets-page__empty-icon"
+                  name="agora-line-buildings"
+                  className="w-12 h-12 text-primary-500 icon-xl"
                 />
               }
+              title="Sem recursos comunitários"
               description="A organização ainda não tem recursos comunitários."
+              hasAnchor={false}
             />
           </div>
         </div>

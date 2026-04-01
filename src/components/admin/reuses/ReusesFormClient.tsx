@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import {
   Button,
   InputText,
@@ -14,6 +14,7 @@ import {
   DropdownOption,
   ButtonUploader,
   CardGeneral,
+  CardLinks,
 } from "@ama-pt/agora-design-system";
 import {
   createReuse,
@@ -23,8 +24,16 @@ import {
   linkDataserviceToReuse,
   fetchReuseTypes,
   fetchReuseTopics,
+  fetchMyDatasets,
+  suggestTags,
 } from "@/services/api";
-import type { Reuse, ReuseType, ReuseTopic } from "@/types/api";
+import type { Reuse, ReuseType, ReuseTopic, Dataset, TagSuggestion } from "@/types/api";
+import { format, formatDistanceToNow } from "date-fns";
+import { pt } from "date-fns/locale";
+import Link from "next/link";
+import AuxiliarList from "@/components/admin/AuxiliarList";
+import IsolatedSelect from "@/components/admin/IsolatedSelect";
+import { useAuth } from "@/context/AuthContext";
 
 interface ReusesFormClientProps {
   currentStep: number;
@@ -37,10 +46,13 @@ export default function ReusesFormClient({
   onNextStep,
   onPreviousStep,
 }: ReusesFormClientProps) {
+  const { user } = useAuth();
+  const selectedProducerRef = useRef("");
+  const selectedReuseTypeRef = useRef("");
+  const selectedReuseTopicRef = useRef("");
+  const selectedKeywordsRef = useRef("");
   const [reuseName, setReuseName] = useState("");
   const [reuseLink, setReuseLink] = useState("");
-  const [selectedReuseType, setSelectedReuseType] = useState("");
-  const [selectedReuseTopic, setSelectedReuseTopic] = useState("");
   const [reuseDescription, setReuseDescription] = useState("");
   const [reuseCoverImageFile, setReuseCoverImageFile] = useState<File | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
@@ -51,16 +63,21 @@ export default function ReusesFormClient({
   // Dynamic options from backend
   const [reuseTypes, setReuseTypes] = useState<ReuseType[]>([]);
   const [reuseTopics, setReuseTopics] = useState<ReuseTopic[]>([]);
+  const [tags, setTags] = useState<TagSuggestion[]>([]);
 
   // Step 2 state
   const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
   const [datasetLinkErrors, setDatasetLinkErrors] = useState<Record<number, string>>({});
   const [apiLinks, setApiLinks] = useState([{ url: "" }]);
   const [apiLinkErrors, setApiLinkErrors] = useState<Record<number, string>>({});
+  const [myDatasets, setMyDatasets] = useState<Dataset[]>([]);
+  const [selectedDataset, setSelectedDataset] = useState<Dataset | null>(null);
 
   useEffect(() => {
     fetchReuseTypes().then(setReuseTypes);
     fetchReuseTopics().then(setReuseTopics);
+    fetchMyDatasets(1, 5).then((res) => setMyDatasets(res.data || []));
+    suggestTags("", 50).then(setTags);
   }, []);
 
   useEffect(() => {
@@ -72,8 +89,10 @@ export default function ReusesFormClient({
     const errors: Record<string, boolean> = {};
     if (!reuseName.trim()) errors.reuseName = true;
     if (!reuseLink.trim()) errors.reuseLink = true;
-    if (!selectedReuseType) errors.reuseType = true;
+    if (!selectedReuseTypeRef.current) errors.reuseType = true;
+    if (!selectedReuseTopicRef.current) errors.reuseTopic = true;
     if (!reuseDescription.trim()) errors.reuseDescription = true;
+    if (!reuseCoverImageFile) errors.reuseCoverImage = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -82,14 +101,19 @@ export default function ReusesFormClient({
     setApiError(null);
     setIsSubmitting(true);
 
+    const url = reuseLink.trim().match(/^https?:\/\//) ? reuseLink.trim() : `https://${reuseLink.trim()}`;
+
     try {
       const reuse = await createReuse({
         title: reuseName.trim(),
         description: reuseDescription.trim(),
-        url: reuseLink.trim(),
-        type: selectedReuseType,
-        topic: selectedReuseTopic || undefined,
+        url,
+        type: selectedReuseTypeRef.current,
+        topic: selectedReuseTopicRef.current || undefined,
         private: true,
+        ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
+          ? { organization: selectedProducerRef.current }
+          : {}),
       });
 
       if (reuseCoverImageFile) {
@@ -99,12 +123,34 @@ export default function ReusesFormClient({
       setCreatedReuse(reuse);
       onNextStep();
     } catch (error: unknown) {
-      const err = error as { status?: number; data?: Record<string, unknown> };
-      if (err.data && typeof err.data === "object") {
-        const messages = Object.entries(err.data)
-          .map(([key, val]) => `${key}: ${val}`)
-          .join(", ");
+      const err = error as { status?: number; data?: { errors?: Record<string, string>; message?: string } };
+
+      const fieldLabels: Record<string, string> = {
+        url: "URL da reutilização",
+        title: "Nome da reutilização",
+        description: "Descrição",
+        type: "Tipo",
+        topic: "Tema",
+        organization: "Organização",
+      };
+      const errorMessages: Record<string, string> = {
+        "This URL is already registered": "Este URL já está registado. Utilize um URL diferente.",
+      };
+
+      if (err.status === 500) {
+        setApiError("Erro interno do servidor. Verifique se todos os campos estão preenchidos corretamente e tente novamente.");
+      } else if (err.data?.errors && typeof err.data.errors === "object") {
+        const messages = Object.entries(err.data.errors)
+          .map(([field, msg]) => {
+            const label = fieldLabels[field] || field;
+            const translated = errorMessages[String(msg)] || String(msg);
+            return `${label}: ${translated}`;
+          })
+          .join("\n");
         setApiError(messages);
+      } else if (err.data?.message) {
+        const translated = errorMessages[err.data.message] || err.data.message;
+        setApiError(translated);
       } else {
         setApiError("Erro ao criar a reutilização. Tente novamente.");
       }
@@ -197,25 +243,30 @@ export default function ReusesFormClient({
       title: "Dê um nome à sua reutilização.",
       content:
         'Prefira um título que permita entender como os dados são usados, em vez do nome do site ou aplicativo ("Mecanismo de Busca de Acordos Comerciais" em vez de "Acordos-Comerciais.fr", por exemplo).',
+      hasError: !!formErrors.reuseName,
     },
     {
       title: "Qual link preencher?",
       content:
         "Insira o link para a página onde o conteúdo reutilizado está visível. Dê preferência ao link para o próprio conteúdo reutilizado, e não para a página inicial. Certifique-se de que o link permaneça estável ao longo do tempo.",
+      hasError: !!formErrors.reuseLink,
     },
     {
       title: "Escolha um tipo",
       content:
         "Indique o tipo em que deve ser classificada a reutilização (API, aplicação, artigo de imprensa, visualização, etc.).",
+      hasError: !!formErrors.reuseType,
     },
     {
       title: "Escolha um tema",
       content: "Escolha o tema associado à sua reutilização.",
+      hasError: !!formErrors.reuseTopic,
     },
     {
       title: "Descreva a sua reutilização.",
       content:
         "Pode fornecer detalhes como a forma como a reutilização foi criada, o que permite fazer ou demonstrar, e até mesmo falar mais sobre si e o contexto desta reutilização. É melhor manter um tom neutro: se a reutilização soar muito como uma mensagem promocional, podemos removê-la.",
+      hasError: !!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength,
     },
     {
       title: "Adicionar palavras-chave",
@@ -244,17 +295,53 @@ export default function ReusesFormClient({
       title: "Escolha uma imagem",
       content:
         'Se a sua reutilização assumir a forma de uma representação gráfica, pode fornecer uma pré-visualização para outros utilizadores usando uma imagem ou captura de ecrã. Esta imagem aparecerá na secção "Reutilizações" da página do conjunto de dados associado. Quando relevante, as capturas de ecrã ilustram melhor a reutilização e, portanto, são preferíveis a logotipos ou ilustrações, por exemplo.',
+      hasError: !!formErrors.reuseCoverImage,
     },
   ];
 
   const auxiliarItems = auxiliarItemsStep1;
 
+  const producerOptions = useMemo(() => (
+    <DropdownSection name="identity">
+      <DropdownOption value="user">
+        {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
+      </DropdownOption>
+      <>
+        {(user?.organizations || []).map((org) => (
+          <DropdownOption key={org.id} value={org.id}>
+            {org.name}
+          </DropdownOption>
+        ))}
+      </>
+    </DropdownSection>
+  ), [user]);
+
+  const typeOptions = useMemo(() => (
+    <DropdownSection name="types">
+      {reuseTypes.map((t) => (
+        <DropdownOption key={t.id} value={t.id}>
+          {t.label}
+        </DropdownOption>
+      ))}
+    </DropdownSection>
+  ), [reuseTypes]);
+
+  const topicOptions = useMemo(() => (
+    <DropdownSection name="themes">
+      {reuseTopics.map((t) => (
+        <DropdownOption key={t.id} value={t.id}>
+          {t.label}
+        </DropdownOption>
+      ))}
+    </DropdownSection>
+  ), [reuseTopics]);
+
   return (
     <>
       {/* Main content area: form + auxiliar sidebar */}
-      <div className="datasets-admin-page__body">
+      <div className="admin-page__body">
         {/* Left: Form */}
-        <div className="datasets-admin-page__form-area">
+        <div className="admin-page__form-area">
           {/* Step 1: Descreva sua reutilização */}
           {currentStep === 1 && (
             <>
@@ -272,38 +359,37 @@ export default function ReusesFormClient({
               />
 
               {apiError && (
-                <StatusCard type="danger" description={apiError} />
+                <div className="mt-[32px] mb-[16px]">
+                  <StatusCard type="danger" description={apiError} />
+                </div>
               )}
 
-              <form className="datasets-admin-page__form">
-                <p className="text-neutral-900 text-base leading-7">
+              <form className="admin-page__form">
+                <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
-                <h2 className="datasets-admin-page__section-title">Produtor</h2>
+                <h2 className="admin-page__section-title">Produtor</h2>
 
-                <InputSelect
+                <IsolatedSelect
                   label="Verifique a identidade que deseja usar na publicação."
-                  placeholder="Para pesquisar..."
+                  placeholder="Selecione o produtor..."
                   id="producer-identity"
+                  onChangeRef={selectedProducerRef}
                 >
-                  <DropdownSection name="organizations">
-                    <DropdownOption value="org1">
-                      Organização
-                    </DropdownOption>
-                  </DropdownSection>
-                </InputSelect>
+                  {producerOptions}
+                </IsolatedSelect>
 
-                <div className="datasets-admin-page__org-card">
-                  <p className="datasets-admin-page__org-card-title">
+                <div className="admin-page__org-card">
+                  <p className="admin-page__org-card-title">
                     Não pertence a nenhuma organização.
                   </p>
-                  <p className="datasets-admin-page__org-card-description">
+                  <p className="admin-page__org-card-description">
                     Recomendamos que publique em nome de uma organização se se
                     tratar de uma atividade profissional.
                   </p>
                   <a
-                    href="#"
-                    className="datasets-admin-page__org-card-link"
+                    href="/pages/admin/organizations/new"
+                    className="admin-page__org-card-link"
                   >
                     Crie ou participe de uma organização
                     <Icon
@@ -313,9 +399,9 @@ export default function ReusesFormClient({
                   </a>
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+                <h2 className="admin-page__section-title">Descrição</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <InputText
                     label="Nome da reutilização *"
                     placeholder="Insira o nome aqui"
@@ -332,63 +418,41 @@ export default function ReusesFormClient({
                   />
                   <InputText
                     label="Reutilização *"
-                    placeholder="Insira o URL aqui"
+                    placeholder="Insira o URL aqui (ex: https://...)"
                     id="reuse-link"
                     value={reuseLink}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setReuseLink(e.target.value);
-                      if (e.target.value.trim()) clearError("reuseLink");
+                      if (e.target.value.trim()) {
+                        clearError("reuseLink");
+                        clearError("reuseLinkInvalid");
+                      }
                     }}
                     hasError={!!formErrors.reuseLink}
                     hasFeedback={!!formErrors.reuseLink}
                     feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
                   />
-                  <InputSelect
+                  <IsolatedSelect
                     label="Tipo *"
-                    placeholder="Procure por um tipo..."
+                    placeholder="Selecione um tipo..."
                     id="reuse-type"
-                    onChange={(options) => {
-                      if (options.length > 0) {
-                        setSelectedReuseType(options[0].value as string);
-                        clearError("reuseType");
-                      } else {
-                        setSelectedReuseType("");
-                      }
-                    }}
+                    onChangeRef={selectedReuseTypeRef}
                     hasError={!!formErrors.reuseType}
-                    hasFeedback={!!formErrors.reuseType}
-                    feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
                   >
-                    <DropdownSection name="types">
-                      {reuseTypes.map((t) => (
-                        <DropdownOption key={t.id} value={t.id}>
-                          {t.label}
-                        </DropdownOption>
-                      ))}
-                    </DropdownSection>
-                  </InputSelect>
-                  <InputSelect
-                    label="Tema"
-                    placeholder="Pesquise um tópico..."
+                    {typeOptions}
+                  </IsolatedSelect>
+                  <IsolatedSelect
+                    label="Tema *"
+                    placeholder="Selecione um tema..."
                     id="reuse-theme"
-                    onChange={(options) => {
-                      if (options.length > 0) {
-                        setSelectedReuseTopic(options[0].value as string);
-                      } else {
-                        setSelectedReuseTopic("");
-                      }
-                    }}
+                    onChangeRef={selectedReuseTopicRef}
+                    hasError={!!formErrors.reuseTopic}
+                    errorFeedbackText="Campo obrigatório"
                   >
-                    <DropdownSection name="themes">
-                      {reuseTopics.map((t) => (
-                        <DropdownOption key={t.id} value={t.id}>
-                          {t.label}
-                        </DropdownOption>
-                      ))}
-                    </DropdownSection>
-                  </InputSelect>
+                    {topicOptions}
+                  </IsolatedSelect>
                   <InputTextArea
                     label="Descrição *"
                     placeholder="Insira a descrição aqui"
@@ -399,45 +463,54 @@ export default function ReusesFormClient({
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setReuseDescription(e.target.value);
                       if (e.target.value.trim()) clearError("reuseDescription");
+                      if (e.target.value.trim().length >= 200) clearError("reuseDescriptionLength");
                     }}
-                    hasError={!!formErrors.reuseDescription}
-                    hasFeedback={!!formErrors.reuseDescription}
-                    feedbackState="danger"
-                    errorFeedbackText="Campo obrigatório"
+                    hasError={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
+                    hasFeedback={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
+                    feedbackState={formErrors.reuseDescriptionLength ? "warning" : "danger"}
+                    errorFeedbackText={formErrors.reuseDescription ? "Campo obrigatório" : "A descrição deve ter pelo menos 200 caracteres"}
                   />
-                  <InputSelect
+                  <IsolatedSelect
                     label="Palavras-chave"
-                    placeholder="Pesquise por uma palavra-chave..."
+                    placeholder="Selecione palavras-chave..."
                     id="reuse-keywords"
+                    type="checkbox"
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
+                    onChangeRef={selectedKeywordsRef}
                   >
                     <DropdownSection name="keywords">
-                      <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
+                      {tags.map((tag) => (
+                        <DropdownOption key={tag.text} value={tag.text}>
+                          {tag.text}
+                        </DropdownOption>
+                      ))}
                     </DropdownSection>
-                  </InputSelect>
-                  <div className="w-1/2">
+                  </IsolatedSelect>
+                  <div className="flex items-center gap-16">
+                    <div className="w-1/2">
+                      <Button
+                        appearance="outline"
+                        variant="primary"
+                        hasIcon
+                        leadingIcon="agora-line-edit"
+                        leadingIconHover="agora-solid-edit"
+                        fullWidth
+                      >
+                        Sugira palavras-chave
+                      </Button>
+                    </div>
                     <Button
-                      appearance="outline"
+                      appearance="link"
                       variant="primary"
                       hasIcon
-                      leadingIcon="agora-line-edit"
-                      leadingIconHover="agora-solid-edit"
-                      fullWidth
+                      trailingIcon="agora-line-external-link"
+                      trailingIconHover="agora-solid-external-link"
                     >
-                      Sugira palavras-chave
+                      O que achou desta sugestão?
                     </Button>
                   </div>
-                  <Button
-                    appearance="link"
-                    variant="primary"
-                    hasIcon
-                    trailingIcon="agora-line-external-link"
-                    trailingIconHover="agora-solid-external-link"
-                  >
-                    O que achou desta sugestão?
-                  </Button>
 
                   <div>
                     <span className="text-primary-900 text-base font-medium leading-7">
@@ -453,16 +526,31 @@ export default function ReusesFormClient({
                         accept=".jpg,.jpeg,.png"
                         maxSize={4194304}
                         maxCount={1}
-                        onChange={(files: File[]) => {
-                          setReuseCoverImageFile(files.length > 0 ? files[0] : null);
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          const files = e.target.files;
+                          setReuseCoverImageFile(files && files.length > 0 ? files[0] : null);
                           clearError("reuseCoverImage");
                         }}
+                        hasError={!!formErrors.reuseCoverImage}
+                        hasFeedback={!!formErrors.reuseCoverImage}
+                        feedbackState="danger"
+                        feedbackText="Campo obrigatório"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="datasets-admin-page__actions">
+                <div className="admin-page__actions flex justify-between gap-[18px]">
+                  <Button
+                    variant="primary"
+                    appearance="outline"
+                    hasIcon
+                    leadingIcon="agora-line-arrow-left-circle"
+                    leadingIconHover="agora-solid-arrow-left-circle"
+                    onClick={onPreviousStep}
+                  >
+                    Anterior
+                  </Button>
                   <Button
                     variant="primary"
                     hasIcon
@@ -481,27 +569,105 @@ export default function ReusesFormClient({
           {/* Step 2: Vinculando conjuntos de dados e APIs */}
           {currentStep === 2 && (
             <>
-              <StatusCard
-                type="info"
-                description="É importante vincular todos os conjuntos de dados utilizados, pois isso ajuda a compreender as referências cruzadas necessárias e a melhorar a visibilidade da sua reutilização."
-              />
+              <div className="mb-[24px]">
+                <StatusCard
+                  type="info"
+                  description="É importante vincular todos os conjuntos de dados utilizados, pois isso ajuda a compreender as referências cruzadas necessárias e a melhorar a visibilidade da sua reutilização."
+                />
+              </div>
               {apiError && (
-                <StatusCard type="danger" description={apiError} />
+                <div className="mt-[32px] mb-[16px]">
+                  <StatusCard type="danger" description={apiError} />
+                </div>
               )}
 
-              <form className="datasets-admin-page__form">
+              <form className="admin-page__form">
                 {/* Conjuntos de dados */}
+                {selectedDataset && (
+                  <div className="agora-card-links-datasets-px0 mt-[16px]">
+                    <CardLinks
+                      onClick={() => {}}
+                      className="cursor-pointer text-neutral-900"
+                      variant="transparent"
+                      image={{
+                        src: selectedDataset.organization?.logo || "/images/placeholders/organization.png",
+                        alt: selectedDataset.organization?.name || "Organização sem logo",
+                      }}
+                      category={selectedDataset.organization?.name}
+                      title={selectedDataset.title}
+                      description={
+                        <div className="flex flex-col gap-12">
+                          <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px]">
+                            {selectedDataset.description}
+                          </p>
+                          <div className="flex flex-wrap gap-8 items-center mt-[8px]">
+                            <span className="text-sm font-medium text-neutral-900">
+                              Metadados: {selectedDataset.quality?.score != null ? Math.round(selectedDataset.quality.score * 100) : 0}%
+                            </span>
+                          </div>
+                          <div className="flex items-center flex-wrap gap-[32px] text-xs mt-[32px] text-[#034AD8] mb-[32px]">
+                            <div className="flex items-center gap-8" title="Visualizações">
+                              <Icon name="agora-line-eye" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.views || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Downloads">
+                              <Icon name="agora-line-download" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.resources_downloads || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Reutilizações">
+                              <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.reuses || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-8" title="Favoritos">
+                              <img src="/Icons/favorite.svg" alt="" aria-hidden="true" />
+                              <span>{selectedDataset.metrics?.followers || 0}</span>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                      date={
+                        <span className="font-[300]">
+                          {`Atualizado há ${formatDistanceToNow(new Date(selectedDataset.last_modified), { locale: pt }).replace("aproximadamente ", "").replace("quase ", "").replace("menos de ", "").replace("cerca de ", "")}`}
+                        </span>
+                      }
+                      mainLink={
+                        <Link href={`/pages/datasets/${selectedDataset.slug}`}>
+                          <span className="underline">{selectedDataset.title}</span>
+                        </Link>
+                      }
+                      blockedLink={true}
+                    />
+                  </div>
+                )}
+
                 <InputSelect
                   label="Pesquisar um conjunto de dados"
                   placeholder="Procurando um conjunto de dados..."
                   id="reuse-dataset-search"
+                  searchable
+                  searchInputPlaceholder="Escreva para pesquisar..."
+                  searchNoResultsText="Nenhum resultado encontrado"
+                  onChange={(options) => {
+                    if (options.length > 0) {
+                      const found = myDatasets.find((d) => d.id === options[0].value);
+                      setSelectedDataset(found || null);
+                    } else {
+                      setSelectedDataset(null);
+                    }
+                  }}
                 >
                   <DropdownSection name="datasets">
-                    <DropdownOption value="dataset1">
-                      Conjunto de dados 1
-                    </DropdownOption>
+                    {myDatasets.map((d) => (
+                      <DropdownOption key={d.id} value={d.id}>
+                        {d.title}
+                      </DropdownOption>
+                    ))}
                   </DropdownSection>
                 </InputSelect>
+
+                <div className="admin-page__divider-or">
+                  <span className="admin-page__divider-or-text">ou</span>
+                </div>
 
                 {datasetLinks.map((link, index) => (
                   <div key={`dataset-${index}`} className="mt-[16px]">
@@ -519,9 +685,9 @@ export default function ReusesFormClient({
                       errorFeedbackText={datasetLinkErrors[index]}
                     />
                     {link.url.trim() && (
-                      <div className="flex justify-end mt-[8px]">
+                      <div className="flex justify-end mt-[24px]">
                         <Button
-                          appearance="link"
+                          appearance="solid"
                           variant="danger"
                           hasIcon
                           leadingIcon="agora-line-trash"
@@ -548,7 +714,8 @@ export default function ReusesFormClient({
                   </Button>
                 </div>
 
-                {/* APIs */}
+                {/* APIs - oculto temporariamente */}
+                {false && (<>
                 <div className="mt-[32px]">
                   <InputSelect
                     label="Pesquisar uma API"
@@ -605,11 +772,15 @@ export default function ReusesFormClient({
                     Adicionar
                   </Button>
                 </div>
+                </>)}
 
-                <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+                <div className="admin-page__actions flex justify-between gap-[18px]">
                   <Button
+                    variant="primary"
                     appearance="outline"
-                    variant="neutral"
+                    hasIcon
+                    leadingIcon="agora-line-arrow-left-circle"
+                    leadingIconHover="agora-solid-arrow-left-circle"
                     onClick={onPreviousStep}
                   >
                     Anterior
@@ -661,30 +832,105 @@ export default function ReusesFormClient({
           {/* Step 3: Finalizar a publicação */}
           {currentStep === 3 && (
             <>
-              <StatusCard
-                type="success"
-                description={
-                  <>
-                    <strong>A sua reutilização foi criada!</strong>
-                    <br />
-                    Agora pode publicar ou guardar como rascunho.
-                  </>
-                }
-              />
+              <div className="mb-[24px]">
+                <StatusCard
+                  type="success"
+                  description={
+                    <>
+                      <strong>A sua reutilização foi criada!</strong>
+                      <br />
+                      Agora pode publicar ou guardar como rascunho.
+                    </>
+                  }
+                />
+              </div>
 
-              <CardGeneral
-                variant="white-outline"
-                isCardHorizontal
-                isBlockedLink
-                iconDefault="agora-line-layers-menu"
-                iconHover="agora-solid-layers-menu"
-                titleText={reuseName || "Sem título"}
-                descriptionText={reuseDescription || "Sem descrição"}
-                anchor={{
-                  href: `/pages/reuses/preview?title=${encodeURIComponent(reuseName)}&description=${encodeURIComponent(reuseDescription)}`,
-                  children: "",
-                }}
-              />
+              <div className="agora-card-links-datasets-px0">
+                <CardLinks
+                  onClick={() => {}}
+                  className="cursor-pointer text-neutral-900"
+                  variant="transparent"
+                  image={{
+                    src: createdReuse?.image_thumbnail || createdReuse?.image || "/laptop.png",
+                    alt: reuseName || "Sem título",
+                  }}
+                  category={createdReuse?.organization?.name || (createdReuse?.owner ? `${createdReuse.owner.first_name} ${createdReuse.owner.last_name}`.trim() : "Reutilização")}
+                  title={<div className="underline text-xl-bold">{reuseName || "Sem título"}</div>}
+                  description={
+                    <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                      {reuseDescription || ""}
+                    </p>
+                  }
+                  date={
+                    <span className="font-[300]">
+                      {`Atualizado ${format(new Date(), "dd MM yyyy", { locale: pt })}`}
+                    </span>
+                  }
+                  links={[
+                    {
+                      href: "#",
+                      hasIcon: true,
+                      leadingIcon: "agora-line-eye",
+                      leadingIconHover: "agora-solid-eye",
+                      trailingIcon: "",
+                      trailingIconHover: "",
+                      trailingIconActive: "",
+                      children: "0",
+                      title: "Visualizações",
+                      onClick: (e: React.MouseEvent) => e.preventDefault(),
+                      className: "text-[#034AD8]",
+                    },
+                    {
+                      href: "#",
+                      hasIcon: true,
+                      leadingIcon: "agora-line-calendar",
+                      leadingIconHover: "agora-solid-calendar",
+                      trailingIcon: "",
+                      trailingIconHover: "",
+                      trailingIconActive: "",
+                      children: `${createdReuse?.datasets?.length || 0} datasets`,
+                      title: "Datasets",
+                      onClick: (e: React.MouseEvent) => e.preventDefault(),
+                      className: "text-[#034AD8]",
+                    },
+                    {
+                      href: "#",
+                      hasIcon: false,
+                      children: (
+                        <span className="flex items-center gap-8">
+                          <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" />
+                          <span>0</span>
+                        </span>
+                      ),
+                      title: "Métricas",
+                      onClick: (e: React.MouseEvent) => e.preventDefault(),
+                    },
+                    {
+                      href: "#",
+                      hasIcon: true,
+                      leadingIcon: "agora-line-star",
+                      leadingIconHover: "agora-solid-star",
+                      trailingIcon: "",
+                      trailingIconHover: "",
+                      trailingIconActive: "",
+                      children: 0,
+                      title: "Favoritos",
+                      onClick: (e: React.MouseEvent) => e.preventDefault(),
+                      className: "text-[#034AD8]",
+                    },
+                  ]}
+                  mainLink={
+                    createdReuse ? (
+                      <Link href={`/pages/reuses/${createdReuse.slug}`}>
+                        <span className="underline">{reuseName}</span>
+                      </Link>
+                    ) : (
+                      <span className="underline">{reuseName || "Sem título"}</span>
+                    )
+                  }
+                  blockedLink={true}
+                />
+              </div>
 
               <Button
                 appearance="link"
@@ -697,10 +943,12 @@ export default function ReusesFormClient({
               </Button>
 
               {apiError && (
-                <StatusCard type="danger" description={apiError} />
+                <div className="mt-[32px] mb-[16px]">
+                  <StatusCard type="danger" description={apiError} />
+                </div>
               )}
 
-              <div className="datasets-admin-page__actions flex justify-end gap-[18px]">
+              <div className="admin-page__actions flex justify-end gap-[18px]">
                 <Button
                   appearance="outline"
                   variant="neutral"
@@ -746,28 +994,16 @@ export default function ReusesFormClient({
 
         {/* Right: Auxiliar sidebar (only for step 1) */}
         {currentStep === 1 && (
-          <aside className="datasets-admin-page__auxiliar">
-            <div className="datasets-admin-page__auxiliar-inner">
-              <div className="datasets-admin-page__auxiliar-header">
+          <aside className="admin-page__auxiliar">
+            <div className="admin-page__auxiliar-inner">
+              <div className="admin-page__auxiliar-header">
                 <Icon
                   name="agora-line-question-mark"
                   className="w-[24px] h-[24px]"
                 />
-                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
               </div>
-              <AccordionGroup>
-                {auxiliarItems.map((item, idx) => (
-                  <Accordion
-                    key={idx}
-                    headingTitle={item.title}
-                    headingLevel="h3"
-                  >
-                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                      {item.content}
-                    </div>
-                  </Accordion>
-                ))}
-              </AccordionGroup>
+              <AuxiliarList items={auxiliarItems} />
             </div>
           </aside>
         )}

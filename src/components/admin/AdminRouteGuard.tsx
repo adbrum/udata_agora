@@ -25,7 +25,11 @@ export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (pathname?.startsWith("/pages/admin/org") && !hasOrganization) {
+    if (
+      pathname?.startsWith("/pages/admin/org") &&
+      !pathname?.startsWith("/pages/admin/organizations/new") &&
+      !hasOrganization
+    ) {
       router.replace(ADMIN_DEFAULT_ROUTE);
       return;
     }
@@ -43,7 +47,12 @@ export function AdminRouteGuard({ children }: { children: React.ReactNode }) {
 
   if (pathname?.startsWith("/pages/admin/system") && !isAdmin) return null;
 
-  if (pathname?.startsWith("/pages/admin/org") && !hasOrganization) return null;
+  if (
+    pathname?.startsWith("/pages/admin/org") &&
+    !pathname?.startsWith("/pages/admin/organizations/new") &&
+    !hasOrganization
+  )
+    return null;
 
   return <>{children}</>;
 }

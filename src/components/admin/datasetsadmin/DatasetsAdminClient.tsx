@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Button,
@@ -12,33 +12,55 @@ import {
   StatusCard,
   Accordion,
   AccordionGroup,
-  InputSelect,
   InputDate,
   DropdownSection,
   DropdownOption,
-  ButtonUploader,
 } from "@ama-pt/agora-design-system";
 import {
   createDataset,
   updateDataset,
   uploadResource,
+  createResource,
   fetchLicenses,
   fetchFrequencies,
+  fetchDataset,
+  fetchMyDatasets,
+  suggestTags,
+  fetchOrgContactPoints,
+  createContactPoint,
 } from "@/services/api";
-import { License, Frequency, Dataset } from "@/types/api";
+import {
+  License,
+  Frequency,
+  Dataset,
+  TagSuggestion,
+  ContactPoint,
+} from "@/types/api";
+import AuxiliarList from "@/components/admin/AuxiliarList";
+import IsolatedSelect from "@/components/admin/IsolatedSelect";
+import FileUploadModal from "@/components/admin/FileUploadModal";
+import { useAuth } from "@/context/AuthContext";
+import { getFrequencyLabel } from "@/utils/frequencyLabels";
 
 interface DatasetsAdminClientProps {
   currentStep: number;
+  datasetId?: string | null;
   onNextStep: () => void;
   onPreviousStep: () => void;
+  onDatasetCreated?: (datasetId: string) => void;
+  onComplete?: () => void;
 }
 
 export default function DatasetsAdminClient({
   currentStep,
+  datasetId,
   onNextStep,
   onPreviousStep,
+  onDatasetCreated,
+  onComplete,
 }: DatasetsAdminClientProps) {
   const router = useRouter();
+  const { user } = useAuth();
 
   // Form state
   const [accessType, setAccessType] = useState("open");
@@ -48,11 +70,32 @@ export default function DatasetsAdminClient({
   const [datasetAcronym, setDatasetAcronym] = useState("");
   const [datasetDescription, setDatasetDescription] = useState("");
   const [datasetShortDescription, setDatasetShortDescription] = useState("");
-  const [selectedLicense, setSelectedLicense] = useState("");
-  const [selectedFrequency, setSelectedFrequency] = useState("");
+  const selectedProducerRef = useRef("");
+  const selectedLicenseRef = useRef("");
+  const selectedFrequencyRef = useRef("");
+  const dummyRef = useRef("");
   const [temporalStart, setTemporalStart] = useState("");
   const [temporalEnd, setTemporalEnd] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [selectedProducer, setSelectedProducer] = useState("");
+  const [orgContactPoints, setOrgContactPoints] = useState<ContactPoint[]>([]);
+  const [selectedContactPointIds, setSelectedContactPointIds] = useState<string[]>([]);
+
+  interface DraftContact {
+    id: number;
+    name: string;
+    email: string;
+    link: string;
+    saved: boolean;
+    errors: Record<string, boolean>;
+  }
+  const draftIdRef = useRef(0);
+  const [draftContacts, setDraftContacts] = useState<DraftContact[]>([
+    { id: 0, name: "", email: "", link: "", saved: false, errors: {} },
+  ]);
+
+  // Step 3 state
+  const [resourceUrl, setResourceUrl] = useState("");
 
   // API state
   const [createdDataset, setCreatedDataset] = useState<Dataset | null>(null);
@@ -62,22 +105,204 @@ export default function DatasetsAdminClient({
   // Dropdown data
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
+  const [tags, setTags] = useState<TagSuggestion[]>([]);
+
+  const producerOptions = useMemo(
+    () => (
+      <DropdownSection name="identity">
+        {[
+          <DropdownOption key="user" value="user">
+            {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
+          </DropdownOption>,
+          ...(user?.organizations || []).map((org) => (
+            <DropdownOption key={org.id} value={org.id}>
+              {org.name}
+            </DropdownOption>
+          )),
+        ]}
+      </DropdownSection>
+    ),
+    [user],
+  );
+
+  const licenseOptions = useMemo(
+    () => (
+      <DropdownSection name="licenses">
+        {licenses.map((license) => (
+          <DropdownOption key={license.id} value={license.id}>
+            {license.title}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [licenses],
+  );
+
+  const frequencyOptions = useMemo(
+    () => (
+      <DropdownSection name="frequencies">
+        {frequencies.map((freq) => (
+          <DropdownOption key={freq.id} value={freq.id}>
+            {getFrequencyLabel(freq.id, freq.label)}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [frequencies],
+  );
+
+  const tagOptions = useMemo(
+    () => (
+      <DropdownSection name="keywords">
+        {tags.map((tag) => (
+          <DropdownOption key={tag.text} value={tag.text}>
+            {tag.text}
+          </DropdownOption>
+        ))}
+      </DropdownSection>
+    ),
+    [tags],
+  );
+
+  // Fetch contact points when an organization is selected as producer
+  useEffect(() => {
+    if (selectedProducer && selectedProducer !== "user") {
+      async function loadContactPoints() {
+        try {
+          const response = await fetchOrgContactPoints(selectedProducer);
+          setOrgContactPoints(response.data);
+        } catch (error) {
+          console.error("Error loading contact points:", error);
+          setOrgContactPoints([]);
+        }
+      }
+      loadContactPoints();
+    } else {
+      setOrgContactPoints([]);
+      setSelectedContactPointIds([]);
+    }
+  }, [selectedProducer]);
+
+  const updateDraft = (draftId: number, field: string, value: string) => {
+    setDraftContacts((prev) =>
+      prev.map((d) =>
+        d.id === draftId
+          ? { ...d, [field]: value, errors: { ...d.errors, [field]: false } }
+          : d,
+      ),
+    );
+  };
+
+  const handleSaveContactDraft = async (draftId: number) => {
+    const draft = draftContacts.find((d) => d.id === draftId);
+    if (!draft) return;
+
+    const errors: Record<string, boolean> = {};
+    if (!draft.name.trim()) errors.name = true;
+    if (!draft.email.trim() && !draft.link.trim()) {
+      errors.email = true;
+      errors.link = true;
+    }
+    if (Object.keys(errors).length > 0) {
+      setDraftContacts((prev) =>
+        prev.map((d) => (d.id === draftId ? { ...d, errors } : d)),
+      );
+      return;
+    }
+
+    try {
+      const payload: Parameters<typeof createContactPoint>[0] = {
+        name: draft.name.trim(),
+        role: "contact",
+        organization: selectedProducer,
+      };
+      if (draft.email.trim()) payload.email = draft.email.trim();
+      if (draft.link.trim()) payload.contact_form = draft.link.trim();
+      const newContact = await createContactPoint(payload);
+      setOrgContactPoints((prev) => [...prev, newContact]);
+      setSelectedContactPointIds((prev) => [...prev, newContact.id]);
+      setDraftContacts((prev) =>
+        prev.map((d) =>
+          d.id === draftId ? { ...d, saved: true, errors: {} } : d,
+        ),
+      );
+    } catch (error) {
+      console.error("Error creating contact point:", error);
+    }
+  };
+
+  const handleAddNewDraft = async (saveDraftId: number) => {
+    const draft = draftContacts.find((d) => d.id === saveDraftId);
+    if (!draft) return;
+
+    // Validate before saving
+    const errors: Record<string, boolean> = {};
+    if (!draft.name.trim()) errors.name = true;
+    if (!draft.email.trim() && !draft.link.trim()) {
+      errors.email = true;
+      errors.link = true;
+    }
+    if (Object.keys(errors).length > 0) {
+      setDraftContacts((prev) =>
+        prev.map((d) => (d.id === saveDraftId ? { ...d, errors } : d)),
+      );
+      return;
+    }
+
+    await handleSaveContactDraft(saveDraftId);
+    draftIdRef.current += 1;
+    setDraftContacts((prev) => [
+      ...prev,
+      {
+        id: draftIdRef.current,
+        name: "",
+        email: "",
+        link: "",
+        saved: false,
+        errors: {},
+      },
+    ]);
+  };
+
+  // Whether user has existing datasets
+  const [hasDatasets, setHasDatasets] = useState(true);
 
   useEffect(() => {
     async function loadDropdownData() {
       try {
-        const [licensesData, frequenciesData] = await Promise.all([
-          fetchLicenses(),
-          fetchFrequencies(),
-        ]);
+        const [licensesData, frequenciesData, myDatasetsData, tagsData] =
+          await Promise.all([
+            fetchLicenses(),
+            fetchFrequencies(),
+            fetchMyDatasets(1, 1),
+            suggestTags("", 50),
+          ]);
         setLicenses(licensesData);
         setFrequencies(frequenciesData);
+        setHasDatasets(myDatasetsData.data.length > 0);
+        setTags(tagsData);
       } catch (error) {
         console.error("Error loading dropdown data:", error);
       }
     }
     loadDropdownData();
   }, []);
+
+  // Restore dataset from API when datasetId is in the URL
+  useEffect(() => {
+    if (datasetId && !createdDataset) {
+      async function restoreDataset() {
+        try {
+          const dataset = await fetchDataset(datasetId as string);
+          setCreatedDataset(dataset);
+        } catch (error) {
+          console.error("Error restoring dataset:", error);
+          setApiError("Não foi possível recuperar o conjunto de dados. Volte ao passo anterior.");
+        }
+      }
+      restoreDataset();
+    }
+  }, [datasetId, createdDataset]);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -93,7 +318,7 @@ export default function DatasetsAdminClient({
     const errors: Record<string, boolean> = {};
     if (!datasetTitle.trim()) errors.datasetTitle = true;
     if (!datasetDescription.trim()) errors.datasetDescription = true;
-    if (!selectedFrequency) errors.datasetFrequency = true;
+    if (!selectedFrequencyRef.current) errors.datasetFrequency = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -106,14 +331,20 @@ export default function DatasetsAdminClient({
       const payload: Parameters<typeof createDataset>[0] = {
         title: datasetTitle.trim(),
         description: datasetDescription.trim(),
-        frequency: selectedFrequency,
+        frequency: selectedFrequencyRef.current,
         private: true,
       };
       if (datasetAcronym.trim()) payload.acronym = datasetAcronym.trim();
       if (datasetShortDescription.trim()) {
         payload.description_short = datasetShortDescription.trim();
       }
-      if (selectedLicense) payload.license = selectedLicense;
+      if (selectedProducerRef.current && selectedProducerRef.current !== "user") {
+        payload.organization = selectedProducerRef.current;
+      }
+      if (selectedLicenseRef.current) payload.license = selectedLicenseRef.current;
+      if (selectedContactPointIds.length > 0) {
+        payload.contact_points = selectedContactPointIds;
+      }
       if (temporalStart) {
         payload.temporal_coverage = {
           start: temporalStart,
@@ -123,7 +354,13 @@ export default function DatasetsAdminClient({
 
       const dataset = await createDataset(payload);
       setCreatedDataset(dataset);
-      onNextStep();
+      if (onDatasetCreated) {
+        onDatasetCreated(dataset.id);
+      } else {
+        router.push(
+          `/pages/admin/datasets/new?step=${currentStep + 1}&datasetId=${dataset.id}`,
+        );
+      }
     } catch (error: unknown) {
       const err = error as { status?: number; data?: Record<string, unknown> };
       if (err.data && typeof err.data === "object") {
@@ -140,22 +377,55 @@ export default function DatasetsAdminClient({
   };
 
   const handleStep3Next = async () => {
-    if (uploadedFiles.length === 0) {
+    const hasFiles = uploadedFiles.length > 0;
+    const hasUrl = resourceUrl.trim().startsWith("https://");
+
+    if (!hasFiles && !hasUrl) {
       setShowFileError(true);
       return;
     }
-    if (!createdDataset) return;
+    if (!createdDataset) {
+      setApiError("Erro: o conjunto de dados não foi criado. Volte ao passo anterior e preencha o formulário.");
+      return;
+    }
 
     setApiError(null);
     setIsSubmitting(true);
     try {
-      for (const file of uploadedFiles) {
-        await uploadResource(createdDataset.id, file);
+      if (hasFiles) {
+        for (const file of uploadedFiles) {
+          await uploadResource(createdDataset.id, file);
+        }
+      }
+      if (hasUrl) {
+        await createResource(createdDataset.id, {
+          title: resourceUrl.trim(),
+          type: "main",
+          url: resourceUrl.trim(),
+          filetype: "remote",
+          format: "",
+        });
       }
       onNextStep();
     } catch (error) {
-      console.error("Error uploading resources:", error);
-      setApiError("Erro ao carregar ficheiros. Tente novamente.");
+      if (error instanceof Error) {
+        console.error("Error uploading resources:", error.message, error.stack);
+        setApiError(`Erro ao carregar ficheiro: ${error.message}`);
+      } else {
+        const err = error as { status?: number; data?: Record<string, unknown> };
+        console.error("Error uploading resources:", err.status, err.data);
+        if (err.data && typeof err.data === "object" && Object.keys(err.data).length > 0) {
+          const msg =
+            (err.data.message as string) ||
+            Object.entries(err.data)
+              .map(([key, val]) => `${key}: ${val}`)
+              .join(", ");
+          setApiError(`Erro ao carregar ficheiro: ${msg}`);
+        } else {
+          const statusHint = err.status ? ` (${err.status})` : "";
+          setApiError(`Erro ao carregar ficheiro${statusHint}. Tente novamente.`);
+        }
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -167,7 +437,8 @@ export default function DatasetsAdminClient({
     setIsSubmitting(true);
     try {
       await updateDataset(createdDataset.id, { private: false });
-      router.push("/pages/admin/me/datasets");
+      if (onComplete) onComplete();
+      else router.push("/pages/admin/me/datasets");
     } catch (error) {
       console.error("Error publishing dataset:", error);
       setApiError("Erro ao publicar o conjunto de dados. Tente novamente.");
@@ -177,7 +448,8 @@ export default function DatasetsAdminClient({
   };
 
   const handleSaveDraft = () => {
-    router.push("/pages/admin/me/datasets");
+    if (onComplete) onComplete();
+    else router.push("/pages/admin/me/datasets");
   };
 
   const auxiliarItemsStep2 = [
@@ -194,6 +466,7 @@ export default function DatasetsAdminClient({
           </p>
         </>
       ),
+      hasError: !!formErrors.datasetTitle,
     },
     {
       title: "Adicione uma sigla ao conjunto de dados.",
@@ -225,6 +498,7 @@ export default function DatasetsAdminClient({
           </ul>
         </>
       ),
+      hasError: !!formErrors.datasetDescription,
     },
     {
       title: "Escreva uma breve descrição.",
@@ -282,6 +556,7 @@ export default function DatasetsAdminClient({
       title: "Escolha a frequência de atualização.",
       content:
         "A frequência de atualização refere-se à frequência com que planeja atualizar os dados publicados. Essa frequência de atualização é apenas indicativa.",
+      hasError: !!formErrors.datasetFrequency,
     },
     {
       title: "Forneça a cobertura de tempo.",
@@ -361,9 +636,9 @@ export default function DatasetsAdminClient({
   return (
     <>
       {/* Main content area: form + auxiliar sidebar */}
-      <div className="datasets-admin-page__body">
+      <div className="admin-page__body">
         {/* Left: Form */}
-        <div className="datasets-admin-page__form-area">
+        <div className="admin-page__form-area">
           {apiError && (
             <StatusCard type="danger" description={apiError} />
           )}
@@ -381,18 +656,56 @@ export default function DatasetsAdminClient({
                   </>
                 }
               />
+              <h2 className="admin-page__section-title">Produtor</h2>
+
+              <div className="admin-page__fields-group">
+                <span className="text-primary-900 text-base font-medium leading-7">
+                  Verifique a identidade que deseja usar na publicação.
+                </span>
+                <IsolatedSelect
+                  label=""
+                  hideLabel
+                  placeholder="Selecione o produtor..."
+                  id="dataset-producer"
+                  onChangeRef={selectedProducerRef}
+                  onChangeCallback={(value) => setSelectedProducer(value)}
+                >
+                  {producerOptions}
+                </IsolatedSelect>
+              </div>
+
+              {(!user?.organizations || user.organizations.length === 0) && (
+                <div className="admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center mt-[24px]">
+                  <h3 className="text-primary-900 text-lg font-bold leading-7">
+                    Você não pertence a nenhuma organização.
+                  </h3>
+                  <p className="text-neutral-700 text-base leading-7">
+                    Recomendamos que publique em nome de uma organização se se tratar de uma
+                    atividade profissional.
+                  </p>
+                  <Button
+                    variant="primary"
+                    onClick={() => router.push("/pages/admin/organizations/new")}
+                  >
+                    Crie ou participe de uma organização
+                  </Button>
+                </div>
+              )}
+
+
+
 
               <form
-                className="datasets-admin-page__form"
+                className="admin-page__form"
                 onSubmit={(e) => e.preventDefault()}
               >
-                <p className="text-neutral-900 text-base leading-7">
+                <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
 
-                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+                <h2 className="admin-page__section-title">Descrição</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <InputText
                     label="Título*"
                     placeholder="Insira o título aqui"
@@ -422,16 +735,17 @@ export default function DatasetsAdminClient({
                     id="dataset-description"
                     rows={4}
                     maxLength={246}
+                    showCharCounter={true}
                     value={datasetDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setDatasetDescription(e.target.value);
                       if (e.target.value.trim()) clearError("datasetDescription");
                     }}
                     hasError={!!formErrors.datasetDescription}
-                    hasFeedback={true}
-                    feedbackState={formErrors.datasetDescription ? "danger" : "info"}
-                    errorFeedbackText="Campo obrigatório"
+                    hasFeedback={!!formErrors.datasetDescription || datasetDescription.length < 200}
+                    feedbackState={formErrors.datasetDescription ? "danger" : "warning"}
                     feedbackText="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <InputTextArea
                     label="Descrição resumida"
@@ -441,12 +755,13 @@ export default function DatasetsAdminClient({
                     value={datasetShortDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setDatasetShortDescription(e.target.value);
+                      if (e.target.value.trim()) clearError("datasetShortDescription");
                     }}
-                    hasFeedback={true}
+                    hasFeedback
                     feedbackState="info"
                     feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 200 caracteres da sua descrição."
                   />
-                  <div className="flex items-center gap-[16px]">
+                  <div className="flex items-center justify-between">
                     <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
                       Sugira uma breve descrição.
                     </Button>
@@ -460,35 +775,45 @@ export default function DatasetsAdminClient({
                     </a>
                   </div>
 
-                  <InputSelect
+                  <IsolatedSelect
                     label="Palavras-chave"
                     placeholder="Pesquise por uma palavra-chave..."
                     id="dataset-keywords"
+                    type="checkbox"
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
+                    onChangeRef={dummyRef}
                   >
-                    <DropdownSection name="keywords">
-                      <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
-                  <div className="w-1/2">
-                    <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit" fullWidth>
+                    {tagOptions}
+                  </IsolatedSelect>
+                  <div className="flex items-center justify-between">
+                    <Button appearance="outline" variant="primary" hasIcon leadingIcon="agora-line-edit" leadingIconHover="agora-solid-edit">
                       Sugira palavras-chave
                     </Button>
+                    <a
+                      href="https://dados.gov.pt"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary-600 text-sm underline inline-flex items-center gap-[8px] hover:text-primary-800"
+                    >
+                      O que achou desta sugestão? <Icon name="agora-line-external-link" className="w-4 h-4" />
+                    </a>
                   </div>
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Acesso</h2>
 
-                <div className="datasets-admin-page__fields-group">
+
+                <h2 className="admin-page__section-title">Acesso</h2>
+
+                <div className="admin-page__fields-group">
                   <div className="flex flex-col gap-[8px]">
                     <span className="text-primary-900 text-base font-medium leading-7">
                       Tipo de acesso
                     </span>
-                    <div className="flex flex-row gap-4">
+                    <div className="flex flex-col gap-4">
                       <RadioButton
-                        label="Abrir"
+                        label="Aberto"
                         id="access-open"
                         name="access-type"
                         checked={accessType === "open"}
@@ -504,56 +829,267 @@ export default function DatasetsAdminClient({
                     </div>
                   </div>
 
-                  <InputSelect
+                  {accessType === "restricted" && (
+                    <>
+                      <div className="grid grid-cols-3 gap-8 mt-4 items-end">
+                        <IsolatedSelect
+                          label="Comunidade e Administração"
+                          placeholder=""
+                          id="dataset-restriction-community"
+                          onChangeRef={dummyRef}
+                        >
+                          <DropdownSection name="community">
+                            <DropdownOption value="sim">Sim</DropdownOption>
+                            <DropdownOption value="nao">Não</DropdownOption>
+                            <DropdownOption value="condicional">Condicional</DropdownOption>
+                          </DropdownSection>
+                        </IsolatedSelect>
+                        <IsolatedSelect
+                          label="Empresa e Associação"
+                          placeholder=""
+                          id="dataset-restriction-enterprise"
+                          onChangeRef={dummyRef}
+                        >
+                          <DropdownSection name="enterprise">
+                            <DropdownOption value="sim">Sim</DropdownOption>
+                            <DropdownOption value="nao">Não</DropdownOption>
+                            <DropdownOption value="condicional">Condicional</DropdownOption>
+                          </DropdownSection>
+                        </IsolatedSelect>
+                        <IsolatedSelect
+                          label="Privado"
+                          placeholder=""
+                          id="dataset-restriction-private"
+                          onChangeRef={dummyRef}
+                        >
+                          <DropdownSection name="private">
+                            <DropdownOption value="sim">Sim</DropdownOption>
+                            <DropdownOption value="nao">Não</DropdownOption>
+                            <DropdownOption value="condicional">Condicional</DropdownOption>
+                          </DropdownSection>
+                        </IsolatedSelect>
+                      </div>
+                      <IsolatedSelect
+                        label="Motivo da restrição"
+                        placeholder=""
+                        id="dataset-restriction-reason"
+                        onChangeRef={dummyRef}
+                      >
+                        <DropdownSection name="restriction-reason">
+                          <DropdownOption value="confidencialidade-procedimentos">Confidencialidade dos procedimentos das autoridades públicas</DropdownOption>
+                          <DropdownOption value="relacoes-internacionais">Relações internacionais, segurança pública ou defesa nacional</DropdownOption>
+                          <DropdownOption value="curso-justica">Curso da justiça</DropdownOption>
+                          <DropdownOption value="confidencialidade-comercial">Confidencialidade comercial ou industrial</DropdownOption>
+                          <DropdownOption value="propriedade-intelectual">Direitos de propriedade intelectual</DropdownOption>
+                          <DropdownOption value="dados-pessoais">Confidencialidade dos dados pessoais</DropdownOption>
+                          <DropdownOption value="protecao-fornecedores">Proteção dos fornecedores voluntários de informações</DropdownOption>
+                          <DropdownOption value="protecao-ambiental">Proteção ambiental</DropdownOption>
+                          <DropdownOption value="outros">Outros</DropdownOption>
+                        </DropdownSection>
+                      </IsolatedSelect>
+                    </>
+                  )}
+
+                  <IsolatedSelect
                     label="Licença"
                     placeholder="Selecione uma licença"
                     id="dataset-license"
-                    onChange={(options) => {
-                      if (options.length > 0) {
-                        setSelectedLicense(options[0].value as string);
-                      }
-                    }}
+                    onChangeRef={selectedLicenseRef}
                   >
-                    <DropdownSection name="licenses">
-                      {licenses.map((license) => (
-                        <DropdownOption key={license.id} value={license.id}>
-                          {license.title}
-                        </DropdownOption>
-                      ))}
-                    </DropdownSection>
-                  </InputSelect>
+                    {licenseOptions}
+                  </IsolatedSelect>
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Tempo</h2>
+                {selectedProducer && selectedProducer !== "user" && (
+                  <>
+                    <h2 className="admin-page__section-title">
+                      Pontos de contato
+                    </h2>
 
-                <div className="datasets-admin-page__fields-group">
-                  <InputSelect
+                    <div className="admin-page__fields-group">
+                      <span className="text-primary-900 text-base font-medium leading-7">
+                        Escolha um ponto de contato.
+                      </span>
+
+                      {draftContacts.map((draft) =>
+                        draft.saved ? (
+                          <div
+                            key={draft.id}
+                            className="border border-neutral-300 rounded"
+                          >
+                            <div
+                              className="flex items-center justify-between
+                                px-4 py-3 border-b border-neutral-200"
+                            >
+                              <span className="text-primary-900 text-sm">
+                                {draft.name}
+                              </span>
+                              <div className="flex items-center gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setDraftContacts((prev) =>
+                                      prev.filter((d) => d.id !== draft.id),
+                                    )
+                                  }
+                                  className="text-neutral-500 hover:text-neutral-700"
+                                  aria-label="Remover contato"
+                                >
+                                  <Icon
+                                    name="agora-line-trash"
+                                    className="w-4 h-4"
+                                  />
+                                </button>
+                              </div>
+                            </div>
+                            <div className="px-4 py-3 flex flex-col gap-1">
+                              {draft.email && (
+                                <span className="text-neutral-700 text-sm">
+                                  E-mail de contato : {draft.email}
+                                </span>
+                              )}
+                              {draft.link && (
+                                <span className="text-neutral-700 text-sm">
+                                  URL de contato: {draft.link}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div key={draft.id}>
+                            <div
+                              className="text-primary-900 text-base
+                                font-medium leading-7"
+                              style={{ paddingBottom: "16px" }}
+                            >
+                              Escolha um ponto de contato.
+                            </div>
+                            <div style={{ paddingBottom: "24px" }}>
+                              <InputText
+                                label="Nome *"
+                                placeholder="Por exemplo, o nome do serviço."
+                                id={`contact-name-${draft.id}`}
+                                value={draft.name}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) =>
+                                  updateDraft(
+                                    draft.id,
+                                    "name",
+                                    e.target.value,
+                                  )
+                                }
+                                hasError={!!draft.errors.name}
+                                hasFeedback={!!draft.errors.name}
+                                feedbackState="danger"
+                                errorFeedbackText="Campo obrigatório"
+                              />
+                            </div>
+                            <div
+                              className="grid grid-cols-2 gap-[18px]"
+                              style={{ paddingBottom: "24px" }}
+                            >
+                              <InputText
+                                label="E-mail"
+                                placeholder="contact@organisation.org"
+                                id={`contact-email-${draft.id}`}
+                                value={draft.email}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) =>
+                                  updateDraft(
+                                    draft.id,
+                                    "email",
+                                    e.target.value,
+                                  )
+                                }
+                                hasError={!!draft.errors.email}
+                                hasFeedback={!!draft.errors.email}
+                                feedbackState="danger"
+                                errorFeedbackText="Preencha o e-mail ou a reutilização"
+                              />
+                              <InputText
+                                label="Reutilização"
+                                placeholder="https://..."
+                                id={`contact-link-${draft.id}`}
+                                value={draft.link}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) =>
+                                  updateDraft(
+                                    draft.id,
+                                    "link",
+                                    e.target.value,
+                                  )
+                                }
+                                hasError={!!draft.errors.link}
+                                hasFeedback={!!draft.errors.link}
+                                feedbackState="danger"
+                                errorFeedbackText="Preencha o e-mail ou a reutilização"
+                              />
+                            </div>
+                            <div style={{ paddingBottom: "24px" }}>
+                              <Button
+                                appearance="outline"
+                                variant="primary"
+                                hasIcon
+                                leadingIcon="agora-line-check-circle"
+                                leadingIconHover="agora-solid-check-circle"
+                                onClick={() =>
+                                  handleSaveContactDraft(draft.id)
+                                }
+                              >
+                                Guardar contato
+                              </Button>
+                            </div>
+                          </div>
+                        ),
+                      )}
+
+                      <div style={{ marginTop: "-16px" }}>
+                        <Button
+                          appearance="outline"
+                          variant="primary"
+                          hasIcon
+                          leadingIcon="agora-line-plus-circle"
+                          leadingIconHover="agora-solid-plus-circle"
+                          onClick={() => {
+                            draftIdRef.current += 1;
+                            setDraftContacts((prev) => [
+                              ...prev,
+                              {
+                                id: draftIdRef.current,
+                                name: "",
+                                email: "",
+                                link: "",
+                                saved: false,
+                                errors: {},
+                              },
+                            ]);
+                          }}
+                        >
+                          Novo contato
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <h2 className="admin-page__section-title">Tempo</h2>
+
+                <div className="admin-page__fields-group">
+                  <IsolatedSelect
                     label="Frequência de atualização *"
                     placeholder="Procure uma frequência..."
                     id="dataset-frequency"
-                    onChange={(options) => {
-                      if (options.length > 0) {
-                        setSelectedFrequency(options[0].value as string);
-                        clearError("datasetFrequency");
-                      } else {
-                        setSelectedFrequency("");
-                      }
-                    }}
+                    onChangeRef={selectedFrequencyRef}
                     hasError={!!formErrors.datasetFrequency}
-                    hasFeedback={!!formErrors.datasetFrequency}
-                    feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
                   >
-                    <DropdownSection name="frequencies">
-                      {frequencies.map((freq) => (
-                        <DropdownOption key={freq.id} value={freq.id}>
-                          {freq.label}
-                        </DropdownOption>
-                      ))}
-                    </DropdownSection>
-                  </InputSelect>
+                    {frequencyOptions}
+                  </IsolatedSelect>
 
-                  <div className="flex gap-[18px]">
+                  <div className="grid grid-cols-2 gap-[18px]">
                     <InputDate
                       label="Cobertura temporal (Data de início)"
                       id="dataset-date-start"
@@ -593,7 +1129,54 @@ export default function DatasetsAdminClient({
                   </div>
                 </div>
 
-                <div className="datasets-admin-page__actions">
+                <h2 className="admin-page__section-title">Espaço</h2>
+
+                <div className="admin-page__fields-group">
+                  <IsolatedSelect
+                    label="Cobertura espacial"
+                    placeholder="Procurando cobertura espacial..."
+                    id="dataset-spatial-coverage"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
+                    onChangeRef={dummyRef}
+                  >
+                    <DropdownSection name="spatial-coverage">
+                      <DropdownOption value="national">Nacional</DropdownOption>
+                      <DropdownOption value="regional">Regional</DropdownOption>
+                      <DropdownOption value="local">Local</DropdownOption>
+                    </DropdownSection>
+                  </IsolatedSelect>
+
+                  <IsolatedSelect
+                    label="Granularidade espacial"
+                    placeholder="Procurando granularidade..."
+                    id="dataset-spatial-granularity"
+                    searchable
+                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchNoResultsText="Nenhum resultado encontrado"
+                    onChangeRef={dummyRef}
+                  >
+                    <DropdownSection name="spatial-granularity">
+                      <DropdownOption value="country">País</DropdownOption>
+                      <DropdownOption value="district">Distrito</DropdownOption>
+                      <DropdownOption value="municipality">Município</DropdownOption>
+                      <DropdownOption value="parish">Freguesia</DropdownOption>
+                    </DropdownSection>
+                  </IsolatedSelect>
+                </div>
+
+                <div className="admin-page__actions flex justify-between gap-[18px]">
+                  <Button
+                    variant="primary"
+                    appearance="outline"
+                    hasIcon
+                    leadingIcon="agora-line-arrow-left-circle"
+                    leadingIconHover="agora-solid-arrow-left-circle"
+                    onClick={onPreviousStep}
+                  >
+                    Anterior
+                  </Button>
                   <Button
                     variant="primary"
                     hasIcon
@@ -624,31 +1207,22 @@ export default function DatasetsAdminClient({
                 }
               />
 
-              <div className="datasets-admin-page__form">
-                <h2 className="datasets-admin-page__section-title">FICHEIROS</h2>
+              <div className="admin-page__form">
+                <FileUploadModal
+                  uploadedFiles={uploadedFiles}
+                  resourceUrl={resourceUrl}
+                  hasError={showFileError}
+                  onFilesChange={(files) => {
+                    setUploadedFiles(files);
+                    if (files.length > 0) setShowFileError(false);
+                  }}
+                  onUrlChange={(url) => {
+                    setResourceUrl(url);
+                    if (url.trim().startsWith("https://")) setShowFileError(false);
+                  }}
+                />
 
-                <div className="datasets-admin-page__org-card flex flex-col items-center gap-[16px]">
-                  <ButtonUploader
-                    label="Ficheiros"
-                    inputLabel="Selecione ou arraste o ficheiro"
-                    selectedFilesLabel="ficheiros selecionados"
-                    removeFileButtonLabel="Remover ficheiro"
-                    replaceFileButtonLabel="Substituir ficheiro"
-                    onChange={(e) => {
-                      const files = (e.target as HTMLInputElement).files;
-                      if (files && files.length > 0) {
-                        setUploadedFiles(Array.from(files));
-                        setShowFileError(false);
-                      }
-                    }}
-                    hasError={showFileError}
-                    hasFeedback={showFileError}
-                    feedbackState="danger"
-                    feedbackText="Campo obrigatório"
-                  />
-                </div>
-
-                <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+                <div className="admin-page__actions">
                   <Button
                     appearance="outline"
                     variant="neutral"
@@ -715,7 +1289,7 @@ export default function DatasetsAdminClient({
                 Dê-nos o seu feedback sobre o processo de publicação.
               </Button>
 
-              <div className="datasets-admin-page__actions flex justify-end gap-[18px]">
+              <div className="admin-page__actions flex justify-end gap-[18px]">
                 <Button
                   appearance="outline"
                   variant="neutral"
@@ -738,28 +1312,16 @@ export default function DatasetsAdminClient({
 
         {/* Right: Auxiliar sidebar */}
         {currentStep !== 4 && (
-          <aside className="datasets-admin-page__auxiliar">
-            <div className="datasets-admin-page__auxiliar-inner">
-              <div className="datasets-admin-page__auxiliar-header">
+          <aside className="admin-page__auxiliar">
+            <div className="admin-page__auxiliar-inner">
+              <div className="admin-page__auxiliar-header">
                 <Icon
                   name="agora-line-question-mark"
                   className="w-[24px] h-[24px]"
                 />
-                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
               </div>
-              <AccordionGroup>
-                {auxiliarItems.map((item, idx) => (
-                  <Accordion
-                    key={idx}
-                    headingTitle={item.title}
-                    headingLevel="h3"
-                  >
-                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                      {item.content}
-                    </div>
-                  </Accordion>
-                ))}
-              </AccordionGroup>
+              <AuxiliarList items={auxiliarItems} />
             </div>
           </aside>
         )}

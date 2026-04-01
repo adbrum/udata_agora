@@ -1,21 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_BASE?.replace("/api/1", "") || "http://127.0.0.1:7000";
+import { backendFetch } from "../backend-fetch";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
   const contentType = request.headers.get("content-type") || "application/x-www-form-urlencoded";
 
-  const backendResponse = await fetch(`${BACKEND_URL}/login/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": contentType,
-      Cookie: request.headers.get("cookie") || "",
-    },
-    body,
-    redirect: "manual",
-  });
+  let backendResponse: Response;
+  try {
+    backendResponse = await backendFetch("/login/", {
+      method: "POST",
+      headers: {
+        "Content-Type": contentType,
+        Cookie: request.headers.get("cookie") || "",
+      },
+      body,
+      redirect: "manual",
+    });
+  } catch {
+    return NextResponse.json({ message: "Backend unavailable" }, { status: 502 });
+  }
 
   const responseHeaders = new Headers();
 
@@ -27,8 +30,19 @@ export async function POST(request: NextRequest) {
     responseHeaders.append("Set-Cookie", cleaned);
   }
 
-  // 302 = login succeeded (backend redirects to /)
+  // 302 = backend redirect (could be success or failed login redirecting back to /login/)
   if (backendResponse.status === 302) {
+    const redirectLocation = backendResponse.headers.get("location") || "/";
+
+    // If backend redirects back to /login/, credentials were invalid
+    if (redirectLocation.includes("/login")) {
+      responseHeaders.set("Content-Type", "application/json");
+      return NextResponse.json(
+        { message: "Autenticação falhada - identidade ou senha/código inválido" },
+        { status: 401, headers: responseHeaders }
+      );
+    }
+
     // Build a cookie string with the session cookies from the login response
     // so the migration check call uses the authenticated session
     const existingCookies = request.headers.get("cookie") || "";
@@ -37,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     // Check if this is a legacy user that needs CMD migration
     try {
-      const checkResponse = await fetch(`${BACKEND_URL}/saml/migration/check`, {
+      const checkResponse = await backendFetch("/saml/migration/check", {
         headers: { Cookie: allCookies },
       });
 
@@ -46,7 +60,7 @@ export async function POST(request: NextRequest) {
 
         if (checkData.needs_migration) {
           // Log the user out — they must migrate via CMD first
-          await fetch(`${BACKEND_URL}/logout/`, {
+          await backendFetch("/logout/", {
             headers: { Cookie: allCookies },
             redirect: "manual",
           });
@@ -72,16 +86,18 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 400 = validation error (wrong password, missing CSRF, etc.)
+  // Login failed — backend returned non-302 (e.g. 200 with re-rendered form or 400)
   const responseBody = await backendResponse.text();
 
   // Try to extract error from HTML form response
   const errorMatch = responseBody.match(/class="help-block">([^<]+)</);
-  const errorMessage = errorMatch ? errorMatch[1].trim() : "Invalid credentials";
+  const errorMessage = errorMatch
+    ? errorMatch[1].trim()
+    : "Autenticação falhada - identidade ou senha/código inválido";
 
   responseHeaders.set("Content-Type", "application/json");
   return NextResponse.json(
     { message: errorMessage },
-    { status: backendResponse.status, headers: responseHeaders }
+    { status: 401, headers: responseHeaders }
   );
 }

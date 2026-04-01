@@ -1,11 +1,21 @@
-import type { Metadata } from "next";
-import OrgReusesClient from "@/components/admin/reuses/OrgReusesClient";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Reutilizações - Organização - Admin - dados.gov",
-  description: "Gestão de reutilizações da organização no portal dados.gov.",
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
-export default function OrgReusesPage() {
-  return <OrgReusesClient />;
+export default function OrgReusesRedirect() {
+  const router = useRouter();
+  const { activeOrg, isLoading } = useActiveOrganization();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (activeOrg) {
+      router.replace(`/pages/admin/org/${activeOrg.id}/reuses`);
+    } else {
+      router.replace("/pages/admin");
+    }
+  }, [activeOrg, isLoading, router]);
+
+  return null;
 }

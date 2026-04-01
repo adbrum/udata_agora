@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -9,17 +9,23 @@ import {
   DropdownOption,
   InputText,
   InputTextArea,
-  InputSelect,
   Icon,
   StatusCard,
-  Accordion,
-  AccordionGroup,
   Switch,
   Pill,
 } from "@ama-pt/agora-design-system";
+import { useAuth } from "@/context/AuthContext";
 import PublishDropdown from "@/components/admin/PublishDropdown";
+import AuxiliarList from "@/components/admin/AuxiliarList";
+import IsolatedSelect from "@/components/admin/IsolatedSelect";
+import { createHarvester, previewHarvestSource } from "@/services/api";
+import {
+  HarvestSourceCreatePayload,
+  HarvestPreviewJob,
+} from "@/types/api";
 
 export default function HarvestersNewClient() {
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const totalSteps = 3;
@@ -28,6 +34,7 @@ export default function HarvestersNewClient() {
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
   const [harvesterName, setHarvesterName] = useState("");
+  const [harvesterDescription, setHarvesterDescription] = useState("");
   const [harvesterUrl, setHarvesterUrl] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [isEnabled, setIsEnabled] = useState(true);
@@ -35,6 +42,93 @@ export default function HarvestersNewClient() {
   const [filters, setFilters] = useState<
     { mode: string; type: string; value: string }[]
   >([]);
+  const [selectedType, setSelectedType] = useState("");
+  const [isGeoDcat, setIsGeoDcat] = useState(false);
+  const [showRemoteUrlPrefix, setShowRemoteUrlPrefix] = useState(false);
+  const [remoteUrlPrefix, setRemoteUrlPrefix] = useState("");
+
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [previewJob, setPreviewJob] = useState<HarvestPreviewJob | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const createdHarvesterId =
+    searchParams.get("id") ||
+    (typeof window !== "undefined"
+      ? sessionStorage.getItem("createdHarvesterId")
+      : null);
+
+  const selectedProducerRef = useRef("");
+  const selectedTypeRef = useRef("");
+  const filterModeRefs = useRef<Record<number, React.MutableRefObject<string>>>({});
+  const filterTypeRefs = useRef<Record<number, React.MutableRefObject<string>>>({});
+
+  const getFilterModeRef = (index: number) => {
+    if (!filterModeRefs.current[index]) {
+      filterModeRefs.current[index] = { current: "include" };
+    }
+    return filterModeRefs.current[index];
+  };
+
+  const getFilterTypeRef = (index: number) => {
+    if (!filterTypeRefs.current[index]) {
+      filterTypeRefs.current[index] = { current: "organization" };
+    }
+    return filterTypeRefs.current[index];
+  };
+
+  const producerOptions = useMemo(
+    () => (
+      <DropdownSection name="identity">
+        <>
+          {(user?.organizations || []).map((org) => (
+            <DropdownOption key={org.id} value={org.id}>
+              {org.name}
+            </DropdownOption>
+          ))}
+        </>
+      </DropdownSection>
+    ),
+    [user],
+  );
+
+  const typeOptions = useMemo(
+    () => (
+      <DropdownSection name="types">
+        <DropdownOption value="dcat">DCAT</DropdownOption>
+        <DropdownOption value="csw-dcat">CSW-DCAT</DropdownOption>
+        <DropdownOption value="csw-iso-19139">CSW-ISO-19139</DropdownOption>
+        <DropdownOption value="ckan">CKAN</DropdownOption>
+        <DropdownOption value="ckanpt">CKAN PT</DropdownOption>
+        <DropdownOption value="dkan">DKAN</DropdownOption>
+        <DropdownOption value="cswudata">CSW</DropdownOption>
+        <DropdownOption value="odspt">OpenDataSoft PT</DropdownOption>
+        <DropdownOption value="maaf">MAAF</DropdownOption>
+        <DropdownOption value="ogc">OGC</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
+
+  const filterModeOptions = useMemo(
+    () => (
+      <DropdownSection name="mode">
+        <DropdownOption value="include">Incluir</DropdownOption>
+        <DropdownOption value="exclude">Excluir</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
+
+  const filterTypeSelectOptions = useMemo(
+    () => (
+      <DropdownSection name="type">
+        <DropdownOption value="organization">Organização</DropdownOption>
+        <DropdownOption value="tag">Marcação</DropdownOption>
+      </DropdownSection>
+    ),
+    [],
+  );
 
   const addFilter = () => {
     setFilters((prev) => [...prev, { mode: "include", type: "organization", value: "" }]);
@@ -60,8 +154,55 @@ export default function HarvestersNewClient() {
     }
   };
 
-  const handleStep1Next = () => {
+  const buildPayload = (): HarvestSourceCreatePayload => {
+    const producer = selectedProducerRef.current;
+    const backend = selectedTypeRef.current || "dcat";
+    console.log("[harvester] buildPayload:", { name: harvesterName, url: harvesterUrl, backend, producer, typeRef: selectedTypeRef.current });
+    return {
+      name: harvesterName,
+      url: harvesterUrl,
+      backend,
+      active: isEnabled,
+      autoarchive: isAutoArchive,
+      ...(harvesterDescription.trim() && {
+        description: harvesterDescription,
+      }),
+      ...(producer && producer !== "user" && { organization: producer }),
+      ...(filters.length > 0 && {
+        filters: filters
+          .filter((f) => f.value.trim())
+          .map((f) => ({
+            key: f.type,
+            value: f.value,
+            type: f.mode,
+          })),
+      }),
+    };
+  };
+
+  const handleCreate = async () => {
+    if (isCreating) return;
+    setIsCreating(true);
+    setCreateError(null);
+    try {
+      const created = await createHarvester(buildPayload());
+      sessionStorage.setItem("createdHarvesterId", created.id);
+      router.push(`/pages/admin/harvesters/new?step=3&id=${created.id}`);
+    } catch (err: unknown) {
+      const error = err as { data?: { message?: string }; message?: string };
+      setCreateError(
+        error?.data?.message || error?.message || "Erro ao criar o harvester."
+      );
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleStep1Next = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
     const errors: Record<string, boolean> = {};
+    if (!selectedProducerRef.current || selectedProducerRef.current === "user")
+      errors.harvesterProducer = true;
     if (!harvesterName.trim()) errors.harvesterName = true;
     if (!harvesterUrl.trim()) errors.harvesterUrl = true;
     if (Object.keys(errors).length > 0) {
@@ -69,7 +210,24 @@ export default function HarvestersNewClient() {
       return;
     }
     setFormErrors({});
+
+    setIsPreviewing(true);
+    setPreviewError(null);
+    setPreviewJob(null);
     router.push("/pages/admin/harvesters/new?step=2");
+
+    try {
+      const payload = buildPayload();
+      const job = await previewHarvestSource(payload);
+      setPreviewJob(job);
+    } catch (err: unknown) {
+      const error = err as { data?: { message?: string }; message?: string };
+      setPreviewError(
+        error?.data?.message || error?.message || "Erro ao pré-visualizar o harvester."
+      );
+    } finally {
+      setIsPreviewing(false);
+    }
   };
 
   const stepTitles: Record<number, string> = {
@@ -80,9 +238,34 @@ export default function HarvestersNewClient() {
 
   const auxiliarItems = [
     {
+      title: "Escolha a organização para a qual deseja implementar um coletor de lixo.",
+      content: (
+        <>
+          <p>
+            A criação de um coletor de dados deve ser feita em nome de uma
+            organização e requer direitos de administrador. Selecione uma
+            organização da qual você seja administrador.
+          </p>
+          <p className="mt-[8px]">
+            Se a sua organização ainda não existe, primeiro você precisa{" "}
+            <a
+              href="/pages/admin/organizations/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-600 underline"
+            >
+              criá-la aqui ↗
+            </a>
+            .
+          </p>
+        </>
+      ),
+    },
+    {
       title: "Escolha um nome",
       content:
         "Dê um nome ao seu harvester. Esta é uma referência interna que o ajudará a identificá-lo caso crie vários harvesters. O nome do seu harvester não será público.",
+      hasError: !!formErrors.harvesterName,
     },
     {
       title: "Descreva o seu harvester",
@@ -93,6 +276,7 @@ export default function HarvestersNewClient() {
       title: "Selecione o URL correto",
       content:
         "Insira aqui o URL do portal que deseja recolher. Normalmente, trata-se do URL da página inicial do seu portal de dados abertos. O URL permite que o harvester navegue e recupere todos os seus conjuntos de dados.",
+      hasError: !!formErrors.harvesterUrl,
     },
     {
       title: "Selecione o tipo de implementação",
@@ -102,8 +286,8 @@ export default function HarvestersNewClient() {
   ];
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -116,14 +300,14 @@ export default function HarvestersNewClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Formulário de inscrição</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Formulário de inscrição</h1>
         <PublishDropdown />
       </div>
 
       {/* Step indicator */}
-      <div className="datasets-admin-page__step-header">
-        <p className="datasets-admin-page__step-text">
+      <div className="admin-page__step-header">
+        <p className="admin-page__step-text">
           <span className="text-primary-600 font-bold">Passo {currentStep} - </span>
           <span className="text-primary-900 font-bold">
             {stepTitles[currentStep]}
@@ -132,29 +316,29 @@ export default function HarvestersNewClient() {
       </div>
 
       {/* Progress bar */}
-      <div className="datasets-admin-page__stepper">
-        <div className="datasets-admin-page__stepper-bar">
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--start" />
+      <div className="admin-page__stepper">
+        <div className="admin-page__stepper-bar">
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--start" />
           {Array.from({ length: totalSegments }).map((_, i) => (
             <div
               key={i}
-              className={`datasets-admin-page__stepper-segment ${
+              className={`admin-page__stepper-segment ${
                 i < filledSegments
-                  ? "datasets-admin-page__stepper-segment--filled"
+                  ? "admin-page__stepper-segment--filled"
                   : ""
               }`}
             />
           ))}
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--end" />
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--end" />
         </div>
-        <span className="datasets-admin-page__stepper-label">
+        <span className="admin-page__stepper-label">
           Passo {currentStep}/{totalSteps}
         </span>
       </div>
 
       {/* Main content area */}
-      <div className="datasets-admin-page__body">
-        <div className="datasets-admin-page__form-area">
+      <div className="admin-page__body">
+        <div className="admin-page__form-area">
           {/* Step 1: Descreva o seu harvester */}
           {currentStep === 1 && (
             <>
@@ -171,30 +355,31 @@ export default function HarvestersNewClient() {
                 }
               />
 
-              <form className="datasets-admin-page__form">
-                <p className="text-neutral-900 text-base leading-7">
+              <form className="admin-page__form">
+                <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
 
-                <h2 className="datasets-admin-page__section-title">Produtor</h2>
+                <h2 className="admin-page__section-title">Produtor</h2>
 
-                <div className="datasets-admin-page__fields-group">
-                  <InputSelect
-                    label="Verifique a identidade que deseja usar para publicar *"
+                <div className="admin-page__fields-group">
+                  <IsolatedSelect
+                    key={`producer-${user?.organizations?.length ?? 0}`}
+                    label="Selecione a sua organização *"
                     placeholder="Para pesquisar..."
                     id="harvester-producer"
+                    onChangeRef={selectedProducerRef}
+                    onChangeCallback={() => clearError("harvesterProducer")}
+                    hasError={!!formErrors.harvesterProducer}
+                    errorFeedbackText="Selecione uma organização"
                   >
-                    <DropdownSection name="organizations">
-                      <DropdownOption value="org1">
-                        Organização
-                      </DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
+                    {producerOptions}
+                  </IsolatedSelect>
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+                <h2 className="admin-page__section-title">Descrição</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <InputText
                     label="Nome *"
                     placeholder=""
@@ -215,6 +400,10 @@ export default function HarvestersNewClient() {
                     placeholder=""
                     id="harvester-description"
                     rows={6}
+                    value={harvesterDescription}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                      setHarvesterDescription(e.target.value)
+                    }
                   />
 
                   <InputText
@@ -233,121 +422,230 @@ export default function HarvestersNewClient() {
                   />
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">
+                <h2 className="admin-page__section-title">
                   Implementação
                 </h2>
 
-                <div className="datasets-admin-page__fields-group">
-                  <InputSelect
+                <div className="admin-page__fields-group">
+                  <IsolatedSelect
                     label="Tipo *"
                     placeholder=""
                     id="harvester-type"
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
+                    onChangeRef={selectedTypeRef}
+                    onChangeCallback={(value) => {
+                      setSelectedType(value);
+                      setShowRemoteUrlPrefix(false);
+                      setRemoteUrlPrefix("");
+                      setIsGeoDcat(false);
+                      setFilters([]);
+                    }}
                   >
-                    <DropdownSection name="types">
-                      <DropdownOption value="dcat">DCAT</DropdownOption>
-                      <DropdownOption value="ckan">CKAN</DropdownOption>
-                      <DropdownOption value="csw">CSW</DropdownOption>
-                      <DropdownOption value="ods">ODS</DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
+                    {typeOptions}
+                  </IsolatedSelect>
 
-                  <div>
-                    <p className="text-primary-900 text-base font-medium leading-7">
-                      Filtros
-                    </p>
+                  {/* CKAN / CKANPT: Filtros */}
+                  {(selectedType === "ckan" || selectedType === "ckanpt") && (
+                    <div>
+                      <p className="text-primary-900 text-base font-medium leading-7">
+                        Filtros
+                      </p>
 
-                    {filters.map((filter, index) => (
-                      <div key={index} className={`mt-[8px] pb-[16px] mb-[8px] ${index < filters.length - 1 ? "border-b border-neutral-200" : ""}`}>
-                        <div className="flex items-center gap-[8px]">
-                          <InputSelect
-                            label=""
-                            hideLabel
-                            placeholder="Incluir"
-                            id={`filter-mode-${index}`}
-                            onChange={(options) => {
-                              if (options.length > 0)
-                                updateFilter(index, "mode", options[0].value as string);
-                            }}
-                          >
-                            <DropdownSection name="mode">
-                              <DropdownOption value="include">Incluir</DropdownOption>
-                              <DropdownOption value="exclude">Excluir</DropdownOption>
-                            </DropdownSection>
-                          </InputSelect>
-                          <InputSelect
-                            label=""
-                            hideLabel
-                            placeholder="Organização"
-                            id={`filter-type-${index}`}
-                            onChange={(options) => {
-                              if (options.length > 0)
-                                updateFilter(index, "type", options[0].value as string);
-                            }}
-                          >
-                            <DropdownSection name="type">
-                              <DropdownOption value="organization">Organização</DropdownOption>
-                              <DropdownOption value="tag">Marcação</DropdownOption>
-                            </DropdownSection>
-                          </InputSelect>
-                        </div>
-                        <div className="flex items-center gap-[8px] mt-[8px]">
-                          <div className="flex-1">
-                            <InputText
+                      {filters.map((filter, index) => (
+                        <div key={index} className={`mt-[8px] pb-[16px] mb-[8px] ${index < filters.length - 1 ? "border-b border-neutral-200" : ""}`}>
+                          <div className="flex items-center gap-[8px]">
+                            <IsolatedSelect
                               label=""
                               hideLabel
-                              placeholder=""
-                              id={`filter-value-${index}`}
-                              value={filter.value}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                updateFilter(index, "value", e.target.value)
-                              }
-                            />
+                              placeholder="Incluir"
+                              id={`filter-mode-${index}`}
+                              onChangeRef={getFilterModeRef(index)}
+                            >
+                              {filterModeOptions}
+                            </IsolatedSelect>
+                            <IsolatedSelect
+                              label=""
+                              hideLabel
+                              placeholder="Organização"
+                              id={`filter-type-${index}`}
+                              onChangeRef={getFilterTypeRef(index)}
+                            >
+                              {filterTypeSelectOptions}
+                            </IsolatedSelect>
                           </div>
+                          <div className="flex items-center gap-[8px] mt-[8px]">
+                            <div className="flex-1">
+                              <InputText
+                                label=""
+                                hideLabel
+                                placeholder=""
+                                id={`filter-value-${index}`}
+                                value={filter.value}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                  updateFilter(index, "value", e.target.value)
+                                }
+                              />
+                            </div>
+                            <Button
+                              variant="danger"
+                              hasIcon
+                              iconOnly
+                              leadingIcon="agora-line-trash"
+                              leadingIconHover="agora-solid-trash"
+                              onClick={() => removeFilter(index)}
+                              aria-label="Excluir filtro"
+                            >
+                              {" "}
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+
+                      <Button
+                        appearance="link"
+                        variant="primary"
+                        hasIcon
+                        leadingIcon="agora-line-plus-circle"
+                        leadingIconHover="agora-solid-plus-circle"
+                        onClick={addFilter}
+                      >
+                        Adicionar um filtro
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* CSW-DCAT: GeoDCAT-AP switch + remote URL prefix toggle */}
+                  {selectedType === "csw-dcat" && (
+                    <>
+                      <Switch
+                        label="GeoDCAT-AP"
+                        checked={isGeoDcat}
+                        onChange={() => setIsGeoDcat((v) => !v)}
+                      />
+
+                      {!showRemoteUrlPrefix ? (
+                        <div className="flex justify-start">
                           <Button
-                            variant="danger"
+                            appearance="link"
+                            variant="primary"
                             hasIcon
-                            iconOnly
-                            leadingIcon="agora-line-trash"
-                            leadingIconHover="agora-solid-trash"
-                            onClick={() => removeFilter(index)}
-                            aria-label="Excluir filtro"
+                            leadingIcon="agora-line-plus-circle"
+                            leadingIconHover="agora-solid-plus-circle"
+                            onClick={() => setShowRemoteUrlPrefix(true)}
                           >
-                            {" "}
+                            Configurar prefixo de URL remoto
                           </Button>
                         </div>
-                      </div>
-                    ))}
+                      ) : (
+                        <div>
+                          <p className="text-primary-900 text-base font-medium leading-7">
+                            Prefixo de URL remoto
+                          </p>
+                          <div className="flex items-center gap-[8px] mt-[8px]">
+                            <div className="flex-1">
+                              <InputText
+                                label=""
+                                hideLabel
+                                placeholder=""
+                                id="remote-url-prefix"
+                                value={remoteUrlPrefix}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                  setRemoteUrlPrefix(e.target.value)
+                                }
+                              />
+                            </div>
+                            <Button
+                              appearance="outline"
+                              variant="neutral"
+                              hasIcon
+                              leadingIcon="agora-line-trash"
+                              leadingIconHover="agora-solid-trash"
+                              onClick={() => {
+                                setShowRemoteUrlPrefix(false);
+                                setRemoteUrlPrefix("");
+                              }}
+                            >
+                              EXCLUIR
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
 
-                    <Button
-                      appearance="link"
-                      variant="primary"
-                      hasIcon
-                      leadingIcon="agora-line-plus-circle"
-                      leadingIconHover="agora-solid-plus-circle"
-                      onClick={addFilter}
-                    >
-                      Adicionar um filtro
-                    </Button>
-                  </div>
+                  {/* CSW-ISO-19139: remote URL prefix toggle */}
+                  {selectedType === "csw-iso-19139" && (
+                    <>
+                      {!showRemoteUrlPrefix ? (
+                        <div className="flex justify-start">
+                          <Button
+                            appearance="link"
+                            variant="primary"
+                            hasIcon
+                            leadingIcon="agora-line-plus-circle"
+                            leadingIconHover="agora-solid-plus-circle"
+                            onClick={() => setShowRemoteUrlPrefix(true)}
+                          >
+                            Configurar prefixo de URL remoto
+                          </Button>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="text-primary-900 text-base font-medium leading-7">
+                            Prefixo de URL remoto
+                          </p>
+                          <div className="flex items-center gap-[8px] mt-[8px]">
+                            <div className="flex-1">
+                              <InputText
+                                label=""
+                                hideLabel
+                                placeholder=""
+                                id="remote-url-prefix"
+                                value={remoteUrlPrefix}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                  setRemoteUrlPrefix(e.target.value)
+                                }
+                              />
+                            </div>
+                            <Button
+                              appearance="outline"
+                              variant="neutral"
+                              hasIcon
+                              leadingIcon="agora-line-trash"
+                              leadingIconHover="agora-solid-trash"
+                              onClick={() => {
+                                setShowRemoteUrlPrefix(false);
+                                setRemoteUrlPrefix("");
+                              }}
+                            >
+                              EXCLUIR
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
 
-                  <div className="flex gap-[48px]">
-                    <Switch
-                      label="Ativado"
-                      checked={isEnabled}
-                      onChange={() => setIsEnabled((v) => !v)}
-                    />
-                    <Switch
-                      label="Arquivamento automático"
-                      checked={isAutoArchive}
-                      onChange={() => setIsAutoArchive((v) => !v)}
-                    />
-                  </div>
+                  {/* Switches: only when a type is selected */}
+                  {selectedType && (
+                    <div className="flex gap-[48px]">
+                      <Switch
+                        label="Ativado"
+                        checked={isEnabled}
+                        onChange={() => setIsEnabled((v) => !v)}
+                      />
+                      <Switch
+                        label="Arquivamento automático"
+                        checked={isAutoArchive}
+                        onChange={() => setIsAutoArchive((v) => !v)}
+                      />
+                    </div>
+                  )}
                 </div>
 
-                <div className="datasets-admin-page__actions">
+                <div className="admin-page__actions">
                   <Button
                     variant="primary"
                     hasIcon
@@ -364,56 +662,138 @@ export default function HarvestersNewClient() {
 
           {/* Step 2: Visualize */}
           {currentStep === 2 && (
-            <div className="datasets-admin-page__form">
+            <div className="admin-page__form">
+              {isPreviewing && (
+                <StatusCard
+                  type="info"
+                  description={
+                    <>
+                      <strong>A pré-visualizar o harvester...</strong>
+                      <br />
+                      Por favor aguarde enquanto o harvester é testado.
+                    </>
+                  }
+                />
+              )}
+
               <div className="flex flex-col gap-[8px] mb-[24px]">
-                <p className="text-neutral-700 text-sm flex items-center gap-[6px]">
+                <p className="text-neutral-900 text-sm flex items-center gap-[6px]">
                   <Icon name="agora-line-calendar" className="w-[16px] h-[16px]" />
-                  Iniciado em: 15 de março de 2026 às 17h13
+                  Iniciado em:{" "}
+                  {previewJob?.started
+                    ? new Date(previewJob.started).toLocaleString("pt-PT", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : isPreviewing
+                      ? "..."
+                      : "—"}
                 </p>
-                <p className="text-neutral-700 text-sm flex items-center gap-[6px]">
+                <p className="text-neutral-900 text-sm flex items-center gap-[6px]">
                   <Icon name="agora-line-calendar" className="w-[16px] h-[16px]" />
-                  Terminado em: 15 de março de 2026 às 17:13
+                  Terminado em:{" "}
+                  {previewJob?.ended
+                    ? new Date(previewJob.ended).toLocaleString("pt-PT", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : isPreviewing
+                      ? "..."
+                      : "—"}
                 </p>
-                <p className="text-neutral-700 text-sm">
-                  Status : <Pill variant="danger">Erro</Pill>
+                <p className="text-neutral-900 text-sm flex items-center gap-[6px]">
+                  Estado:{" "}
+                  <Pill
+                    variant={
+                      previewJob
+                        ? previewJob.status === "done"
+                          ? "success"
+                          : previewJob.status === "failed" ||
+                              previewJob.status === "done-errors"
+                            ? "danger"
+                            : "neutral"
+                        : "neutral"
+                    }
+                  >
+                    {previewJob
+                      ? previewJob.status === "done"
+                        ? "Concluído"
+                        : previewJob.status === "failed"
+                          ? "Erro"
+                          : previewJob.status === "done-errors"
+                            ? "Concluído com erros"
+                            : previewJob.status === "processing"
+                              ? "Em processamento"
+                              : "Pendente"
+                      : isPreviewing
+                        ? "Em processamento"
+                        : "Pendente"}
+                  </Pill>
                 </p>
-                <p className="text-neutral-700 text-sm flex items-center gap-[12px]">
+                <p className="text-neutral-900 text-sm flex items-center gap-[12px]">
                   Elementos:
-                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-check" className="w-[16px] h-[16px]" /> 0</span>
-                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-alert-triangle" className="w-[16px] h-[16px]" /> 0</span>
-                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-info-mark" className="w-[16px] h-[16px]" /> 0</span>
-                  <span className="flex items-center gap-[4px]"><Icon name="agora-line-x" className="w-[16px] h-[16px]" /> 0</span>
-                  (0 no total)
+                  <span className="flex items-center gap-[4px]">
+                    <Icon name="agora-line-check" className="w-[16px] h-[16px]" />{" "}
+                    {previewJob?.items.filter((i) => i.status === "done").length ?? 0}
+                  </span>
+                  <span className="flex items-center gap-[4px]">
+                    <Icon name="agora-line-alert-triangle" className="w-[16px] h-[16px]" />{" "}
+                    {previewJob?.items.filter((i) => i.status === "failed").length ?? 0}
+                  </span>
+                  <span className="flex items-center gap-[4px]">
+                    <Icon name="agora-line-info-mark" className="w-[16px] h-[16px]" />{" "}
+                    {previewJob?.items.filter((i) => i.status === "skipped").length ?? 0}
+                  </span>
+                  <span className="flex items-center gap-[4px]">
+                    <Icon name="agora-line-x" className="w-[16px] h-[16px]" />{" "}
+                    {previewJob?.items.filter(
+                      (i) => i.status === "pending" || i.status === "started"
+                    ).length ?? 0}
+                  </span>
+                  ({previewJob?.items.length ?? 0} no total)
                 </p>
               </div>
 
-              <StatusCard
-                type="success"
-                description={
-                  <>
-                    <strong>O seu harvester foi criado</strong>
-                    <br />
-                    O harvester está a aguardar aprovação. Será notificado após aprovação (ou recusa).
-                  </>
-                }
-              />
+              <h2 className="admin-page__section-title">Erros</h2>
 
-              <h2 className="datasets-admin-page__section-title">Erros</h2>
-
-              <StatusCard
-                type="danger"
-                description={
-                  <>
-                    <strong>ERRO</strong> Tipo MIME não suportado: &quot;text/html&quot;
-                  </>
-                }
-              />
+              {previewJob && previewJob.errors.length > 0 ? (
+                previewJob.errors.map((error, index) => (
+                  <StatusCard
+                    key={index}
+                    type="danger"
+                    description={
+                      <>
+                        <strong>ERRO</strong> {error.message}
+                      </>
+                    }
+                  />
+                ))
+              ) : previewError ? (
+                <StatusCard
+                  type="danger"
+                  description={
+                    <>
+                      <strong>ERRO</strong> {previewError}
+                    </>
+                  }
+                />
+              ) : !isPreviewing ? (
+                <p className="text-neutral-700 text-sm">
+                  Nenhum erro encontrado.
+                </p>
+              ) : null}
 
               <p className="text-neutral-700 text-sm font-semibold uppercase mt-[24px]">
-                0 itens
+                {previewJob?.items.length ?? 0} itens
               </p>
 
-              <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+              <div className="admin-page__actions">
                 <Button
                   appearance="outline"
                   variant="neutral"
@@ -428,9 +808,13 @@ export default function HarvestersNewClient() {
                 </Button>
                 <Button
                   variant="primary"
-                  onClick={() => router.push("/pages/admin/system/harvesters")}
+                  hasIcon
+                  trailingIcon="agora-line-arrow-right-circle"
+                  trailingIconHover="agora-solid-arrow-right-circle"
+                  onClick={handleCreate}
+                  disabled={isCreating}
                 >
-                  Ver em administração
+                  {isCreating ? "A criar..." : "Seguinte"}
                 </Button>
               </div>
             </div>
@@ -438,35 +822,76 @@ export default function HarvestersNewClient() {
 
           {/* Step 3: Finalizar */}
           {currentStep === 3 && (
-            <div className="datasets-admin-page__form">
-              <StatusCard
-                type="success"
-                description={
-                  <>
-                    <strong>O seu harvester foi criado!</strong>
-                    <br />
-                    Agora pode gerir o seu harvester.
-                  </>
-                }
-              />
+            <div className="admin-page__form">
+              {createError && (
+                <StatusCard
+                  type="danger"
+                  description={
+                    <>
+                      <strong>Erro ao criar o harvester</strong>
+                      <br />
+                      {createError}
+                    </>
+                  }
+                />
+              )}
 
-              <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+              {!createError && (
+                <StatusCard
+                  type="warning"
+                  description={
+                    <>
+                      <strong>
+                        Seu harvester foi criado e está a aguardar validação pela
+                        equipa de administração.
+                      </strong>
+                      <br />
+                      Informe-nos através do formulário de contato abaixo se
+                      deseja que validemos seu harvester. Você será notificado da
+                      aprovação (ou rejeição).
+                    </>
+                  }
+                />
+              )}
+
+              <div className="flex justify-start mt-[16px]">
+                <Button
+                  appearance="link"
+                  variant="primary"
+                  hasIcon
+                  trailingIcon="agora-line-external-link"
+                  trailingIconHover="agora-solid-external-link"
+                  onClick={() =>
+                    window.open("https://dados.gov.pt/pt/contact", "_blank")
+                  }
+                >
+                  Dê-nos o seu feedback sobre o processo de publicação.
+                </Button>
+              </div>
+
+              <div className="admin-page__actions">
                 <Button
                   appearance="outline"
                   variant="neutral"
                   onClick={() =>
-                    router.push("/pages/admin/harvesters/new?step=2")
+                    router.push(
+                      createdHarvesterId
+                        ? `/pages/admin/harvesters/${createdHarvesterId}`
+                        : "/pages/admin/system/harvesters"
+                    )
                   }
                 >
-                  Anterior
+                  Vá até a administração
                 </Button>
                 <Button
-                  variant="primary"
-                  onClick={() =>
-                    router.push("/pages/admin/system/harvesters")
-                  }
+                  appearance="outline"
+                  variant="neutral"
+                  hasIcon
+                  trailingIcon="agora-line-external-link"
+                  trailingIconHover="agora-solid-external-link"
+                  onClick={() => router.push("/pages/support")}
                 >
-                  Guardar
+                  Validação da solicitação
                 </Button>
               </div>
             </div>
@@ -475,28 +900,16 @@ export default function HarvestersNewClient() {
 
         {/* Right: Auxiliar sidebar (only for step 1) */}
         {currentStep === 1 && (
-          <aside className="datasets-admin-page__auxiliar">
-            <div className="datasets-admin-page__auxiliar-inner">
-              <div className="datasets-admin-page__auxiliar-header">
+          <aside className="admin-page__auxiliar">
+            <div className="admin-page__auxiliar-inner">
+              <div className="admin-page__auxiliar-header">
                 <Icon
                   name="agora-line-question-mark"
                   className="w-[24px] h-[24px]"
                 />
-                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
               </div>
-              <AccordionGroup>
-                {auxiliarItems.map((item, idx) => (
-                  <Accordion
-                    key={idx}
-                    headingTitle={item.title}
-                    headingLevel="h3"
-                  >
-                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                      {item.content}
-                    </div>
-                  </Accordion>
-                ))}
-              </AccordionGroup>
+              <AuxiliarList items={auxiliarItems} />
             </div>
           </aside>
         )}

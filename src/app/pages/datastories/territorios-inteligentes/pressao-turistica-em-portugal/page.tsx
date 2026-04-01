@@ -5,6 +5,7 @@ import { Metadata } from 'next';
 import { CardCompound } from '@/components/datastories/Components/Shared/CardCompound';
 import FooterReference from '@/components/datastories/Components/Shared/FooterReference';
 import DataSourcesSection, { DataSourcesSectionProps } from '@/components/datastories/Components/Shared/DataSourcesSection';
+import { SourceInfoFooter } from '@/components/datastories/Components/Shared/SourceInfoFooter';
 
 export const metadata: Metadata = {
     title: 'Data Story - dados.gov',
@@ -38,11 +39,16 @@ export default function DataStoryDetailPage() {
         sections: [{
             title: 'De que forma evoluiu o número de hóspedes e residentes ao longo do tempo?',
             description: "Observe a diferença entre a população residente e a população presente, resultante da soma entre residentes e hóspedes. A linha da população residente mantém-se estável, refletindo a base demográfica permanente do país. Já a linha da população presente varia ao longo do tempo, acompanhando as oscilações no número de hóspedes. ",
-            className: 'bg-primary-100',
-            extraPy: 'py-[64px]',
+            className: 'bg-white',
+            extraPy: 'pt-[64px]',
             iFrame: {
-                className: 'w-full h-[1200px] bg-white',
-                src: '',
+                className: '',
+                src: 'https://app.powerbi.com/view?r=eyJrIjoiY2M1OTY2Y2EtZWVhMy00NGZlLTllYjItNDUyYTBlZmJkMDczIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
+            },
+            source: {
+                dataSource: "INE",
+                update: "2026-03-19T00:00:00Z",
+                download: "#",
             },
             label: "Esta visualização permite identificar períodos de maior presença turística e compreender como o turismo altera temporariamente a dimensão da população no território."
         }, {
@@ -51,8 +57,13 @@ export default function DataStoryDetailPage() {
             className: 'bg-white',
             extraPy: 'pt-[64px]',
             iFrame: {
-                className: 'w-full h-[1200px] bg-primary-100',
-                src: '',
+                className: '',
+                src: 'https://app.powerbi.com/view?r=eyJrIjoiMGYxNjMzNjgtYmFmYy00Njg2LWExY2QtMmY4MjgwNjM1YmExIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
+            },
+            source: {
+                dataSource: "INE",
+                update: "2026-03-19T00:00:00Z",
+                download: "#",
             },
             label: "Analise a distribuição do número de hóspedes e da população residente em Portugal."
         },
@@ -60,21 +71,31 @@ export default function DataStoryDetailPage() {
             title: 'Proporção entre o número de hóspedes e residentes por município',
             description: "Compare o número de hóspedes e residentes em cada município. A comparação entre municípios permite identificar diferenças na intensidade da atividade turística e observar onde o número de visitantes assume maior expressão.",
             className: 'bg-white',
-            extraPy: 'py-[64px]',
+            extraPy: 'pt-[64px]',
             iFrame: {
-                className: 'w-full h-[820px] bg-primary-100',
-                src: '',
+                className: '',
+                src: 'https://app.powerbi.com/view?r=eyJrIjoiMzdlYWZjYjItZjMwZS00ZGZiLTgxY2MtMTE4YmJkY2I2ZmMwIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
+            },
+            source: {
+                dataSource: "INE",
+                update: "2026-03-19T00:00:00Z",
+                download: "#",
             },
             label: "Este gráfico permite analisar a relação entre visitantes e população local em cada território. Utilize os filtros para explorar os dados por ano ou mês."
         },
         {
             title: 'Percentagem do número de hóspedes face à população residente em cada município',
             description: "O número total de hóspedes não reflete necessariamente a intensidade da atividade turística. Para compreender essa intensidade, é importante analisar a relação entre hóspedes e população residente, permitindo observar onde a presença de visitantes assume maior peso relativo face à população local. ",
-            className: 'bg-primary-100',
+            className: 'bg-white',
             extraPy: 'py-[64px]',
             iFrame: {
-                className: 'w-full h-[1530px] bg-white',
-                src: '',
+                className: '',
+                src: 'https://app.powerbi.com/view?r=eyJrIjoiODU5YzhhZDgtNTdlNC00MGIzLTlhMjgtZTRkNjZlYjc2NjIwIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
+            },
+            source: {
+                dataSource: "INE",
+                update: "2026-03-19T00:00:00Z",
+                download: "#",
             },
             label: "Explore a percentagem de hóspedes em relação à população residente. Territórios com percentagens mais elevadas indicam uma presença turística mais intensa em relação à população local. Utilize os filtros temporais para observar como esta relação varia ao longo do tempo. "
         }],
@@ -129,7 +150,20 @@ export default function DataStoryDetailPage() {
                             <InfoBlock.Title titleLevel="h2" title={section.title} className='text-2xl font-bold text-primary-900' />
                             <InfoBlock.Description className='whitespace-pre-wrap text-m-light text-black max-w-[500px] ' description={section.description} />
                         </InfoBlock.Header>
-                        <iframe src={section.iFrame.src} className={section.iFrame.className} />
+                        <div>
+                            <InfoBlock.IFrame
+                                src={section.iFrame.src}
+                                className={section.iFrame.className}
+
+                            />
+                            <SourceInfoFooter
+                                dataSource={section.source.dataSource}
+                                update={section.source.update}
+                                download={section.source.download}
+                                className='mt-16'
+                            />
+                        </div>
+
                         <InfoBlock.Content>
                             <InfoBlock.Description className='text-m-regular text-black' description={section.label} />
                         </InfoBlock.Content>

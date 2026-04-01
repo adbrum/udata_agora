@@ -14,6 +14,8 @@ import {
   Area,
   Languages,
   Language,
+  Search,
+  CustomSearch,
   Unauthenticated,
   UnauthenticatedLink,
   Icon,
@@ -34,27 +36,44 @@ export const Header = () => {
   const pathname = usePathname();
   const { user, samlLogin } = useAuth();
 
-  // Create a DOM node for the "Desconectar" portal
+  // Create DOM nodes for "Administração" and "Desconectar" portals
+  const [adminPortalNode, setAdminPortalNode] = useState<HTMLLIElement | null>(null);
   const [logoutPortalNode, setLogoutPortalNode] = useState<HTMLLIElement | null>(null);
   React.useEffect(() => {
     const panelsList = document.querySelector("header.sticky .panels-menu > ul");
     if (!panelsList) return;
 
     if (user) {
-      let li = panelsList.querySelector(".logout-panel-menu") as HTMLLIElement | null;
-      if (!li) {
-        li = document.createElement("li");
-        li.className = "logout-panel-menu";
-        panelsList.appendChild(li);
+      // Administração portal
+      let adminLi = panelsList.querySelector(".admin-panel-menu") as HTMLLIElement | null;
+      if (!adminLi) {
+        adminLi = document.createElement("li");
+        adminLi.className = "admin-panel-menu";
+        panelsList.appendChild(adminLi);
       }
-      setLogoutPortalNode(li);
+      setAdminPortalNode(adminLi);
+
+      // Desconectar portal
+      let logoutLi = panelsList.querySelector(".logout-panel-menu") as HTMLLIElement | null;
+      if (!logoutLi) {
+        logoutLi = document.createElement("li");
+        logoutLi.className = "logout-panel-menu";
+        panelsList.appendChild(logoutLi);
+      }
+      setLogoutPortalNode(logoutLi);
     } else {
-      const existing = panelsList.querySelector(".logout-panel-menu");
-      if (existing) existing.remove();
+      const existingAdmin = panelsList.querySelector(".admin-panel-menu");
+      if (existingAdmin) existingAdmin.remove();
+      setAdminPortalNode(null);
+
+      const existingLogout = panelsList.querySelector(".logout-panel-menu");
+      if (existingLogout) existingLogout.remove();
       setLogoutPortalNode(null);
     }
 
     return () => {
+      panelsList.querySelector(".admin-panel-menu")?.remove();
+      setAdminPortalNode(null);
       panelsList.querySelector(".logout-panel-menu")?.remove();
       setLogoutPortalNode(null);
     };
@@ -72,34 +91,11 @@ export const Header = () => {
       setSelectedArea('1');
     }
 
-    // Force close the responsive menu on route change
-    const closeMenu = () => {
-      // 1. Try via design system ref
-      if (headerRef.current?.closeResponsiveMenu) {
-        headerRef.current.closeResponsiveMenu();
-      }
-
-      // 2. Fallback: Try to trigger click on the close button in the modal/menu
-      const closeButton = document.querySelector(
-        '.agora-header-navigation-modal [aria-label="Fechar"], .agora-header-navigation-modal button.agora-modal-close'
-      ) as HTMLButtonElement;
-      if (closeButton) {
-        closeButton.click();
-      }
-
-      // 3. Fallback: Close expanded panel by clicking its toggle button
-      const expandedBtn = document.querySelector(
-        '.agora-header button.panel-menu-button[aria-expanded="true"]'
-      ) as HTMLButtonElement;
-      if (expandedBtn) {
-        expandedBtn.click();
-      }
-    };
-
-    // Small timeout to ensure the route change has started and the DOM is accessible
-    const timer = setTimeout(closeMenu, 100);
+    // Force close all menus/panels on route change via design system API
+    if (headerRef.current?.closeAll) {
+      headerRef.current.closeAll();
+    }
     setSubmenu(null);
-    return () => clearTimeout(timer);
   }, [pathname]);
 
   // Mark header when on auth pages so CSS can style the "Autenticar" button
@@ -223,18 +219,18 @@ export const Header = () => {
         : [
           {
             type: "card",
-            key: "sobre",
+            key: "dados-gov",
             iconDefault: "agora-line-info-mark",
             iconHover: "agora-solid-info-mark",
-            title: "Sobre dados abertos",
-            description: "Informação geral",
-            href: "/pages/about-open-data",
+            title: "O que é o dados.gov",
+            description: "Sobre o portal",
+            href: "/pages/faqs/about_dadosgov",
           },
           {
             type: "card",
             key: "publicar",
-            iconDefault: "agora-line-layers-menu",
-            iconHover: "agora-solid-layers-menu",
+            iconDefault: "agora-line-info-mark",
+            iconHover: "agora-solid-info-mark",
             title: "Publicar dados",
             description: "Guia de publicação",
             href: "/pages/faqs/publish",
@@ -242,20 +238,20 @@ export const Header = () => {
           {
             type: "card",
             key: "reutilizar",
-            iconDefault: "agora-line-layers-menu",
-            iconHover: "agora-solid-layers-menu",
+            iconDefault: "/Icons/bar_char_white.svg",
+            iconHover: "/Icons/bar_char_white.svg",
             title: "Reutilizar dados",
             description: "Guia de reutilização",
             href: "/pages/faqs/reuse",
           },
           {
             type: "card",
-            key: "dados-gov",
-            iconDefault: "agora-line-question-mark",
-            iconHover: "agora-solid-question-mark",
-            title: "O que é o dados.gov",
-            description: "Sobre o portal",
-            href: "/pages/faqs/about_dadosgov",
+            key: "sobre",
+            iconDefault: "agora-line-info-mark",
+            iconHover: "agora-solid-info-mark",
+            title: "Sobre dados abertos",
+            description: "Informação geral",
+            href: "/pages/about-open-data",
           },
           {
             type: "card",
@@ -285,7 +281,7 @@ export const Header = () => {
             iconHover: "agora-solid-mega-phone",
             title: "Notícias",
             description: "Últimas novidades",
-            href: "/pages/article",
+            href: "/pages/posts",
           },
           // Minicursos ocultos temporariamente
           // {
@@ -300,20 +296,12 @@ export const Header = () => {
         ];
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    // Force close the menu immediately
-    if (headerRef.current?.closeResponsiveMenu) {
-      headerRef.current.closeResponsiveMenu();
+    // Close all menus/panels via design system API
+    if (headerRef.current?.closeAll) {
+      headerRef.current.closeAll();
     }
+    setSubmenu(null);
 
-    // Fallback close
-    const closeButton = document.querySelector(
-      '.agora-header-navigation-modal [aria-label="Fechar"], .agora-header-navigation-modal button.agora-modal-close'
-    ) as HTMLButtonElement;
-    if (closeButton) {
-      closeButton.click();
-    }
-
-    // In mobile, sometimes we need to manually trigger the router to ensure it happens after the menu closes
     if (href !== '#') {
       router.push(href);
     }
@@ -322,12 +310,12 @@ export const Header = () => {
   return (
     <>
     <header className="sticky top-0 z-sticky" data-auth-page={isAuthPage || undefined} data-no-user={!user || undefined} onClickCapture={handleHeaderClickCapture}>
-      <AgoraHeader ref={headerRef}>
+      <AgoraHeader ref={headerRef} maxNavigationItems={6}>
         <Brand>
           <Logo>
             <Link href="/" className="flex items-center">
               <NextImage
-                src="/Logos/logo.png"
+                src="/Logos/logo.svg"
                 alt="dados.gov"
                 height={43}
                 width={251}
@@ -350,12 +338,14 @@ export const Header = () => {
               onClick={() => router.push('/')}
               active={selectedArea === '1'}
             />
-            <Area
-              value="2"
-              label="Iniciar Sessão"
-              onClick={() => router.push('/pages/login')}
-              active={selectedArea === '2'}
-            />
+            <div className="hidden">
+              <Area
+                value="2"
+                label="Iniciar Sessão"
+                onClick={() => router.push('/pages/login')}
+                active={selectedArea === '2'}
+              />
+            </div>
           </Areas>
 
           <Languages
@@ -390,25 +380,31 @@ export const Header = () => {
             />
           </Languages>
 
-          <div className="header-search-wrapper flex items-center">
-            <SearchDropdown
-              id="header-search"
-              placeholder="Pesquisar"
-              label="Pesquisar"
-            />
-          </div>
+          <Search label="Pesquisar">
+            <CustomSearch>
+              <div style={{ maxWidth: "40vw" }}>
+                <SearchDropdown
+                  id="header-search"
+                  hasVoiceActionButton={false}
+                  label="O que procura no Portal?"
+                  placeholder="Pesquisar conjunto de dados, organizações, temas..."
+                  excludeTypes={["dataservices"]}
+                />
+              </div>
+            </CustomSearch>
+          </Search>
 
           <Unauthenticated
-            label={user ? "Administração" : "Autenticar"}
-            aria-label={user ? "Administração" : "Autenticar"}
+            label={user ? `${user.first_name} ${user.last_name}` : "Autenticar"}
+            aria-label={user ? `${user.first_name} ${user.last_name}` : "Autenticar"}
           >
             <UnauthenticatedLink
               hasIcon
               leadingIcon="agora-line-user"
               leadingIconHover="agora-solid-user"
             >
-              <Link href={user ? "/pages/admin/me/datasets" : "/pages/login"}>
-                {user ? "Administração" : "Autenticar"}
+              <Link href={user ? `/pages/users/${user.slug}` : "/pages/login"}>
+                {user ? `${user.first_name} ${user.last_name}` : "Autenticar"}
               </Link>
             </UnauthenticatedLink>
           </Unauthenticated>
@@ -422,87 +418,29 @@ export const Header = () => {
           modalAriaLabel="Menu de navegação"
           modalCloseLabel="Fechar"
         >
-          <NavigationRoot label="Contribuir">
-            {[
-              {
-                iconDefault: "agora-line-layers-menu",
-                iconHover: "agora-solid-layers-menu",
-                title: "Novo Conjunto de Dados",
-                description: "Pesquisar e explorar dados",
-                href: "/pages/admin/me/datasets/new",
-              },
-              {
-                iconDefault: "/Icons/bar_char_white.svg",
-                iconHover: "/Icons/bar_char_white.svg",
-                title: "Nova Reutilização",
-                description: "Casos de uso",
-                href: "/pages/admin/me/reuses/new",
-              },
-              {
-                iconDefault: "agora-line-buildings",
-                iconHover: "agora-solid-buildings",
-                title: "Nova Organização",
-                description: "Entidades",
-                href: "#",
-              },
-              {
-                iconDefault: "agora-line-help-support",
-                iconHover: "agora-solid-help-support",
-                title: "Contactar",
-                description: "Fale connosco",
-                href: "/pages/support",
-              },
-            ].map((card) => (
-              <NavigationLink key={card.title} appearance="link">
-                <HeaderCard {...card} onLinkClick={handleLinkClick} />
-              </NavigationLink>
-            ))}
-          </NavigationRoot>
+          <NavigationLink appearance="link">
+            <Link href="/pages/datastories" onClick={(e) => handleLinkClick(e, '/pages/datastories')}>
+              Data Stories
+            </Link>
+          </NavigationLink>
 
-          <NavigationRoot label="Explorar">
-            {[
-              {
-                iconDefault: "agora-line-layers-menu",
-                iconHover: "agora-solid-layers-menu",
-                title: "Conjuntos de dados",
-                description: "Explore os dados",
-                href: "/pages/datasets",
-              },
-              {
-                iconDefault: "agora-line-health",
-                iconHover: "agora-solid-health",
-                title: "HVDs",
-                description: "High Value Datasets",
-                href: "/pages/datasets?tag=hvd",
-              },
-              {
-                iconDefault: "/Icons/bar_char_white.svg",
-                iconHover: "/Icons/bar_char_white.svg",
-                title: "Reutilizações",
-                description: "Casos de uso",
-                href: "/pages/reuses",
-              },
-              {
-                iconDefault: "agora-line-buildings",
-                iconHover: "agora-solid-buildings",
-                title: "Organizações",
-                description: "Entidades públicas",
-                href: "/pages/organizations",
-              },
-              // Data Stories oculto temporariamente
-              // {
-              //   iconDefault: "agora-line-bell",
-              //   iconHover: "agora-solid-bell",
-              //   title: "Data Stories",
-              //   description: "Histórias com dados",
-              //   href: "/pages/datastories",
-              // },
-            ].map((card) => (
-              <NavigationLink key={card.title} appearance="link">
-                <HeaderCard {...card} onLinkClick={handleLinkClick} />
-              </NavigationLink>
-            ))}
-          </NavigationRoot>
+          <NavigationLink appearance="link">
+            <Link href="/pages/datasets" onClick={(e) => handleLinkClick(e, '/pages/datasets')}>
+              Conjuntos de dados
+            </Link>
+          </NavigationLink>
+
+          <NavigationLink appearance="link">
+            <Link href="/pages/reuses" onClick={(e) => handleLinkClick(e, '/pages/reuses')}>
+              Reutilizações
+            </Link>
+          </NavigationLink>
+
+          <NavigationLink appearance="link">
+            <Link href="/pages/organizations" onClick={(e) => handleLinkClick(e, '/pages/organizations')}>
+              Organizações
+            </Link>
+          </NavigationLink>
 
           <NavigationRoot label="Conhecimento">
             {conhecimentoItems.map((item) => {
@@ -633,9 +571,62 @@ export const Header = () => {
             })}
 
           </NavigationRoot>
+
+          <NavigationRoot label="Publicar">
+            {[
+              {
+                iconDefault: "agora-line-layers-menu",
+                iconHover: "agora-solid-layers-menu",
+                title: "Novo Conjunto de Dados",
+                description: "Publicar dados",
+                href: "/pages/admin/datasets/new",
+              },
+              {
+                iconDefault: "/Icons/bar_char_white.svg",
+                iconHover: "/Icons/bar_char_white.svg",
+                title: "Nova Reutilização",
+                description: "Casos de uso",
+                href: "/pages/admin/reuses/new",
+              },
+              {
+                iconDefault: "agora-line-buildings",
+                iconHover: "agora-solid-buildings",
+                title: "Nova Organização",
+                description: "Entidades",
+                href: "/pages/admin/organizations/new?step=1",
+              },
+              {
+                iconDefault: "/Icons/harvester.svg",
+                iconHover: "/Icons/harvester-solid.svg",
+                title: "Novo Harvester",
+                description: "Recolha automática",
+                href: "/pages/admin/harvesters/new",
+              },
+            ].map((card) => (
+              <NavigationLink key={card.title} appearance="link">
+                <HeaderCard {...card} onLinkClick={handleLinkClick} />
+              </NavigationLink>
+            ))}
+          </NavigationRoot>
         </NavigationBar>
       </AgoraHeader>
     </header>
+    {adminPortalNode && createPortal(
+      <div className="panel-menu unauthenticated-panel-menu">
+        <span className="agora-link-wrapper agora-link-wrapper-link-neutral full-width inline-flex items-center justify-center min-h-[44px] min-w-[44px] py-8 custom-header-link-wrapper panel-menu-link-wrapper">
+          <Link
+            className="link-with-icon"
+            href="/pages/admin/me/datasets"
+          >
+            <div className="icon-wrapper leading">
+              <Icon name="agora-line-hardware-settings" dimensions="s" />
+            </div>
+            <span className="children-wrapper">Administração</span>
+          </Link>
+        </span>
+      </div>,
+      adminPortalNode
+    )}
     {logoutPortalNode && createPortal(
       <div className="panel-menu unauthenticated-panel-menu">
         <span className="agora-link-wrapper agora-link-wrapper-link-neutral full-width inline-flex items-center justify-center min-h-[44px] min-w-[44px] py-8 custom-header-link-wrapper panel-menu-link-wrapper">
@@ -655,7 +646,7 @@ export const Header = () => {
             <div className="icon-wrapper leading">
               <Icon name="agora-line-log-out" dimensions="s" />
             </div>
-            <span className="children-wrapper">Desconectar</span>
+            <span className="children-wrapper">Sair</span>
           </a>
         </span>
       </div>,

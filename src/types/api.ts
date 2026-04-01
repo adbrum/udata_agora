@@ -10,6 +10,7 @@ export interface UserRef {
   saml_login?: boolean;
   roles?: string[];
   organizations?: Organization[];
+  last_modified?: string;
 }
 
 export interface UserMetrics {
@@ -241,6 +242,7 @@ export interface Dataset {
   organization: Organization | null;
   owner: UserRef | null;
   license: string | null;
+  license_url: string | null;
   frequency: string;
   frequency_date?: string | null;
   temporal_coverage?: TemporalCoverage | null;
@@ -261,6 +263,7 @@ export interface Dataset {
   quality?: DatasetQuality;
   extras?: Record<string, unknown>;
   harvest?: Record<string, unknown> | null;
+  contact_points?: ContactPoint[];
   uri: string;
   page: string;
   permissions?: DatasetPermissions;
@@ -279,6 +282,7 @@ export interface DatasetCreatePayload {
   spatial?: SpatialCoverage;
   private?: boolean;
   organization?: string;
+  contact_points?: string[];
   extras?: Record<string, unknown>;
 }
 
@@ -324,6 +328,7 @@ export interface ReuseFilters {
   type?: string;
   tag?: string;
   organization?: string;
+  owner?: string;
   dataset?: string;
   sort?: string;
 }
@@ -465,6 +470,13 @@ export interface SiteInfo {
   metrics: SiteMetrics;
 }
 
+export interface HomepageData {
+  site_metrics: SiteMetrics;
+  latest_datasets: Dataset[];
+  latest_reuses: Reuse[];
+  latest_posts: Post[];
+}
+
 export interface SiteConfigUpdatePayload {
   title?: string;
   [key: string]: unknown;
@@ -587,6 +599,25 @@ export interface DiscussionCreatePayload {
     class: string;
     id: string;
   };
+  organization?: string;
+}
+
+export interface ContactPoint {
+  id: string;
+  name: string;
+  email: string;
+  contact_form?: string;
+  role: string;
+  organization?: { id: string; name: string } | null;
+  owner?: UserRef | null;
+}
+
+export interface ContactPointCreatePayload {
+  name: string;
+  email?: string;
+  contact_form?: string;
+  role: string;
+  organization?: string;
 }
 
 export interface License {
@@ -663,27 +694,13 @@ export interface DatasetFilters {
   geozone?: string;
   granularity?: string;
   organization?: string | string[];
+  owner?: string;
   badge?: string | string[];
   featured?: boolean;
   sort?: string;
 }
 
-export interface DiscussionMessage {
-  content: string;
-  posted_by: UserRef;
-  posted_on: string;
-}
 
-export interface Discussion {
-  id: string;
-  title: string;
-  user: UserRef;
-  created: string;
-  closed: string | null;
-  closed_by: UserRef | null;
-  discussion: DiscussionMessage[];
-  url: string;
-}
 
 export interface TopicElementsLink {
   rel: string;
@@ -820,6 +837,21 @@ export interface FollowResponse {
   followers: number;
 }
 
+export interface UserFollowing {
+  id: string;
+  follower: UserRef;
+  following: {
+    id: string;
+    class: string;
+    name?: string;
+    title?: string;
+    slug?: string;
+    avatar_thumbnail?: string | null;
+    image_thumbnail?: string | null;
+  };
+  since: string;
+}
+
 export interface CommunityResource {
   id: string;
   title: string;
@@ -827,20 +859,27 @@ export interface CommunityResource {
   url: string;
   filetype: string | null;
   format: string | null;
+  filesize: number | null;
+  mime: string | null;
+  checksum: { type: string; value: string } | null;
   dataset: DatasetRef | null;
   organization: Organization | null;
   owner: UserRef | null;
   created_at: string;
   last_modified: string;
+  archived: boolean;
+  deleted: boolean;
 }
 
 export interface CommunityResourceCreatePayload {
   title: string;
   description?: string;
   url: string;
-  filetype?: string;
+  filetype?: "file" | "remote";
+  type?: string;
   format?: string;
   dataset: string;
+  organization?: string;
 }
 
 export interface CommunityResourceUpdatePayload {
@@ -852,13 +891,51 @@ export interface CommunityResourceUpdatePayload {
   dataset?: string;
 }
 
+export interface HarvestError {
+  message: string;
+  details: string | null;
+}
+
+export interface HarvestItem {
+  remote_id: string;
+  status: "pending" | "started" | "done" | "failed" | "skipped" | "archived";
+  errors: HarvestError[];
+}
+
 export interface HarvestJob {
   id: string;
-  status: "pending" | "started" | "done" | "failed";
+  status: "pending" | "initializing" | "initialized" | "started" | "processing" | "done" | "done-errors" | "failed";
+  created: string | null;
   started: string | null;
   ended: string | null;
-  errors: number;
-  items: number;
+  errors: Record<string, unknown>[];
+  items: Record<string, unknown>[];
+  source: string;
+}
+
+export interface HarvestSourceValidation {
+  state: "pending" | "accepted" | "refused";
+  by: UserRef | null;
+  on: string | null;
+  comment: string | null;
+}
+
+export interface HarvestPreviewJob {
+  id: string;
+  status:
+    | "pending"
+    | "initializing"
+    | "initialized"
+    | "processing"
+    | "done"
+    | "done-errors"
+    | "failed";
+  created: string;
+  started: string | null;
+  ended: string | null;
+  errors: HarvestError[];
+  items: HarvestItem[];
+  source: string;
 }
 
 export interface HarvestSource {
@@ -874,6 +951,7 @@ export interface HarvestSource {
   features: Record<string, boolean>;
   active: boolean;
   autoarchive: boolean;
+  validation: HarvestSourceValidation | null;
   created_at: string;
   last_modified: string;
   last_job: HarvestJob | null;
@@ -918,6 +996,8 @@ export interface UserAdmin extends UserPublic {
 export interface UserAdminUpdatePayload {
   first_name?: string;
   last_name?: string;
+  about?: string;
+  website?: string;
   roles?: UserRole[];
   active?: boolean;
 }

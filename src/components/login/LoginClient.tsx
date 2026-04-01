@@ -14,6 +14,7 @@ import {
   TabBody,
   InputText,
   InputPassword,
+  StatusCard,
 } from "@ama-pt/agora-design-system";
 import { fetchCsrfToken, login } from "@/services/api";
 
@@ -29,14 +30,65 @@ export default function LoginClient() {
 
   const samlEnabled = process.env.NEXT_PUBLIC_SAML_ENABLED === "true";
 
+  const submitSamlForm = async (endpoint: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(endpoint);
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("SAML login failed:", res.status, text);
+        setError(`Erro ao iniciar autenticação (${res.status}). Tente novamente.`);
+        return;
+      }
+
+      const contentType = res.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        const text = await res.text();
+        console.error("SAML login: unexpected response type:", contentType, text.substring(0, 500));
+        setError("Erro ao iniciar autenticação. O servidor não respondeu corretamente.");
+        return;
+      }
+
+      const data = await res.json();
+      if (!data.action || !data.SAMLRequest) {
+        console.error("SAML login: missing fields in response:", data);
+        setError("Erro ao iniciar autenticação. Resposta incompleta do servidor.");
+        return;
+      }
+
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = data.action;
+
+      const samlInput = document.createElement("input");
+      samlInput.type = "hidden";
+      samlInput.name = "SAMLRequest";
+      samlInput.value = data.SAMLRequest;
+      form.appendChild(samlInput);
+
+      const relayInput = document.createElement("input");
+      relayInput.type = "hidden";
+      relayInput.name = "RelayState";
+      relayInput.value = data.RelayState;
+      form.appendChild(relayInput);
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch (e) {
+      console.error("SAML login error:", e);
+      setError("Não foi possível contactar o servidor de autenticação. Verifique a sua ligação.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSamlLogin = () => {
-    // Full-page redirect required for SAML 2.0 HTTP-POST/Redirect binding
-    window.location.href = "/saml/login";
+    submitSamlForm("/saml/login");
   };
 
   const handleEidasLogin = () => {
-    // Full-page redirect required for eIDAS SAML flow
-    window.location.href = "/saml/eidas/login";
+    submitSamlForm("/saml/eidas/login");
   };
 
   const breadcrumbItems = [
@@ -68,6 +120,7 @@ export default function LoginClient() {
       payload.append("email", email);
       payload.append("password", password);
       payload.append("csrf_token", csrfToken);
+      payload.append("remember", "y");
 
       // 3. Login
       const response = await login(payload);
@@ -127,7 +180,7 @@ export default function LoginClient() {
                         <p className="text-[#2B363C]">
                           Precisa do código PIN da sua CMD e do telemóvel que lhe está associado.
                         </p>
-                        <p className="text-sm text-neutral-700 mt-8">
+                        <p className="text-sm text-neutral-900 mt-8">
                           Ainda não tem conta? Ao autenticar-se com a Chave Móvel Digital, a sua
                           conta será criada automaticamente.
                         </p>
@@ -165,11 +218,22 @@ export default function LoginClient() {
                     </div>
                     <div className="mt-8">
                       <Checkbox
-                        label="Declaro que li e aceito os termos e condições para o tratamento dos meus dados pessoais no acesso e utilização da Área Reservada do dadosgov.pt"
                         id="terms-cmd"
                         className="text-sm text-neutral-700 leading-relaxed"
                         onChange={(e) => setTermsCmdAccepted(e.target.checked)}
-                      />
+                      >
+                        Declaro que li e aceito os{" "}
+                        <a
+                          href="/pages/faqs/terms"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary-600 underline hover:text-primary-800"
+                        >
+                          termos e condições relativos ao tratamento de dados
+                          pessoais
+                        </a>{" "}
+                        para a criação de conta e acesso ao portal dados.gov
+                      </Checkbox>
                     </div>
                   </div>
                   <div className="mt-16">
@@ -216,7 +280,7 @@ export default function LoginClient() {
                           país de origem na União Europeia (UE). Este meio de autenticação está
                           disponível para a qualquer cidadã/o da UE.
                         </p>
-                        <p className="text-sm text-neutral-700 mt-8">
+                        <p className="text-sm text-neutral-900 mt-8">
                           Ainda não tem conta? Ao autenticar-se com o eIDAS, a sua conta será
                           criada automaticamente.
                         </p>
@@ -238,11 +302,22 @@ export default function LoginClient() {
                   <div className="flex flex-col gap-24">
                     <div className="mt-8">
                       <Checkbox
-                        label="Declaro que li e aceito os termos e condições para o tratamento dos meus dados pessoais no acesso e utilização da Área Reservada do dadosgov.pt"
                         id="terms-eidas"
                         className="text-sm text-neutral-700 leading-relaxed"
                         onChange={(e) => setTermsEidasAccepted(e.target.checked)}
-                      />
+                      >
+                        Declaro que li e aceito os{" "}
+                        <a
+                          href="/pages/faqs/terms"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary-600 underline hover:text-primary-800"
+                        >
+                          termos e condições relativos ao tratamento de dados
+                          pessoais
+                        </a>{" "}
+                        para a criação de conta e acesso ao portal dados.gov
+                      </Checkbox>
                     </div>
                   </div>
                   <div className="mt-16">
@@ -315,7 +390,7 @@ export default function LoginClient() {
                           Migrar com CMD
                         </Button>
                         <Button
-                          variant="secondary"
+                          variant="neutral"
                           className="px-48 h-56 text-lg font-bold shadow-md hover:shadow-lg transition-all"
                           onClick={handleEidasLogin}
                         >
@@ -335,14 +410,21 @@ export default function LoginClient() {
                       </div>
 
                       {error && (
-                        <div className="p-16 rounded-8 bg-red-50 text-red-700 text-sm font-medium border border-red-200">
-                          {error}
-                        </div>
+                        <StatusCard type="danger" description={error} />
                       )}
 
-                      <form className="flex flex-col gap-24" onSubmit={handleSubmit}>
+                      <form
+                        className="flex flex-col gap-24"
+                        onSubmit={handleSubmit}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            e.currentTarget.requestSubmit();
+                          }
+                        }}
+                      >
                         <InputText
-                          label="Endereço de email *"
+                          label="Endereço de e-mail *"
                           placeholder="Introduza aqui o texto"
                           id="login-email"
                           name="email"

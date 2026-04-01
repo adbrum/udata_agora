@@ -17,6 +17,8 @@ import {
 } from "@ama-pt/agora-design-system";
 import { createDataservice } from "@/services/api";
 import type { Dataservice } from "@/types/api";
+import AuxiliarList from "@/components/admin/AuxiliarList";
+import { useAuth } from "@/context/AuthContext";
 
 interface ApiRegistrationClientProps {
   currentStep: number;
@@ -29,6 +31,7 @@ export default function ApiRegistrationClient({
   onNextStep,
   onPreviousStep,
 }: ApiRegistrationClientProps) {
+  const { user } = useAuth();
   const [accessType, setAccessType] = useState("open");
   const [apiName, setApiName] = useState("");
   const [apiAcronym, setApiAcronym] = useState("");
@@ -150,6 +153,7 @@ export default function ApiRegistrationClient({
       title: "Como dar nome à sua API",
       content:
         'Dê à sua API um nome relevante e descritivo que reflita sua função ou área de aplicação. Um bom nome facilita a busca e a identificação por parte dos utilizadores. Sempre adicione o prefixo "API" para manter a consistência.',
+      hasError: !!formErrors.apiName,
     },
     {
       title: "Adicione uma abreviação ou sigla à API.",
@@ -160,6 +164,7 @@ export default function ApiRegistrationClient({
       title: "Escreva uma boa descrição",
       content:
         "Escreva uma descrição clara e precisa da API. Os utilizadores precisam entender a finalidade da API, os dados fornecidos, o escopo abrangido (os dados são completos? Há alguma lacuna?), a frequência de atualização dos dados e os parâmetros que podem ser usados para fazer uma chamada.",
+      hasError: !!formErrors.apiDescription,
     },
     {
       title: "Defina o link correto para a API.",
@@ -208,9 +213,9 @@ export default function ApiRegistrationClient({
   return (
     <>
       {/* Main content area: form + auxiliar sidebar */}
-      <div className="datasets-admin-page__body">
+      <div className="admin-page__body">
         {/* Left: Form */}
-        <div className="datasets-admin-page__form-area">
+        <div className="admin-page__form-area">
           {/* Step 1: Descreva a sua API */}
           {currentStep === 1 && (
             <>
@@ -230,35 +235,44 @@ export default function ApiRegistrationClient({
                 <StatusCard type="danger" description={apiError} />
               )}
 
-              <form className="datasets-admin-page__form">
-                <p className="text-neutral-900 text-base leading-7">
+              <form className="admin-page__form">
+                <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
-                <h2 className="datasets-admin-page__section-title">Produtor</h2>
+                <h2 className="admin-page__section-title">Produtor</h2>
 
                 <InputSelect
                   label="Verifique a identidade que deseja usar na publicação."
                   placeholder="Para pesquisar..."
                   id="producer-identity"
                 >
-                  <DropdownSection name="organizations">
-                    <DropdownOption value="org1">
-                      Organização
+                  <DropdownSection name="identity">
+                    <DropdownOption value="user">
+                      {user
+                        ? `${user.first_name} ${user.last_name}`
+                        : "Eu próprio"}
                     </DropdownOption>
+                    <>
+                      {(user?.organizations || []).map((org) => (
+                        <DropdownOption key={org.id} value={org.id}>
+                          {org.name}
+                        </DropdownOption>
+                      ))}
+                    </>
                   </DropdownSection>
                 </InputSelect>
 
-                <div className="datasets-admin-page__org-card">
-                  <p className="datasets-admin-page__org-card-title">
+                <div className="admin-page__org-card">
+                  <p className="admin-page__org-card-title">
                     Não pertence a nenhuma organização.
                   </p>
-                  <p className="datasets-admin-page__org-card-description">
+                  <p className="admin-page__org-card-description">
                     Recomendamos que publique em nome de uma organização se se
                     tratar de uma atividade profissional.
                   </p>
                   <a
-                    href="#"
-                    className="datasets-admin-page__org-card-link"
+                    href="/pages/admin/organizations/new"
+                    className="admin-page__org-card-link"
                   >
                     Crie ou participe de uma organização
                     <Icon
@@ -268,9 +282,9 @@ export default function ApiRegistrationClient({
                   </a>
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+                <h2 className="admin-page__section-title">Descrição</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <InputText
                     label="Nome da API *"
                     placeholder="Insira o nome aqui"
@@ -357,9 +371,9 @@ export default function ApiRegistrationClient({
                   />
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Acesso</h2>
+                <h2 className="admin-page__section-title">Acesso</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <div className="flex flex-col gap-[8px]">
                     <span className="text-primary-900 text-base font-medium leading-7">
                       Tipo de acesso
@@ -408,7 +422,7 @@ export default function ApiRegistrationClient({
                   />
                 </div>
 
-                <div className="datasets-admin-page__actions">
+                <div className="admin-page__actions">
                   <Button
                     variant="primary"
                     hasIcon
@@ -432,7 +446,7 @@ export default function ApiRegistrationClient({
                 description="É importante vincular todos os conjuntos de dados utilizados, pois isso ajuda a compreender as referências cruzadas necessárias e a melhorar a visibilidade da sua reutilização."
               />
 
-              <form className="datasets-admin-page__form">
+              <form className="admin-page__form">
                 <InputSelect
                   label="Pesquisar um conjunto de dados"
                   placeholder="Procurando um conjunto de dados..."
@@ -492,7 +506,7 @@ export default function ApiRegistrationClient({
                   </Button>
                 </div>
 
-                <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+                <div className="admin-page__actions">
                   <Button
                     appearance="outline"
                     variant="neutral"
@@ -556,7 +570,7 @@ export default function ApiRegistrationClient({
                 Dê-nos o seu feedback sobre o processo de publicação.
               </Button>
 
-              <div className="datasets-admin-page__actions flex justify-end gap-[18px]">
+              <div className="admin-page__actions flex justify-end gap-[18px]">
                 <Button appearance="outline" variant="neutral">
                   Salvar rascunho
                 </Button>
@@ -570,28 +584,16 @@ export default function ApiRegistrationClient({
 
         {/* Right: Auxiliar sidebar (only for step 1) */}
         {currentStep === 1 && (
-          <aside className="datasets-admin-page__auxiliar">
-            <div className="datasets-admin-page__auxiliar-inner">
-              <div className="datasets-admin-page__auxiliar-header">
+          <aside className="admin-page__auxiliar">
+            <div className="admin-page__auxiliar-inner">
+              <div className="admin-page__auxiliar-header">
                 <Icon
                   name="agora-line-question-mark"
                   className="w-[24px] h-[24px]"
                 />
-                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
               </div>
-              <AccordionGroup>
-                {auxiliarItems.map((item, idx) => (
-                  <Accordion
-                    key={idx}
-                    headingTitle={item.title}
-                    headingLevel="h3"
-                  >
-                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                      {item.content}
-                    </div>
-                  </Accordion>
-                ))}
-              </AccordionGroup>
+              <AuxiliarList items={auxiliarItems} />
             </div>
           </aside>
         )}

@@ -1,11 +1,21 @@
-import type { Metadata } from "next";
-import OrgDataservicesClient from "@/components/admin/dataservices/OrgDataservicesClient";
+"use client";
 
-export const metadata: Metadata = {
-  title: "API - Organização - Admin - dados.gov",
-  description: "Gestão de APIs da organização no portal dados.gov.",
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
-export default function OrgDataservicesPage() {
-  return <OrgDataservicesClient />;
+export default function OrgDataservicesRedirect() {
+  const router = useRouter();
+  const { activeOrg, isLoading } = useActiveOrganization();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (activeOrg) {
+      router.replace(`/pages/admin/org/${activeOrg.id}/dataservices`);
+    } else {
+      router.replace("/pages/admin");
+    }
+  }, [activeOrg, isLoading, router]);
+
+  return null;
 }

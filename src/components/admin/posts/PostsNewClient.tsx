@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -13,7 +13,10 @@ import {
   ButtonUploader,
   RadioButton,
 } from "@ama-pt/agora-design-system";
+import { suggestTags, createPost } from "@/services/api";
+import type { TagSuggestion } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
+import type { PostCreatePayload } from "@/types/api";
 
 export default function PostsNewClient() {
   const searchParams = useSearchParams();
@@ -23,10 +26,20 @@ export default function PostsNewClient() {
   const totalSegments = 12;
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
+  const [articleType, setArticleType] = useState("news");
   const [contentType, setContentType] = useState("markdown");
   const [articleTitle, setArticleTitle] = useState("");
   const [articleHeader, setArticleHeader] = useState("");
+  const [articleContent, setArticleContent] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [tags, setTags] = useState<TagSuggestion[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  useEffect(() => {
+    suggestTags("", 50).then(setTags);
+  }, []);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -50,14 +63,42 @@ export default function PostsNewClient() {
     router.push("/pages/admin/system/posts/new?step=2");
   };
 
+  const handleSave = async () => {
+    if (!articleContent.trim()) {
+      setFormErrors({ articleContent: true });
+      return;
+    }
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      const payload: PostCreatePayload = {
+        name: articleTitle.trim(),
+        headline: articleHeader.trim(),
+        content: articleContent.trim(),
+        body_type: contentType,
+        tags: selectedTags,
+      };
+      const result = await createPost(payload);
+      if (result) {
+        router.push("/pages/admin/system/posts");
+      } else {
+        setSaveError("Erro ao guardar o artigo. Verifique a autenticação.");
+      }
+    } catch {
+      setSaveError("Erro ao guardar o artigo.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const stepTitles: Record<number, string> = {
     1: "Descreva seu item",
     2: "Conteúdo",
   };
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Bem-vindo", url: "/pages/admin" },
@@ -70,14 +111,14 @@ export default function PostsNewClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Formulário de inscrição</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Formulário de inscrição</h1>
         <PublishDropdown />
       </div>
 
       {/* Step indicator */}
-      <div className="datasets-admin-page__step-header">
-        <p className="datasets-admin-page__step-text">
+      <div className="admin-page__step-header">
+        <p className="admin-page__step-text">
           <span className="text-primary-600 font-bold">Passo {currentStep} - </span>
           <span className="text-primary-900 font-bold">
             {stepTitles[currentStep]}
@@ -86,40 +127,40 @@ export default function PostsNewClient() {
       </div>
 
       {/* Progress bar */}
-      <div className="datasets-admin-page__stepper">
-        <div className="datasets-admin-page__stepper-bar">
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--start" />
+      <div className="admin-page__stepper">
+        <div className="admin-page__stepper-bar">
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--start" />
           {Array.from({ length: totalSegments }).map((_, i) => (
             <div
               key={i}
-              className={`datasets-admin-page__stepper-segment ${
+              className={`admin-page__stepper-segment ${
                 i < filledSegments
-                  ? "datasets-admin-page__stepper-segment--filled"
+                  ? "admin-page__stepper-segment--filled"
                   : ""
               }`}
             />
           ))}
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--end" />
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--end" />
         </div>
-        <span className="datasets-admin-page__stepper-label">
+        <span className="admin-page__stepper-label">
           Passo {currentStep}/{totalSteps}
         </span>
       </div>
 
       {/* Main content area: form + auxiliar sidebar */}
-      <div className="datasets-admin-page__body">
+      <div className="admin-page__body">
         {/* Left: Form */}
-        <div className="datasets-admin-page__form-area">
+        <div className="admin-page__form-area">
           {/* Step 1: Descrição */}
           {currentStep === 1 && (
-            <form className="datasets-admin-page__form">
-              <p className="text-neutral-900 text-base leading-7">
+            <form className="admin-page__form">
+              <p className="text-neutral-900 text-base leading-7 pt-32">
                 Os campos marcados com um asterisco ( * ) são obrigatórios.
               </p>
 
-              <h2 className="datasets-admin-page__section-title">Descrição</h2>
+              <h2 className="admin-page__section-title">Descrição</h2>
 
-              <div className="datasets-admin-page__fields-group">
+              <div className="admin-page__fields-group">
                 <InputText
                   label="Título do artigo *"
                   placeholder="Insira o título aqui"
@@ -153,6 +194,28 @@ export default function PostsNewClient() {
 
                 <div className="flex flex-col gap-[8px]">
                   <span className="text-primary-900 text-base font-medium leading-7">
+                    Tipo de artigo
+                  </span>
+                  <div className="flex flex-row gap-4">
+                    <RadioButton
+                      label="Notícias"
+                      id="article-type-news"
+                      name="article-type"
+                      checked={articleType === "news"}
+                      onChange={() => setArticleType("news")}
+                    />
+                    <RadioButton
+                      label="Página"
+                      id="article-type-page"
+                      name="article-type"
+                      checked={articleType === "page"}
+                      onChange={() => setArticleType("page")}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-[8px]">
+                  <span className="text-primary-900 text-base font-medium leading-7">
                     Tipo de conteúdo
                   </span>
                   <div className="flex flex-row gap-4">
@@ -177,18 +240,26 @@ export default function PostsNewClient() {
                   label="Palavras-chave"
                   placeholder="Pesquise por uma palavra-chave..."
                   id="article-keywords"
-                    searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
-                    searchNoResultsText="Nenhum resultado encontrado"
+                  type="checkbox"
+                  searchable
+                  searchInputPlaceholder="Escreva para pesquisar..."
+                  searchNoResultsText="Nenhum resultado encontrado"
+                  onChange={(options) => {
+                    setSelectedTags(options.map((o) => o.value as string));
+                  }}
                 >
                   <DropdownSection name="keywords">
-                    <DropdownOption value="keyword1">Palavra-chave 1</DropdownOption>
+                    {tags.map((tag) => (
+                      <DropdownOption key={tag.text} value={tag.text}>
+                        {tag.text}
+                      </DropdownOption>
+                    ))}
                   </DropdownSection>
                 </InputSelect>
 
                 <div>
                   <span className="text-primary-900 text-base font-medium leading-7">
-                    Cobertor *
+                    Cobertura *
                   </span>
                   <div className="mt-2">
                     <ButtonUploader
@@ -205,7 +276,7 @@ export default function PostsNewClient() {
                 </div>
               </div>
 
-              <div className="datasets-admin-page__actions">
+              <div className="admin-page__actions">
                 <Button
                   variant="primary"
                   hasIcon
@@ -221,17 +292,30 @@ export default function PostsNewClient() {
 
           {/* Step 2: Conteúdo */}
           {currentStep === 2 && (
-            <form className="datasets-admin-page__form">
-              <div className="datasets-admin-page__fields-group">
+            <form className="admin-page__form">
+              <div className="admin-page__fields-group">
                 <InputTextArea
-                  label="Contente *"
+                  label="Conteúdo *"
                   placeholder="Insira aqui"
                   id="article-content"
                   rows={12}
+                  value={articleContent}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                    setArticleContent(e.target.value);
+                    if (e.target.value.trim()) clearError("articleContent");
+                  }}
+                  hasError={!!formErrors.articleContent}
+                  hasFeedback={!!formErrors.articleContent}
+                  feedbackState="danger"
+                  errorFeedbackText="Campo obrigatório"
                 />
               </div>
 
-              <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+              {saveError && (
+                <p className="text-danger-600 text-sm mb-16">{saveError}</p>
+              )}
+
+              <div className="admin-page__actions">
                 <Button
                   appearance="outline"
                   variant="neutral"
@@ -243,9 +327,10 @@ export default function PostsNewClient() {
                 </Button>
                 <Button
                   variant="primary"
-                  onClick={() => router.push("/pages/admin/system/posts")}
+                  onClick={handleSave}
+                  disabled={isSaving}
                 >
-                  Guardar
+                  {isSaving ? "A guardar..." : "Guardar"}
                 </Button>
               </div>
             </form>

@@ -1,7 +1,9 @@
 "use client";
 
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Breadcrumb,
+  CardNoResults,
   Icon,
   InputSelect,
   InputSearchBar,
@@ -13,108 +15,105 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pill,
 } from "@ama-pt/agora-design-system";
+import StatusDot from "@/components/admin/StatusDot";
+import { fetchHarvesters } from "@/services/api";
+import type { HarvestSource } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
+import { format } from "date-fns";
 
-interface MockHarvester {
-  name: string;
-  slug: string;
-  status: string;
-  statusVariant: "success" | "warning" | "danger" | "informative";
-  implementation: string;
-  createdAt: string;
-  lastExecution: string;
-  datasets: number;
-  api: number;
+const VALIDATION_STATUS: Record<
+  string,
+  { label: string; variant: "success" | "warning" | "danger" | "informative" }
+> = {
+  pending: { label: "Em espera de validação", variant: "warning" },
+  accepted: { label: "Validado", variant: "success" },
+  refused: { label: "Recusado", variant: "danger" },
+};
+
+const JOB_STATUS: Record<
+  string,
+  { label: string; variant: "success" | "warning" | "danger" | "informative" }
+> = {
+  pending: { label: "Pendente", variant: "informative" },
+  initializing: { label: "A inicializar", variant: "informative" },
+  initialized: { label: "Inicializado", variant: "informative" },
+  processing: { label: "Em processamento", variant: "informative" },
+  done: { label: "Terminado", variant: "success" },
+  "done-errors": { label: "Terminado com erros", variant: "warning" },
+  failed: { label: "Falhado", variant: "danger" },
+};
+
+function getStatus(source: HarvestSource) {
+  if (source.validation?.state && source.validation.state !== "accepted") {
+    return (
+      VALIDATION_STATUS[source.validation.state] || VALIDATION_STATUS.pending
+    );
+  }
+  if (source.last_job?.status) {
+    return (
+      JOB_STATUS[source.last_job.status] || {
+        label: "Sem tarefa de momento",
+        variant: "informative" as const,
+      }
+    );
+  }
+  return { label: "Sem tarefa de momento", variant: "informative" as const };
 }
 
-const mockHarvesters: MockHarvester[] = [
-  {
-    name: "Teste Title",
-    slug: "teste-title",
-    status: "Em espera de validação",
-    statusVariant: "warning",
-    implementation: "dgt",
-    createdAt: "16 de janeiro de 2026",
-    lastExecution: "Ainda não",
-    datasets: 0,
-    api: 0,
-  },
-  {
-    name: "Teste",
-    slug: "teste",
-    status: "Sem tarefa de momento",
-    statusVariant: "informative",
-    implementation: "dgt",
-    createdAt: "16 de janeiro de 2026",
-    lastExecution: "Ainda não",
-    datasets: 0,
-    api: 0,
-  },
-  {
-    name: "INE HVD - Instituto Nacional de Estatística",
-    slug: "ine-hvd",
-    status: "Terminado",
-    statusVariant: "success",
-    implementation: "inehvd",
-    createdAt: "6 de novembro de 2025",
-    lastExecution: "6 de janeiro de 2026",
-    datasets: 36,
-    api: 0,
-  },
-  {
-    name: "Harvested",
-    slug: "harvested",
-    status: "Suprimido",
-    statusVariant: "danger",
-    implementation: "ckan",
-    createdAt: "3 de novembro de 2025",
-    lastExecution: "Ainda não",
-    datasets: 0,
-    api: 0,
-  },
-  {
-    name: "IFAP - Inst de Financ. da Agri. e das Pescas (DGT)",
-    slug: "ifap-dgt",
-    status: "Terminado",
-    statusVariant: "success",
-    implementation: "dgt",
-    createdAt: "26 de fevereiro de 2025",
-    lastExecution: "5 de janeiro de 2026",
-    datasets: 6,
-    api: 0,
-  },
-  {
-    name: "IPRA - Inst. da Seg. Soc. dos Açores (DGT)",
-    slug: "ipra-dgt",
-    status: "Falhado",
-    statusVariant: "danger",
-    implementation: "dgt",
-    createdAt: "22 de agosto de 2024",
-    lastExecution: "6 de janeiro de 2026",
-    datasets: 0,
-    api: 0,
-  },
-  {
-    name: "PG Pres do Gov Reg Açores (DGT)",
-    slug: "pg-pres-gov-reg-acores-dgt",
-    status: "Falhado",
-    statusVariant: "danger",
-    implementation: "dgt",
-    createdAt: "23 de julho de 2024",
-    lastExecution: "5 de janeiro de 2026",
-    datasets: 0,
-    api: 0,
-  },
-];
-
 export default function SystemHarvestersClient() {
-  const harvesters = mockHarvesters;
+  const [harvesters, setHarvesters] = useState<HarvestSource[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetchHarvesters(currentPage, pageSize);
+      setHarvesters(res.data || []);
+      setTotalItems(res.total || 0);
+    } catch (error) {
+      console.error("Error loading harvesters:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, pageSize]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const handleSearch = (value: string) => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setSearchQuery(value);
+      setCurrentPage(1);
+    }, 400);
+  };
+
+  const filtered = useMemo(() => {
+    let result = harvesters;
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter((h) => h.name.toLowerCase().includes(q));
+    }
+    if (statusFilter) {
+      result = result.filter((h) => {
+        const valState = h.validation?.state;
+        return valState === statusFilter;
+      });
+    }
+    return result;
+  }, [harvesters, searchQuery, statusFilter]);
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -124,21 +123,25 @@ export default function SystemHarvestersClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Harvesters</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Harvesters</h1>
         <PublishDropdown />
       </div>
 
       <p className="text-neutral-700 text-sm mb-[16px]">
-        {harvesters.length} resultados
+        {isLoading ? "A carregar..." : `${totalItems} resultados`}
       </p>
 
       <div className="flex items-end gap-[16px] mb-[24px]">
-        <div className="w-[60%]">
-          <InputSearchBar hasVoiceActionButton={false}
+        <div className="admin-search-wrapper">
+          <InputSearchBar
+            hasVoiceActionButton={false}
             label="Pesquisar"
             placeholder="Pesquise o nome do harvester"
             aria-label="Pesquisar harvesters"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              handleSearch(e.target.value);
+            }}
           />
         </div>
         <InputSelect
@@ -146,98 +149,119 @@ export default function SystemHarvestersClient() {
           hideLabel
           placeholder="Filtrar por estado"
           id="filter-status"
+          onChange={(options) => {
+            setStatusFilter(
+              options.length > 0 ? (options[0].value as string) : ""
+            );
+          }}
         >
           <DropdownSection name="status">
-            <DropdownOption value="public">Público</DropdownOption>
-            <DropdownOption value="archived">Arquivo</DropdownOption>
-            <DropdownOption value="draft">Rascunho</DropdownOption>
-            <DropdownOption value="deleted">Excluído</DropdownOption>
+            <DropdownOption value="pending">
+              Em espera de validação
+            </DropdownOption>
+            <DropdownOption value="accepted">Validado</DropdownOption>
+            <DropdownOption value="refused">Recusado</DropdownOption>
           </DropdownSection>
         </InputSelect>
       </div>
 
-      <Table
-        paginationProps={{
-          itemsPerPageLabel: "Linhas por página",
-          itemsPerPage: 10,
-          totalItems: harvesters.length,
-          availablePageSizes: [5, 10, 20],
-          currentPage: 1,
-          buttonDropdownAriaLabel: "Selecionar linhas por página",
-          dropdownListAriaLabel: "Opções de linhas por página",
-          prevButtonAriaLabel: "Página anterior",
-          nextButtonAriaLabel: "Próxima página",
-        }}
-      >
-        <TableHeader>
-          <TableRow>
-            <TableHeaderCell sortType="string" sortOrder="descending">
-              Nome
-            </TableHeaderCell>
-            <TableHeaderCell>Estatuto</TableHeaderCell>
-            <TableHeaderCell>Implementação</TableHeaderCell>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Criado em
-            </TableHeaderCell>
-            <TableHeaderCell sortType="date" sortOrder="none">
-              Última execução
-            </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
-              Conjuntos de dados
-            </TableHeaderCell>
-            <TableHeaderCell sortType="numeric" sortOrder="none">
-              API
-            </TableHeaderCell>
-            <TableHeaderCell>Ações</TableHeaderCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {harvesters.map((harvester, index) => (
-            <TableRow key={index}>
-              <TableCell headerLabel="Nome">
-                <a
-                  href={`/pages/admin/system/harvesters/${harvester.slug}`}
-                  className="text-primary-600 underline"
-                >
-                  {harvester.name}
-                </a>
-              </TableCell>
-              <TableCell headerLabel="Estatuto">
-                <Pill variant={harvester.statusVariant}>{harvester.status}</Pill>
-              </TableCell>
-              <TableCell headerLabel="Implementação">
-                {harvester.implementation}
-              </TableCell>
-              <TableCell headerLabel="Criado em">{harvester.createdAt}</TableCell>
-              <TableCell headerLabel="Última execução">
-                {harvester.lastExecution}
-              </TableCell>
-              <TableCell headerLabel="Conjuntos de dados">
-                <a href="#" className="text-primary-600 underline">
-                  {harvester.datasets}
-                </a>
-              </TableCell>
-              <TableCell headerLabel="API">
-                <a href="#" className="text-primary-600 underline">
-                  {harvester.api}
-                </a>
-              </TableCell>
-              <TableCell headerLabel="Ações">
-                <div className="flex gap-[8px]">
-                  <a href={`/pages/admin/system/harvesters/${harvester.slug}`}>
-                    <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
-                  </a>
-                  <a
-                    href={`/pages/admin/system/harvesters/edit?slug=${harvester.slug}`}
-                  >
-                    <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
-                  </a>
-                </div>
-              </TableCell>
+      {isLoading ? (
+        <p className="text-neutral-700 text-sm">A carregar...</p>
+      ) : filtered.length > 0 ? (
+        <Table
+          paginationProps={{
+            itemsPerPageLabel: "Linhas por página",
+            itemsPerPage: pageSize,
+            totalItems: totalItems,
+            availablePageSizes: [5, 10, 20],
+            currentPage,
+            buttonDropdownAriaLabel: "Selecionar linhas por página",
+            dropdownListAriaLabel: "Opções de linhas por página",
+            prevButtonAriaLabel: "Página anterior",
+            nextButtonAriaLabel: "Próxima página",
+            onPageChange: (page: number) => setCurrentPage(page),
+            onPageSizeChange: (size: number) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            },
+          }}
+        >
+          <TableHeader>
+            <TableRow>
+              <TableHeaderCell>Nome</TableHeaderCell>
+              <TableHeaderCell>Estado</TableHeaderCell>
+              <TableHeaderCell>Implementação</TableHeaderCell>
+              <TableHeaderCell>Criado em</TableHeaderCell>
+              <TableHeaderCell>Última execução</TableHeaderCell>
+              <TableHeaderCell>Conjuntos de dados</TableHeaderCell>
+              <TableHeaderCell>API</TableHeaderCell>
+              <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {filtered.map((harvester) => {
+              const status = getStatus(harvester);
+              return (
+                <TableRow key={harvester.id}>
+                  <TableCell headerLabel="Nome">
+                    <a
+                      href={`/pages/admin/system/harvesters/${harvester.id}`}
+                      className="text-primary-600 underline"
+                    >
+                      {harvester.name}
+                    </a>
+                  </TableCell>
+                  <TableCell headerLabel="Estado">
+                    <StatusDot variant={status.variant}>
+                      {status.label}
+                    </StatusDot>
+                  </TableCell>
+                  <TableCell headerLabel="Implementação">
+                    {harvester.backend}
+                  </TableCell>
+                  <TableCell headerLabel="Criado em">
+                    {format(new Date(harvester.created_at), "dd/MM/yyyy")}
+                  </TableCell>
+                  <TableCell headerLabel="Última execução">
+                    {harvester.last_job?.ended
+                      ? format(new Date(harvester.last_job.ended), "dd/MM/yyyy")
+                      : "Ainda não"}
+                  </TableCell>
+                  <TableCell headerLabel="Conjuntos de dados">
+                    {harvester.last_job?.items?.length || 0}
+                  </TableCell>
+                  <TableCell headerLabel="API">
+                    0
+                  </TableCell>
+                  <TableCell headerLabel="Ações">
+                    <a
+                      href={`/pages/admin/harvesters/${harvester.id}`}
+                    >
+                      <Icon
+                        name="agora-line-edit"
+                        className="w-[20px] h-[20px]"
+                      />
+                    </a>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      ) : (
+        <CardNoResults
+          position="center"
+          icon={
+            <Icon
+              name="agora-line-download"
+              className="w-12 h-12 text-primary-500 icon-xl"
+            />
+          }
+          title="Sem harvesters"
+          description="Nenhum harvester encontrado."
+          hasAnchor={false}
+        />
+      )}
     </div>
   );
 }

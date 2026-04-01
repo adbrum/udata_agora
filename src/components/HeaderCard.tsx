@@ -32,7 +32,7 @@ export const HeaderCard = ({
     <div
       ref={wrapperCallback}
       className="header-card-wrapper cursor-pointer"
-      onClick={(e) => {
+      onClickCapture={(e) => {
         if (hasNavigation) {
           e.preventDefault();
           e.stopPropagation();
@@ -47,7 +47,6 @@ export const HeaderCard = ({
         iconDefault={iconDefault}
         iconHover={iconHover}
         titleText={title}
-        descriptionText={description}
         anchor={{
           href,
           children: "",
@@ -56,6 +55,7 @@ export const HeaderCard = ({
           trailingIconHover: "agora-solid-arrow-right-circle",
           onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
             e.preventDefault();
+            e.stopPropagation();
             if (hasNavigation) {
               onLinkClick(e, href);
             }

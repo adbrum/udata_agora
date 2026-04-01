@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -16,7 +16,10 @@ import {
   Accordion,
   AccordionGroup,
 } from "@ama-pt/agora-design-system";
+import { suggestOrganizations, createOrganization, uploadOrgLogo } from "@/services/api";
+import type { OrganizationSuggestion } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
+import AuxiliarList from "@/components/admin/AuxiliarList";
 
 export default function OrganizationsNewClient() {
   const searchParams = useSearchParams();
@@ -27,8 +30,17 @@ export default function OrganizationsNewClient() {
   const filledSegments = Math.round((currentStep / totalSteps) * totalSegments);
 
   const [orgName, setOrgName] = useState("");
+  const [orgAcronym, setOrgAcronym] = useState("");
   const [orgDescription, setOrgDescription] = useState("");
+  const [orgWebsite, setOrgWebsite] = useState("");
+  const [orgLogo, setOrgLogo] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const [orgSuggestions, setOrgSuggestions] = useState<OrganizationSuggestion[]>([]);
+
+  useEffect(() => {
+    suggestOrganizations("", 20).then(setOrgSuggestions);
+  }, []);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -40,7 +52,7 @@ export default function OrganizationsNewClient() {
     }
   };
 
-  const handleCreateOrg = () => {
+  const handleCreateOrg = async () => {
     const errors: Record<string, boolean> = {};
     if (!orgName.trim()) errors.orgName = true;
     if (!orgDescription.trim()) errors.orgDescription = true;
@@ -49,7 +61,24 @@ export default function OrganizationsNewClient() {
       return;
     }
     setFormErrors({});
-    router.push("/pages/admin/system/organizations");
+    setIsSubmitting(true);
+    try {
+      const org = await createOrganization({
+        name: orgName.trim(),
+        acronym: orgAcronym.trim() || undefined,
+        description: orgDescription.trim(),
+        url: orgWebsite.trim() || undefined,
+      });
+      if (orgLogo) {
+        await uploadOrgLogo(org.id, orgLogo);
+      }
+      router.push(`/pages/organizations/${org.slug}`);
+    } catch (error) {
+      const err = error as { status?: number; data?: unknown };
+      console.error("Erro ao criar organização:", err.status, JSON.stringify(err.data));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const stepTitles: Record<number, string> = {
@@ -62,6 +91,7 @@ export default function OrganizationsNewClient() {
     {
       title: "Dê um nome à sua organização.",
       content: "Nome público da sua organização.",
+      hasError: !!formErrors.orgName,
     },
     {
       title: "Escolha uma sigla",
@@ -92,6 +122,7 @@ export default function OrganizationsNewClient() {
       title: "Escreva uma boa descrição",
       content:
         "Por favor, descreva aqui o que sua organização faz e qual é a sua missão. Inclua todas as informações que permitam aos utilizadores entrar em contacto consigo: endereço de e-mail, endereço postal, conta do Twitter, etc.",
+      hasError: !!formErrors.orgDescription,
     },
     {
       title: "Digite um site",
@@ -106,8 +137,8 @@ export default function OrganizationsNewClient() {
   ];
 
   return (
-    <div className="datasets-admin-page">
-      <div className="datasets-admin-page__breadcrumb">
+    <div className="admin-page">
+      <div className="admin-page__breadcrumb">
         <Breadcrumb
           items={[
             { label: "Administração", url: "/pages/admin" },
@@ -120,14 +151,14 @@ export default function OrganizationsNewClient() {
         />
       </div>
 
-      <div className="datasets-admin-page__header">
-        <h1 className="datasets-admin-page__title">Formulário de inscrição</h1>
+      <div className="admin-page__header">
+        <h1 className="admin-page__title">Formulário de inscrição</h1>
         <PublishDropdown />
       </div>
 
       {/* Step indicator */}
-      <div className="datasets-admin-page__step-header">
-        <p className="datasets-admin-page__step-text">
+      <div className="admin-page__step-header">
+        <p className="admin-page__step-text">
           <span className="text-primary-600 font-bold">Passo {currentStep} - </span>
           <span className="text-primary-900 font-bold">
             {stepTitles[currentStep]}
@@ -136,37 +167,37 @@ export default function OrganizationsNewClient() {
       </div>
 
       {/* Progress bar */}
-      <div className="datasets-admin-page__stepper">
-        <div className="datasets-admin-page__stepper-bar">
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--start" />
+      <div className="admin-page__stepper">
+        <div className="admin-page__stepper-bar">
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--start" />
           {Array.from({ length: totalSegments }).map((_, i) => (
             <div
               key={i}
-              className={`datasets-admin-page__stepper-segment ${
+              className={`admin-page__stepper-segment ${
                 i < filledSegments
-                  ? "datasets-admin-page__stepper-segment--filled"
+                  ? "admin-page__stepper-segment--filled"
                   : ""
               }`}
             />
           ))}
-          <div className="datasets-admin-page__stepper-mark datasets-admin-page__stepper-mark--end" />
+          <div className="admin-page__stepper-mark admin-page__stepper-mark--end" />
         </div>
-        <span className="datasets-admin-page__stepper-label">
+        <span className="admin-page__stepper-label">
           Passo {currentStep}/{totalSteps}
         </span>
       </div>
 
       {/* Main content area */}
-      <div className="datasets-admin-page__body">
-        <div className="datasets-admin-page__form-area">
+      <div className="admin-page__body">
+        <div className="admin-page__form-area">
           {/* Step 1: Ingressar ou criar */}
           {currentStep === 1 && (
-            <div className="datasets-admin-page__form">
+            <div className="admin-page__form">
               <StatusCard
                 type="info"
                 description={
                   <>
-                    <strong>Ingressar em uma organização</strong>
+                    <strong>Inscreva-se numa organização</strong>
                     <br />
                     Uma organização é uma entidade na qual os utilizadores podem
                     colaborar. Conjuntos de dados publicados dentro de uma
@@ -183,15 +214,29 @@ export default function OrganizationsNewClient() {
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
                   searchNoResultsText="Nenhum resultado encontrado"
+                  onChange={(options: { value?: string }[]) => {
+                    const selectedId = options?.[0]?.value;
+                    if (selectedId) {
+                      const org = orgSuggestions.find((o) => o.id === selectedId);
+                      if (org) {
+                        router.push(`/pages/organizations/${org.slug}`);
+                      }
+                    }
+                  }}
                 >
                   <DropdownSection name="organizations">
-                    <DropdownOption value="org1">Organização 1</DropdownOption>
-                    <DropdownOption value="org2">Organização 2</DropdownOption>
+                    <>
+                      {orgSuggestions.map((org) => (
+                        <DropdownOption key={org.id} value={org.id}>
+                          {org.name}
+                        </DropdownOption>
+                      ))}
+                    </>
                   </DropdownSection>
                 </InputSelect>
 
-                <div className="flex items-center justify-center gap-[16px] mt-[16px]">
-                  <span className="text-neutral-500">ou</span>
+                <div className="admin-page__divider-or">
+                  <span className="admin-page__divider-or-text">ou</span>
                 </div>
 
                 <div className="flex justify-center mt-[16px]">
@@ -224,14 +269,14 @@ export default function OrganizationsNewClient() {
                 }
               />
 
-              <form className="datasets-admin-page__form">
-                <p className="text-neutral-900 text-base leading-7">
+              <form className="admin-page__form">
+                <p className="text-neutral-900 text-base leading-7 pt-32">
                   Os campos marcados com um asterisco ( * ) são obrigatórios.
                 </p>
 
-                <h2 className="datasets-admin-page__section-title">Descrição</h2>
+                <h2 className="admin-page__section-title">Descrição</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <InputText
                     label="Nome *"
                     placeholder="Insira o nome aqui"
@@ -251,6 +296,10 @@ export default function OrganizationsNewClient() {
                     label="Sigla"
                     placeholder="Insira a sigla aqui"
                     id="org-acronym"
+                    value={orgAcronym}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setOrgAcronym(e.target.value)
+                    }
                   />
 
                   <InputTextArea
@@ -273,12 +322,16 @@ export default function OrganizationsNewClient() {
                     label="Site da Internet"
                     placeholder="Insira o URL aqui"
                     id="org-website"
+                    value={orgWebsite}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setOrgWebsite(e.target.value)
+                    }
                   />
                 </div>
 
-                <h2 className="datasets-admin-page__section-title">Logotipo</h2>
+                <h2 className="admin-page__section-title">Logotipo</h2>
 
-                <div className="datasets-admin-page__fields-group">
+                <div className="admin-page__fields-group">
                   <ButtonUploader
                     label="Ficheiros"
                     inputLabel="Selecione ou arraste o ficheiro"
@@ -288,10 +341,14 @@ export default function OrganizationsNewClient() {
                     accept=".jpg,.jpeg,.png"
                     maxSize={4194304}
                     maxCount={1}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const file = e.target.files?.[0] || null;
+                      setOrgLogo(file);
+                    }}
                   />
                 </div>
 
-                <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+                <div className="admin-page__actions">
                   <Button
                     appearance="outline"
                     variant="neutral"
@@ -304,6 +361,7 @@ export default function OrganizationsNewClient() {
                   <Button
                     variant="primary"
                     onClick={handleCreateOrg}
+                    disabled={isSubmitting}
                   >
                     Criar a organização
                   </Button>
@@ -314,7 +372,7 @@ export default function OrganizationsNewClient() {
 
           {/* Step 3: Finalizar */}
           {currentStep === 3 && (
-            <div className="datasets-admin-page__form">
+            <div className="admin-page__form">
               <StatusCard
                 type="success"
                 description={
@@ -326,7 +384,7 @@ export default function OrganizationsNewClient() {
                 }
               />
 
-              <div className="datasets-admin-page__actions datasets-admin-page__actions--between">
+              <div className="admin-page__actions">
                 <Button
                   appearance="outline"
                   variant="neutral"
@@ -351,28 +409,16 @@ export default function OrganizationsNewClient() {
 
         {/* Right: Auxiliar sidebar (only for step 2) */}
         {currentStep === 2 && (
-          <aside className="datasets-admin-page__auxiliar">
-            <div className="datasets-admin-page__auxiliar-inner">
-              <div className="datasets-admin-page__auxiliar-header">
+          <aside className="admin-page__auxiliar">
+            <div className="admin-page__auxiliar-inner">
+              <div className="admin-page__auxiliar-header">
                 <Icon
                   name="agora-line-question-mark"
                   className="w-[24px] h-[24px]"
                 />
-                <h2 className="datasets-admin-page__auxiliar-title">Auxiliar</h2>
+                <h2 className="admin-page__auxiliar-title">Auxiliar</h2>
               </div>
-              <AccordionGroup>
-                {auxiliarItems.map((item, idx) => (
-                  <Accordion
-                    key={idx}
-                    headingTitle={item.title}
-                    headingLevel="h3"
-                  >
-                    <div className="py-[12px] text-sm text-neutral-700 leading-relaxed">
-                      {item.content}
-                    </div>
-                  </Accordion>
-                ))}
-              </AccordionGroup>
+              <AuxiliarList items={auxiliarItems} />
             </div>
           </aside>
         )}

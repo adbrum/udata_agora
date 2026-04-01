@@ -2,6 +2,7 @@
 import InfoBlockContent from "./InfoBlockContent";
 import InfoBlockDescription from "./InfoBlockDescription";
 import InfoBlockHeader from "./InfoBlockHeader";
+import InfoBlockIFrame from "./InfoBlockIFrame";
 import InfoBlockRoot from "./InfoblockRoot";
 import InfoBlockTitle from "./InfoBlockTitle";
 
@@ -19,4 +20,5 @@ export const InfoBlock = {
   Title: InfoBlockTitle,
   Content: InfoBlockContent,
   Description: InfoBlockDescription,
+  IFrame: InfoBlockIFrame,
 };

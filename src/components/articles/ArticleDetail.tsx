@@ -3,6 +3,9 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Breadcrumb } from "@ama-pt/agora-design-system";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import { fetchPost } from "@/services/api";
 import { Post } from "@/types/api";
 import { format } from "date-fns";
@@ -16,6 +19,10 @@ export default function ArticleDetail({ rid }: ArticleDetailProps) {
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -60,7 +67,7 @@ export default function ArticleDetail({ rid }: ArticleDetailProps) {
       <div className="flex flex-col items-center justify-center min-h-screen gap-16">
         <h1 className="text-2xl-bold text-neutral-900">Artigo não encontrado</h1>
         <p className="text-neutral-600">O artigo que procura não existe ou foi removido.</p>
-        <Link href="/pages/article" className="text-primary-600 underline hover:text-primary-700">
+        <Link href="/pages/posts" className="text-primary-600 underline hover:text-primary-700">
           Voltar aos artigos
         </Link>
       </div>
@@ -77,7 +84,7 @@ export default function ArticleDetail({ rid }: ArticleDetailProps) {
           <Breadcrumb
             items={[
               { label: "Início", url: "/" },
-              { label: "Notícias", url: "/pages/article" },
+              { label: "Notícias", url: "/pages/posts" },
               { label: post.name, url: "#" },
             ]}
           />
@@ -101,11 +108,12 @@ export default function ArticleDetail({ rid }: ArticleDetailProps) {
             <div className="max-w-[592px]">
                 {/* Content */}
                 <div className="text-[16px] leading-[28px]">
-                  {post.body_type === "html" ? (
-                    <div dangerouslySetInnerHTML={{ __html: post.content }} />
-                  ) : (
-                    <div className="whitespace-pre-wrap">{post.content}</div>
-                  )}
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                  >
+                    {post.content}
+                  </ReactMarkdown>
                 </div>
 
                 {/* Article Image */}
