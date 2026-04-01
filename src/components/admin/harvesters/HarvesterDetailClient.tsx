@@ -43,6 +43,17 @@ const VALIDATION_LABELS: Record<string, { label: string; variant: "warning" | "s
   refused: { label: "RECUSADO", variant: "danger" },
 };
 
+const JOB_STATUS_LABELS: Record<string, string> = {
+  pending: "Pendente",
+  initializing: "A inicializar",
+  initialized: "Inicializado",
+  started: "Iniciado",
+  processing: "Em processamento",
+  done: "Terminado",
+  "done-errors": "Falhado",
+  failed: "Falhado",
+};
+
 export default function HarvesterDetailClient({ slug }: HarvesterDetailClientProps) {
   const router = useRouter();
   const { user } = useAuth();
@@ -57,6 +68,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
   const [isEnabled, setIsEnabled] = useState(true);
   const [isAutoArchive, setIsAutoArchive] = useState(true);
   const [filters, setFilters] = useState<{ mode: string; type: string; value: string }[]>([]);
+  const [harvesterSchedule, setHarvesterSchedule] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
 
   const selectedProducerRef = useRef("");
@@ -89,6 +101,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
           setHarvesterUrl(data.url);
           setIsEnabled(data.active);
           setIsAutoArchive(data.autoarchive);
+          setHarvesterSchedule(data.schedule || "");
           selectedTypeRef.current = data.backend;
           const jobsRes = await fetchHarvestJobs(data.id);
           setJobs(jobsRes.data || []);
@@ -317,21 +330,44 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
               >
                 <TableHeader>
                   <TableRow>
-                    <TableHeaderCell>ID</TableHeaderCell>
-                    <TableHeaderCell>Estado</TableHeaderCell>
-                    <TableHeaderCell>Início</TableHeaderCell>
-                    <TableHeaderCell>Fim</TableHeaderCell>
-                    <TableHeaderCell>Items</TableHeaderCell>
-                    <TableHeaderCell>Erros</TableHeaderCell>
+                    <TableHeaderCell>ID de tarefa</TableHeaderCell>
+                    <TableHeaderCell>Status</TableHeaderCell>
+                    <TableHeaderCell>Começou em</TableHeaderCell>
+                    <TableHeaderCell>Concluído em</TableHeaderCell>
+                    <TableHeaderCell>Conjuntos de dados</TableHeaderCell>
+                    <TableHeaderCell>API</TableHeaderCell>
+                    <TableHeaderCell>
+                      <Icon name="agora-line-check" className="w-[16px] h-[16px]" />
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                      <Icon name="agora-line-eye-off" className="w-[16px] h-[16px]" />
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                      <img src="/Icons/box.svg" alt="Arquivados" className="w-[24px] h-[24px]" />
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                      <Icon name="agora-line-x" className="w-[16px] h-[16px]" />
+                    </TableHeaderCell>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {jobs.map((job) => (
+                  {jobs.map((job) => {
+                    const items = job.items || [];
+                    const doneCount = items.filter((i) => i.status === "done").length;
+                    const skippedCount = items.filter((i) => i.status === "skipped").length;
+                    const archivedCount = items.filter((i) => i.status === "archived").length;
+                    const failedCount = items.filter((i) => i.status === "failed").length;
+                    return (
                     <TableRow key={job.id}>
-                      <TableCell headerLabel="ID">
-                        <span className="text-xs">{job.id}</span>
+                      <TableCell headerLabel="ID de tarefa">
+                        <a
+                          href={`/pages/admin/harvesters/${slug}/jobs/${job.id}`}
+                          className="text-primary-600 underline uppercase text-xs"
+                        >
+                          {job.id}
+                        </a>
                       </TableCell>
-                      <TableCell headerLabel="Estado">
+                      <TableCell headerLabel="Status">
                         <StatusDot
                           variant={
                             job.status === "done"
@@ -341,27 +377,52 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                                 : "informative"
                           }
                         >
-                          {job.status}
+                          {JOB_STATUS_LABELS[job.status] || job.status}
                         </StatusDot>
                       </TableCell>
-                      <TableCell headerLabel="Início">
+                      <TableCell headerLabel="Começou em">
                         {job.started
-                          ? new Date(job.started).toLocaleString("pt-PT")
+                          ? new Date(job.started).toLocaleString("pt-PT", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                           : "—"}
                       </TableCell>
-                      <TableCell headerLabel="Fim">
+                      <TableCell headerLabel="Concluído em">
                         {job.ended
-                          ? new Date(job.ended).toLocaleString("pt-PT")
+                          ? new Date(job.ended).toLocaleString("pt-PT", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                           : "—"}
                       </TableCell>
-                      <TableCell headerLabel="Items">
-                        {job.items?.length || 0}
+                      <TableCell headerLabel="Conjuntos de dados">
+                        {items.length}
                       </TableCell>
-                      <TableCell headerLabel="Erros">
+                      <TableCell headerLabel="API">
                         {job.errors?.length || 0}
                       </TableCell>
+                      <TableCell headerLabel="Concluídos">
+                        {doneCount}
+                      </TableCell>
+                      <TableCell headerLabel="Ignorados">
+                        {skippedCount}
+                      </TableCell>
+                      <TableCell headerLabel="Arquivados">
+                        {archivedCount}
+                      </TableCell>
+                      <TableCell headerLabel="Falhados">
+                        {failedCount}
+                      </TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                 </TableBody>
               </Table>
             )}
@@ -520,6 +581,20 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                         onChange={() => setIsAutoArchive((v) => !v)}
                       />
                     </div>
+                  </div>
+
+                  <h2 className="admin-page__section-title">Avançado</h2>
+
+                  <div className="admin-page__fields-group">
+                    <InputText
+                      label="Planeamento"
+                      placeholder=""
+                      id="harvester-schedule"
+                      value={harvesterSchedule}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setHarvesterSchedule(e.target.value)
+                      }
+                    />
                   </div>
 
                   <div className="admin-page__actions flex justify-end gap-[16px]">

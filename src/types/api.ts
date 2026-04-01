@@ -898,6 +898,8 @@ export interface HarvestError {
 
 export interface HarvestItem {
   remote_id: string;
+  remote_url: string | null;
+  dataset: { id: string; title: string; page: string } | null;
   status: "pending" | "started" | "done" | "failed" | "skipped" | "archived";
   errors: HarvestError[];
 }
@@ -909,7 +911,7 @@ export interface HarvestJob {
   started: string | null;
   ended: string | null;
   errors: Record<string, unknown>[];
-  items: Record<string, unknown>[];
+  items: HarvestItem[];
   source: string;
 }
 

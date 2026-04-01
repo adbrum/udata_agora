@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Breadcrumb,
   CardNoResults,
@@ -69,6 +70,7 @@ export default function SystemHarvestersClient() {
   const [pageSize, setPageSize] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const router = useRouter();
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadData = useCallback(async () => {
@@ -202,11 +204,18 @@ export default function SystemHarvestersClient() {
             {filtered.map((harvester) => {
               const status = getStatus(harvester);
               return (
-                <TableRow key={harvester.id}>
+                <TableRow
+                  key={harvester.id}
+                  onClick={() =>
+                    router.push(`/pages/admin/harvesters/${harvester.id}`)
+                  }
+                  style={{ cursor: "pointer" }}
+                >
                   <TableCell headerLabel="Nome">
                     <a
-                      href={`/pages/admin/system/harvesters/${harvester.id}`}
+                      href={`/pages/admin/harvesters/${harvester.id}`}
                       className="text-primary-600 underline"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       {harvester.name}
                     </a>

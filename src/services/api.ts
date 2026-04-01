@@ -3313,6 +3313,22 @@ export async function fetchHarvestJobs(
   }
 }
 
+export async function fetchHarvestJob(
+  jobId: string
+): Promise<HarvestJob | null> {
+  try {
+    const res = await fetch(`${API_AUTH_URL}/harvest/job/${jobId}/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error(`Failed to fetch harvest job: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching harvest job:", error);
+    return null;
+  }
+}
+
 export async function validateHarvestSource(
   id: string
 ): Promise<Record<string, unknown>> {
