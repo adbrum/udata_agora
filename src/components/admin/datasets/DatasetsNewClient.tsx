@@ -138,15 +138,6 @@ export default function DatasetsNewClient() {
                 e disponibilizem o seu catálogo de dados.
               </p>
               <div className="flex gap-4 flex-wrap">
-                <Button
-                  appearance="link"
-                  variant="primary"
-                  hasIcon
-                  trailingIcon="agora-line-external-link"
-                  trailingIconHover="agora-solid-external-link"
-                >
-                  Aceda à área de catálogo.
-                </Button>
               </div>
             </div>
           </div>

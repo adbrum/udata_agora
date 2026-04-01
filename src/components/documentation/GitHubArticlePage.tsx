@@ -36,8 +36,11 @@ const markdownComponents = {
     <p className="text-[16px] leading-[28px] mb-[16px]">{children}</p>
   ),
   a: ({ href, children }: any) => {
-    const resolvedHref =
-      href === "/docapi/" ? "https://10.55.37.38/docapi/" : href;
+    const linkOverrides: Record<string, string> = {
+      "/docapi/": "/pages/faqs/api-documentation",
+      "http://www.mejoratuescuela.org": "https://www.redalyc.org/journal/5475/547567705004/",
+    };
+    const resolvedHref = linkOverrides[href] ?? href;
     const isExternal = resolvedHref?.startsWith("http");
     return (
       <Link
