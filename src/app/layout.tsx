@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   icons: {
-    icon: '/favicon.svg',
+    icon: '/favicon.png',
   },
   openGraph: {
     title: siteConfig.title,
