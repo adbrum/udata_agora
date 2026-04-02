@@ -83,10 +83,6 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         {
-          source: "/logout/",
-          destination: `${BACKEND_URL}/logout/`,
-        },
-        {
           source: "/get-csrf",
           destination: `${BACKEND_URL}/get-csrf`,
         },
