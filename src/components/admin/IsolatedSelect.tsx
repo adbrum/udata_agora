@@ -23,6 +23,7 @@ interface IsolatedSelectProps {
   placeholder: string;
   id: string;
   onChangeRef: React.MutableRefObject<string>;
+  defaultValue?: string;
   type?: "checkbox" | "text";
   hasError?: boolean;
   errorFeedbackText?: string;
@@ -41,6 +42,7 @@ const IsolatedSelect = React.memo(function IsolatedSelect({
   placeholder,
   id,
   onChangeRef,
+  defaultValue,
   type,
   hasError,
   errorFeedbackText,
@@ -51,6 +53,14 @@ const IsolatedSelect = React.memo(function IsolatedSelect({
   onChangeCallback,
   children,
 }: IsolatedSelectProps) {
+  // Sync defaultValue into the ref on mount so handleSave reads the correct initial value
+  React.useEffect(() => {
+    if (defaultValue !== undefined) {
+      onChangeRef.current = defaultValue;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <InputSelect
       label={label}
@@ -61,6 +71,7 @@ const IsolatedSelect = React.memo(function IsolatedSelect({
       searchable={searchable}
       searchInputPlaceholder={searchInputPlaceholder}
       searchNoResultsText={searchNoResultsText}
+      defaultValue={defaultValue}
       onChange={(options) => {
         const value = options.map((o) => o.value as string).join(",");
         onChangeRef.current = value;
