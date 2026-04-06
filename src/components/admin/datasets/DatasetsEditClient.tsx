@@ -1060,7 +1060,7 @@ export default function DatasetsEditClient() {
                             }}
                             disabled={isSubmitting}
                           >
-                            Elimine o conjunto de dados
+                            Eliminar o conjunto de dados
                           </Button>
                         </>
                       }

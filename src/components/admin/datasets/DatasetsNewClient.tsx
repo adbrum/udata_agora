@@ -41,7 +41,7 @@ export default function DatasetsNewClient() {
 
       <div className="admin-page__header">
         <h1 className="admin-page__title">
-          {currentStep === 1 ? "Publique em dados.gov" : "Formulário de inscrição"}
+          {currentStep === 1 ? "Publique em dados.gov" : "Formulário de publicação"}
         </h1>
         <PublishDropdown />
       </div>

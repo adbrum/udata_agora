@@ -44,7 +44,7 @@ const usefulLinksData = [
 const FooterNavigation = () => {
   return (
     <div className="container mx-auto px-4 py-12 xl:py-64">
-      <h3 className="text-l-bold mb-8 text-white mb-[32px]">Mais para descobrir no portal</h3>
+      <h3 className="text-l-bold mb-8 text-white mb-[32px]">Mais para descobrir na plataforma</h3>
       <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-32">
         {linkColumns.map((column, idx) => (
           <div key={idx}>

@@ -51,6 +51,7 @@ const markdownComponents = {
         href: "https://online-learning.iscte-iul.pt/login/required?show_warning=true",
         text: "https://online-learning.iscte-iul.pt/login/required?show_warning=true",
       },
+      "/pt/pages/faqs/about_opendata/": { href: "/pages/about-open-data" },
     };
     const override = linkOverrides[href];
     const resolvedHref = override?.href ?? href;

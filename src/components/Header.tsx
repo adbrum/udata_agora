@@ -167,7 +167,7 @@ export const Header = () => {
   ];
 
   const areas = [
-    { value: '1', label: 'Portal' },
+    { value: '1', label: 'Plataforma' },
     { value: '2', label: 'Iniciar Sessão' },
   ];
 
@@ -223,7 +223,7 @@ export const Header = () => {
             iconDefault: "agora-line-info-mark",
             iconHover: "agora-solid-info-mark",
             title: "O que é o dados.gov",
-            description: "Sobre o portal",
+            description: "Sobre a plataforma",
             href: "/pages/faqs/about_dadosgov",
           },
           {
@@ -327,14 +327,14 @@ export const Header = () => {
 
         <GeneralBar aria-label="Opções navegação geral">
           <Areas
-            aria-label="Áreas do portal"
+            aria-label="Áreas da plataforma"
             // @ts-ignore - Prop label does exist in component logic
             label={currentAreaLabel}
             onChange={(area: string) => setSelectedArea(area)}
           >
             <Area
               value="1"
-              label="Portal"
+              label="Plataforma"
               onClick={() => router.push('/')}
               active={selectedArea === '1'}
             />
@@ -386,7 +386,7 @@ export const Header = () => {
                 <SearchDropdown
                   id="header-search"
                   hasVoiceActionButton={false}
-                  label="O que procura no Portal?"
+                  label="O que procura na Plataforma?"
                   placeholder="Pesquisar conjunto de dados, organizações, temas..."
                   excludeTypes={["dataservices"]}
                 />
