@@ -23,8 +23,11 @@ import {
   updateMemberRole,
   removeMember,
   suggestUsers,
+  fetchMembershipRequests,
+  acceptMembership,
+  refuseMembership,
 } from "@/services/api";
-import { OrganizationMember, UserSuggestion } from "@/types/api";
+import { OrganizationMember, MembershipRequest, UserSuggestion } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 
@@ -276,20 +279,99 @@ function EditRolePopupContent({
   );
 }
 
+interface RefuseMembershipPopupProps {
+  orgId: string;
+  request: MembershipRequest;
+  onRefused: () => void;
+}
+
+function RefuseMembershipPopupContent({
+  orgId,
+  request,
+  onRefused,
+}: RefuseMembershipPopupProps) {
+  const { hide } = usePopupContext();
+  const [comment, setComment] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleRefuse = async () => {
+    setIsSubmitting(true);
+    try {
+      await refuseMembership(orgId, request.id, comment);
+      onRefused();
+      hide();
+    } catch (error) {
+      console.error("Error refusing membership:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-[24px]">
+      <p className="text-neutral-700">
+        Recusar o pedido de adesão de{" "}
+        <strong>
+          {request.user.first_name} {request.user.last_name}
+        </strong>
+        ?
+      </p>
+
+      <div className="flex flex-col gap-[8px]">
+        <label
+          htmlFor="refuse-comment"
+          className="text-primary-900 text-base font-medium leading-7"
+        >
+          Motivo da recusa
+        </label>
+        <textarea
+          id="refuse-comment"
+          className="w-full rounded-lg border border-neutral-300 p-[12px] text-sm"
+          rows={3}
+          placeholder="Indique o motivo da recusa (opcional)"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        />
+      </div>
+
+      <div className="flex gap-[16px]">
+        <Button appearance="outline" variant="neutral" onClick={() => hide()}>
+          Cancelar
+        </Button>
+        <Button
+          variant="danger"
+          onClick={handleRefuse}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "A recusar..." : "Recusar pedido"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function MembersClient() {
   const { show } = usePopupContext();
   const { activeOrg, isLoading: isOrgLoading } = useActiveOrganization();
   const [members, setMembers] = useState<OrganizationMember[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<MembershipRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [requestAction, setRequestAction] = useState<string | null>(null);
 
   const loadMembers = useCallback(async () => {
     if (!activeOrg) return;
     setIsLoading(true);
     try {
-      const org = await fetchOrganization(activeOrg.id);
+      const [org, requests] = await Promise.all([
+        fetchOrganization(activeOrg.id),
+        fetchMembershipRequests(activeOrg.id),
+      ]);
       setMembers(org.members || []);
+      setPendingRequests(
+        requests.filter((r: MembershipRequest) => r.status === "pending")
+      );
     } catch (error) {
       console.error("Error loading members:", error);
     } finally {
@@ -304,6 +386,33 @@ export default function MembersClient() {
     }
     loadMembers();
   }, [activeOrg, loadMembers]);
+
+  const handleAcceptRequest = async (request: MembershipRequest) => {
+    setRequestAction(request.id);
+    try {
+      await acceptMembership(activeOrg!.id, request.id);
+      await loadMembers();
+    } catch (error) {
+      console.error("Error accepting membership:", error);
+    } finally {
+      setRequestAction(null);
+    }
+  };
+
+  const handleRefuseRequest = (request: MembershipRequest) => {
+    show(
+      <RefuseMembershipPopupContent
+        orgId={activeOrg!.id}
+        request={request}
+        onRefused={loadMembers}
+      />,
+      {
+        title: "Recusar pedido de adesão",
+        closeAriaLabel: "Fechar",
+        dimensions: "m",
+      }
+    );
+  };
 
   const handleRemoveMember = (member: OrganizationMember) => {
     show(
@@ -346,6 +455,80 @@ export default function MembersClient() {
         <h1 className="admin-page__title">Membros</h1>
         <PublishDropdown />
       </div>
+
+      {pendingRequests.length > 0 && (
+        <div className="mb-[32px]">
+          <h2 className="text-neutral-900 text-base font-semibold mb-[16px]">
+            Pedidos de adesão pendentes ({pendingRequests.length})
+          </h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHeaderCell>Utilizador</TableHeaderCell>
+                <TableHeaderCell>Comentário</TableHeaderCell>
+                <TableHeaderCell>Data do pedido</TableHeaderCell>
+                <TableHeaderCell>Ações</TableHeaderCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pendingRequests.map((request) => (
+                <TableRow key={request.id}>
+                  <TableCell headerLabel="Utilizador">
+                    <div className="flex items-center gap-[8px]">
+                      {request.user.avatar_thumbnail ? (
+                        <img
+                          src={request.user.avatar_thumbnail}
+                          alt={`${request.user.first_name} ${request.user.last_name}`}
+                          className="w-[32px] h-[32px] rounded-full"
+                        />
+                      ) : (
+                        <Icon
+                          name="agora-line-user"
+                          className="w-[32px] h-[32px]"
+                        />
+                      )}
+                      <a
+                        href={`/pages/users/${request.user.slug}`}
+                        className="text-primary-600 underline"
+                      >
+                        {request.user.first_name} {request.user.last_name}
+                      </a>
+                    </div>
+                  </TableCell>
+                  <TableCell headerLabel="Comentário">
+                    {request.comment || "-"}
+                  </TableCell>
+                  <TableCell headerLabel="Data do pedido">
+                    {formatDate(request.created)}
+                  </TableCell>
+                  <TableCell headerLabel="Ações">
+                    <div className="flex gap-[8px]">
+                      <Button
+                        variant="primary"
+                        appearance="outline"
+                        onClick={() => handleAcceptRequest(request)}
+                        disabled={requestAction === request.id}
+                      >
+                        {requestAction === request.id
+                          ? "A aceitar..."
+                          : "Aceitar"}
+                      </Button>
+                      <Button
+                        variant="danger"
+                        appearance="outline"
+                        onClick={() => handleRefuseRequest(request)}
+                        disabled={requestAction === request.id}
+                      >
+                        Recusar
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       <div className="flex items-center justify-between mb-[24px]">
         <p className="text-neutral-700 text-sm font-semibold uppercase">
