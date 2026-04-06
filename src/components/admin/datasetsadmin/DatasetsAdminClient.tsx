@@ -323,6 +323,10 @@ export default function DatasetsAdminClient({
       if (datasetAcronym.trim()) payload.acronym = datasetAcronym.trim();
       if (datasetShortDescription.trim()) {
         payload.description_short = datasetShortDescription.trim();
+      } else {
+        const desc = datasetDescription.trim();
+        payload.description_short =
+          desc.length > 197 ? desc.slice(0, 197) + "..." : desc;
       }
       if (selectedProducerRef.current && selectedProducerRef.current !== "user") {
         payload.organization = selectedProducerRef.current;
@@ -765,7 +769,7 @@ export default function DatasetsAdminClient({
                     }}
                     hasFeedback
                     feedbackState="info"
-                    feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 200 caracteres da sua descrição."
+                    feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 197 caracteres da sua descrição, seguidos de '...' (máximo de 200 caracteres)."
                   />
                   <IsolatedSelect
                     label="Palavras-chave"
