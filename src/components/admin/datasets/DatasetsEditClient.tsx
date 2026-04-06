@@ -194,89 +194,95 @@ function ResourceDetailPopupContent({
     : "Este recurso encontra-se nos nossos servidores";
 
   return (
-    <div className="flex flex-col gap-[16px]">
+    <div className="flex flex-col gap-[16px]" style={{ minHeight: "60vh" }}>
       {resource.description && (
         <p className="text-neutral-700 text-sm">{resource.description}</p>
       )}
-      <table className="text-sm">
-        <tbody>
-          <tr>
-            <td className="font-semibold pr-[16px] py-[4px] align-top">Tipo</td>
-            <td className="py-[4px]">{typeLabel}</td>
-          </tr>
-          <tr>
-            <td className="font-semibold pr-[16px] py-[4px] align-top">
-              Localização
-            </td>
-            <td className="py-[4px]">{location}</td>
-          </tr>
-          <tr>
-            <td className="font-semibold pr-[16px] py-[4px] align-top">URL</td>
-            <td className="py-[4px] break-all">
-              <a
-                href={resource.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary-600 underline"
-              >
-                {resource.url}
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <td className="font-semibold pr-[16px] py-[4px] align-top">
-              Formato
-            </td>
-            <td className="py-[4px]">{resource.format || "-"}</td>
-          </tr>
-          <tr>
-            <td className="font-semibold pr-[16px] py-[4px] align-top">
-              Mime Type
-            </td>
-            <td className="py-[4px]">{resource.mime || "-"}</td>
-          </tr>
-          <tr>
-            <td className="font-semibold pr-[16px] py-[4px] align-top">
-              Tamanho
-            </td>
-            <td className="py-[4px]">{formatSize(resource.filesize)}</td>
-          </tr>
-          {resource.checksum && (
+      <div className="flex-1 overflow-y-auto">
+        <table className="text-sm w-full">
+          <tbody>
             <tr>
-              <td className="font-semibold pr-[16px] py-[4px] align-top">
-                {resource.checksum.type}
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Tipo
               </td>
-              <td className="py-[4px] break-all font-mono text-xs">
-                {resource.checksum.value}
+              <td className="py-[4px]">{typeLabel}</td>
+            </tr>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Localização
+              </td>
+              <td className="py-[4px]">{location}</td>
+            </tr>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                URL
+              </td>
+              <td className="py-[4px] break-all">
+                <a
+                  href={resource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-600 underline"
+                >
+                  {resource.url}
+                </a>
               </td>
             </tr>
-          )}
-          <tr>
-            <td className="font-semibold pr-[16px] py-[4px] align-top">
-              Criado em
-            </td>
-            <td className="py-[4px]">
-              {format(
-                new Date(resource.created_at),
-                "d 'de' MMMM 'de' yyyy HH:mm",
-                { locale: pt }
-              )}
-            </td>
-          </tr>
-          <tr>
-            <td className="font-semibold pr-[16px] py-[4px] align-top">
-              Modificado em
-            </td>
-            <td className="py-[4px]">
-              {format(
-                new Date(resource.last_modified || resource.created_at),
-                "d 'de' MMMM 'de' yyyy HH:mm",
-                { locale: pt }
-              )}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Formato
+              </td>
+              <td className="py-[4px]">{resource.format || "-"}</td>
+            </tr>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Mime Type
+              </td>
+              <td className="py-[4px]">{resource.mime || "-"}</td>
+            </tr>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Tamanho
+              </td>
+              <td className="py-[4px]">{formatSize(resource.filesize)}</td>
+            </tr>
+            {resource.checksum && (
+              <tr>
+                <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                  {resource.checksum.type}
+                </td>
+                <td className="py-[4px] break-all font-mono text-xs">
+                  {resource.checksum.value}
+                </td>
+              </tr>
+            )}
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Criado em
+              </td>
+              <td className="py-[4px]">
+                {format(
+                  new Date(resource.created_at),
+                  "d 'de' MMMM 'de' yyyy HH:mm",
+                  { locale: pt }
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Modificado em
+              </td>
+              <td className="py-[4px]">
+                {format(
+                  new Date(resource.last_modified || resource.created_at),
+                  "d 'de' MMMM 'de' yyyy HH:mm",
+                  { locale: pt }
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div className="flex justify-between pt-[8px]">
         <Button appearance="outline" variant="neutral" onClick={onClose}>
           Fechar
@@ -353,18 +359,23 @@ function ResourceEditPopupContent({
     try {
       await replaceResourceFile(datasetId, resource.id, files[0]);
       onSaved();
-    } catch (err) {
-      console.error("Error replacing file:", err);
-      setError("Erro ao substituir o ficheiro.");
+    } catch (err: unknown) {
+      const apiErr = err as { status?: number; data?: Record<string, unknown> };
+      console.error("Error replacing file:", apiErr.status, apiErr.data);
+      const msg = apiErr.data?.message
+        ? String(apiErr.data.message)
+        : `Erro ao substituir o ficheiro (${apiErr.status || "desconhecido"}).`;
+      setError(msg);
     } finally {
       setIsReplacing(false);
     }
   };
 
   return (
-    <div className="flex flex-col gap-[16px]">
+    <div className="flex flex-col gap-[16px]" style={{ minHeight: "60vh" }}>
       {error && <StatusCard type="danger" description={error} />}
 
+      <div className="flex-1 overflow-y-auto flex flex-col gap-[16px]">
       <InputText
         label="Título *"
         placeholder="Título do recurso"
@@ -461,6 +472,7 @@ function ResourceEditPopupContent({
           </span>
         </div>
       )}
+      </div>
 
       <div className="flex justify-between pt-[8px]">
         <Button appearance="outline" variant="neutral" onClick={onCancel}>

@@ -1664,11 +1664,21 @@ export async function replaceResourceFile(
       body: formData,
     }
   );
+  const text = await res.text();
   if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw { status: res.status, data: error };
+    let data: Record<string, unknown> = {};
+    try {
+      data = JSON.parse(text);
+    } catch {
+      if (text) data = { message: text };
+    }
+    throw { status: res.status, data };
   }
-  return await res.json();
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {} as Resource;
+  }
 }
 
 export async function deleteResource(datasetId: string, resourceId: string): Promise<void> {
