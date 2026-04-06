@@ -159,12 +159,12 @@ export default function OrgHarvestersClient() {
               itemsPerPage,
               totalItems: harvesters.length,
               availablePageSizes: [5, 10, 20],
-              currentPage,
+              currentPage: currentPage - 1,
               buttonDropdownAriaLabel: "Selecionar linhas por página",
               dropdownListAriaLabel: "Opções de linhas por página",
               prevButtonAriaLabel: "Página anterior",
               nextButtonAriaLabel: "Próxima página",
-              onPageChange: (page: number) => setCurrentPage(page),
+              onPageChange: (page: number) => setCurrentPage(page + 1),
               onItemsPerPageChange: (size: number) => {
                 setItemsPerPage(size);
                 setCurrentPage(1);
