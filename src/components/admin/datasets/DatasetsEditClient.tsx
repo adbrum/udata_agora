@@ -585,8 +585,24 @@ export default function DatasetsEditClient() {
       setDataset(updated);
       setApiSuccess("Ficheiro(s) carregado(s) com sucesso.");
     } catch (error) {
-      console.error("Error uploading resource:", error);
-      setApiError("Erro ao carregar ficheiro(s).");
+      const err = error as { status?: number; data?: Record<string, unknown>; message?: string };
+      console.error("Error uploading resource:", err.status, err.data ?? err.message ?? error);
+      if (err.data && typeof err.data === "object" && Object.keys(err.data).length > 0) {
+        const flattenValue = (val: unknown): string => {
+          if (Array.isArray(val)) return val.map(flattenValue).join("; ");
+          if (val && typeof val === "object")
+            return Object.values(val as Record<string, unknown>).map(flattenValue).join("; ");
+          return String(val);
+        };
+        const msg = (err.data.message as string) ||
+          Object.entries(err.data).map(([k, v]) => `${k}: ${flattenValue(v)}`).join(", ");
+        setApiError(`Erro ao carregar ficheiro(s): ${msg}`);
+      } else if (err.message) {
+        setApiError(`Erro ao carregar ficheiro(s): ${err.message}`);
+      } else {
+        const statusHint = err.status ? ` (HTTP ${err.status})` : "";
+        setApiError(`Erro ao carregar ficheiro(s)${statusHint}. Tente novamente.`);
+      }
     } finally {
       setIsSubmitting(false);
     }
