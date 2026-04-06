@@ -36,11 +36,25 @@ const markdownComponents = {
     <p className="text-[16px] leading-[28px] mb-[16px]">{children}</p>
   ),
   a: ({ href, children }: any) => {
-    const linkOverrides: Record<string, string> = {
-      "/docapi/": "/pages/faqs/api-documentation",
-      "http://www.mejoratuescuela.org": "https://www.redalyc.org/journal/5475/547567705004/",
+    const linkOverrides: Record<string, { href: string; text?: string }> = {
+      "/docapi/": { href: "/pages/faqs/api-documentation" },
+      "http://www.mejoratuescuela.org": {
+        href: "https://www.redalyc.org/journal/5475/547567705004/",
+      },
+      "https://play.google.com/store/apps/details?id=be.tragewegen.brussels": {
+        href: "https://data.europa.eu/sites/default/files/use-cases/use_case_belgium_-_be_walking_be.brussels.pdf",
+      },
+      "https://ogp.eportugal.gov.pt/": {
+        href: "https://online-learning.iscte-iul.pt/login/required?show_warning=true",
+      },
+      "https://online-learning.iscte-iul.pt/bo/courses/plano-nacional-de-acao-de-administracao-aberta-pt": {
+        href: "https://online-learning.iscte-iul.pt/login/required?show_warning=true",
+        text: "https://online-learning.iscte-iul.pt/login/required?show_warning=true",
+      },
     };
-    const resolvedHref = linkOverrides[href] ?? href;
+    const override = linkOverrides[href];
+    const resolvedHref = override?.href ?? href;
+    const resolvedChildren = override?.text ?? children;
     const isExternal = resolvedHref?.startsWith("http");
     return (
       <Link
@@ -49,7 +63,7 @@ const markdownComponents = {
         rel={isExternal ? "noopener noreferrer" : undefined}
         className="text-[#034AD8] underline font-medium hover:text-primary-700"
       >
-        {children}
+        {resolvedChildren}
       </Link>
     );
   },

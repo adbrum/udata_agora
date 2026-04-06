@@ -608,20 +608,49 @@ export default function DatasetsEditClient() {
     }
   };
 
-  const handleDeleteResource = async (resource: Resource) => {
+  const handleDeleteResource = (resource: Resource) => {
     if (!dataset) return;
-    if (!confirm(`Tem certeza que deseja eliminar "${resource.title}"?`)) return;
-    setIsSubmitting(true);
-    try {
-      await deleteResource(dataset.id, resource.id);
-      const updated = await fetchDataset(slug);
-      setDataset(updated);
-    } catch (error) {
-      console.error("Error deleting resource:", error);
-      setApiError("Erro ao eliminar o ficheiro.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    show(
+      <div className="flex flex-col gap-[16px]">
+        <p>
+          Tem certeza que deseja eliminar <strong>&quot;{resource.title}&quot;</strong>? Esta ação não pode ser revertida.
+        </p>
+        <div className="flex justify-end gap-16 pt-16">
+          <Button appearance="outline" variant="neutral" onClick={hide}>
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            hasIcon
+            leadingIcon="agora-line-trash"
+            leadingIconHover="agora-solid-trash"
+            onClick={async () => {
+              hide();
+              setIsSubmitting(true);
+              setApiError(null);
+              try {
+                await deleteResource(dataset.id, resource.id);
+                const updated = await fetchDataset(slug);
+                setDataset(updated);
+                setApiSuccess("Ficheiro eliminado com sucesso.");
+              } catch (error) {
+                console.error("Error deleting resource:", error);
+                setApiError("Erro ao eliminar o ficheiro.");
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+          >
+            Eliminar
+          </Button>
+        </div>
+      </div>,
+      {
+        title: "Eliminar ficheiro",
+        closeAriaLabel: "Fechar",
+        dimensions: "s",
+      },
+    );
   };
 
   if (isLoading) {
@@ -1266,6 +1295,18 @@ export default function DatasetsEditClient() {
                 {dataset.resources.length} {dataset.resources.length === 1 ? "FICHEIRO" : "FICHEIROS"}
               </h2>
 
+              {dataset.resources.length === 0 && (
+                <CardNoResults
+                  position="center"
+                  icon={
+                    <Icon name="agora-line-document" className="w-12 h-12 text-primary-500 icon-xl" />
+                  }
+                  title="Sem ficheiros"
+                  description="Este conjunto de dados ainda não tem ficheiros. Adicione ficheiros ou links para começar."
+                  hasAnchor={false}
+                />
+              )}
+
               {dataset.resources.length > 0 && (
                 <Table>
                   <TableHeader>
@@ -1299,7 +1340,7 @@ export default function DatasetsEditClient() {
                           {resource.type === "main" ? "Ficheiros principais" : resource.type || "-"}
                         </TableCell>
                         <TableCell headerLabel="Formato">
-                          {resource.format || "-"}
+                          {resource.format ? resource.format.toUpperCase() : "-"}
                         </TableCell>
                         <TableCell headerLabel="Criado em">
                           {format(new Date(resource.created_at), "d 'de' MMMM 'de' yyyy", { locale: pt })}
@@ -1310,9 +1351,16 @@ export default function DatasetsEditClient() {
                             : format(new Date(resource.created_at), "d 'de' MMMM 'de' yyyy", { locale: pt })}
                         </TableCell>
                         <TableCell headerLabel="Ação">
-                          <a href={`/pages/admin/me/datasets/edit?id=${dataset.id}`}>
-                            <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
-                          </a>
+                          <div className="flex items-center gap-[8px]">
+                            <button
+                              className="text-danger-500 hover:text-danger-700"
+                              title="Eliminar ficheiro"
+                              onClick={() => handleDeleteResource(resource)}
+                              disabled={isSubmitting}
+                            >
+                              <Icon name="agora-line-trash" className="w-[20px] h-[20px]" />
+                            </button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
