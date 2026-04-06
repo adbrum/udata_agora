@@ -1267,7 +1267,14 @@ export default function DatasetsEditClient() {
                     {dataset.resources.map((resource) => (
                       <TableRow key={resource.id}>
                         <TableCell headerLabel="Nome do ficheiro">
-                          {resource.title}
+                          <a
+                            href={resource.latest ?? resource.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary-600 underline hover:text-primary-800"
+                          >
+                            {resource.title}
+                          </a>
                         </TableCell>
                         <TableCell headerLabel="Estado">
                           <StatusDot variant="success">DISPONÍVEL</StatusDot>
