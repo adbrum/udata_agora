@@ -994,29 +994,33 @@ export default function DatasetsEditClient() {
     if (!dataset) return;
     const openEdit = () => {
       hide();
-      show(
-        <ResourceEditPopupContent
-          resource={resource}
-          datasetId={dataset.id}
-          resourceTypes={resourceTypes}
-          onSaved={async () => {
-            hide();
-            await refreshDataset();
-            setApiSuccess("Recurso atualizado com sucesso.");
-          }}
-          onCancel={hide}
-        />,
-        {
-          title: resource.title,
-          closeAriaLabel: "Fechar",
-          dimensions: "l",
-        },
-      );
+      setTimeout(() => {
+        show(
+          <ResourceEditPopupContent
+            resource={resource}
+            datasetId={dataset.id}
+            resourceTypes={resourceTypes}
+            onSaved={async () => {
+              hide();
+              await refreshDataset();
+              setApiSuccess("Recurso atualizado com sucesso.");
+            }}
+            onCancel={hide}
+          />,
+          {
+            title: resource.title,
+            closeAriaLabel: "Fechar",
+            dimensions: "l",
+          },
+        );
+      }, 100);
     };
 
     const openDelete = () => {
       hide();
-      handleDeleteResource(resource);
+      setTimeout(() => {
+        handleDeleteResource(resource);
+      }, 100);
     };
 
     show(
