@@ -73,6 +73,7 @@ export default function DatasetsAdminClient({
   const selectedProducerRef = useRef("");
   const selectedLicenseRef = useRef("");
   const selectedFrequencyRef = useRef("");
+  const selectedKeywordsRef = useRef("");
   const dummyRef = useRef("");
   const [temporalStart, setTemporalStart] = useState("");
   const [temporalEnd, setTemporalEnd] = useState("");
@@ -107,62 +108,46 @@ export default function DatasetsAdminClient({
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
   const [tags, setTags] = useState<TagSuggestion[]>([]);
 
-  const producerOptions = useMemo(
-    () => (
-      <DropdownSection name="identity">
-        {[
-          <DropdownOption key="user" value="user">
-            {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
-          </DropdownOption>,
-          ...(user?.organizations || []).map((org) => (
-            <DropdownOption key={org.id} value={org.id}>
-              {org.name}
-            </DropdownOption>
-          )),
-        ]}
-      </DropdownSection>
-    ),
-    [user],
-  );
+  const producerOptions = useMemo(() => {
+    const options = [
+      <DropdownOption key="user" value="user">
+        {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
+      </DropdownOption>,
+      ...(user?.organizations || []).map((org) => (
+        <DropdownOption key={org.id} value={org.id}>
+          {org.name}
+        </DropdownOption>
+      )),
+    ];
+    return <DropdownSection name="identity">{options}</DropdownSection>;
+  }, [user]);
 
-  const licenseOptions = useMemo(
-    () => (
-      <DropdownSection name="licenses">
-        {licenses.map((license) => (
-          <DropdownOption key={license.id} value={license.id}>
-            {license.title}
-          </DropdownOption>
-        ))}
-      </DropdownSection>
-    ),
-    [licenses],
-  );
+  const licenseOptions = useMemo(() => {
+    const options = licenses.map((license) => (
+      <DropdownOption key={license.id} value={license.id}>
+        {license.title}
+      </DropdownOption>
+    ));
+    return <DropdownSection name="licenses">{options}</DropdownSection>;
+  }, [licenses]);
 
-  const frequencyOptions = useMemo(
-    () => (
-      <DropdownSection name="frequencies">
-        {frequencies.map((freq) => (
-          <DropdownOption key={freq.id} value={freq.id}>
-            {getFrequencyLabel(freq.id, freq.label)}
-          </DropdownOption>
-        ))}
-      </DropdownSection>
-    ),
-    [frequencies],
-  );
+  const frequencyOptions = useMemo(() => {
+    const options = frequencies.map((freq) => (
+      <DropdownOption key={freq.id} value={freq.id}>
+        {getFrequencyLabel(freq.id, freq.label)}
+      </DropdownOption>
+    ));
+    return <DropdownSection name="frequencies">{options}</DropdownSection>;
+  }, [frequencies]);
 
-  const tagOptions = useMemo(
-    () => (
-      <DropdownSection name="keywords">
-        {tags.map((tag) => (
-          <DropdownOption key={tag.text} value={tag.text}>
-            {tag.text}
-          </DropdownOption>
-        ))}
-      </DropdownSection>
-    ),
-    [tags],
-  );
+  const tagOptions = useMemo(() => {
+    const options = tags.map((tag) => (
+      <DropdownOption key={tag.text} value={tag.text}>
+        {tag.text}
+      </DropdownOption>
+    ));
+    return <DropdownSection name="keywords">{options}</DropdownSection>;
+  }, [tags]);
 
   // Fetch contact points when an organization is selected as producer
   useEffect(() => {
@@ -316,6 +301,7 @@ export default function DatasetsAdminClient({
 
   const handleStep2Next = async () => {
     const errors: Record<string, boolean> = {};
+    if (!selectedProducerRef.current) errors.datasetProducer = true;
     if (!datasetTitle.trim()) errors.datasetTitle = true;
     if (!datasetDescription.trim()) errors.datasetDescription = true;
     if (!selectedFrequencyRef.current) errors.datasetFrequency = true;
@@ -342,6 +328,9 @@ export default function DatasetsAdminClient({
         payload.organization = selectedProducerRef.current;
       }
       if (selectedLicenseRef.current) payload.license = selectedLicenseRef.current;
+      if (selectedKeywordsRef.current) {
+        payload.tags = selectedKeywordsRef.current.split(",").filter(Boolean);
+      }
       if (selectedContactPointIds.length > 0) {
         payload.contact_points = selectedContactPointIds;
       }
@@ -364,8 +353,13 @@ export default function DatasetsAdminClient({
     } catch (error: unknown) {
       const err = error as { status?: number; data?: Record<string, unknown> };
       if (err.data && typeof err.data === "object") {
+        const flattenValue = (val: unknown): string => {
+          if (Array.isArray(val)) return val.map(flattenValue).join("; ");
+          if (val && typeof val === "object") return Object.values(val as Record<string, unknown>).map(flattenValue).join("; ");
+          return String(val);
+        };
         const messages = Object.entries(err.data)
-          .map(([key, val]) => `${key}: ${val}`)
+          .map(([key, val]) => `${key}: ${flattenValue(val)}`)
           .join(", ");
         setApiError(messages);
       } else {
@@ -663,12 +657,22 @@ export default function DatasetsAdminClient({
                   Verifique a identidade que deseja usar na publicação.
                 </span>
                 <IsolatedSelect
-                  label=""
-                  hideLabel
+                  label="Produtor*"
                   placeholder="Selecione o produtor..."
                   id="dataset-producer"
                   onChangeRef={selectedProducerRef}
-                  onChangeCallback={(value) => setSelectedProducer(value)}
+                  onChangeCallback={(value) => {
+                    setSelectedProducer(value);
+                    if (value) {
+                      setFormErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.datasetProducer;
+                        return next;
+                      });
+                    }
+                  }}
+                  hasError={!!formErrors.datasetProducer}
+                  errorFeedbackText="Campo obrigatório"
                 >
                   {producerOptions}
                 </IsolatedSelect>
@@ -752,6 +756,8 @@ export default function DatasetsAdminClient({
                     placeholder="Insira a descrição aqui"
                     id="dataset-short-description"
                     rows={3}
+                    maxLength={200}
+                    showCharCounter={true}
                     value={datasetShortDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setDatasetShortDescription(e.target.value);
@@ -769,7 +775,7 @@ export default function DatasetsAdminClient({
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
-                    onChangeRef={dummyRef}
+                    onChangeRef={selectedKeywordsRef}
                   >
                     {tagOptions}
                   </IsolatedSelect>

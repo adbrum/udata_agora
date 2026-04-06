@@ -2325,6 +2325,29 @@ export async function fetchSpatialZones(ids: string[]): Promise<object> {
   }
 }
 
+export async function fetchSpatialZonesByIds(ids: string[]): Promise<SpatialZone[]> {
+  if (!ids.length) return [];
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/spatial/zones/${ids.join(",")}/`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch spatial zones: ${res.statusText}`);
+    const geojson = await res.json() as {
+      features?: Array<{ id: string; properties: { name: string; code: string; uri?: string } }>;
+    };
+    return (geojson.features ?? []).map((f) => ({
+      id: f.id,
+      name: f.properties.name,
+      code: f.properties.code,
+      uri: f.properties.uri ?? "",
+    }));
+  } catch (error) {
+    console.error("Error fetching spatial zones by ids:", error);
+    return [];
+  }
+}
+
 export async function fetchGranularities(): Promise<Granularity[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/spatial/granularities/`, { cache: "no-store" });

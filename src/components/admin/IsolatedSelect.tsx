@@ -32,6 +32,7 @@ interface IsolatedSelectProps {
   searchInputPlaceholder?: string;
   searchNoResultsText?: string;
   onChangeCallback?: (value: string) => void;
+  onSearchCallback?: (query: string) => void;
   children:
     | ReactElement<DropdownSectionProps>
     | ReactElement<DropdownSectionProps>[];
@@ -51,6 +52,7 @@ const IsolatedSelect = React.memo(function IsolatedSelect({
   searchInputPlaceholder,
   searchNoResultsText,
   onChangeCallback,
+  onSearchCallback,
   children,
 }: IsolatedSelectProps) {
   // Sync defaultValue into the ref on mount so handleSave reads the correct initial value
@@ -72,6 +74,7 @@ const IsolatedSelect = React.memo(function IsolatedSelect({
       searchInputPlaceholder={searchInputPlaceholder}
       searchNoResultsText={searchNoResultsText}
       defaultValue={defaultValue}
+      onSearchInputChange={onSearchCallback}
       onChange={(options) => {
         const value = options.map((o) => o.value as string).join(",");
         onChangeRef.current = value;
