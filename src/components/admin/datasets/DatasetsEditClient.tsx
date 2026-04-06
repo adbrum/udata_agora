@@ -23,7 +23,6 @@ import {
   Pill,
   Switch,
   RadioButton,
-  ButtonUploader,
   CardNoResults,
   Tabs,
   Tab,
@@ -38,6 +37,7 @@ import {
   updateDataset,
   deleteDataset,
   uploadResource,
+  createResource,
   deleteResource,
   fetchLicenses,
   fetchFrequencies,
@@ -48,6 +48,7 @@ import { Dataset, License, Frequency, Activity, Resource, Discussion } from "@/t
 import StatusDot from "@/components/admin/StatusDot";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
+import FileUploadPopupContent from "@/components/admin/FileUploadPopupContent";
 import { getFrequencyLabel } from "@/utils/frequencyLabels";
 
 function TransferDatasetPopupContent({
@@ -440,40 +441,100 @@ export default function DatasetsEditClient() {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = (e.target as HTMLInputElement).files;
-    if (!files || files.length === 0 || !dataset) return;
-    setIsSubmitting(true);
-    setApiError(null);
-    try {
-      for (const file of Array.from(files)) {
-        await uploadResource(dataset.id, file);
-      }
-      const updated = await fetchDataset(slug);
-      setDataset(updated);
-      setApiSuccess("Ficheiro(s) carregado(s) com sucesso.");
-    } catch (error) {
-      console.error("Error uploading resource:", error);
-      setApiError("Erro ao carregar ficheiro(s).");
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleAddResource = () => {
+    if (!dataset) return;
+    show(
+      <FileUploadPopupContent
+        initialFiles={[]}
+        initialUrl=""
+        onConfirm={async (files: File[], url: string) => {
+          setIsSubmitting(true);
+          setApiError(null);
+          setApiSuccess(null);
+          try {
+            if (files.length > 0) {
+              for (const file of files) {
+                await uploadResource(dataset.id, file);
+              }
+              const updated = await fetchDataset(slug);
+              setDataset(updated);
+              setApiSuccess("Ficheiro(s) carregado(s) com sucesso.");
+            } else if (url.trim()) {
+              const urlObj = new URL(url.trim());
+              const filename = urlObj.pathname.split("/").pop() || url.trim();
+              const ext = filename.includes(".")
+                ? filename.split(".").pop()?.toLowerCase() || ""
+                : "";
+              await createResource(dataset.id, {
+                title: filename,
+                url: url.trim(),
+                type: "main",
+                filetype: "remote",
+                format: ext,
+              });
+              const updated = await fetchDataset(slug);
+              setDataset(updated);
+              setApiSuccess("Link adicionado com sucesso.");
+            }
+          } catch (error) {
+            console.error("Error adding resource:", error);
+            setApiError("Erro ao adicionar ficheiro/link.");
+          } finally {
+            setIsSubmitting(false);
+          }
+        }}
+      />,
+      {
+        title: "Adicionar um ficheiro ou link",
+        closeAriaLabel: "Fechar",
+        dimensions: "m",
+      },
+    );
   };
 
-  const handleDeleteResource = async (resource: Resource) => {
+  const handleDeleteResource = (resource: Resource) => {
     if (!dataset) return;
-    if (!confirm(`Tem certeza que deseja eliminar "${resource.title}"?`)) return;
-    setIsSubmitting(true);
-    try {
-      await deleteResource(dataset.id, resource.id);
-      const updated = await fetchDataset(slug);
-      setDataset(updated);
-    } catch (error) {
-      console.error("Error deleting resource:", error);
-      setApiError("Erro ao eliminar o ficheiro.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    show(
+      <div className="flex flex-col gap-[16px]">
+        <p>
+          Tem certeza que deseja eliminar <strong>&quot;{resource.title}&quot;</strong>? Esta ação não pode ser revertida.
+        </p>
+        <div className="flex justify-end gap-16 pt-16">
+          <Button appearance="outline" variant="neutral" onClick={hide}>
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            hasIcon
+            leadingIcon="agora-line-trash"
+            leadingIconHover="agora-solid-trash"
+            onClick={async () => {
+              hide();
+              setIsSubmitting(true);
+              setApiError(null);
+              try {
+                await deleteResource(dataset.id, resource.id);
+                const updated = await fetchDataset(slug);
+                setDataset(updated);
+                setApiSuccess("Ficheiro eliminado com sucesso.");
+              } catch (error) {
+                console.error("Error deleting resource:", error);
+                setApiError("Erro ao eliminar o ficheiro.");
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+          >
+            Eliminar
+          </Button>
+        </div>
+      </div>,
+      {
+        title: "Eliminar ficheiro",
+        closeAriaLabel: "Fechar",
+        dimensions: "s",
+      },
+    );
   };
 
   if (isLoading) {
@@ -1081,23 +1142,39 @@ export default function DatasetsEditClient() {
           <TabHeader>Ficheiros ({dataset.resources.length})</TabHeader>
           <TabBody>
             <div className="mt-[24px]">
-              <div className="flex items-end gap-[16px] mb-[16px]">
-                <ButtonUploader
-                  label="Ficheiros"
-                  inputLabel="Selecione ou arraste o ficheiro"
-                  selectedFilesLabel="ficheiros selecionados"
-                  removeFileButtonLabel="Remover ficheiro"
-                  replaceFileButtonLabel="Substituir ficheiro"
-                  onChange={handleFileUpload}
-                />
-                <Button appearance="outline" variant="primary" className="mb-[32px]">
-                  Reordene os ficheiros
+              <div className="flex items-center gap-[16px] mb-[16px]">
+                <Button
+                  variant="primary"
+                  hasIcon
+                  leadingIcon="agora-line-plus"
+                  leadingIconHover="agora-solid-plus"
+                  onClick={handleAddResource}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "A carregar..." : "Adicionar ficheiro ou link"}
                 </Button>
+                {dataset.resources.length > 1 && (
+                  <Button appearance="outline" variant="primary">
+                    Reordene os ficheiros
+                  </Button>
+                )}
               </div>
 
               <h2 className="font-medium text-neutral-900 text-base mb-[16px]">
                 {dataset.resources.length} {dataset.resources.length === 1 ? "FICHEIRO" : "FICHEIROS"}
               </h2>
+
+              {dataset.resources.length === 0 && (
+                <CardNoResults
+                  position="center"
+                  icon={
+                    <Icon name="agora-line-document" className="w-12 h-12 text-primary-500 icon-xl" />
+                  }
+                  title="Sem ficheiros"
+                  description="Este conjunto de dados ainda não tem ficheiros. Adicione ficheiros ou links para começar."
+                  hasAnchor={false}
+                />
+              )}
 
               {dataset.resources.length > 0 && (
                 <Table>
@@ -1125,7 +1202,7 @@ export default function DatasetsEditClient() {
                           {resource.type === "main" ? "Ficheiros principais" : resource.type || "-"}
                         </TableCell>
                         <TableCell headerLabel="Formato">
-                          {resource.format || "-"}
+                          {resource.format ? resource.format.toUpperCase() : "-"}
                         </TableCell>
                         <TableCell headerLabel="Criado em">
                           {format(new Date(resource.created_at), "d 'de' MMMM 'de' yyyy", { locale: pt })}
@@ -1136,9 +1213,16 @@ export default function DatasetsEditClient() {
                             : format(new Date(resource.created_at), "d 'de' MMMM 'de' yyyy", { locale: pt })}
                         </TableCell>
                         <TableCell headerLabel="Ação">
-                          <a href={`/pages/admin/me/datasets/edit?id=${dataset.id}`}>
-                            <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
-                          </a>
+                          <div className="flex items-center gap-[8px]">
+                            <button
+                              className="text-danger-500 hover:text-danger-700"
+                              title="Eliminar ficheiro"
+                              onClick={() => handleDeleteResource(resource)}
+                              disabled={isSubmitting}
+                            >
+                              <Icon name="agora-line-trash" className="w-[20px] h-[20px]" />
+                            </button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
