@@ -283,7 +283,7 @@ export default function OrganizationsClient({
                                       </div>
                                       <div className="flex items-center gap-8" title="Datasets">
                                         <Icon
-                                          name={org.metrics?.datasets ? "agora-solid-calendar" : "agora-line-calendar"}
+                                          name={org.metrics?.datasets ? "agora-solid-layers-menu" : "agora-line-layers-menu"}
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"

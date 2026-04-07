@@ -142,8 +142,8 @@ export default function DataStoriesClient({ currentPage }: DataStoriesClientProp
                       {
                         href: '#',
                         hasIcon: true,
-                        leadingIcon: 'agora-line-calendar',
-                        leadingIconHover: 'agora-solid-calendar',
+                        leadingIcon: 'agora-line-layers-menu',
+                        leadingIconHover: 'agora-solid-layers-menu',
                         trailingIcon: '',
                         trailingIconHover: '',
                         children: `${story.datasets.length}`,

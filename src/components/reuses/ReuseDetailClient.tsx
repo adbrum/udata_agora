@@ -369,7 +369,7 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                     </div>
                     <div className="flex items-center gap-8">
                       <Icon
-                        name="agora-line-calendar"
+                        name="agora-line-layers-menu"
                         className="w-20 h-20 fill-[var(--color-neutral-900)]"
                       />
                       <span className="text-neutral-900">{datasetRefs.length}</span>
