@@ -24,17 +24,15 @@ interface DatasetsClientProps {
 const SORT_OPTIONS: Record<string, string> = {
   relevancia: '',
   criacao: '-created',
-  atualizacao: '-last_update',
-  seguidores: '-followers',
-  reutilizacoes: '-reuses',
+  antigo: 'created',
+  subscritores: '-followers',
 };
 
 const SORT_LABELS: Record<string, string> = {
   relevancia: 'Relevância',
   criacao: 'Mais recente',
-  atualizacao: 'Última atualização',
-  seguidores: 'Seguidores',
-  reutilizacoes: 'Reutilizações',
+  antigo: 'Mais antigo',
+  subscritores: 'Subscritores',
 };
 
 export default function DatasetsClient({

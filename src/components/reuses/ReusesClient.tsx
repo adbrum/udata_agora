@@ -43,7 +43,7 @@ const SORT_LABELS: Record<string, string> = {
   relevancia: 'Relevância',
   recentes: 'Mais recente',
   antigos: 'Mais antigo',
-  subscritores: 'Seguidores',
+  subscritores: 'Subscritores',
 };
 
 function TypeSelect({

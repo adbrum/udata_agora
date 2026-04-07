@@ -35,7 +35,6 @@ const SORT_OPTIONS: Record<string, string> = {
   recentes: '-last_modified',
   antigos: 'last_modified',
   subscritores: '-followers',
-  reutilizacoes: '-reuses',
 };
 
 const SORT_LABELS: Record<string, string> = {
@@ -43,7 +42,6 @@ const SORT_LABELS: Record<string, string> = {
   recentes: 'Mais recente',
   antigos: 'Mais antigo',
   subscritores: 'Subscritores',
-  reutilizacoes: 'Reutilizações',
 };
 
 export default function OrganizationsClient({

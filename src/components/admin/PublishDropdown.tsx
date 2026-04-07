@@ -81,6 +81,7 @@ export default function PublishDropdown({ darkMode = false }: PublishDropdownPro
                   src={item.customIcon!}
                   alt=""
                   className="w-[24px] h-[24px]"
+                  style={{ filter: "invert(22%) sepia(93%) saturate(2500%) hue-rotate(215deg) brightness(95%) contrast(105%)" }}
                   aria-hidden="true"
                 />
               )}
