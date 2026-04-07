@@ -59,10 +59,50 @@ import {
   Resource,
   Discussion,
 } from "@/types/api";
+import dynamic from "next/dynamic";
 import StatusDot from "@/components/admin/StatusDot";
+
+const RichTextEditor = dynamic(
+  () => import("@/components/admin/posts/RichTextEditor"),
+  { ssr: false, loading: () => <p>A carregar editor...</p> }
+);
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
 import { getFrequencyLabel } from "@/utils/frequencyLabels";
+
+const activityLabels: Record<string, string> = {
+  "created a dataset": "criou um conjunto de dados",
+  "updated a dataset": "atualizou um conjunto de dados",
+  "deleted a dataset": "eliminou um conjunto de dados",
+  "added a resource to a dataset": "adicionou um recurso a um conjunto de dados",
+  "updated a resource": "atualizou um recurso",
+  "removed a resource from a dataset": "removeu um recurso de um conjunto de dados",
+  "created a dataservice": "criou um serviço de dados",
+  "updated a dataservice": "atualizou um serviço de dados",
+  "deleted a dataservice": "eliminou um serviço de dados",
+  "created a topic": "criou um tema",
+  "updated a topic": "atualizou um tema",
+  "added an element to a topic": "adicionou um elemento a um tema",
+  "updated an element in a topic": "atualizou um elemento num tema",
+  "removed an element from a topic": "removeu um elemento de um tema",
+  "created an organization": "criou uma organização",
+  "updated an organization": "atualizou uma organização",
+  "followed a user": "seguiu um utilizador",
+  "discussed a dataservice": "comentou um serviço de dados",
+  "discussed a dataset": "comentou um conjunto de dados",
+  "discussed a reuse": "comentou uma reutilização",
+  "followed a dataservice": "seguiu um serviço de dados",
+  "followed a dataset": "seguiu um conjunto de dados",
+  "followed a reuse": "seguiu uma reutilização",
+  "followed an organization": "seguiu uma organização",
+  "created a reuse": "criou uma reutilização",
+  "updated a reuse": "atualizou uma reutilização",
+  "deleted a reuse": "eliminou uma reutilização",
+};
+
+function translateActivityLabel(label: string): string {
+  return activityLabels[label] || label;
+}
 
 function TransferDatasetPopupContent({
   datasetTitle,
@@ -782,7 +822,7 @@ export default function DatasetsEditClient() {
                 {latestActivity.actor.first_name} {latestActivity.actor.last_name}
               </Link>
               {" — "}
-              {latestActivity.label}
+              {translateActivityLabel(latestActivity.label)}
               {" — "}
               <span>
                 {format(new Date(latestActivity.created_at), "d 'de' MMMM 'de' yyyy", {
@@ -905,24 +945,21 @@ export default function DatasetsEditClient() {
                       value={acronym}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAcronym(e.target.value)}
                     />
-                    <InputTextArea
-                      label="Descrição*"
-                      placeholder="Insira a descrição aqui"
-                      id="edit-description"
-                      rows={6}
-                      maxLength={246}
-                      showCharCounter={true}
-                      value={description}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                        setDescription(e.target.value);
-                        if (e.target.value.trim()) clearError("description");
-                      }}
-                      hasError={formErrors.description ? true : undefined}
-                      hasFeedback={formErrors.description ? true : undefined}
-                      feedbackState="danger"
-                      feedbackText="Campo obrigatório"
-                      errorFeedbackText="Campo obrigatório"
-                    />
+                    <div className="flex flex-col gap-[8px]">
+                      <span className="text-primary-900 text-base font-medium leading-7">
+                        Descrição *
+                      </span>
+                      <RichTextEditor
+                        content={description}
+                        onChange={(html) => {
+                          setDescription(html);
+                          if (html.trim()) clearError("description");
+                        }}
+                      />
+                      {formErrors.description && (
+                        <span className="text-danger-600 text-sm">Campo obrigatório</span>
+                      )}
+                    </div>
                     <IsolatedSelect
                       label="Palavras-chave"
                       placeholder="Pesquise por uma palavra-chave..."
@@ -1434,7 +1471,7 @@ export default function DatasetsEditClient() {
                               {activity.actor?.first_name} {activity.actor?.last_name}
                             </a>
                             {" "}
-                            {activity.label}
+                            {translateActivityLabel(activity.label)}
                           </p>
                           <p className="text-xs text-neutral-600 mt-[4px]">
                             {new Date(activity.created_at).toLocaleDateString("pt-PT", {

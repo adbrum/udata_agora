@@ -74,11 +74,15 @@ export function GitHubMarkdownPage({
                       ),
                       a: ({ href, children }) => {
                         const isExternal = href?.startsWith("http");
+                        const resolvedHref =
+                          href && !isExternal
+                            ? `https://dados.gov.pt/pt${href}`
+                            : (href ?? "#");
                         return (
                           <Link
-                            href={href ?? "#"}
-                            target={isExternal ? "_blank" : undefined}
-                            rel={isExternal ? "noopener noreferrer" : undefined}
+                            href={resolvedHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="text-[#034AD8] underline font-medium hover:text-primary-700"
                           >
                             {children}
