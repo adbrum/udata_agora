@@ -1649,6 +1649,38 @@ export async function updateResource(
   return await res.json();
 }
 
+export async function replaceResourceFile(
+  datasetId: string,
+  resourceId: string,
+  file: File
+): Promise<Resource> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(
+    `${API_AUTH_URL}/datasets/${datasetId}/resources/${resourceId}/upload/`,
+    {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    }
+  );
+  const text = await res.text();
+  if (!res.ok) {
+    let data: Record<string, unknown> = {};
+    try {
+      data = JSON.parse(text);
+    } catch {
+      if (text) data = { message: text };
+    }
+    throw { status: res.status, data };
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {} as Resource;
+  }
+}
+
 export async function deleteResource(datasetId: string, resourceId: string): Promise<void> {
   const res = await fetch(
     `${API_AUTH_URL}/datasets/${datasetId}/resources/${resourceId}/`,

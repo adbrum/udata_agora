@@ -38,9 +38,13 @@ import {
   updateDataset,
   deleteDataset,
   uploadResource,
+  createResource,
+  updateResource,
+  replaceResourceFile,
   deleteResource,
   fetchLicenses,
   fetchFrequencies,
+  fetchResourceTypes,
   fetchGranularities,
   fetchSpatialZonesByIds,
   suggestSpatialZones,
@@ -57,6 +61,7 @@ import {
   TagSuggestion,
   Activity,
   Resource,
+  ResourceType,
   Discussion,
 } from "@/types/api";
 import dynamic from "next/dynamic";
@@ -202,6 +207,342 @@ function DeleteDatasetPopupContent({
   );
 }
 
+function ResourceDetailPopupContent({
+  resource,
+  onEdit,
+  onDelete,
+  onClose,
+}: {
+  resource: Resource;
+  onEdit: () => void;
+  onDelete: () => void;
+  onClose: () => void;
+}) {
+  const formatSize = (bytes?: number) => {
+    if (!bytes) return "-";
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const typeLabel = resource.type === "main"
+    ? "Main file"
+    : resource.type || "-";
+
+  const location = resource.filetype === "remote"
+    ? "Este recurso é um link externo"
+    : "Este recurso encontra-se nos nossos servidores";
+
+  return (
+    <div className="flex flex-col gap-[16px]" style={{ minHeight: "60vh" }}>
+      {resource.description && (
+        <p className="text-neutral-700 text-sm">{resource.description}</p>
+      )}
+      <div className="flex-1 overflow-y-auto">
+        <table className="text-sm w-full">
+          <tbody>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Tipo
+              </td>
+              <td className="py-[4px]">{typeLabel}</td>
+            </tr>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Localização
+              </td>
+              <td className="py-[4px]">{location}</td>
+            </tr>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                URL
+              </td>
+              <td className="py-[4px] break-all">
+                <a
+                  href={resource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-600 underline"
+                >
+                  {resource.url}
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Formato
+              </td>
+              <td className="py-[4px]">{resource.format || "-"}</td>
+            </tr>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Mime Type
+              </td>
+              <td className="py-[4px]">{resource.mime || "-"}</td>
+            </tr>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Tamanho
+              </td>
+              <td className="py-[4px]">{formatSize(resource.filesize)}</td>
+            </tr>
+            {resource.checksum && (
+              <tr>
+                <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                  {resource.checksum.type}
+                </td>
+                <td className="py-[4px] break-all font-mono text-xs">
+                  {resource.checksum.value}
+                </td>
+              </tr>
+            )}
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Criado em
+              </td>
+              <td className="py-[4px]">
+                {format(
+                  new Date(resource.created_at),
+                  "d 'de' MMMM 'de' yyyy HH:mm",
+                  { locale: pt }
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td className="font-semibold pr-[16px] py-[4px] align-top whitespace-nowrap">
+                Modificado em
+              </td>
+              <td className="py-[4px]">
+                {format(
+                  new Date(resource.last_modified || resource.created_at),
+                  "d 'de' MMMM 'de' yyyy HH:mm",
+                  { locale: pt }
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div className="flex justify-between pt-[8px]">
+        <Button appearance="outline" variant="neutral" onClick={onClose}>
+          Fechar
+        </Button>
+        <div className="flex gap-[8px]">
+          <Button variant="danger" onClick={onDelete}>
+            Eliminar
+          </Button>
+          <Button variant="primary" onClick={onEdit}>
+            Editar
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ResourceEditPopupContent({
+  resource,
+  datasetId,
+  resourceTypes,
+  onSaved,
+  onCancel,
+}: {
+  resource: Resource;
+  datasetId: string;
+  resourceTypes: ResourceType[];
+  onSaved: () => void;
+  onCancel: () => void;
+}) {
+  const [title, setTitle] = useState(resource.title);
+  const [description, setDescription] = useState(resource.description || "");
+  const [resourceUrl, setResourceUrl] = useState(resource.url || "");
+  const [resourceFormat, setResourceFormat] = useState(resource.format || "");
+  const [mime, setMime] = useState(resource.mime || "");
+  const [filesize, setFilesize] = useState(
+    resource.filesize ? String(resource.filesize) : ""
+  );
+  const [resourceType, setResourceType] = useState(resource.type || "main");
+  const [isSaving, setIsSaving] = useState(false);
+  const [isReplacing, setIsReplacing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSave = async () => {
+    if (!title.trim()) return;
+    setIsSaving(true);
+    setError(null);
+    try {
+      await updateResource(datasetId, resource.id, {
+        title: title.trim(),
+        description: description.trim() || undefined,
+        url: resourceUrl.trim() || undefined,
+        format: resourceFormat.trim() || undefined,
+        mime: mime.trim() || undefined,
+        filesize: filesize ? Number(filesize) : undefined,
+        type: resourceType,
+      });
+      onSaved();
+    } catch (err) {
+      console.error("Error updating resource:", err);
+      setError("Erro ao guardar as alterações.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleReplaceFile = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = (e.target as HTMLInputElement).files;
+    if (!files || files.length === 0) return;
+    setIsReplacing(true);
+    setError(null);
+    try {
+      await replaceResourceFile(datasetId, resource.id, files[0]);
+      onSaved();
+    } catch (err: unknown) {
+      const apiErr = err as { status?: number; data?: Record<string, unknown> };
+      console.error("Error replacing file:", apiErr.status, apiErr.data);
+      const msg = apiErr.data?.message
+        ? String(apiErr.data.message)
+        : `Erro ao substituir o ficheiro (${apiErr.status || "desconhecido"}).`;
+      setError(msg);
+    } finally {
+      setIsReplacing(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-[16px]" style={{ minHeight: "60vh" }}>
+      {error && <StatusCard type="danger" description={error} />}
+
+      <div className="flex-1 overflow-y-auto flex flex-col gap-[16px]">
+      <InputText
+        label="Título *"
+        placeholder="Título do recurso"
+        id="res-edit-title"
+        value={title}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setTitle(e.target.value)
+        }
+      />
+
+      <div className="flex flex-col gap-[4px]">
+        <label
+          htmlFor="res-edit-type"
+          className="text-primary-900 text-sm font-medium"
+        >
+          Tipo *
+        </label>
+        <select
+          id="res-edit-type"
+          className="rounded-lg border border-neutral-300 p-[10px] text-sm"
+          value={resourceType}
+          onChange={(e) => setResourceType(e.target.value)}
+        >
+          {resourceTypes.map((rt) => (
+            <option key={rt.id} value={rt.id}>
+              {rt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <InputTextArea
+        label="Descrição"
+        placeholder="Descrição do recurso"
+        id="res-edit-description"
+        rows={4}
+        value={description}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+          setDescription(e.target.value)
+        }
+      />
+
+      <InputText
+        label="URL *"
+        placeholder="URL do recurso"
+        id="res-edit-url"
+        value={resourceUrl}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setResourceUrl(e.target.value)
+        }
+      />
+
+      <div className="grid grid-cols-2 gap-[16px]">
+        <InputText
+          label="Tamanho"
+          placeholder="Tamanho em bytes"
+          id="res-edit-filesize"
+          value={filesize}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setFilesize(e.target.value)
+          }
+        />
+        <InputText
+          label="Formato *"
+          placeholder="csv, json, xlsx..."
+          id="res-edit-format"
+          value={resourceFormat}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setResourceFormat(e.target.value)
+          }
+        />
+      </div>
+
+      <InputText
+        label="Mime Type"
+        placeholder="application/json, text/csv..."
+        id="res-edit-mime"
+        value={mime}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setMime(e.target.value)
+        }
+      />
+
+      {resource.checksum && (
+        <div className="flex items-center gap-[8px]">
+          <span className="text-sm font-semibold">
+            Soma de verificação
+          </span>
+          <span className="bg-neutral-100 rounded px-[8px] py-[2px] text-xs font-mono">
+            {resource.checksum.type}
+          </span>
+          <span className="text-xs font-mono break-all">
+            {resource.checksum.value}
+          </span>
+        </div>
+      )}
+      </div>
+
+      <div className="flex justify-between pt-[8px]">
+        <Button appearance="outline" variant="neutral" onClick={onCancel}>
+          Cancelar
+        </Button>
+        <div className="flex gap-[8px]">
+          <label className="cursor-pointer">
+            <input
+              type="file"
+              className="hidden"
+              onChange={handleReplaceFile}
+              disabled={isReplacing}
+            />
+            <span className="inline-flex items-center gap-[6px] rounded-lg border border-primary-600 text-primary-600 px-[16px] py-[10px] text-sm font-medium hover:bg-primary-50">
+              {isReplacing ? "A substituir..." : "Substituir o ficheiro"}
+            </span>
+          </label>
+          <Button
+            variant="primary"
+            onClick={handleSave}
+            disabled={isSaving || !title.trim()}
+          >
+            {isSaving ? "A guardar..." : "Guardar"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DatasetsEditClient() {
   const searchParams = useSearchParams();
   const params = useParams();
@@ -255,6 +596,7 @@ export default function DatasetsEditClient() {
   const [loadedKeywords, setLoadedKeywords] = useState("");
   const [loadedSpatialGranularity, setLoadedSpatialGranularity] = useState("");
   const [loadedSpatialZones, setLoadedSpatialZones] = useState<string[]>([]);
+  const [resourceTypes, setResourceTypes] = useState<ResourceType[]>([]);
 
   // Activity data
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
@@ -269,11 +611,12 @@ export default function DatasetsEditClient() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [ds, licensesData, frequenciesData, granularitiesData] = await Promise.all([
+        const [ds, licensesData, frequenciesData, granularitiesData, resTypes] = await Promise.all([
           fetchDataset(slug),
           fetchLicenses(),
           fetchFrequencies(),
           fetchGranularities(),
+          fetchResourceTypes(),
         ]);
         setDataset(ds);
         setTitle(ds.title);
@@ -304,6 +647,7 @@ export default function DatasetsEditClient() {
         setLicenses(licensesData);
         setFrequencies(frequenciesData);
         setGranularities(granularitiesData);
+        setResourceTypes(resTypes);
 
         suggestTags("", 50).then(setTagSuggestions);
 
@@ -689,6 +1033,59 @@ export default function DatasetsEditClient() {
         title: "Eliminar ficheiro",
         closeAriaLabel: "Fechar",
         dimensions: "s",
+      },
+    );
+  };
+
+  const refreshDataset = async () => {
+    const updated = await fetchDataset(slug);
+    setDataset(updated);
+  };
+
+  const handleResourceClick = (resource: Resource) => {
+    if (!dataset) return;
+    const openEdit = () => {
+      hide();
+      setTimeout(() => {
+        show(
+          <ResourceEditPopupContent
+            resource={resource}
+            datasetId={dataset.id}
+            resourceTypes={resourceTypes}
+            onSaved={async () => {
+              hide();
+              await refreshDataset();
+              setApiSuccess("Recurso atualizado com sucesso.");
+            }}
+            onCancel={hide}
+          />,
+          {
+            title: resource.title,
+            closeAriaLabel: "Fechar",
+            dimensions: "l",
+          },
+        );
+      }, 100);
+    };
+
+    const openDelete = () => {
+      hide();
+      setTimeout(() => {
+        handleDeleteResource(resource);
+      }, 100);
+    };
+
+    show(
+      <ResourceDetailPopupContent
+        resource={resource}
+        onEdit={openEdit}
+        onDelete={openDelete}
+        onClose={hide}
+      />,
+      {
+        title: resource.title,
+        closeAriaLabel: "Fechar",
+        dimensions: "l",
       },
     );
   };
@@ -1300,41 +1697,64 @@ export default function DatasetsEditClient() {
                     {dataset.resources.map((resource) => (
                       <TableRow key={resource.id}>
                         <TableCell headerLabel="Nome do ficheiro">
-                          <a
-                            href={resource.latest ?? resource.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary-600 underline hover:text-primary-800"
+                          <button
+                            className="text-primary-600 underline text-left cursor-pointer"
+                            onClick={() => handleResourceClick(resource)}
                           >
                             {resource.title}
-                          </a>
+                          </button>
                         </TableCell>
                         <TableCell headerLabel="Estado">
                           <StatusDot variant="success">DISPONÍVEL</StatusDot>
                         </TableCell>
                         <TableCell headerLabel="Tipo">
-                          {resource.type === "main" ? "Ficheiros principais" : resource.type || "-"}
+                          {resource.type === "main"
+                            ? "Ficheiros principais"
+                            : resource.type || "-"}
                         </TableCell>
                         <TableCell headerLabel="Formato">
-                          {resource.format ? resource.format.toUpperCase() : "-"}
+                          {resource.format
+                            ? resource.format.toUpperCase()
+                            : "-"}
                         </TableCell>
                         <TableCell headerLabel="Criado em">
-                          {format(new Date(resource.created_at), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                          {format(
+                            new Date(resource.created_at),
+                            "d 'de' MMMM 'de' yyyy",
+                            { locale: pt }
+                          )}
                         </TableCell>
                         <TableCell headerLabel="Atualizado em">
-                          {resource.last_modified
-                            ? format(new Date(resource.last_modified), "d 'de' MMMM 'de' yyyy", { locale: pt })
-                            : format(new Date(resource.created_at), "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                          {format(
+                            new Date(
+                              resource.last_modified || resource.created_at
+                            ),
+                            "d 'de' MMMM 'de' yyyy",
+                            { locale: pt }
+                          )}
                         </TableCell>
                         <TableCell headerLabel="Ação">
                           <div className="flex items-center gap-[8px]">
+                            <button
+                              className="text-primary-500 hover:text-primary-700"
+                              title="Ver detalhes"
+                              onClick={() => handleResourceClick(resource)}
+                            >
+                              <Icon
+                                name="agora-line-eye"
+                                className="w-[20px] h-[20px]"
+                              />
+                            </button>
                             <button
                               className="text-danger-500 hover:text-danger-700"
                               title="Eliminar ficheiro"
                               onClick={() => handleDeleteResource(resource)}
                               disabled={isSubmitting}
                             >
-                              <Icon name="agora-line-trash" className="w-[20px] h-[20px]" />
+                              <Icon
+                                name="agora-line-trash"
+                                className="w-[20px] h-[20px]"
+                              />
                             </button>
                           </div>
                         </TableCell>

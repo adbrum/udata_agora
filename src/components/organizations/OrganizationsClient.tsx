@@ -35,7 +35,6 @@ const SORT_OPTIONS: Record<string, string> = {
   recentes: '-last_modified',
   antigos: 'last_modified',
   subscritores: '-followers',
-  reutilizacoes: '-reuses',
 };
 
 const SORT_LABELS: Record<string, string> = {
@@ -43,7 +42,6 @@ const SORT_LABELS: Record<string, string> = {
   recentes: 'Mais recente',
   antigos: 'Mais antigo',
   subscritores: 'Subscritores',
-  reutilizacoes: 'Reutilizações',
 };
 
 export default function OrganizationsClient({
@@ -285,7 +283,7 @@ export default function OrganizationsClient({
                                       </div>
                                       <div className="flex items-center gap-8" title="Datasets">
                                         <Icon
-                                          name={org.metrics?.datasets ? "agora-solid-calendar" : "agora-line-calendar"}
+                                          name={org.metrics?.datasets ? "agora-solid-layers-menu" : "agora-line-layers-menu"}
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"
