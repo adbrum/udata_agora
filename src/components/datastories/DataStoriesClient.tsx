@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { CardLinks, InputSearchBar, Button, InputSelect, DropdownSection, DropdownOption, } from '@ama-pt/agora-design-system';
+import { CardLinks, InputSearch, ToggleGroup, Toggle } from '@ama-pt/agora-design-system';
 import PageBanner from '@/components/PageBanner';
 import { Pagination } from '@/components/Pagination';
 
@@ -41,9 +41,11 @@ export default function DataStoriesClient({ currentPage }: DataStoriesClientProp
   const router = useRouter();
   const total = 48; // Dummy total to show pagination
   const pageSize = 12;
+  const [searchQuery, setSearchQuery] = React.useState('');
+
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 datastories ">
+    <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 datastories">
       <main className="flex-grow bg-white">
         <PageBanner
           title="Data Stories"
@@ -53,136 +55,133 @@ export default function DataStoriesClient({ currentPage }: DataStoriesClientProp
             { label: 'Home', url: '/' },
             { label: 'Data Stories', url: '/pages/datastories' }
           ]}
-        >
-          <InputSearchBar
-            label="O que procura nas data stories?"
-            placeholder="Pesquisar data stories, temas..."
-            id="datastories-search"
-            hasVoiceActionButton={false}
-            voiceActionAltText="Pesquisar por voz"
-            searchActionAltText="Pesquisar"
-            darkMode={true}
-          />
+          subtitle={
+            <p className="text-primary-100 max-w-[592px]">
+              Pesquise através de {total} data stories em dados.gov
+            </p>
+          }
+        />
 
-          <div className="mt-[32px] text-white">
-            <span>Conteúdo atualizado a 11.3.2024</span>
+        {/* Search Section */}
+        <div className="container mx-auto pt-32 pb-16 px-4">
+          <div className="max-w-[592px]">
+            <InputSearch
+              label="Pesquisar"
+              placeholder="Pesquisar data stories, temas..."
+              id="datastories-search"
+              value={searchQuery}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            />
+            <div className="mt-8 text-s-regular text-neutral-900">
+              Exemplos: &quot;serviços públicos&quot;, &quot;turismo&quot;, &quot;territórios&quot;
+            </div>
           </div>
-        </PageBanner>
+        </div>
 
-        <div className="container mx-auto md:gap-32 xl:gap-64">
-          <div className="pt-32 pb-64">
-            <div className="grid md:grid-cols-2 xl:grid-cols-12 gap-32 mb-16 items-center mt-[12px]">
-              <span className="text-neutral-900 font-medium text-base xl:col-span-7 mt-[32px]">
+        {/* Main Content */}
+        <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
+          {/* Results count + Sort — full width, aligned with grid */}
+          <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
+            <div className="xl:col-span-5 flex flex-row items-end gap-24 pl-0 py-16">
+              <span className="text-neutral-900 text-l-regular whitespace-nowrap">
                 {total} Resultados
               </span>
-              <div className="w-full md:w-auto xl:col-span-5 flex items-end gap-16 justify-end">
-                <Button
-                  variant="primary"
-                  appearance="link"
-                  hasIcon={true}
-                  trailingIcon="agora-line-settings"
-                  trailingIconHover="agora-solid-settings"
-                >
-                  Filtrar
-                </Button>
-                <div className="flex-grow max-w-[240px]">
-                  <InputSelect
-                    label="Ordenar por:"
-                    id="sort-datastories"
-                    defaultValue="recentes"
-                    className="selectReuse"
-                  >
-                    <DropdownSection name="order">
-                      <DropdownOption value="recentes">Mais recentes</DropdownOption>
-                      <DropdownOption value="visualizados">Mais visualizados</DropdownOption>
-                    </DropdownSection>
-                  </InputSelect>
-                </div>
+            </div>
+            <div className="xl:col-span-7 flex items-center justify-end py-16">
+              <ToggleGroup
+                multiple={false}
+                onChange={() => {}}
+              >
+                <Toggle value="recentes" selected={true}>Mais recentes</Toggle>
+                <Toggle value="visualizados" selected={false}>Mais visualizados</Toggle>
+              </ToggleGroup>
+            </div>
+          </div>
+          <div className="divider-neutral-200 mb-24" />
+
+          <div>
+            <div className="col-span-full">
+              <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-32">
+                {dummyDataStories.map((story) => (
+                  <div key={story.id} className="h-full">
+                    <CardLinks
+                      onClick={() => router.push(`/pages/datastories/${story.slug}`)}
+                      className="cursor-pointer text-neutral-900"
+                      variant="transparent"
+                      image={{
+                        src: story.image,
+                        alt: story.title,
+                      }}
+                      category={story.organization.name}
+                      title={<div className="underline text-xl-bold">{story.title}</div>}
+                      description={
+                        <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
+                          {story.description}
+                        </p>
+                      }
+                      date={
+                        <span className="font-[300]">
+                          Publicado em 11 de março de 2024
+                        </span>
+                      }
+                      links={[
+                        {
+                          href: '#',
+                          hasIcon: true,
+                          leadingIcon: 'agora-line-eye',
+                          leadingIconHover: 'agora-solid-eye',
+                          trailingIcon: '',
+                          trailingIconHover: '',
+                          children: story.metrics.views.toLocaleString('pt-PT'),
+                          title: 'Visualizações',
+                          onClick: (e: React.MouseEvent) => e.preventDefault(),
+                          className: 'text-[#034AD8]',
+                        },
+                        {
+                          href: '#',
+                          hasIcon: true,
+                          leadingIcon: 'agora-line-layers-menu',
+                          leadingIconHover: 'agora-solid-layers-menu',
+                          trailingIcon: '',
+                          trailingIconHover: '',
+                          children: `${story.datasets.length}`,
+                          title: 'Datasets',
+                          onClick: (e: React.MouseEvent) => e.preventDefault(),
+                          className: 'text-[#034AD8]',
+                        },
+                        {
+                          href: '#',
+                          hasIcon: true,
+                          leadingIcon: 'agora-line-star',
+                          leadingIconHover: 'agora-solid-star',
+                          trailingIcon: '',
+                          trailingIconHover: '',
+                          children: story.metrics.followers,
+                          title: 'Favoritos',
+                          onClick: (e: React.MouseEvent) => e.preventDefault(),
+                          className: 'text-[#034AD8]',
+                        },
+                      ]}
+                      mainLink={
+                        <Link href={`/pages/datastories/${story.slug}`}>
+                          <span className="underline">{story.title}</span>
+                        </Link>
+                      }
+                      blockedLink={true}
+                    />
+                  </div>
+                ))}
               </div>
-            </div>
 
-            <div className="divider-neutral-200 mt-[14px] mb-24" />
-
-            <div className="grid grid-cols-2 agora-card-links-datasets-px0 gap-32">
-              {dummyDataStories.map((story) => (
-                <div key={story.id} className="h-full">
-                  <CardLinks
-                    onClick={() => router.push(`/pages/datastories/${story.slug}`)}
-                    className="cursor-pointer text-neutral-900"
-                    variant="transparent"
-                    image={{
-                      src: story.image,
-                      alt: story.title,
-                    }}
-                    category={story.organization.name}
-                    title={<div className="underline text-xl-bold">{story.title}</div>}
-                    description={
-                      <p className="text-sm line-clamp-3 leading-relaxed text-neutral-900 mt-[8px] max-w-[592px]">
-                        {story.description}
-                      </p>
-                    }
-                    date={
-                      <span className="font-[300]">
-                        Publicado em 11 de março de 2024
-                      </span>
-                    }
-                    links={[
-                      {
-                        href: '#',
-                        hasIcon: true,
-                        leadingIcon: 'agora-line-eye',
-                        leadingIconHover: 'agora-solid-eye',
-                        trailingIcon: '',
-                        trailingIconHover: '',
-                        children: story.metrics.views.toLocaleString('pt-PT'),
-                        title: 'Visualizações',
-                        onClick: (e: React.MouseEvent) => e.preventDefault(),
-                        className: 'text-[#034AD8]',
-                      },
-                      {
-                        href: '#',
-                        hasIcon: true,
-                        leadingIcon: 'agora-line-layers-menu',
-                        leadingIconHover: 'agora-solid-layers-menu',
-                        trailingIcon: '',
-                        trailingIconHover: '',
-                        children: `${story.datasets.length}`,
-                        title: 'Datasets',
-                        onClick: (e: React.MouseEvent) => e.preventDefault(),
-                        className: 'text-[#034AD8]',
-                      },
-                      {
-                        href: '#',
-                        hasIcon: true,
-                        leadingIcon: 'agora-line-star',
-                        leadingIconHover: 'agora-solid-star',
-                        trailingIcon: '',
-                        trailingIconHover: '',
-                        children: story.metrics.followers,
-                        title: 'Favoritos',
-                        onClick: (e: React.MouseEvent) => e.preventDefault(),
-                        className: 'text-[#034AD8]',
-                      },
-                    ]}
-                    mainLink={
-                      <Link href={`/pages/datastories/${story.slug}`}>
-                        <span className="underline">{story.title}</span>
-                      </Link>
-                    }
-                    blockedLink={true}
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Pagination */}
-            <div className="mt-64 flex justify-center pb-12">
-              <Pagination
-                currentPage={currentPage}
-                totalItems={total}
-                pageSize={pageSize}
-                baseUrl="/pages/datastories"
-              />
+              {/* Pagination */}
+              <div className="pb-64 mt-8 flex justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalItems={total}
+                  pageSize={pageSize}
+                  baseUrl="/pages/datastories"
+                />
+              </div>
             </div>
           </div>
         </div>
