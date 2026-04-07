@@ -136,6 +136,12 @@ export default function OrganizationsNewClient() {
     },
   ];
 
+  const orgOptions = orgSuggestions.map((org) => (
+    <DropdownOption key={org.id} value={org.id}>
+      {org.name}
+    </DropdownOption>
+  ));
+
   return (
     <div className="admin-page">
       <div className="admin-page__breadcrumb">
@@ -225,13 +231,7 @@ export default function OrganizationsNewClient() {
                   }}
                 >
                   <DropdownSection name="organizations">
-                    <>
-                      {orgSuggestions.map((org) => (
-                        <DropdownOption key={org.id} value={org.id}>
-                          {org.name}
-                        </DropdownOption>
-                      ))}
-                    </>
+                    {orgOptions}
                   </DropdownSection>
                 </InputSelect>
 
