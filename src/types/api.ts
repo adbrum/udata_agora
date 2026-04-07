@@ -210,6 +210,8 @@ export interface ResourceUpdatePayload {
   url?: string;
   filetype?: string;
   format?: string;
+  mime?: string;
+  filesize?: number;
 }
 
 export interface DatasetPermissions {
