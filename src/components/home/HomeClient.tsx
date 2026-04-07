@@ -79,7 +79,7 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
               <div className="title">
                 <h1 className="container mx-auto text-white flex flex-col items-start leading-tight">
                   <span className="xs:text-xl-bold md:text-2xl-bold xl:text-2xl-bold">
-                    Plataforma aberta
+                    Portal aberto
                   </span>
                   <span className="xs:text-xl-light md:text-2xl-light xl:text-2xl-light">
                     de dados públicos portugueses

@@ -943,67 +943,6 @@ export default function DatasetsEditClient() {
 
                   <h2 className="admin-page__section-title">Acesso</h2>
                   <div className="admin-page__fields-group">
-                    <div className="flex flex-col gap-[8px]">
-                      <span className="text-primary-900 text-base font-medium leading-7">
-                        Tipo de acesso
-                      </span>
-                      <div className="flex flex-col gap-4">
-                        <RadioButton
-                          label="Aberto"
-                          id="edit-access-open"
-                          name="edit-access-type"
-                          checked={accessType === "open"}
-                          onChange={() => setAccessType("open")}
-                        />
-                        <RadioButton
-                          label="Restrito"
-                          id="edit-access-restricted"
-                          name="edit-access-type"
-                          checked={accessType === "restricted"}
-                          onChange={() => setAccessType("restricted")}
-                        />
-                      </div>
-                    </div>
-
-                    {accessType === "restricted" && (
-                      <>
-                        <div className="grid grid-cols-3 gap-8 mt-4 items-end">
-                          <IsolatedSelect
-                            label="Comunidade e Administração"
-                            placeholder=""
-                            id="edit-restriction-community"
-                            onChangeRef={restrictionCommunityRef}
-                          >
-                            {communityOptions}
-                          </IsolatedSelect>
-                          <IsolatedSelect
-                            label="Empresa e Associação"
-                            placeholder=""
-                            id="edit-restriction-enterprise"
-                            onChangeRef={restrictionEnterpriseRef}
-                          >
-                            {enterpriseOptions}
-                          </IsolatedSelect>
-                          <IsolatedSelect
-                            label="Privado"
-                            placeholder=""
-                            id="edit-restriction-private"
-                            onChangeRef={restrictionPrivateRef}
-                          >
-                            {privateOptions}
-                          </IsolatedSelect>
-                        </div>
-                        <IsolatedSelect
-                          label="Motivo da restrição"
-                          placeholder=""
-                          id="edit-restriction-reason"
-                          onChangeRef={restrictionReasonRef}
-                        >
-                          {restrictionReasonOptions}
-                        </IsolatedSelect>
-                      </>
-                    )}
-
                     <IsolatedSelect
                       label="Licença"
                       placeholder="Selecione uma licença"

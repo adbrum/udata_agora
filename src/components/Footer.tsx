@@ -12,7 +12,7 @@ const linkColumns = [
     ],
   },
   {
-    title: 'Plataforma',
+    title: 'Portal',
     links: [
       { href: '/pages/faqs/about_dadosgov', label: 'Sobre nós' },
       { href: '/pages/support', label: 'Contactar-nos' },
@@ -44,7 +44,7 @@ const usefulLinksData = [
 const FooterNavigation = () => {
   return (
     <div className="container mx-auto px-4 py-12 xl:py-64">
-      <h3 className="text-l-bold mb-8 text-white mb-[32px]">Mais para descobrir na plataforma</h3>
+      <h3 className="text-l-bold mb-8 text-white mb-[32px]">Mais para descobrir no portal</h3>
       <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-32">
         {linkColumns.map((column, idx) => (
           <div key={idx}>
@@ -103,7 +103,7 @@ export const Footer = () => {
             style: { height: '43px', width: 'auto' }
           }
         }}
-        caption="Plataforma aberta de dados públicos portugueses"
+        caption="Portal aberto de dados públicos portugueses"
         partnersLogos={[
           { image: { src: '/Logos/NextGenerationEU.svg', alt: 'NextGenerationEU', style: { height: '24px', width: 'auto', opacity: 0.5 } } },
           { image: { src: '/Logos/republica-portuguesa.svg', alt: 'República Portuguesa', style: { height: '24px', width: 'auto', opacity: 0.5 } } },
