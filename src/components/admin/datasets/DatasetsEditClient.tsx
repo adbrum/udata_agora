@@ -23,6 +23,7 @@ import {
   Pill,
   Switch,
   RadioButton,
+  ButtonUploader,
   CardNoResults,
   Tabs,
   Tab,
@@ -37,18 +38,30 @@ import {
   updateDataset,
   deleteDataset,
   uploadResource,
-  createResource,
   deleteResource,
   fetchLicenses,
   fetchFrequencies,
+  fetchGranularities,
+  fetchSpatialZonesByIds,
+  suggestSpatialZones,
+  suggestTags,
   fetchActivity,
   fetchDiscussions,
 } from "@/services/api";
-import { Dataset, License, Frequency, Activity, Resource, Discussion } from "@/types/api";
+import {
+  Dataset,
+  License,
+  Frequency,
+  Granularity,
+  SpatialZone,
+  TagSuggestion,
+  Activity,
+  Resource,
+  Discussion,
+} from "@/types/api";
 import StatusDot from "@/components/admin/StatusDot";
 import AuxiliarList from "@/components/admin/AuxiliarList";
 import IsolatedSelect from "@/components/admin/IsolatedSelect";
-import FileUploadPopupContent from "@/components/admin/FileUploadPopupContent";
 import { getFrequencyLabel } from "@/utils/frequencyLabels";
 
 function TransferDatasetPopupContent({
@@ -190,6 +203,18 @@ export default function DatasetsEditClient() {
   // Dropdown data
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
+  const [granularities, setGranularities] = useState<Granularity[]>([]);
+  const [tagSuggestions, setTagSuggestions] = useState<TagSuggestion[]>([]);
+  const [tagSearch, setTagSearch] = useState<TagSuggestion[]>([]);
+  const [spatialZones, setSpatialZones] = useState<SpatialZone[]>([]);
+  const [spatialZoneSearch, setSpatialZoneSearch] = useState<SpatialZone[]>([]);
+
+  // Loaded default values for IsolatedSelect (needed because data arrives async after mount)
+  const [loadedLicense, setLoadedLicense] = useState("");
+  const [loadedFrequency, setLoadedFrequency] = useState("");
+  const [loadedKeywords, setLoadedKeywords] = useState("");
+  const [loadedSpatialGranularity, setLoadedSpatialGranularity] = useState("");
+  const [loadedSpatialZones, setLoadedSpatialZones] = useState<string[]>([]);
 
   // Activity data
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
@@ -204,10 +229,11 @@ export default function DatasetsEditClient() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [ds, licensesData, frequenciesData] = await Promise.all([
+        const [ds, licensesData, frequenciesData, granularitiesData] = await Promise.all([
           fetchDataset(slug),
           fetchLicenses(),
           fetchFrequencies(),
+          fetchGranularities(),
         ]);
         setDataset(ds);
         setTitle(ds.title);
@@ -215,14 +241,50 @@ export default function DatasetsEditClient() {
         setDescription(ds.description);
         setShortDescription(ds.description_short || "");
         setFeatured(ds.featured || false);
-        selectedLicenseRef.current = ds.license || "";
-        selectedFrequencyRef.current = ds.frequency || "";
+
+        const license = ds.license || "";
+        const frequency = ds.frequency || "";
+        const keywords = (ds.tags || []).join(",");
+        const spatialGranularity = ds.spatial?.granularity || "";
+
+        selectedLicenseRef.current = license;
+        selectedFrequencyRef.current = frequency;
+        keywordsRef.current = keywords;
+        spatialGranularityRef.current = spatialGranularity;
+
+        setLoadedLicense(license);
+        setLoadedFrequency(frequency);
+        setLoadedKeywords(keywords);
+        setLoadedSpatialGranularity(spatialGranularity);
+
         if (ds.temporal_coverage) {
           setTemporalStart(ds.temporal_coverage.start || "");
           setTemporalEnd(ds.temporal_coverage.end || "");
         }
         setLicenses(licensesData);
         setFrequencies(frequenciesData);
+        setGranularities(granularitiesData);
+
+        suggestTags("", 50).then(setTagSuggestions);
+
+        // Load initial Portuguese zone suggestions; merge with any already-selected zones
+        suggestSpatialZones("pt", 50).then((suggestions) => {
+          if (ds.spatial?.zones?.length) {
+            fetchSpatialZonesByIds(ds.spatial.zones).then((currentZones) => {
+              const currentIds = currentZones.map((z) => z.id);
+              const seen = new Set(currentIds);
+              const merged = [
+                ...currentZones,
+                ...suggestions.filter((z) => !seen.has(z.id)),
+              ];
+              setSpatialZones(merged);
+              setLoadedSpatialZones(currentIds);
+              spatialCoverageRef.current = currentIds.join(",");
+            });
+          } else {
+            setSpatialZones(suggestions);
+          }
+        });
 
         fetchActivity(ds.id, 1, 1)
           .then((res) => {
@@ -264,44 +326,62 @@ export default function DatasetsEditClient() {
   };
 
   // Memoized children for IsolatedSelect to prevent re-render cascades
-  const licenseOptions = useMemo(
-    () => (
-      <DropdownSection name="licenses">
-        {licenses.map((license) => (
-          <DropdownOption key={license.id} value={license.id}>
-            {license.title}
-          </DropdownOption>
-        ))}
-      </DropdownSection>
-    ),
-    [licenses],
+  const licenseOptions = useMemo(() => {
+    const options = licenses.map((license) => (
+      <DropdownOption
+        key={license.id}
+        value={license.id}
+        selected={license.id === loadedLicense}
+      >
+        {license.title}
+      </DropdownOption>
+    ));
+    return <DropdownSection name="licenses">{options}</DropdownSection>;
+  }, [licenses, loadedLicense]);
+
+  const frequencyOptions = useMemo(() => {
+    const options = frequencies.map((freq) => (
+      <DropdownOption
+        key={freq.id}
+        value={freq.id}
+        selected={freq.id === loadedFrequency}
+      >
+        {getFrequencyLabel(freq.id, freq.label)}
+      </DropdownOption>
+    ));
+    return <DropdownSection name="frequencies">{options}</DropdownSection>;
+  }, [frequencies, loadedFrequency]);
+
+  const selectedKeywordsSet = useMemo(
+    () => new Set(loadedKeywords ? loadedKeywords.split(",").filter(Boolean) : []),
+    [loadedKeywords],
   );
 
-  const frequencyOptions = useMemo(
-    () => (
-      <DropdownSection name="frequencies">
-        {frequencies.map((freq) => (
-          <DropdownOption key={freq.id} value={freq.id}>
-            {getFrequencyLabel(freq.id, freq.label)}
-          </DropdownOption>
-        ))}
-      </DropdownSection>
-    ),
-    [frequencies],
-  );
-
-  const keywordOptions = useMemo(
-    () => (
-      <DropdownSection name="keywords">
-        {(dataset?.tags || []).map((tag) => (
-          <DropdownOption key={tag} value={tag}>
-            {tag}
-          </DropdownOption>
-        ))}
-      </DropdownSection>
-    ),
-    [dataset?.tags],
-  );
+  const keywordOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const options: React.ReactElement[] = [];
+    // Current tags first (marked as selected)
+    for (const tag of selectedKeywordsSet) {
+      seen.add(tag);
+      options.push(
+        <DropdownOption key={tag} value={tag} selected>
+          {tag}
+        </DropdownOption>,
+      );
+    }
+    // Then suggestions and search results (not already selected)
+    for (const t of [...tagSuggestions, ...tagSearch]) {
+      if (!seen.has(t.text)) {
+        seen.add(t.text);
+        options.push(
+          <DropdownOption key={t.text} value={t.text}>
+            {t.text}
+          </DropdownOption>,
+        );
+      }
+    }
+    return <DropdownSection name="keywords">{options}</DropdownSection>;
+  }, [selectedKeywordsSet, tagSuggestions, tagSearch]);
 
   const communityOptions = useMemo(
     () => (
@@ -353,23 +433,53 @@ export default function DatasetsEditClient() {
     [],
   );
 
-  const spatialCoverageOptions = useMemo(
-    () => (
-      <DropdownSection name="spatial-coverage">
-        <DropdownOption value="">—</DropdownOption>
-      </DropdownSection>
-    ),
-    [],
-  );
+  const allSpatialZones = useMemo(() => {
+    const seen = new Set<string>();
+    const merged: SpatialZone[] = [];
+    for (const z of [...spatialZones, ...spatialZoneSearch]) {
+      if (!seen.has(z.id)) {
+        seen.add(z.id);
+        merged.push(z);
+      }
+    }
+    return merged;
+  }, [spatialZones, spatialZoneSearch]);
 
-  const spatialGranularityOptions = useMemo(
-    () => (
-      <DropdownSection name="spatial-granularity">
-        <DropdownOption value="">—</DropdownOption>
-      </DropdownSection>
-    ),
-    [],
-  );
+  const spatialCoverageOptions = useMemo(() => {
+    const options = allSpatialZones.map((z) => (
+      <DropdownOption
+        key={z.id}
+        value={z.id}
+        selected={loadedSpatialZones.includes(z.id)}
+      >
+        {z.name}
+      </DropdownOption>
+    ));
+    if (options.length === 0) {
+      options.push(
+        <DropdownOption key="empty" value="">—</DropdownOption>
+      );
+    }
+    return <DropdownSection name="spatial-coverage">{options}</DropdownSection>;
+  }, [allSpatialZones, loadedSpatialZones]);
+
+  const spatialGranularityOptions = useMemo(() => {
+    const options = [
+      <DropdownOption key="empty" value="">—</DropdownOption>,
+      ...granularities.map((g) => (
+        <DropdownOption
+          key={g.id}
+          value={g.id}
+          selected={g.id === loadedSpatialGranularity}
+        >
+          {g.name}
+        </DropdownOption>
+      )),
+    ];
+    return (
+      <DropdownSection name="spatial-granularity">{options}</DropdownSection>
+    );
+  }, [granularities, loadedSpatialGranularity]);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -396,25 +506,46 @@ export default function DatasetsEditClient() {
     setIsSubmitting(true);
 
     try {
+      const tagsValue = keywordsRef.current;
+      const tags = tagsValue ? tagsValue.split(",").filter(Boolean) : [];
+      const granularity = spatialGranularityRef.current || undefined;
+      const zonesValue = spatialCoverageRef.current;
+      const zones = zonesValue ? zonesValue.split(",").filter(Boolean) : undefined;
+
       const updated = await updateDataset(dataset.id, {
         title: title.trim(),
         description: description.trim(),
         description_short: shortDescription.trim() || undefined,
         acronym: acronym.trim() || undefined,
         featured,
+        tags,
         license: selectedLicenseRef.current || undefined,
         frequency: selectedFrequencyRef.current || undefined,
         temporal_coverage: temporalStart
           ? { start: temporalStart, ...(temporalEnd ? { end: temporalEnd } : {}) }
           : undefined,
+        ...(granularity || zones
+          ? {
+              spatial: {
+                zones: zones ?? dataset.spatial?.zones ?? [],
+                granularity: granularity ?? null,
+              },
+            }
+          : {}),
       });
       setDataset(updated);
       setApiSuccess("Conjunto de dados atualizado com sucesso.");
     } catch (error: unknown) {
       const err = error as { status?: number; data?: Record<string, unknown> };
       if (err.data && typeof err.data === "object") {
+        const flattenValue = (val: unknown): string => {
+          if (Array.isArray(val)) return val.map(flattenValue).join("; ");
+          if (val && typeof val === "object")
+            return Object.values(val as Record<string, unknown>).map(flattenValue).join("; ");
+          return String(val);
+        };
         const messages = Object.entries(err.data)
-          .map(([key, val]) => `${key}: ${val}`)
+          .map(([key, val]) => `${key}: ${flattenValue(val)}`)
           .join(", ");
         setApiError(messages);
       } else {
@@ -441,55 +572,40 @@ export default function DatasetsEditClient() {
     }
   };
 
-  const handleAddResource = () => {
-    if (!dataset) return;
-    show(
-      <FileUploadPopupContent
-        initialFiles={[]}
-        initialUrl=""
-        onConfirm={async (files: File[], url: string) => {
-          setIsSubmitting(true);
-          setApiError(null);
-          setApiSuccess(null);
-          try {
-            if (files.length > 0) {
-              for (const file of files) {
-                await uploadResource(dataset.id, file);
-              }
-              const updated = await fetchDataset(slug);
-              setDataset(updated);
-              setApiSuccess("Ficheiro(s) carregado(s) com sucesso.");
-            } else if (url.trim()) {
-              const urlObj = new URL(url.trim());
-              const filename = urlObj.pathname.split("/").pop() || url.trim();
-              const ext = filename.includes(".")
-                ? filename.split(".").pop()?.toLowerCase() || ""
-                : "";
-              await createResource(dataset.id, {
-                title: filename,
-                url: url.trim(),
-                type: "main",
-                filetype: "remote",
-                format: ext,
-              });
-              const updated = await fetchDataset(slug);
-              setDataset(updated);
-              setApiSuccess("Link adicionado com sucesso.");
-            }
-          } catch (error) {
-            console.error("Error adding resource:", error);
-            setApiError("Erro ao adicionar ficheiro/link.");
-          } finally {
-            setIsSubmitting(false);
-          }
-        }}
-      />,
-      {
-        title: "Adicionar um ficheiro ou link",
-        closeAriaLabel: "Fechar",
-        dimensions: "m",
-      },
-    );
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = (e.target as HTMLInputElement).files;
+    if (!files || files.length === 0 || !dataset) return;
+    setIsSubmitting(true);
+    setApiError(null);
+    try {
+      for (const file of Array.from(files)) {
+        await uploadResource(dataset.id, file);
+      }
+      const updated = await fetchDataset(slug);
+      setDataset(updated);
+      setApiSuccess("Ficheiro(s) carregado(s) com sucesso.");
+    } catch (error) {
+      const err = error as { status?: number; data?: Record<string, unknown>; message?: string };
+      console.error("Error uploading resource:", err.status, err.data ?? err.message ?? error);
+      if (err.data && typeof err.data === "object" && Object.keys(err.data).length > 0) {
+        const flattenValue = (val: unknown): string => {
+          if (Array.isArray(val)) return val.map(flattenValue).join("; ");
+          if (val && typeof val === "object")
+            return Object.values(val as Record<string, unknown>).map(flattenValue).join("; ");
+          return String(val);
+        };
+        const msg = (err.data.message as string) ||
+          Object.entries(err.data).map(([k, v]) => `${k}: ${flattenValue(v)}`).join(", ");
+        setApiError(`Erro ao carregar ficheiro(s): ${msg}`);
+      } else if (err.message) {
+        setApiError(`Erro ao carregar ficheiro(s): ${err.message}`);
+      } else {
+        const statusHint = err.status ? ` (HTTP ${err.status})` : "";
+        setApiError(`Erro ao carregar ficheiro(s)${statusHint}. Tente novamente.`);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDeleteResource = (resource: Resource) => {
@@ -812,7 +928,14 @@ export default function DatasetsEditClient() {
                       placeholder="Pesquise por uma palavra-chave..."
                       id="edit-keywords"
                       type="checkbox"
+                      searchable
+                      searchInputPlaceholder="Escreva para pesquisar..."
+                      searchNoResultsText="Nenhum resultado encontrado"
                       onChangeRef={keywordsRef}
+                      onSearchCallback={(q) => {
+                        if (!q) return;
+                        suggestTags(q, 20).then(setTagSearch);
+                      }}
                     >
                       {keywordOptions}
                     </IsolatedSelect>
@@ -904,8 +1027,10 @@ export default function DatasetsEditClient() {
 
                     <div className="flex gap-[18px] [&>*]:flex-1">
                       <InputDate
+                        key={`date-start-${temporalStart}`}
                         label="Cobertura temporal (Data de início)"
                         id="edit-date-start"
+                        defaultValue={temporalStart}
                         dayInputPlaceholder="dd"
                         monthInputPlaceholder="mm"
                         yearInputPlaceholder="aaaa"
@@ -924,8 +1049,10 @@ export default function DatasetsEditClient() {
                         }
                       />
                       <InputDate
+                        key={`date-end-${temporalEnd}`}
                         label="Data de fim"
                         id="edit-date-end"
+                        defaultValue={temporalEnd}
                         dayInputPlaceholder="dd"
                         monthInputPlaceholder="mm"
                         yearInputPlaceholder="aaaa"
@@ -952,7 +1079,15 @@ export default function DatasetsEditClient() {
                       label="Cobertura espacial"
                       placeholder="Pesquisar por cobertura espacial..."
                       id="edit-spatial-coverage"
+                      type="checkbox"
+                      searchable
+                      searchInputPlaceholder="Escreva para pesquisar..."
+                      searchNoResultsText="Nenhum resultado encontrado"
                       onChangeRef={spatialCoverageRef}
+                      onSearchCallback={(q) => {
+                        if (!q) return;
+                        suggestSpatialZones(q, 10).then(setSpatialZoneSearch);
+                      }}
                     >
                       {spatialCoverageOptions}
                     </IsolatedSelect>
@@ -1142,22 +1277,18 @@ export default function DatasetsEditClient() {
           <TabHeader>Ficheiros ({dataset.resources.length})</TabHeader>
           <TabBody>
             <div className="mt-[24px]">
-              <div className="flex items-center gap-[16px] mb-[16px]">
-                <Button
-                  variant="primary"
-                  hasIcon
-                  leadingIcon="agora-line-plus"
-                  leadingIconHover="agora-solid-plus"
-                  onClick={handleAddResource}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "A carregar..." : "Adicionar ficheiro ou link"}
+              <div className="flex items-end gap-[16px] mb-[16px]">
+                <ButtonUploader
+                  label="Ficheiros"
+                  inputLabel="Selecione ou arraste o ficheiro"
+                  selectedFilesLabel="ficheiros selecionados"
+                  removeFileButtonLabel="Remover ficheiro"
+                  replaceFileButtonLabel="Substituir ficheiro"
+                  onChange={handleFileUpload}
+                />
+                <Button appearance="outline" variant="primary" className="mb-[32px]">
+                  Reordene os ficheiros
                 </Button>
-                {dataset.resources.length > 1 && (
-                  <Button appearance="outline" variant="primary">
-                    Reordene os ficheiros
-                  </Button>
-                )}
               </div>
 
               <h2 className="font-medium text-neutral-900 text-base mb-[16px]">
@@ -1193,7 +1324,14 @@ export default function DatasetsEditClient() {
                     {dataset.resources.map((resource) => (
                       <TableRow key={resource.id}>
                         <TableCell headerLabel="Nome do ficheiro">
-                          {resource.title}
+                          <a
+                            href={resource.latest ?? resource.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary-600 underline hover:text-primary-800"
+                          >
+                            {resource.title}
+                          </a>
                         </TableCell>
                         <TableCell headerLabel="Estado">
                           <StatusDot variant="success">DISPONÍVEL</StatusDot>

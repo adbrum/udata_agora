@@ -73,6 +73,7 @@ import {
   CommunityResource,
   CommunityResourceCreatePayload,
   CommunityResourceUpdatePayload,
+  HarvestBackend,
   HarvestJob,
   HarvestPreviewJob,
   HarvestSource,
@@ -2324,6 +2325,29 @@ export async function fetchSpatialZones(ids: string[]): Promise<object> {
   }
 }
 
+export async function fetchSpatialZonesByIds(ids: string[]): Promise<SpatialZone[]> {
+  if (!ids.length) return [];
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/spatial/zones/${ids.join(",")}/`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch spatial zones: ${res.statusText}`);
+    const geojson = await res.json() as {
+      features?: Array<{ id: string; properties: { name: string; code: string; uri?: string } }>;
+    };
+    return (geojson.features ?? []).map((f) => ({
+      id: f.id,
+      name: f.properties.name,
+      code: f.properties.code,
+      uri: f.properties.uri ?? "",
+    }));
+  } catch (error) {
+    console.error("Error fetching spatial zones by ids:", error);
+    return [];
+  }
+}
+
 export async function fetchGranularities(): Promise<Granularity[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/spatial/granularities/`, { cache: "no-store" });
@@ -3255,7 +3279,7 @@ export async function updateHarvester(
   id: string,
   payload: HarvestSourceUpdatePayload
 ): Promise<HarvestSource> {
-  const res = await fetch(`${API_AUTH_URL}/harvest/sources/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/harvest/source/${id}/`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -3269,11 +3293,36 @@ export async function updateHarvester(
 }
 
 export async function deleteHarvester(id: string): Promise<void> {
-  const res = await fetch(`${API_AUTH_URL}/harvest/sources/${id}/`, {
+  const res = await fetch(`${API_AUTH_URL}/harvest/source/${id}/`, {
     method: "DELETE",
     credentials: "include",
   });
   if (!res.ok) throw new Error(`Failed to delete harvester: ${res.statusText}`);
+}
+
+export async function scheduleHarvester(id: string, cron: string): Promise<HarvestSource> {
+  const res = await fetch(`${API_AUTH_URL}/harvest/source/${id}/schedule/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(cron),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
+  return await res.json();
+}
+
+export async function unscheduleHarvester(id: string): Promise<void> {
+  const res = await fetch(`${API_AUTH_URL}/harvest/source/${id}/schedule/`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw { status: res.status, data: error };
+  }
 }
 
 export async function triggerHarvest(id: string): Promise<HarvestJob> {
@@ -3354,6 +3403,20 @@ export async function previewHarvestSource(
     throw { status: res.status, data: error };
   }
   return await res.json();
+}
+
+export async function fetchHarvestBackends(): Promise<HarvestBackend[]> {
+  try {
+    const res = await fetch(`${API_AUTH_URL}/harvest/backends/`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error(`Failed to fetch harvest backends: ${res.statusText}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching harvest backends:", error);
+    return [];
+  }
 }
 
 export async function fetchOrgHarvesters(

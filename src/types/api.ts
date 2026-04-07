@@ -987,6 +987,14 @@ export interface HarvestSourceUpdatePayload {
   autoarchive?: boolean;
 }
 
+export interface HarvestBackend {
+  id: string;
+  label: string;
+  filters: { label: string; key: string; type: string; description: string }[];
+  features: { label: string; key: string; description: string; default: boolean }[];
+  extra_configs: { label: string; key: string; description: string; default: string }[];
+}
+
 export type UserRole = string;
 
 export interface UserAdmin extends UserPublic {
