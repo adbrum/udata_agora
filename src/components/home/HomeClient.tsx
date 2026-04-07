@@ -29,7 +29,7 @@ function formatStatNumber(value: number): { number: string; suffix: string } {
     }
     parts.unshift(String(remaining));
     const formatted = parts.join("\u2009");
-    return { number: formatted, suffix: "mil" };
+    return { number: formatted, suffix: "" };
   }
   return { number: String(value), suffix: "" };
 }
@@ -129,7 +129,7 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
                         <div className="publish-custom-dropdown">
                           {[
                             { icon: "agora-line-layers-menu", label: "Um conjunto de dados", href: "/pages/admin/datasets/new" },
-                            { icon: null, customIcon: "/Icons/bar_chart.svg", label: "Uma reutilização", href: "/pages/admin/reuses/new" },
+                            { icon: null, customIcon: "/Icons/bar_chart_primary.svg", label: "Uma reutilização", href: "/pages/admin/reuses/new" },
                             { icon: "agora-line-award", label: "Um harvester", href: "/pages/admin/harvesters/new" },
                             { icon: "agora-line-buildings", label: "Uma organização", href: "/pages/admin/organizations/new" },
                           ].map((item, index) => (

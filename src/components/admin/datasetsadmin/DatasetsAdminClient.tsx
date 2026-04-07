@@ -654,6 +654,9 @@ export default function DatasetsAdminClient({
                   </>
                 }
               />
+              <p className="text-neutral-900 text-base leading-7 pt-32">
+                Os campos marcados com um asterisco ( * ) são obrigatórios.
+              </p>
               <h2 className="admin-page__section-title">Produtor</h2>
 
               <div className="admin-page__fields-group">
@@ -707,10 +710,6 @@ export default function DatasetsAdminClient({
                 className="admin-page__form"
                 onSubmit={(e) => e.preventDefault()}
               >
-                <p className="text-neutral-900 text-base leading-7 pt-32">
-                  Os campos marcados com um asterisco ( * ) são obrigatórios.
-                </p>
-
                 <h2 className="admin-page__section-title">Descrição</h2>
 
                 <div className="admin-page__fields-group">
