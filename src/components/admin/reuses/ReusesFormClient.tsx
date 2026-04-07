@@ -860,8 +860,8 @@ export default function ReusesFormClient({
                     {
                       href: "#",
                       hasIcon: true,
-                      leadingIcon: "agora-line-calendar",
-                      leadingIconHover: "agora-solid-calendar",
+                      leadingIcon: "agora-line-layers-menu",
+                      leadingIconHover: "agora-solid-layers-menu",
                       trailingIcon: "",
                       trailingIconHover: "",
                       trailingIconActive: "",
