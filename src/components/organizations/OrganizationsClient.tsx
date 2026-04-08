@@ -32,15 +32,15 @@ interface OrganizationsClientProps {
 
 const SORT_OPTIONS: Record<string, string> = {
   relevancia: '',
-  recentes: '-last_modified',
-  antigos: 'last_modified',
+  mais_dados: '-datasets',
+  mais_reutilizacoes: '-reuses',
   subscritores: '-followers',
 };
 
 const SORT_LABELS: Record<string, string> = {
   relevancia: 'Relevância',
-  recentes: 'Mais recente',
-  antigos: 'Mais antigo',
+  mais_dados: 'Mais dados',
+  mais_reutilizacoes: 'Mais reutilizações',
   subscritores: 'Subscritores',
 };
 
@@ -179,6 +179,7 @@ export default function OrganizationsClient({
             <div className="xl:col-span-7 flex items-center justify-end py-16">
               <ToggleGroup
                 multiple={false}
+                value={currentSortKey}
                 onChange={(val) => {
                   const selected = val.length > 0 ? val[0] : 'relevancia';
                   if (selected !== currentSortKey) {
@@ -283,7 +284,7 @@ export default function OrganizationsClient({
                                       </div>
                                       <div className="flex items-center gap-8" title="Datasets">
                                         <Icon
-                                          name={org.metrics?.datasets ? "agora-solid-calendar" : "agora-line-calendar"}
+                                          name={org.metrics?.datasets ? "agora-solid-layers-menu" : "agora-line-layers-menu"}
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"
