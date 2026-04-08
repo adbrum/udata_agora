@@ -11,7 +11,7 @@ import {
   CardExpandable,
 } from '@ama-pt/agora-design-system';
 import { Dataset } from '@/types/api';
-import { fetchDataset, followEntity, unfollowEntity } from '@/services/api';
+import { fetchDataset, followEntity, isFollowing, unfollowEntity } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 import { useActiveOrganization } from '@/hooks/useActiveOrganization';
 
@@ -147,6 +147,10 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
       try {
         const data = await fetchDataset(slug);
         setDataset(data);
+        if (user && data) {
+          const following = await isFollowing('datasets', data.id, user.id);
+          setIsFavorite(following);
+        }
       } catch (error) {
         console.error("Error loading dataset:", error);
       } finally {
@@ -154,7 +158,7 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
       }
     }
     loadDataset();
-  }, [slug]);
+  }, [slug, user]);
 
   const handleToggleFavorite = async () => {
     if (!dataset || isTogglingFavorite) return;
