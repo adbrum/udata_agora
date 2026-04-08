@@ -220,7 +220,14 @@ export default function OrgProfileClient() {
               </div>
 
               <div className="flex justify-end mt-[16px]">
-                <Button variant="primary" onClick={handleSave} disabled={isSaving}>
+                <Button
+                  variant="primary"
+                  hasIcon
+                  trailingIcon="agora-line-check-circle"
+                  trailingIconHover="agora-solid-check-circle"
+                  onClick={handleSave}
+                  disabled={isSaving}
+                >
                   {isSaving ? "A guardar..." : "Guardar"}
                 </Button>
               </div>

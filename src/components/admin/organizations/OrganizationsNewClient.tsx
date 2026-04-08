@@ -379,7 +379,12 @@ export default function OrganizationsNewClient() {
                 </Button>
                 <Button
                   variant="primary"
-                  onClick={() => router.push("/pages/admin/system/organizations")}
+                  hasIcon
+                  trailingIcon="agora-line-check-circle"
+                  trailingIconHover="agora-solid-check-circle"
+                  onClick={() =>
+                    router.push("/pages/admin/system/organizations")
+                  }
                 >
                   Guardar
                 </Button>

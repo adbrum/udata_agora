@@ -41,7 +41,7 @@ export default function OrgDiscussionsClient({ orgId }: OrgDiscussionsClientProp
       setIsLoading(true);
       try {
         const data = await fetchOrgDiscussions(orgId);
-        setDiscussions(data);
+        setDiscussions(data.data ?? []);
       } catch (error) {
         console.error("Error loading discussions:", error);
       } finally {

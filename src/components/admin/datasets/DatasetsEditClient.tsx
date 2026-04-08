@@ -532,6 +532,9 @@ function ResourceEditPopupContent({
           </label>
           <Button
             variant="primary"
+            hasIcon
+            trailingIcon="agora-line-check-circle"
+            trailingIconHover="agora-solid-check-circle"
             onClick={handleSave}
             disabled={isSaving || !title.trim()}
           >
@@ -941,6 +944,34 @@ export default function DatasetsEditClient() {
       } else {
         setApiError("Erro ao atualizar o conjunto de dados.");
       }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleArchiveDataset = async () => {
+    if (!dataset) return;
+    setIsSubmitting(true);
+    try {
+      await updateDataset(dataset.id, { archived: new Date().toISOString() });
+      router.push("/pages/admin/me/datasets?status=archived");
+    } catch (error) {
+      console.error("Error archiving dataset:", error);
+      setApiError("Erro ao arquivar o conjunto de dados.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUnarchiveDataset = async () => {
+    if (!dataset) return;
+    setIsSubmitting(true);
+    try {
+      const updated = await updateDataset(dataset.id, { archived: null });
+      setDataset(updated);
+    } catch (error) {
+      console.error("Error unarchiving dataset:", error);
+      setApiError("Erro ao desarquivar o conjunto de dados.");
     } finally {
       setIsSubmitting(false);
     }
@@ -1459,6 +1490,9 @@ export default function DatasetsEditClient() {
                   <div className="admin-page__actions flex justify-end mt-[24px]">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={handleSaveMetadata}
                       disabled={isSubmitting}
                     >
@@ -1513,9 +1547,14 @@ export default function DatasetsEditClient() {
                             onClick={(e: React.MouseEvent) => {
                               e.preventDefault();
                               e.stopPropagation();
+                              dataset?.archived
+                                ? handleUnarchiveDataset()
+                                : handleArchiveDataset();
                             }}
                           >
-                            Arquivar o conjunto de dados
+                            {dataset?.archived
+                              ? "Desarquivar o conjunto de dados"
+                              : "Arquivar o conjunto de dados"}
                           </Button>
                         </>
                       }
