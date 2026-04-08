@@ -147,12 +147,12 @@ export default function SystemReusesClient() {
             itemsPerPage: pageSize,
             totalItems: totalItems,
             availablePageSizes: [5, 10, 20],
-            currentPage: currentPage,
+            currentPage: currentPage - 1,
             buttonDropdownAriaLabel: "Selecionar linhas por página",
             dropdownListAriaLabel: "Opções de linhas por página",
             prevButtonAriaLabel: "Página anterior",
             nextButtonAriaLabel: "Próxima página",
-            onPageChange: (page: number) => setCurrentPage(page),
+            onPageChange: (page: number) => setCurrentPage(page + 1),
             onPageSizeChange: (size: number) => {
               setPageSize(size);
               setCurrentPage(1);

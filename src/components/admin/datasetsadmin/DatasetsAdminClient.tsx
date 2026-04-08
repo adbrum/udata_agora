@@ -2,6 +2,9 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
+import { pt } from "date-fns/locale";
 import {
   Button,
   CardGeneral,
@@ -15,6 +18,7 @@ import {
   InputDate,
   DropdownSection,
   DropdownOption,
+  ProgressBar,
 } from "@ama-pt/agora-design-system";
 import {
   createDataset,
@@ -1238,28 +1242,123 @@ export default function DatasetsAdminClient({
                 type="success"
                 description={
                   <>
-                    <strong>Seu conjunto de dados foi criado!</strong>
+                    <strong>O seu conjunto de dados foi criado!</strong>
                     <br />
                     Agora pode publicar ou guardar como rascunho.
                   </>
                 }
               />
 
-              <CardGeneral
-                variant="white-outline"
-                isCardHorizontal
-                isBlockedLink
-                iconDefault="agora-line-layers-menu"
-                iconHover="agora-solid-layers-menu"
-                titleText={createdDataset?.title || datasetTitle || "Sem título"}
-                descriptionText={createdDataset?.description || datasetDescription || "Sem descrição"}
-                anchor={{
-                  href: createdDataset
-                    ? `/pages/datasets/${createdDataset.slug}`
-                    : `/pages/datasets/preview?title=${encodeURIComponent(datasetTitle)}&description=${encodeURIComponent(datasetDescription)}`,
-                  children: "",
-                }}
-              />
+              {(() => {
+                const qualityScore = createdDataset?.quality?.score != null
+                  ? Math.round(createdDataset.quality.score * 100)
+                  : 0;
+                const formatMetric = (value: number | undefined) => {
+                  if (!value) return "0";
+                  if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(".", ",") + " M";
+                  if (value >= 1_000) return (value / 1_000).toFixed(0) + " mil";
+                  return String(value);
+                };
+                const timeAgo = createdDataset?.last_modified
+                  ? formatDistanceToNow(new Date(createdDataset.last_modified), { locale: pt })
+                      .replace("aproximadamente ", "")
+                      .replace("quase ", "")
+                      .replace("menos de ", "")
+                      .replace("cerca de ", "")
+                  : "agora";
+                const href = createdDataset
+                  ? `/pages/datasets/${createdDataset.slug}`
+                  : `/pages/datasets/preview?title=${encodeURIComponent(datasetTitle)}&description=${encodeURIComponent(datasetDescription)}`;
+                return (
+                  <Link
+                    href={href}
+                    className="card-general-listing rounded-[4px] overflow-hidden flex flex-col"
+                  >
+                    <CardGeneral
+                      variant="neutral-100"
+                      image={{
+                        src: createdDataset?.organization?.logo || "/images/placeholders/organization.png",
+                        alt: createdDataset?.organization?.name || "Organização",
+                        height: "56px",
+                        className: "bg-primary-100 !object-contain !h-[56px]",
+                      }}
+                      subtitleText={
+                        (
+                          <div className="flex flex-col">
+                            <span style={{ fontSize: "16px" }} className="text-neutral-900">{timeAgo}</span>
+                            <span style={{ fontSize: "16px", fontWeight: 300 }} className="text-neutral-900 mt-4">
+                              {createdDataset?.organization?.name || "Sem Organização"}
+                            </span>
+                          </div>
+                        ) as unknown as string
+                      }
+                      titleText={createdDataset?.title || datasetTitle || "Sem título"}
+                      descriptionText={
+                        (
+                          <div className="flex flex-col grow">
+                            <p className="text-m-regular text-neutral-800 line-clamp-3 mb-16">
+                              {createdDataset?.description || datasetDescription || "Sem descrição"}
+                            </p>
+                            <div className={`mt-auto ${qualityScore <= 45 ? "quality-progress-warning" : qualityScore > 50 ? "quality-progress-success" : ""}`}>
+                              <ProgressBar
+                                value={qualityScore}
+                                max={100}
+                                hideLabel={true}
+                                hidePercentageValue={true}
+                              />
+                              <span className="text-[14px] text-neutral-900 mt-4 block">
+                                {qualityScore}% Qualidade dos metadados
+                              </span>
+                              <div className="flex items-center flex-wrap gap-8 text-xs mt-12 text-neutral-700">
+                                <div className="flex items-center gap-8" title="Visualizações">
+                                  <Icon
+                                    name={createdDataset?.metrics?.views ? "agora-solid-eye" : "agora-line-eye"}
+                                    dimensions="xs"
+                                    className="fill-neutral-700"
+                                    aria-hidden="true"
+                                  />
+                                  <span>{formatMetric(createdDataset?.metrics?.views)}</span>
+                                </div>
+                                <div className="flex items-center gap-8" title="Downloads">
+                                  <Icon
+                                    name={createdDataset?.metrics?.resources_downloads ? "agora-solid-download" : "agora-line-download"}
+                                    dimensions="xs"
+                                    className="fill-neutral-700"
+                                    aria-hidden="true"
+                                  />
+                                  <span>{formatMetric(createdDataset?.metrics?.resources_downloads)}</span>
+                                </div>
+                                <div className="flex items-center gap-8" title="Reutilizações">
+                                  <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                  <span>{createdDataset?.metrics?.reuses || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-8" title="Favoritos">
+                                  <Icon
+                                    name={createdDataset?.metrics?.followers ? "agora-solid-star" : "agora-line-star"}
+                                    dimensions="xs"
+                                    className="fill-neutral-700"
+                                    aria-hidden="true"
+                                  />
+                                  <span>{formatMetric(createdDataset?.metrics?.followers)}</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-8 text-primary-600 mt-16">
+                                <Icon
+                                  name="agora-line-arrow-right-circle"
+                                  className="w-32 h-32"
+                                  aria-hidden="true"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ) as unknown as string
+                      }
+                      isBlockedLink={true}
+                      anchor={{ href }}
+                    />
+                  </Link>
+                );
+              })()}
 
               <Button
                 appearance="link"
