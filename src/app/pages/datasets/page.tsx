@@ -23,8 +23,14 @@ export default async function Page({
   if (resolved?.sort) filters.sort = String(resolved.sort);
   if (resolved?.featured) filters.featured = resolved.featured === 'true';
 
+  // Relevance sort: when no search query, fall back to default (most recent first)
+  const apiFilters = { ...filters };
+  if (!apiFilters.sort && !apiFilters.q) {
+    apiFilters.sort = '-created';
+  }
+
   const [initialData, siteInfo] = await Promise.all([
-    fetchDatasets(page, 20, filters),
+    fetchDatasets(page, 20, apiFilters),
     fetchSiteInfo(),
   ]);
 
