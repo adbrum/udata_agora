@@ -495,7 +495,7 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
                       }}
                       subtitle={
                         post.created_at
-                          ? `Publicado em ${format(new Date(post.created_at), "dd 'de' MMMM 'de' yyyy", { locale: pt })}`
+                          ? `Publicado a ${format(new Date(post.created_at), "d MMM yyyy", { locale: pt })}`
                           : ""
                       }
                       title={post.name}
