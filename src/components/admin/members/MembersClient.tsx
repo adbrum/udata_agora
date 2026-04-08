@@ -564,12 +564,12 @@ export default function MembersClient() {
           itemsPerPage: itemsPerPage,
           totalItems: members.length,
           availablePageSizes: [10, 20, 50],
-          currentPage: currentPage,
+          currentPage: currentPage - 1,
           buttonDropdownAriaLabel: "Selecionar itens por página",
           dropdownListAriaLabel: "Opções de itens por página",
           prevButtonAriaLabel: "Página anterior",
           nextButtonAriaLabel: "Próxima página",
-          onPageChange: (page: number) => setCurrentPage(page),
+          onPageChange: (page: number) => setCurrentPage(page + 1),
           onPageSizeChange: (size: number) => {
             setItemsPerPage(size);
             setCurrentPage(1);

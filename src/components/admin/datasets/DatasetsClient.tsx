@@ -204,19 +204,19 @@ export default function DatasetsClient() {
         </InputSelect>
       </div>
 
-      {!isLoading && datasets.length > 0 ? (
+      {!isLoading && totalItems > 0 ? (
         <Table
           paginationProps={{
             itemsPerPageLabel: "Itens por página",
             itemsPerPage: pageSize,
             totalItems: totalItems,
             availablePageSizes: [5, 10, 20],
-            currentPage: currentPage,
+            currentPage: currentPage - 1,
             buttonDropdownAriaLabel: "Selecionar itens por página",
             dropdownListAriaLabel: "Opções de itens por página",
             prevButtonAriaLabel: "Página anterior",
             nextButtonAriaLabel: "Próxima página",
-            onPageChange: (page: number) => setCurrentPage(page),
+            onPageChange: (page: number) => setCurrentPage(page + 1),
             onPageSizeChange: (size: number) => {
               setPageSize(size);
               setCurrentPage(1);
