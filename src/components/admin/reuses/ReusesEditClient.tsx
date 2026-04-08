@@ -623,6 +623,9 @@ export default function ReusesEditClient() {
                   <div className="admin-page__actions flex justify-end mt-[24px]">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={handleSaveMetadata}
                       disabled={isSubmitting}
                     >
@@ -1024,6 +1027,9 @@ export default function ReusesEditClient() {
                   <div className="admin-page__actions flex justify-end gap-[18px]">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={async () => {
                         if (!reuse) return;
                         const errors: Record<number, string> = {};
@@ -1181,6 +1187,9 @@ export default function ReusesEditClient() {
                   <div className="admin-page__actions flex justify-end gap-[18px]">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={async () => {
                         if (!reuse) return;
                         const errors: Record<number, string> = {};

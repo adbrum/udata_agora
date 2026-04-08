@@ -304,6 +304,9 @@ function EditRolePopupContent({
         </Button>
         <Button
           variant="primary"
+          hasIcon
+          trailingIcon="agora-line-check-circle"
+          trailingIconHover="agora-solid-check-circle"
           onClick={handleUpdate}
         >
           Guardar

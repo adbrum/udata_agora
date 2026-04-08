@@ -532,6 +532,9 @@ function ResourceEditPopupContent({
           </label>
           <Button
             variant="primary"
+            hasIcon
+            trailingIcon="agora-line-check-circle"
+            trailingIconHover="agora-solid-check-circle"
             onClick={handleSave}
             disabled={isSaving || !title.trim()}
           >
@@ -1487,6 +1490,9 @@ export default function DatasetsEditClient() {
                   <div className="admin-page__actions flex justify-end mt-[24px]">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={handleSaveMetadata}
                       disabled={isSubmitting}
                     >

@@ -386,6 +386,9 @@ export default function PostsEditClient() {
                   <div className="admin-page__actions">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={handleSaveMetadata}
                       disabled={isSaving}
                     >
@@ -441,6 +444,9 @@ export default function PostsEditClient() {
                   <div className="admin-page__actions">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={handleSaveContent}
                       disabled={isSaving}
                     >
