@@ -28,9 +28,14 @@ export default async function ReusesPage({
         ...(resolvedSearchParams?.organization && { organization: resolvedSearchParams.organization }),
         ...(resolvedSearchParams?.sort && { sort: resolvedSearchParams.sort }),
     };
-    const hasFilters = Object.keys(filters).length > 0;
+    // Relevance sort: when no search query, fall back to default (most recent first)
+    const apiFilters = { ...filters };
+    if (!apiFilters.sort && !apiFilters.q) {
+        apiFilters.sort = '-last_modified';
+    }
+
     const [initialData, reuseTypes, siteInfo] = await Promise.all([
-        fetchReuses(page, 12, hasFilters ? filters : undefined),
+        fetchReuses(page, 12, apiFilters),
         fetchReuseTypes(),
         fetchSiteInfo(),
     ]);
