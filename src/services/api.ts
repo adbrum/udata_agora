@@ -2553,7 +2553,18 @@ export async function addMember(
     credentials: "include",
     body: JSON.stringify({ user: userId, role }),
   });
-  if (!res.ok) throw new Error(`Failed to add member: ${res.statusText}`);
+  if (!res.ok) {
+    let message = res.statusText;
+    try {
+      const body = await res.json();
+      const userError = body?.errors?.user;
+      message = (Array.isArray(userError) ? userError[0] : userError)
+        || body?.message
+        || (typeof body?.errors === "string" ? body.errors : null)
+        || message;
+    } catch {}
+    throw new Error(typeof message === "string" ? message : JSON.stringify(message));
+  }
   return await res.json();
 }
 

@@ -6,6 +6,7 @@ import {
   Button,
   Icon,
   RadioButton,
+  StatusCard,
   DropdownSection,
   DropdownOption,
   InputSelect,
@@ -63,22 +64,29 @@ interface AddMemberPopupProps {
 function AddMemberPopupContent({ orgId, onMemberAdded, openKey }: AddMemberPopupProps) {
   const { hide } = usePopupContext();
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
-  const [memberIds, setMemberIds] = useState<string[]>([]);
+  const memberIdsRef = useRef<string[]>([]);
+  const pendingUserIdsRef = useRef<string[]>([]);
   const selectedUserIdRef = useRef("");
   const selectedRoleRef = useRef("editor");
   const canSubmitRef = useRef(false);
   const [, forceUpdate] = useState(0);
   const [alreadyMember, setAlreadyMember] = useState(false);
+  const [hasPendingInvite, setHasPendingInvite] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [users, org] = await Promise.all([
+        const [users, org, requests] = await Promise.all([
           suggestUsers(""),
           fetchOrganization(orgId),
+          fetchMembershipRequests(orgId),
         ]);
         setSuggestions(users);
-        setMemberIds((org.members || []).map((m: OrganizationMember) => m.user.id));
+        memberIdsRef.current = (org.members || []).map((m: OrganizationMember) => m.user.id);
+        pendingUserIdsRef.current = requests
+          .filter((r: MembershipRequest) => r.status === "pending" && r.user)
+          .map((r: MembershipRequest) => r.user.id);
       } catch (error) {
         console.error("Error loading users:", error);
       }
@@ -105,17 +113,35 @@ function AddMemberPopupContent({ orgId, onMemberAdded, openKey }: AddMemberPopup
 
   const handleAdd = async () => {
     if (!canSubmitRef.current) return;
+    setAddError(null);
     try {
       await addMember(orgId, selectedUserIdRef.current, selectedRoleRef.current);
       onMemberAdded();
       hide();
     } catch (error) {
       console.error("Error adding member:", error);
+      const msg = error instanceof Error ? error.message : null;
+      setAddError(msg || "Ocorreu um erro ao adicionar o membro. Tente novamente.");
     }
   };
 
+  const onUserChangeCallback = useCallback((userId: string) => {
+    const isMember = userId ? memberIdsRef.current.includes(userId) : false;
+    const isPending = userId ? pendingUserIdsRef.current.includes(userId) : false;
+    canSubmitRef.current = !!userId && !isMember && !isPending;
+    setAlreadyMember(isMember);
+    setHasPendingInvite(isPending);
+    forceUpdate((n) => n + 1);
+  }, []);
+
   return (
     <div className="flex flex-col gap-[24px]">
+      {hasPendingInvite && (
+        <StatusCard
+          type="info"
+          description="Este utilizador já foi convidado para esta organização. O convite encontra-se pendente de aceitação."
+        />
+      )}
       <IsolatedSelect
         key={`user-${openKey}`}
         label="Utilizador"
@@ -127,12 +153,7 @@ function AddMemberPopupContent({ orgId, onMemberAdded, openKey }: AddMemberPopup
         searchNoResultsText="Nenhum resultado encontrado"
         hasError={alreadyMember}
         errorFeedbackText="Utilizador já está associado a esta organização"
-        onChangeCallback={(userId) => {
-          const isMember = userId ? memberIds.includes(userId) : false;
-          canSubmitRef.current = !!userId && !isMember;
-          setAlreadyMember(isMember);
-          forceUpdate((n) => n + 1);
-        }}
+        onChangeCallback={onUserChangeCallback}
       >
         {userDropdownChildren}
       </IsolatedSelect>
@@ -147,6 +168,10 @@ function AddMemberPopupContent({ orgId, onMemberAdded, openKey }: AddMemberPopup
       >
         {roleDropdownChildren}
       </IsolatedSelect>
+
+      {addError && (
+        <p className="text-sm text-danger-600">{addError}</p>
+      )}
 
       <div className="flex gap-[16px]">
         <Button appearance="outline" variant="primary" onClick={() => hide()}>
@@ -243,7 +268,7 @@ function EditRolePopupContent({
 
   return (
     <div className="flex flex-col gap-[24px]">
-      <p className="text-neutral-700">
+      <p className="text-neutral-900">
         Alterar o papel de{" "}
         <strong>
           {member.user.first_name} {member.user.last_name}
@@ -432,7 +457,7 @@ export default function MembersClient() {
         onMemberRemoved={loadMembers}
       />,
       {
-        title: "Eliminar",
+        title: "Eliminar membro",
         closeAriaLabel: "Fechar",
         dimensions: "m",
       }
@@ -515,21 +540,21 @@ export default function MembersClient() {
                     <div className="flex gap-[8px]">
                       <Button
                         variant="primary"
-                        appearance="outline"
+                        appearance="link"
                         onClick={() => handleAcceptRequest(request)}
                         disabled={requestAction === request.id}
                       >
-                        {requestAction === request.id
-                          ? "A aceitar..."
-                          : "Aceitar"}
+                        <span className="underline">
+                          {requestAction === request.id ? "A aceitar..." : "Aceitar"}
+                        </span>
                       </Button>
                       <Button
                         variant="danger"
-                        appearance="outline"
+                        appearance="link"
                         onClick={() => handleRefuseRequest(request)}
                         disabled={requestAction === request.id}
                       >
-                        Recusar
+                        <span className="underline">Recusar</span>
                       </Button>
                     </div>
                   </TableCell>
