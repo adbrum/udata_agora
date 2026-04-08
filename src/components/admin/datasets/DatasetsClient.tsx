@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Breadcrumb,
   Button,
@@ -48,6 +49,7 @@ type SortField = "title" | "created_at" | "last_modified" | "resources";
 
 export default function DatasetsClient() {
   const { displayName } = useCurrentUser();
+  const searchParams = useSearchParams();
 
   const [allDatasets, setAllDatasets] = useState<Dataset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +58,7 @@ export default function DatasetsClient() {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>("none");
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState(() => searchParams.get("status") ?? "");
 
   useEffect(() => {
     async function loadDatasets() {
@@ -193,6 +195,7 @@ export default function DatasetsClient() {
           hideLabel
           placeholder="Filtrar por estado"
           id="filter-status"
+          defaultValue={statusFilter || undefined}
           onChange={(options) => {
             setStatusFilter(options.length > 0 ? (options[0].value as string) : "");
             setCurrentPage(1);

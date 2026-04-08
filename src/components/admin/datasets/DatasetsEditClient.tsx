@@ -946,6 +946,34 @@ export default function DatasetsEditClient() {
     }
   };
 
+  const handleArchiveDataset = async () => {
+    if (!dataset) return;
+    setIsSubmitting(true);
+    try {
+      await updateDataset(dataset.id, { archived: new Date().toISOString() });
+      router.push("/pages/admin/me/datasets?status=archived");
+    } catch (error) {
+      console.error("Error archiving dataset:", error);
+      setApiError("Erro ao arquivar o conjunto de dados.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUnarchiveDataset = async () => {
+    if (!dataset) return;
+    setIsSubmitting(true);
+    try {
+      const updated = await updateDataset(dataset.id, { archived: null });
+      setDataset(updated);
+    } catch (error) {
+      console.error("Error unarchiving dataset:", error);
+      setApiError("Erro ao desarquivar o conjunto de dados.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleDeleteDataset = async () => {
     if (!dataset) return;
     setIsSubmitting(true);
@@ -1513,9 +1541,14 @@ export default function DatasetsEditClient() {
                             onClick={(e: React.MouseEvent) => {
                               e.preventDefault();
                               e.stopPropagation();
+                              dataset?.archived
+                                ? handleUnarchiveDataset()
+                                : handleArchiveDataset();
                             }}
                           >
-                            Arquivar o conjunto de dados
+                            {dataset?.archived
+                              ? "Desarquivar o conjunto de dados"
+                              : "Arquivar o conjunto de dados"}
                           </Button>
                         </>
                       }
