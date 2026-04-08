@@ -10,6 +10,7 @@ import {
   DropdownSection,
   DropdownOption,
   InputSelect,
+  InputTextArea,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -342,7 +343,7 @@ function RefuseMembershipPopupContent({
 
   return (
     <div className="flex flex-col gap-[24px]">
-      <p className="text-neutral-700">
+      <p className="text-neutral-900">
         Recusar o pedido de adesão de{" "}
         <strong>
           {request.user.first_name} {request.user.last_name}
@@ -350,22 +351,14 @@ function RefuseMembershipPopupContent({
         ?
       </p>
 
-      <div className="flex flex-col gap-[8px]">
-        <label
-          htmlFor="refuse-comment"
-          className="text-primary-900 text-base font-medium leading-7"
-        >
-          Motivo da recusa
-        </label>
-        <textarea
-          id="refuse-comment"
-          className="w-full rounded-lg border border-neutral-300 p-[12px] text-sm"
-          rows={3}
-          placeholder="Indique o motivo da recusa (opcional)"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-      </div>
+      <InputTextArea
+        label="Motivo da recusa"
+        id="refuse-comment"
+        rows={3}
+        placeholder="Indique o motivo da recusa (opcional)"
+        value={comment}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setComment(e.target.value)}
+      />
 
       <div className="flex gap-[16px]">
         <Button appearance="outline" variant="primary" onClick={() => hide()}>
@@ -376,7 +369,7 @@ function RefuseMembershipPopupContent({
           onClick={handleRefuse}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "A recusar..." : "Recusar pedido"}
+          {isSubmitting ? "A recusar..." : "Recusar"}
         </Button>
       </div>
     </div>

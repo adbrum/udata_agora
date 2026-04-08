@@ -68,6 +68,8 @@ export interface MembershipRequest {
   created: string;
   status: "pending" | "accepted" | "refused";
   comment: string;
+  kind: "request" | "invitation";
+  role: string;
 }
 
 export interface OrgRole {
