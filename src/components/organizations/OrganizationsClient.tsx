@@ -156,7 +156,7 @@ export default function OrganizationsClient({
         </div>
 
         {/* Main Content */}
-        <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
+        <div className="container mx-auto md:gap-32 xl:gap-64 bg-primary-50">
           {/* Results count + Sort toggles */}
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
             <div className="xl:col-span-5 flex flex-row items-end gap-24 pl-0 py-16">

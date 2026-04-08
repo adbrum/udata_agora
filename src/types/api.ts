@@ -865,6 +865,7 @@ export interface CommunityResource {
   description: string | null;
   url: string;
   filetype: string | null;
+  type: string | null;
   format: string | null;
   filesize: number | null;
   mime: string | null;
@@ -876,6 +877,7 @@ export interface CommunityResource {
   last_modified: string;
   archived: boolean;
   deleted: boolean;
+  schema: SchemaRef | null;
 }
 
 export interface CommunityResourceCreatePayload {
@@ -887,6 +889,7 @@ export interface CommunityResourceCreatePayload {
   format?: string;
   dataset: string;
   organization?: string;
+  schema?: string;
 }
 
 export interface CommunityResourceUpdatePayload {
@@ -894,8 +897,12 @@ export interface CommunityResourceUpdatePayload {
   description?: string;
   url?: string;
   filetype?: string;
+  type?: string;
   format?: string;
+  mime?: string;
+  filesize?: number;
   dataset?: string;
+  schema?: string;
 }
 
 export interface HarvestError {
@@ -932,13 +939,13 @@ export interface HarvestSourceValidation {
 export interface HarvestPreviewJob {
   id: string;
   status:
-    | "pending"
-    | "initializing"
-    | "initialized"
-    | "processing"
-    | "done"
-    | "done-errors"
-    | "failed";
+  | "pending"
+  | "initializing"
+  | "initialized"
+  | "processing"
+  | "done"
+  | "done-errors"
+  | "failed";
   created: string;
   started: string | null;
   ended: string | null;

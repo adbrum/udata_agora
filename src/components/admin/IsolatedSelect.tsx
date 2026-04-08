@@ -34,8 +34,8 @@ interface IsolatedSelectProps {
   onChangeCallback?: (value: string) => void;
   onSearchCallback?: (query: string) => void;
   children:
-    | ReactElement<DropdownSectionProps>
-    | ReactElement<DropdownSectionProps>[];
+  | ReactElement<DropdownSectionProps>
+  | ReactElement<DropdownSectionProps>[];
 }
 
 const IsolatedSelect = React.memo(function IsolatedSelect({
@@ -55,13 +55,21 @@ const IsolatedSelect = React.memo(function IsolatedSelect({
   onSearchCallback,
   children,
 }: IsolatedSelectProps) {
-  // Sync defaultValue into the ref on mount so handleSave reads the correct initial value
+  // Sync defaultValue into the ref when it changes so handleSave reads the correct value
   React.useEffect(() => {
     if (defaultValue !== undefined) {
       onChangeRef.current = defaultValue;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [defaultValue, onChangeRef]);
+
+  const [internalValue, setInternalValue] = React.useState(defaultValue || "");
+
+  // Update internal state if defaultValue prop changes (e.g. after save)
+  React.useEffect(() => {
+    if (defaultValue !== undefined) {
+      setInternalValue(defaultValue);
+    }
+  }, [defaultValue]);
 
   return (
     <InputSelect
@@ -73,10 +81,11 @@ const IsolatedSelect = React.memo(function IsolatedSelect({
       searchable={searchable}
       searchInputPlaceholder={searchInputPlaceholder}
       searchNoResultsText={searchNoResultsText}
-      defaultValue={defaultValue}
+      value={internalValue !== undefined ? (typeof internalValue === "string" && internalValue !== "" ? (type === "checkbox" ? internalValue.split(",") : [internalValue]) : internalValue) : undefined}
       onSearchInputChange={onSearchCallback}
       onChange={(options) => {
         const value = options.map((o) => o.value as string).join(",");
+        setInternalValue(value);
         onChangeRef.current = value;
         onChangeCallback?.(value);
       }}

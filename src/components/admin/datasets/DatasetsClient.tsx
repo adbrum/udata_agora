@@ -348,8 +348,8 @@ export default function DatasetsClient() {
               icon={
                 <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
               }
-              title="Sem publicações"
-              description="Ainda não publicou um conjunto de dados."
+              title="Sem conjuntos de dados"
+              description="Não publicou conjuntos de dados."
               hasAnchor={false}
               extraDescription={
                 <div className="mt-24">

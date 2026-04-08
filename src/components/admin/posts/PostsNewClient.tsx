@@ -238,7 +238,7 @@ export default function PostsNewClient() {
 
                 <InputSelect
                   label="Palavras-chave"
-                  placeholder="Pesquise por uma palavra-chave..."
+                  placeholder="Pesquise ou insira uma palavra-chave..."
                   id="article-keywords"
                   type="checkbox"
                   searchable
@@ -267,7 +267,7 @@ export default function PostsNewClient() {
                       inputLabel="Selecione ou arraste o ficheiro"
                       removeFileButtonLabel="Remover ficheiro"
                       replaceFileButtonLabel="Substituir ficheiro"
-                      extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                      extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceites: JPG, JPEG, PNG."
                       accept=".jpg,.jpeg,.png"
                       maxSize={4194304}
                       maxCount={1}

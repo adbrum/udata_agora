@@ -59,8 +59,8 @@ function TransferReusePopupContent({
         </a>
       </p>
       <p>
-        <strong>Essa ação é irreversível.</strong>
-        Você não terá mais acesso para gerenciar esse conjunto de dados.
+        <strong>Essa ação é irreversível.</strong>&nbsp;
+        Poderá deixar de conseguir gerir este conjunto de dados.
       </p>
 
       <div className="flex flex-col gap-[8px]">
@@ -68,7 +68,7 @@ function TransferReusePopupContent({
           Encontre uma organização ou usuário
         </label>
         <InputText
-          placeholder="Procurar..."
+          placeholder="Selecione a identidade para a qual pretende transferir o conjunto de dados..."
           id="transfer-reuse-search"
           label=""
         />
@@ -86,7 +86,7 @@ function TransferReusePopupContent({
           href="/pages/admin/organizations"
           className="inline-flex items-center text-primary-500 text-base hover:underline"
         >
-          <span className="mr-[5px]">Crie ou participe de uma organização</span>
+          <span className="mr-[5px]">Crie ou integre uma organização em dados.gov</span>
           <Icon name="agora-line-arrow-right-circle" className="w-5 h-5" />
         </Link>
       </div>
@@ -571,7 +571,7 @@ export default function ReusesEditClient() {
                     />
                     <InputSelect
                       label="Palavras-chave"
-                      placeholder="Pesquise por uma palavra-chave..."
+                      placeholder="Pesquise ou insira uma palavra-chave..."
                       id="edit-keywords"
                       type="checkbox"
                       searchable
@@ -596,7 +596,7 @@ export default function ReusesEditClient() {
                           inputLabel="Selecione ou arraste o ficheiro"
                           removeFileButtonLabel="Remover ficheiro"
                           replaceFileButtonLabel="Substituir ficheiro"
-                          extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                          extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceites: JPG, JPEG, PNG."
                           accept=".jpg,.jpeg,.png"
                           maxSize={4194304}
                           maxCount={1}
