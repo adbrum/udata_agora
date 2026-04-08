@@ -391,7 +391,7 @@ export default function ReusesFormClient({
                     href="/pages/admin/organizations/new"
                     className="admin-page__org-card-link"
                   >
-                    Crie ou participe de uma organização
+                    Crie ou integre uma organização em dados.gov
                     <Icon
                       name="agora-line-arrow-right-circle"
                       className="w-[24px] h-[24px]"
@@ -499,7 +499,7 @@ export default function ReusesFormClient({
                         inputLabel="Selecione ou arraste o ficheiro"
                         removeFileButtonLabel="Remover ficheiro"
                         replaceFileButtonLabel="Substituir ficheiro"
-                        extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                        extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceites: JPG, JPEG, PNG."
                         accept=".jpg,.jpeg,.png"
                         maxSize={4194304}
                         maxCount={1}

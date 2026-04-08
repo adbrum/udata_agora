@@ -612,6 +612,7 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 /* 5.6 Cards (Article) */
 .agora-card-article img.card-image.w-full {
   border-radius: 4px;
+  width: 352px !important;
   height: 208px;
   object-fit: cover;
   display: flex;
@@ -885,6 +886,13 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   gap: 104px;
   background-color: var(--color-primary-50);
 }
+
+.agora-card-no-results .main-content {
+  background: white;
+  padding: 80px;
+  margin: 0 !important;
+}
+
 
 .pagination-filters {
   position: relative;
@@ -1499,7 +1507,6 @@ body:has(.admin-wrapper)>div>header.sticky {
   font-weight: 600;
   line-height: 32px;
   color: var(--color-primary-900);
-  margin-top: 32px !important;
 }
 
 .admin-page__section-title--no-top {
@@ -1668,11 +1675,15 @@ body:has(.admin-wrapper)>div>header.sticky {
   text-align: left;
 }
 
+.auxiliar-list__content,
+.auxiliar-list__content * {
+  font-size: 14px !important;
+  line-height: 22px !important;
+  color: var(--color-neutral-900);
+}
+
 .auxiliar-list__content {
   padding: 0 16px 16px 56px;
-  font-size: 14px;
-  line-height: 22px;
-  color: var(--color-neutral-900);
 }
 
 .auxiliar-list__icon {

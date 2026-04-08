@@ -49,6 +49,8 @@ export default function CommunityResourceEditClient() {
   const [schemaUrl, setSchemaUrl] = useState("");
   const [resourceTypes, setResourceTypes] = useState<ResourceType[]>([]);
   const selectedTypeRef = useRef("");
+  const selectedFormatRef = useRef("");
+  const selectedChecksumTypeRef = useRef("");
   const selectedSchemaRef = useRef("");
 
   useEffect(() => {
@@ -66,15 +68,18 @@ export default function CommunityResourceEditClient() {
         setDescription(res.description || "");
         setFormat(res.format || "");
         setMimeType(res.mime || "");
+        selectedTypeRef.current = res.filetype || "";
+        selectedFormatRef.current = res.format || "";
         if (res.checksum) {
           setChecksumType(res.checksum.type || "");
           setChecksumValue(res.checksum.value || "");
+          selectedChecksumTypeRef.current = res.checksum.type || "";
           setShowChecksum(true);
         }
         setResourceTypes(types);
       } catch (error) {
         console.error("Error loading community resource:", error);
-        setApiError("Erro ao carregar recurso comunitario.");
+        setApiError("Erro ao carregar recurso comunitário.");
       } finally {
         setIsLoading(false);
       }
@@ -93,6 +98,9 @@ export default function CommunityResourceEditClient() {
   const handleSave = async () => {
     const errors: Record<string, boolean> = {};
     if (!title.trim()) errors.title = true;
+    if (!resourceUrl.trim()) errors.url = true;
+    if (!selectedTypeRef.current) errors.type = true;
+    if (!selectedFormatRef.current) errors.format = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -107,18 +115,19 @@ export default function CommunityResourceEditClient() {
         title: title.trim(),
         description: description.trim() || undefined,
         url: resourceUrl.trim() || undefined,
-        format: format.trim() || undefined,
+        filetype: selectedTypeRef.current || undefined,
+        format: selectedFormatRef.current.trim() || undefined,
       });
 
       setResource(updated);
-      setSuccessMessage("Recurso comunitario atualizado com sucesso.");
+      setSuccessMessage("Recurso comunitário atualizado com sucesso.");
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err: unknown) {
       const error = err as { status?: number; data?: Record<string, unknown> };
       if (error?.status === 401) {
         setApiError("Sessao expirada. Faca login novamente.");
       } else {
-        setApiError("Erro ao atualizar recurso comunitario.");
+        setApiError("Erro ao atualizar recurso comunitário.");
       }
     } finally {
       setIsSubmitting(false);
@@ -130,7 +139,7 @@ export default function CommunityResourceEditClient() {
       await deleteCommunityResource(resourceId);
       router.push("/pages/admin/system/community-resources");
     } catch {
-      setApiError("Erro ao eliminar recurso comunitario.");
+      setApiError("Erro ao eliminar recurso comunitário.");
     }
   };
 
@@ -159,63 +168,65 @@ export default function CommunityResourceEditClient() {
   const auxiliarItems = [
     {
       title: "Escolha o link correto",
+      hasError: !!formErrors.url,
       content:
-        "E recomendavel criar um link para o proprio arquivo em vez de uma pagina da web para permitir que o {site} o analise.",
+        "É recomendável criar um link para o próprio arquivo em vez de uma página da web para permitir que o {site} o analise.",
     },
     {
-      title: "Soma de verificacao",
+      title: "Soma de verificação",
       content:
-        "O checksum permite ao usuario verificar se os dados baixados nao foram corrompidos ou alterados.",
+        "O checksum permite ao utilizador verificar se os dados descarregados não foram corrompidos ou alterados.",
     },
     {
-      title: "De um nome ao link",
+      title: "Dê um nome ao link",
+      hasError: !!formErrors.title,
       content: (
         <>
-          Recomenda-se escolher um titulo que informe claramente qualquer usuario sobre o conteudo
-          do arquivo. Algumas praticas a serem evitadas:
+          Recomenda-se escolher um título que informe claramente qualquer utilizador sobre o conteúdo
+          do arquivo. Algumas práticas a evitar:
           <ul className="list-disc pl-16 mt-8">
-            <li>atribuir um titulo muito generico (por exemplo, &quot;list.csv&quot;);</li>
-            <li>Dar um titulo muito longo dificultaria a manipulacao do arquivo;</li>
+            <li>atribuir um título muito genérico (por exemplo, &quot;list.csv&quot;);</li>
+            <li>dar um título muito longo dificultaria a manipulação do arquivo;</li>
             <li>
-              fornecer um titulo que contenha acentos ou caracteres especiais (problemas de
+              fornecer um título que contenha acentos ou caracteres especiais (problemas de
               interoperabilidade de arquivos);
             </li>
             <li>
-              Dar um titulo que seja demasiado tecnico e derivado de nomenclaturas da industria.
+              dar um título demasiado técnico e derivado de nomenclaturas da indústria.
             </li>
           </ul>
         </>
       ),
     },
     {
-      title: "Publique os tipos de arquivos corretos.",
+      title: "Publique os tipos de ficheiros corretos",
+      hasError: !!formErrors.type,
       content: (
         <>
-          Voce pode escolher entre os seguintes tipos:
+          Pode escolher entre os seguintes tipos:
           <ul className="list-disc pl-16 mt-8">
-            <li>Arquivos principais</li>
-            <li>Documentacao</li>
-            <li>Atualizar</li>
+            <li>Ficheiros principais</li>
+            <li>Documentação</li>
+            <li>Atualização</li>
             <li>API</li>
-            <li>Codigo-fonte</li>
+            <li>Código-fonte</li>
             <li>Outro</li>
           </ul>
         </>
       ),
     },
     {
-      title: "Adicionar documentacao",
+      title: "Adicionar documentação",
       content: (
         <>
-          A descricao de um arquivo facilita a reutilizacao de dados. Ela inclui, entre outras
-          coisas:
+          A descrição de um ficheiro facilita a reutilização de dados. Inclui, entre outras coisas:
           <ul className="list-disc pl-16 mt-8">
-            <li>uma descricao geral do conjunto de dados;</li>
-            <li>uma descricao do metodo de producao de dados;</li>
-            <li>uma descricao do modelo de dados;</li>
-            <li>uma descricao do esquema de dados;</li>
-            <li>uma descricao dos metadados;</li>
-            <li>Uma descricao das principais mudancas.</li>
+            <li>uma descrição geral do conjunto de dados;</li>
+            <li>uma descrição do método de produção de dados;</li>
+            <li>uma descrição do modelo de dados;</li>
+            <li>uma descrição do esquema de dados;</li>
+            <li>uma descrição dos metadados;</li>
+            <li>uma descrição das principais alterações.</li>
           </ul>
         </>
       ),
@@ -227,18 +238,18 @@ export default function CommunityResourceEditClient() {
           Os formatos devem ser:
           <ul className="list-disc pl-16 mt-8">
             <li>
-              Aberto: um formato aberto nao adiciona especificacoes tecnicas que restrinjam o uso
+              Aberto: um formato aberto não adiciona especificações técnicas que restrinjam o uso
               dos dados (por exemplo, o uso de software pago);
             </li>
             <li>
-              facilmente reutilizavel: um formato facilmente reutilizavel implica que qualquer
+              facilmente reutilizável: um formato facilmente reutilizável implica que qualquer
               pessoa ou servidor pode reutilizar facilmente o conjunto de dados;
             </li>
             <li>
-              Utilizavel em um sistema de processamento automatizado: um sistema de processamento
-              automatizado permite operacoes automaticas relacionadas ao processamento de dados (por
-              exemplo, um arquivo CSV e facilmente utilizavel por um sistema automatizado, ao
-              contrario de um arquivo PDF).
+              utilizável num sistema de processamento automatizado: um sistema de processamento
+              automatizado permite operações automáticas relacionadas ao processamento de dados (por
+              exemplo, um ficheiro CSV é facilmente utilizável por um sistema automatizado, ao
+              contrário de um ficheiro PDF).
             </li>
           </ul>
         </>
@@ -247,12 +258,12 @@ export default function CommunityResourceEditClient() {
     {
       title: "Escolha um tipo MIME",
       content:
-        "Especifique o tipo MIME correspondente ao formato do recurso remoto (por exemplo, application/pdf, text/csv). Se necessario, utilize uma ferramenta online para deteta-lo.",
+        "Especifique o tipo MIME correspondente ao formato do recurso remoto (por exemplo, application/pdf, text/csv). Se necessário, utilize uma ferramenta online para o detetar.",
     },
     {
       title: "Selecione um esquema",
       content:
-        "E possivel identificar um esquema de dados existente visitando o site schema.data.gouv.fr, que contem uma lista de esquemas de dados existentes.esquema.dados.gouv.fr",
+        "É possível identificar um esquema de dados existente visitando o site schema.data.gouv.fr, que contém uma lista de esquemas de dados existentes.",
     },
   ];
 
@@ -267,7 +278,7 @@ export default function CommunityResourceEditClient() {
   if (!resource) {
     return (
       <div className="admin-page">
-        <StatusCard type="danger" description="Recurso comunitario nao encontrado." />
+        <StatusCard type="danger" description="Recurso comunitário nao encontrado." />
       </div>
     );
   }
@@ -280,7 +291,7 @@ export default function CommunityResourceEditClient() {
             { label: "Administracao", url: "/pages/admin" },
             { label: "Sistema", url: "#" },
             {
-              label: "Recursos comunitarios",
+              label: "Recursos comunitários",
               url: "/pages/admin/system/community-resources",
             },
             { label: "Editar", url: "#" },
@@ -322,7 +333,12 @@ export default function CommunityResourceEditClient() {
                 value={resourceUrl}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setResourceUrl(e.target.value);
+                  if (e.target.value.trim()) clearError("url");
                 }}
+                hasError={!!formErrors.url}
+                hasFeedback={!!formErrors.url}
+                feedbackState="danger"
+                errorFeedbackText="Campo obrigatório"
               />
             </div>
 
@@ -348,6 +364,9 @@ export default function CommunityResourceEditClient() {
               <Button
                 variant="primary"
                 appearance="outline"
+                hasIcon
+                leadingIcon="agora-line-plus"
+                leadingIconHover="agora-solid-plus"
                 onClick={() => setShowChecksum(true)}
               >
                 Adicionar
@@ -361,7 +380,8 @@ export default function CommunityResourceEditClient() {
                   label="Tipo de soma de verificação"
                   placeholder="SHA1"
                   id="checksum-type"
-                  onChangeRef={{ current: checksumType }}
+                  defaultValue={checksumType}
+                  onChangeRef={selectedChecksumTypeRef}
                 >
                   <DropdownSection name="checksum-types">
                     <DropdownOption value="sha1">SHA1</DropdownOption>
@@ -400,17 +420,29 @@ export default function CommunityResourceEditClient() {
                 hasError={!!formErrors.title}
                 hasFeedback={!!formErrors.title}
                 feedbackState="danger"
-                errorFeedbackText="Campo obrigatorio"
+                errorFeedbackText="Campo obrigatório"
               />
 
-              <IsolatedSelect
-                label="Tipo *"
-                placeholder="Arquivos principais"
-                id="resource-type"
-                onChangeRef={selectedTypeRef}
-              >
-                {typeOptions}
-              </IsolatedSelect>
+              <div>
+                <IsolatedSelect
+                  label="Tipo *"
+                  placeholder="Arquivos principais"
+                  id="resource-type"
+                  defaultValue={resource?.filetype || ""}
+                  onChangeRef={selectedTypeRef}
+                  onChangeCallback={() => clearError("type")}
+                >
+                  {typeOptions}
+                </IsolatedSelect>
+                {formErrors.type && (
+                  <div className="feedback">
+                    <span className="feedback-icon-wrapper feedback-icon-wrapper-danger">
+                      <Icon name="agora-solid-alert-triangle" dimensions="s" aria-hidden={true} />
+                    </span>
+                    <p className="feedback-text feedback-text-light">Campo obrigatório</p>
+                  </div>
+                )}
+              </div>
 
               <InputTextArea
                 label="Descrição"
@@ -423,20 +455,32 @@ export default function CommunityResourceEditClient() {
                 }
               />
 
-              <IsolatedSelect
-                label="Formato *"
-                placeholder="Selecione o formato"
-                id="resource-format"
-                onChangeRef={{ current: format }}
-              >
-                <DropdownSection name="formats">
-                  {["csv", "json", "xml", "pdf", "xls", "xlsx", "ods", "doc", "docx", "zip", "gz", "tar", "shp", "geojson", "kml", "rdf", "ttl", "txt", "html"].map((f) => (
-                    <DropdownOption key={f} value={f}>
-                      {f}
-                    </DropdownOption>
-                  ))}
-                </DropdownSection>
-              </IsolatedSelect>
+              <div>
+                <IsolatedSelect
+                  label="Formato *"
+                  placeholder="Selecione o formato"
+                  id="resource-format"
+                  defaultValue={format}
+                  onChangeRef={selectedFormatRef}
+                  onChangeCallback={() => clearError("format")}
+                >
+                  <DropdownSection name="formats">
+                    {["csv", "json", "xml", "pdf", "xls", "xlsx", "ods", "doc", "docx", "zip", "gz", "tar", "shp", "geojson", "kml", "rdf", "ttl", "txt", "html"].map((f) => (
+                      <DropdownOption key={f} value={f}>
+                        {f}
+                      </DropdownOption>
+                    ))}
+                  </DropdownSection>
+                </IsolatedSelect>
+                {formErrors.format && (
+                  <div className="feedback">
+                    <span className="feedback-icon-wrapper feedback-icon-wrapper-danger">
+                      <Icon name="agora-solid-alert-triangle" dimensions="s" aria-hidden={true} />
+                    </span>
+                    <p className="feedback-text feedback-text-light">Campo obrigatório</p>
+                  </div>
+                )}
+              </div>
 
               <InputText
                 label="Tipo mime"
@@ -455,7 +499,7 @@ export default function CommunityResourceEditClient() {
             <div className="admin-page__fields-group">
               <IsolatedSelect
                 label="Plano"
-                placeholder="Procure um esquema referenciado em schema.data.gouv.fr..."
+                placeholder="Procure um esquema referenciado em dados.gov..."
                 id="resource-schema"
                 onChangeRef={selectedSchemaRef}
               >
@@ -477,21 +521,27 @@ export default function CommunityResourceEditClient() {
               />
             </div>
 
-            {/* Actions: Para validar + Cancelar */}
+            {/* Actions: Anterior + Guardar */}
             <div className="admin-page__actions flex gap-[18px]">
               <Button
                 variant="primary"
-                onClick={handleSave}
-                disabled={isSubmitting}
+                appearance="outline"
+                hasIcon
+                leadingIcon="agora-line-arrow-left-circle"
+                leadingIconHover="agora-solid-arrow-left-circle"
+                onClick={() => router.push("/pages/admin/system/community-resources")}
               >
-                {isSubmitting ? "A guardar..." : "Para validar"}
+                Anterior
               </Button>
               <Button
                 variant="primary"
-                appearance="outline"
-                onClick={() => router.push("/pages/admin/system/community-resources")}
+                hasIcon
+                trailingIcon="agora-line-check-circle"
+                trailingIconHover="agora-solid-check-circle"
+                onClick={handleSave}
+                disabled={isSubmitting}
               >
-                Cancelar
+                {isSubmitting ? "A guardar..." : "Guardar"}
               </Button>
             </div>
 
@@ -501,7 +551,7 @@ export default function CommunityResourceEditClient() {
                 type="danger"
                 description={
                   <>
-                    <strong>Atenção, esta ação não pode ser corrigida.</strong>
+                    <strong>Atenção Esta ação é irreversível.</strong>
                     <br />
                     <Button
                       appearance="link"
@@ -519,19 +569,6 @@ export default function CommunityResourceEditClient() {
               />
             </div>
 
-            {/* Anterior */}
-            <div className="flex justify-end mt-[24px]">
-              <Button
-                variant="primary"
-                appearance="outline"
-                hasIcon
-                leadingIcon="agora-line-arrow-left-circle"
-                leadingIconHover="agora-solid-arrow-left-circle"
-                onClick={() => router.push("/pages/admin/system/community-resources")}
-              >
-                Anterior
-              </Button>
-            </div>
           </form>
         </div>
 

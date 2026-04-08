@@ -136,7 +136,7 @@ test.describe("Backoffice - Datasets CRUD", () => {
       const stepIndicator = page.getByText("Passo 4/4").first();
       await expect(stepIndicator).toBeVisible({ timeout: 5000 }).catch(() => {});
 
-      const publishBtn = page.getByRole("button", { name: "Publique o conjunto de dados" }).first();
+      const publishBtn = page.getByRole("button", { name: "Publicar o conjunto de dados" }).first();
       if (await publishBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
         await publishBtn.click();
         await page.waitForTimeout(2000);
@@ -550,8 +550,8 @@ test.describe("Backoffice - Datasets CRUD", () => {
         }
       }
 
-      // Publish - "Publique o conjunto de dados"
-      const publishBtn = page.getByRole("button", { name: "Publique o conjunto de dados" }).first();
+      // Publish - "Publicar o conjunto de dados"
+      const publishBtn = page.getByRole("button", { name: "Publicar o conjunto de dados" }).first();
       if (await publishBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
         await publishBtn.click();
         await page.waitForTimeout(3000);
