@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
   Button,
@@ -24,6 +24,7 @@ import {
   updatePost,
   uploadPostImage,
   suggestTags,
+  deletePost,
 } from "@/services/api";
 import type { Post, PostUpdatePayload, TagSuggestion } from "@/types/api";
 import dynamic from "next/dynamic";
@@ -35,6 +36,7 @@ const RichTextEditor = dynamic(() => import("./RichTextEditor"), {
 
 export default function PostsEditClient() {
   const params = useParams();
+  const router = useRouter();
   const postId = params.postId as string;
 
   const [post, setPost] = useState<Post | null>(null);
@@ -156,6 +158,25 @@ export default function PostsEditClient() {
       }
     } catch {
       setApiError("Erro ao despublicar o artigo.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setIsSaving(true);
+    setApiError(null);
+    setApiSuccess(null);
+
+    try {
+      const success = await deletePost(postId);
+      if (success) {
+        router.push("/pages/admin/system/posts");
+      } else {
+        setApiError("Erro ao eliminar. Verifique a autenticação.");
+      }
+    } catch {
+      setApiError("Erro ao eliminar o artigo.");
     } finally {
       setIsSaving(false);
     }
@@ -396,29 +417,55 @@ export default function PostsEditClient() {
                     </Button>
                   </div>
                 </form>
+
+                <div className="dataset-edit-danger-actions">
+                  {post.published && (
+                    <StatusCard
+                      type="warning"
+                      description={
+                        <>
+                          <strong>Despublicar o artigo</strong>
+                          <br />
+                          Por favor, note que o item não será mais visível.
+                          <br />
+                          <Button
+                            appearance="link"
+                            variant="primary"
+                            hasIcon
+                            trailingIcon="agora-line-arrow-right-circle"
+                            trailingIconHover="agora-solid-arrow-right-circle"
+                            onClick={handleUnpublish}
+                            disabled={isSaving}
+                          >
+                            {isSaving ? "A despublicar..." : "Despublicar"}
+                          </Button>
+                        </>
+                      }
+                    />
+                  )}
+                  <StatusCard
+                    type="danger"
+                    description={
+                      <>
+                        <strong>Atenção, esta ação não pode ser corrigida.</strong>
+                        <br />
+                        <Button
+                          appearance="link"
+                          variant="primary"
+                          hasIcon
+                          trailingIcon="agora-line-arrow-right-circle"
+                          trailingIconHover="agora-solid-arrow-right-circle"
+                          onClick={handleDelete}
+                          disabled={isSaving}
+                        >
+                          Eliminar o artigo
+                        </Button>
+                      </>
+                    }
+                  />
+                </div>
               </div>
             </div>
-
-            {post.published && (
-              <div className="mt-8 p-6 bg-danger-50 border border-danger-200 rounded-lg flex items-center justify-between">
-                <div>
-                  <p className="text-primary-900 font-bold">
-                    Despublicar o artigo
-                  </p>
-                  <p className="text-warning-700 text-sm">
-                    Por favor, note que o item não será mais visível.
-                  </p>
-                </div>
-                <Button
-                  variant="danger"
-                  appearance="outline"
-                  onClick={handleUnpublish}
-                  disabled={isSaving}
-                >
-                  Despublicar
-                </Button>
-              </div>
-            )}
           </TabBody>
         </Tab>
 
