@@ -77,20 +77,14 @@ export default function HarvestersNewClient() {
     return filterTypeRefs.current[index];
   };
 
-  const producerOptions = useMemo(
-    () => (
-      <DropdownSection name="identity">
-        <>
-          {(user?.organizations || []).map((org) => (
-            <DropdownOption key={org.id} value={org.id}>
-              {org.name}
-            </DropdownOption>
-          ))}
-        </>
-      </DropdownSection>
-    ),
-    [user],
-  );
+  const producerOptions = useMemo(() => {
+    const options = (user?.organizations || []).map((org) => (
+      <DropdownOption key={org.id} value={org.id}>
+        {org.name}
+      </DropdownOption>
+    ));
+    return <DropdownSection name="identity">{options}</DropdownSection>;
+  }, [user]);
 
   const typeOptions = useMemo(
     () => (
