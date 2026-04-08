@@ -122,7 +122,7 @@ export default function HomeClient({ siteMetrics, latestDatasets, latestReuses, 
                         }}
                       >
                         <span className="text-lg font-medium">
-                          Publicar <span className="font-bold">dados.gov</span>
+                          Publicar <span className="font-bold">dados.gov.pt</span>
                         </span>
                       </Button>
                       {showPublishDropdown && (

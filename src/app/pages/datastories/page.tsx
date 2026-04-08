@@ -2,7 +2,7 @@ import DataStoriesClient from '@/components/datastories/DataStoriesClient';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Data Stories - dados.gov',
+    title: 'Data Stories - dados.gov.pt',
     description: 'Explore narrativas baseadas em dados abertos para descobrir novos insights sobre Portugal.',
 };
 

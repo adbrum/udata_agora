@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import HarvestJobDetailClient from "@/components/admin/harvesters/HarvestJobDetailClient";
 
 export const metadata: Metadata = {
-  title: "Detalhe do trabalho - Admin - dados.gov",
-  description: "Detalhe de um trabalho de harvesting no portal dados.gov.",
+  title: "Detalhe do trabalho - Admin - dados.gov.pt",
+  description: "Detalhe de um trabalho de harvesting no portal dados.gov.pt.",
 };
 
 export default async function HarvestJobDetailPage({

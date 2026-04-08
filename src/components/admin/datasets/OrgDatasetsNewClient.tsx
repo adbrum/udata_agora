@@ -44,7 +44,7 @@ export default function OrgDatasetsNewClient() {
 
       <div className="admin-page__header">
         <h1 className="admin-page__title">
-          {currentStep === 1 ? "Publique em dados.gov" : "Formulário de publicação"}
+          {currentStep === 1 ? "Publique em dados.gov.pt" : "Formulário de publicação"}
         </h1>
         <PublishDropdown />
       </div>
@@ -87,14 +87,14 @@ export default function OrgDatasetsNewClient() {
 
           <StatusCard
             type="info"
-            description="Se desejar realizar testes, utilize demo.dados.gov"
+            description="Se desejar realizar testes, utilize demo.dados.gov.pt"
           />
 
           <div className="datasets-new-page__cards mb-[32px]" style={{ maxWidth: "50%" }}>
             <CardAction
               variant="neutral-100"
               titleText="Publique um conjunto de dados"
-              descriptionText="Seja uma administração pública ou uma empresa pública, todos podem publicar em dados.gov!"
+              descriptionText="Seja uma administração pública ou uma empresa pública, todos podem publicar em dados.gov.pt!"
               icon={{ name: "agora-line-edit" }}
               button={{
                 children: "Comece a publicar",
@@ -113,7 +113,7 @@ export default function OrgDatasetsNewClient() {
               </p>
               <p className="text-neutral-700 text-sm leading-relaxed">
                 Pode publicar automaticamente via API ou vinculando seu portal de dados
-                abertos ao dados.gov com um coletor de dados.
+                abertos ao dados.gov.pt com um coletor de dados.
               </p>
               <div className="flex gap-4 flex-wrap">
                 <Button

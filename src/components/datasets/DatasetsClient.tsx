@@ -144,7 +144,7 @@ export default function DatasetsClient({
           subtitle={
             <p className="text-primary-100 max-w-[592px]">
               Pesquise através de {total.toLocaleString('pt-PT')} conjuntos
-              de dados em dados.gov
+              de dados em dados.gov.pt
             </p>
           }
         >

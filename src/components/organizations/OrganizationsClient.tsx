@@ -131,7 +131,7 @@ export default function OrganizationsClient({
           subtitle={
             <p className="text-primary-100 max-w-[592px]">
               Pesquise através de {total.toLocaleString('pt-PT')} organizações
-              em dados.gov
+              em dados.gov.pt
             </p>
           }
         >

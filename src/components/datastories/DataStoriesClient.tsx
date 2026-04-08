@@ -57,7 +57,7 @@ export default function DataStoriesClient({ currentPage }: DataStoriesClientProp
           ]}
           subtitle={
             <p className="text-primary-100 max-w-[592px]">
-              Pesquise através de {total} data stories em dados.gov
+              Pesquise através de {total} data stories em dados.gov.pt
             </p>
           }
         />

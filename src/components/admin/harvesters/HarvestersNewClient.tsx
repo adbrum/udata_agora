@@ -275,7 +275,7 @@ export default function HarvestersNewClient() {
     {
       title: "Selecione o tipo de implementação",
       content:
-        "Escolha o formato dos metadados (por exemplo, DCAT, CKAN, etc.). Esse formato permite que o harvester saiba como ler e interpretar seus metadados, para que possam ser transcritos corretamente em dados.gov.",
+        "Escolha o formato dos metadados (por exemplo, DCAT, CKAN, etc.). Esse formato permite que o harvester saiba como ler e interpretar seus metadados, para que possam ser transcritos corretamente em dados.gov.pt.",
     },
   ];
 

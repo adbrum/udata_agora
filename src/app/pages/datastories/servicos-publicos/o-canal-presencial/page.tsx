@@ -5,7 +5,7 @@ import Section from '@/components/datastories/Components/Shared/Section';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Data Story - dados.gov',
+    title: 'Data Story - dados.gov.pt',
 };
 
 export default function DataStoryDetailPage() {

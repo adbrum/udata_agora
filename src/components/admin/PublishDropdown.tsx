@@ -60,7 +60,7 @@ export default function PublishDropdown({ darkMode = false }: PublishDropdownPro
         onClick={() => setShowDropdown((v) => !v)}
       >
         <span className="text-lg font-medium">
-          Publicar <span className="font-bold">dados.gov</span>
+          Publicar <span className="font-bold">dados.gov.pt</span>
         </span>
       </Button>
       {showDropdown && (
