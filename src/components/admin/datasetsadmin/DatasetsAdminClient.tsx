@@ -550,7 +550,7 @@ export default function DatasetsAdminClient({
       ),
     },
     {
-      title: "Selecione uma licença",
+      title: "Selecione uma licença…",
       content:
         "As licenças definem as regras para a reutilização. Ao escolher uma licença de reutilização, garante que o conjunto de dados publicado será reutilizado de acordo com os termos de uso que definiu.",
     },
@@ -692,17 +692,16 @@ export default function DatasetsAdminClient({
               {(!user?.organizations || user.organizations.length === 0) && (
                 <div className="admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center mt-[24px]">
                   <h3 className="text-primary-900 text-lg font-bold leading-7">
-                    Você não pertence a nenhuma organização.
+                    Não pertence a uma organização.
                   </h3>
                   <p className="text-neutral-700 text-base leading-7">
-                    Recomendamos que publique em nome de uma organização se se tratar de uma
-                    atividade profissional.
+                    Quando o conjunto de dados for produzido no contexto de atividade profissional, é recomendável que seja publicado em nome da organização responsável.
                   </p>
                   <Button
                     variant="primary"
                     onClick={() => router.push("/pages/admin/organizations/new")}
                   >
-                    Crie ou participe de uma organização
+                    Crie ou integre uma organização em dados.gov
                   </Button>
                 </div>
               )}
@@ -776,7 +775,7 @@ export default function DatasetsAdminClient({
                   />
                   <IsolatedSelect
                     label="Palavras-chave"
-                    placeholder="Pesquise por uma palavra-chave..."
+                    placeholder="Pesquise ou insira uma palavra-chave..."
                     id="dataset-keywords"
                     type="checkbox"
                     searchable
@@ -878,7 +877,7 @@ export default function DatasetsAdminClient({
 
                   <IsolatedSelect
                     label="Licença"
-                    placeholder="Selecione uma licença"
+                    placeholder="Selecione uma licença…"
                     id="dataset-license"
                     onChangeRef={selectedLicenseRef}
                   >
@@ -1384,7 +1383,7 @@ export default function DatasetsAdminClient({
                   onClick={handlePublish}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "A publicar..." : "Publique o conjunto de dados"}
+                  {isSubmitting ? "A publicar..." : "Publicar o conjunto de dados"}
                 </Button>
               </div>
             </>
