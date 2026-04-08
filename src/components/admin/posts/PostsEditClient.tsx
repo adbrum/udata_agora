@@ -364,7 +364,7 @@ export default function PostsEditClient() {
                           inputLabel="Selecione ou arraste o ficheiro"
                           removeFileButtonLabel="Remover ficheiro"
                           replaceFileButtonLabel="Substituir ficheiro"
-                          extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                          extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceites: JPG, JPEG, PNG."
                           accept=".jpg,.jpeg,.png"
                           maxSize={4194304}
                           maxCount={1}
