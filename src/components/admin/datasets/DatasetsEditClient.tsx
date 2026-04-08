@@ -41,7 +41,6 @@ import {
   createResource,
   updateResource,
   replaceResourceFile,
-  deleteResource,
   fetchLicenses,
   fetchFrequencies,
   fetchResourceTypes,
@@ -66,6 +65,7 @@ import {
 } from "@/types/api";
 import dynamic from "next/dynamic";
 import StatusDot from "@/components/admin/StatusDot";
+import DeleteResourcePopup from "@/components/admin/datasets/DeleteResourcePopup";
 
 const RichTextEditor = dynamic(
   () => import("@/components/admin/posts/RichTextEditor"),
@@ -995,44 +995,20 @@ export default function DatasetsEditClient() {
   const handleDeleteResource = (resource: Resource) => {
     if (!dataset) return;
     show(
-      <div className="flex flex-col gap-[16px]">
-        <p>
-          Tem certeza que deseja eliminar <strong>&quot;{resource.title}&quot;</strong>? Esta ação não pode ser revertida.
-        </p>
-        <div className="flex justify-end gap-16 pt-16">
-          <Button appearance="outline" variant="neutral" onClick={hide}>
-            Cancelar
-          </Button>
-          <Button
-            variant="danger"
-            hasIcon
-            leadingIcon="agora-line-trash"
-            leadingIconHover="agora-solid-trash"
-            onClick={async () => {
-              hide();
-              setIsSubmitting(true);
-              setApiError(null);
-              try {
-                await deleteResource(dataset.id, resource.id);
-                const updated = await fetchDataset(slug);
-                setDataset(updated);
-                setApiSuccess("Ficheiro eliminado com sucesso.");
-              } catch (error) {
-                console.error("Error deleting resource:", error);
-                setApiError("Erro ao eliminar o ficheiro.");
-              } finally {
-                setIsSubmitting(false);
-              }
-            }}
-          >
-            Eliminar
-          </Button>
-        </div>
-      </div>,
+      <DeleteResourcePopup
+        datasetId={dataset.id}
+        resource={resource}
+        onDeleted={() => {
+          setDataset((prev) =>
+            prev ? { ...prev, resources: prev.resources.filter((r) => r.id !== resource.id) } : prev
+          );
+          setApiSuccess("Ficheiro eliminado com sucesso.");
+        }}
+      />,
       {
         title: "Eliminar ficheiro",
         closeAriaLabel: "Fechar",
-        dimensions: "s",
+        dimensions: "m",
       },
     );
   };
