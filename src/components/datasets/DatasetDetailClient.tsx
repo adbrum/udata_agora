@@ -23,6 +23,17 @@ interface DatasetDetailClientProps {
 
 const READMORE_BUTTON_HEIGHT = 48;
 
+const licenseMap: Record<string, string> = {
+  "cc-by": "Creative Commons Attribution",
+  "cc-by-sa": "Creative Commons Attribution Share-Alike",
+  "cc-zero": "Creative Commons Zero",
+  "fr-lo": "Licence Ouverte / Open Licence",
+  "odc-by": "Open Data Commons Attribution",
+  "odc-odbl": "Open Data Commons Open Database License",
+  "odc-pddl": "Open Data Commons Public Domain Dedication and License",
+  notspecified: "Não especificada",
+};
+
 function DescriptionWithReadMore({ text, sidebarRef, titleRef }: { text: string; sidebarRef: React.RefObject<HTMLDivElement | null>; titleRef: React.RefObject<HTMLDivElement | null> }) {
   const [expanded, setExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -296,16 +307,9 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                     })}
                   </div>
                   {dataset.license && (
-                    <div className="text-sm">
-                      <a
-                        href={dataset.license_url || `https://dados.gov.pt/pt/licenses/${dataset.license}/`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary-600 underline"
-                      >
-                        <span className="text-m-semibold">Licença:</span>{' '}
-                        {dataset.license}
-                      </a>
+                    <div className="text-neutral-900 text-sm mb-[16px]">
+                      <span className="text-m-semibold">Licença:</span>{' '}
+                      {licenseMap[dataset.license] || dataset.license}
                     </div>
                   )}
                 </div>
