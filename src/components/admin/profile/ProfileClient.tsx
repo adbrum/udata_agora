@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -13,8 +14,9 @@ import {
   generateApiKey,
   clearApiKey,
   requestEmailChange,
+  fetchMyFollowing,
 } from "@/services/api";
-import { Activity, UserPublic } from "@/types/api";
+import { Activity, UserFollowing, UserPublic } from "@/types/api";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import {
@@ -67,6 +69,9 @@ export default function ProfileClient() {
   const [activityTotal, setActivityTotal] = useState(0);
   const activityPageSize = 20;
 
+  const [subscriptions, setSubscriptions] = useState<UserFollowing[]>([]);
+  const [isLoadingSubscriptions, setIsLoadingSubscriptions] = useState(true);
+
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -103,6 +108,21 @@ export default function ProfileClient() {
     }
     loadActivities();
   }, [user?.id, activityPage]);
+
+  useEffect(() => {
+    async function loadSubscriptions() {
+      setIsLoadingSubscriptions(true);
+      try {
+        const response = await fetchMyFollowing(1, 100);
+        setSubscriptions(response.data || []);
+      } catch (error) {
+        console.error("Error loading subscriptions:", error);
+      } finally {
+        setIsLoadingSubscriptions(false);
+      }
+    }
+    loadSubscriptions();
+  }, []);
 
   const totalActivityPages = Math.ceil(activityTotal / activityPageSize);
 
@@ -596,19 +616,63 @@ export default function ProfileClient() {
             <TabHeader>Subscrições</TabHeader>
             <TabBody>
               <div className="mt-[24px]">
-                <CardNoResults
-                  className="datasets-page__empty"
-                  position="center"
-                  icon={
-                    <Icon
-                      name="agora-line-bell"
-                      className="w-12 h-12 text-primary-500 icon-xl"
-                    />
-                  }
-                  title="Sem subscrições"
-                  description="Ainda não subscreveu nenhum conteúdo."
-                  hasAnchor={false}
-                />
+                {isLoadingSubscriptions ? (
+                  <p className="text-neutral-900 text-base">A carregar subscrições...</p>
+                ) : subscriptions.length === 0 ? (
+                  <CardNoResults
+                    className="datasets-page__empty"
+                    position="center"
+                    icon={
+                      <Icon
+                        name="agora-line-bell"
+                        className="w-12 h-12 text-primary-500 icon-xl"
+                      />
+                    }
+                    title="Sem subscrições"
+                    description="Ainda não subscreveu nenhum conteúdo."
+                    hasAnchor={false}
+                  />
+                ) : (
+                  <div className="flex flex-col gap-16">
+                    {subscriptions.map((sub) => {
+                      const subName = sub.following.name || sub.following.title || "";
+                      const subAvatar = sub.following.avatar_thumbnail || sub.following.image_thumbnail;
+                      const initials = subName
+                        .split(" ")
+                        .map((w) => w.charAt(0).toUpperCase())
+                        .slice(0, 2)
+                        .join("");
+                      const classToPath: Record<string, string> = {
+                        Dataset: "/pages/datasets",
+                        Organization: "/pages/organizations",
+                        Reuse: "/pages/reuses",
+                        User: "/pages/users",
+                      };
+                      const basePath = classToPath[sub.following.class];
+                      const href = basePath && sub.following.slug
+                        ? `${basePath}/${sub.following.slug}`
+                        : null;
+                      const content = (
+                        <div className="flex items-center gap-16">
+                          <Avatar
+                            avatarType={subAvatar ? "image" : "initials"}
+                            srcPath={(subAvatar || initials) as unknown as undefined}
+                            alt={subName}
+                            className="w-[48px] h-[48px]"
+                          />
+                          <span className="text-neutral-900 text-base font-medium">{subName}</span>
+                        </div>
+                      );
+                      return href ? (
+                        <Link key={sub.id} href={href} className="hover:opacity-80 transition-opacity">
+                          {content}
+                        </Link>
+                      ) : (
+                        <div key={sub.id}>{content}</div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </TabBody>
           </Tab>
