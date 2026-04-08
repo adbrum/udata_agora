@@ -345,7 +345,7 @@ export default function PublicProfileClient() {
                       children: (
                         <span className="flex items-center gap-8">
                           <img
-                            src="/Icons/bar_chart.svg"
+                            src="/Icons/bar_chart_primary.svg"
                             alt=""
                             aria-hidden="true"
                           />
@@ -354,6 +354,7 @@ export default function PublicProfileClient() {
                       ),
                       title: "Reutilizações",
                       onClick: (e: React.MouseEvent) => e.preventDefault(),
+                      className: "text-[#034AD8]",
                     },
                     {
                       href: "#",
