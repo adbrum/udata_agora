@@ -19,6 +19,7 @@ export default function DatasetsNewClient() {
   const totalSteps = 4;
   const currentStep = Number(searchParams.get("step")) || 1;
   const [createdDatasetId, setCreatedDatasetId] = useState<string | null>(null);
+  const [sessionKey, setSessionKey] = useState(0);
 
   const buildStepUrl = (step: number) => {
     return `/pages/admin/datasets/new?step=${step}`;
@@ -88,7 +89,11 @@ export default function DatasetsNewClient() {
                 children: "Comece a publicação",
                 variant: "primary",
                 appearance: "outline",
-                onClick: () => router.push("/pages/admin/datasets/new?step=2"),
+                onClick: () => {
+                setSessionKey((k) => k + 1);
+                setCreatedDatasetId(null);
+                router.push("/pages/admin/datasets/new?step=2");
+              },
               }}
             />
           </div>
@@ -145,6 +150,7 @@ export default function DatasetsNewClient() {
 
       {currentStep >= 2 && (
         <DatasetsAdminClient
+          key={sessionKey}
           currentStep={currentStep}
           datasetId={createdDatasetId}
           onNextStep={() => router.push(buildStepUrl(currentStep + 1))}

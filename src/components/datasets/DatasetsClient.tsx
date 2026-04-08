@@ -169,7 +169,7 @@ export default function DatasetsClient({
         </div>
 
         {/* Main Content */}
-        <div className="container mx-auto md:gap-32 xl:gap-64 bg-white">
+        <div className="container mx-auto md:gap-32 xl:gap-64 bg-primary-50">
           {/* Results count + Sort toggles — full width, aligned with grid */}
           <div className="grid md:grid-cols-3 xl:grid-cols-12 grid-filters gap-x-[32px]">
             <div className="xl:col-span-5 flex flex-row items-end gap-24 pl-0 py-16">
@@ -260,7 +260,7 @@ export default function DatasetsClient({
                           className="card-general-listing rounded-[4px] overflow-hidden h-full flex flex-col"
                         >
                           <CardGeneral
-                            variant="neutral-100"
+                            variant="white"
                             image={{
                               src: dataset.organization?.logo || "/images/placeholders/organization.png",
                               alt: dataset.organization?.name || "Organização",

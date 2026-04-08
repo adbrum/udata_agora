@@ -5,10 +5,7 @@ import {
   Breadcrumb,
   CardNoResults,
   Icon,
-  InputSelect,
   InputSearchBar,
-  DropdownSection,
-  DropdownOption,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -125,19 +122,6 @@ export default function SystemOrganizationsClient() {
             }}
           />
         </div>
-        <InputSelect
-          label=""
-          hideLabel
-          placeholder="Filtrar por estado"
-          id="filter-status"
-        >
-          <DropdownSection name="status">
-            <DropdownOption value="public">Público</DropdownOption>
-            <DropdownOption value="archived">Arquivo</DropdownOption>
-            <DropdownOption value="draft">Rascunho</DropdownOption>
-            <DropdownOption value="deleted">Excluído</DropdownOption>
-          </DropdownSection>
-        </InputSelect>
       </div>
 
       {isLoading ? (
@@ -149,12 +133,12 @@ export default function SystemOrganizationsClient() {
             itemsPerPage: pageSize,
             totalItems: totalItems,
             availablePageSizes: [5, 10, 20],
-            currentPage: currentPage,
+            currentPage: currentPage - 1,
             buttonDropdownAriaLabel: "Selecionar linhas por página",
             dropdownListAriaLabel: "Opções de linhas por página",
             prevButtonAriaLabel: "Página anterior",
             nextButtonAriaLabel: "Próxima página",
-            onPageChange: (page: number) => setCurrentPage(page),
+            onPageChange: (page: number) => setCurrentPage(page + 1),
             onPageSizeChange: (size: number) => {
               setPageSize(size);
               setCurrentPage(1);

@@ -68,6 +68,8 @@ export interface MembershipRequest {
   created: string;
   status: "pending" | "accepted" | "refused";
   comment: string;
+  kind: "request" | "invitation";
+  role: string;
 }
 
 export interface OrgRole {
@@ -300,7 +302,7 @@ export interface DatasetUpdatePayload {
   temporal_coverage?: TemporalCoverage;
   spatial?: SpatialCoverage;
   private?: boolean;
-  archived?: string;
+  archived?: string | null;
   organization?: string;
   extras?: Record<string, unknown>;
 }
@@ -700,6 +702,9 @@ export interface DatasetFilters {
   badge?: string | string[];
   featured?: boolean;
   sort?: string;
+  private?: boolean;
+  archived?: boolean;
+  deleted?: boolean;
 }
 
 

@@ -5,9 +5,12 @@ import {
   Breadcrumb,
   Button,
   Icon,
+  RadioButton,
+  StatusCard,
   DropdownSection,
   DropdownOption,
   InputSelect,
+  InputTextArea,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -29,6 +32,7 @@ import {
 } from "@/services/api";
 import { OrganizationMember, MembershipRequest, UserSuggestion } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
+import IsolatedSelect from "@/components/admin/IsolatedSelect";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 
 const formatDate = (dateStr: string) => {
@@ -37,8 +41,8 @@ const formatDate = (dateStr: string) => {
 };
 
 const roleLabels: Record<string, string> = {
-  admin: "ADMINISTRADOR",
-  editor: "EDITOR",
+  admin: "Administrador",
+  editor: "Editor",
 };
 
 const rolePillVariant = (role: string) => {
@@ -55,27 +59,35 @@ const rolePillVariant = (role: string) => {
 interface AddMemberPopupProps {
   orgId: string;
   onMemberAdded: () => void;
+  openKey: number;
 }
 
-function AddMemberPopupContent({ orgId, onMemberAdded }: AddMemberPopupProps) {
+function AddMemberPopupContent({ orgId, onMemberAdded, openKey }: AddMemberPopupProps) {
   const { hide } = usePopupContext();
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
-  const [memberIds, setMemberIds] = useState<string[]>([]);
+  const memberIdsRef = useRef<string[]>([]);
+  const pendingUserIdsRef = useRef<string[]>([]);
   const selectedUserIdRef = useRef("");
   const selectedRoleRef = useRef("editor");
-  const [canSubmit, setCanSubmit] = useState(false);
+  const canSubmitRef = useRef(false);
+  const [, forceUpdate] = useState(0);
   const [alreadyMember, setAlreadyMember] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasPendingInvite, setHasPendingInvite] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [users, org] = await Promise.all([
+        const [users, org, requests] = await Promise.all([
           suggestUsers(""),
           fetchOrganization(orgId),
+          fetchMembershipRequests(orgId),
         ]);
         setSuggestions(users);
-        setMemberIds((org.members || []).map((m: OrganizationMember) => m.user.id));
+        memberIdsRef.current = (org.members || []).map((m: OrganizationMember) => m.user.id);
+        pendingUserIdsRef.current = requests
+          .filter((r: MembershipRequest) => r.status === "pending" && r.user)
+          .map((r: MembershipRequest) => r.user.id);
       } catch (error) {
         console.error("Error loading users:", error);
       }
@@ -83,76 +95,95 @@ function AddMemberPopupContent({ orgId, onMemberAdded }: AddMemberPopupProps) {
     loadData();
   }, [orgId]);
 
+  const userDropdownChildren = useMemo(() => (
+    <DropdownSection name="users">
+      {suggestions.map((user) => (
+        <DropdownOption key={user.id} value={user.id}>
+          {`${user.first_name} ${user.last_name}`}
+        </DropdownOption>
+      ))}
+    </DropdownSection>
+  ), [suggestions]);
+
+  const roleDropdownChildren = useMemo(() => (
+    <DropdownSection name="roles">
+      <DropdownOption value="admin">Administrador</DropdownOption>
+      <DropdownOption value="editor">Editor</DropdownOption>
+    </DropdownSection>
+  ), []);
+
   const handleAdd = async () => {
-    if (!selectedUserIdRef.current) return;
-    setIsSubmitting(true);
+    if (!canSubmitRef.current) return;
+    setAddError(null);
     try {
       await addMember(orgId, selectedUserIdRef.current, selectedRoleRef.current);
       onMemberAdded();
       hide();
     } catch (error) {
       console.error("Error adding member:", error);
-    } finally {
-      setIsSubmitting(false);
+      const msg = error instanceof Error ? error.message : null;
+      setAddError(msg || "Ocorreu um erro ao adicionar o membro. Tente novamente.");
     }
   };
 
+  const onUserChangeCallback = useCallback((userId: string) => {
+    const isMember = userId ? memberIdsRef.current.includes(userId) : false;
+    const isPending = userId ? pendingUserIdsRef.current.includes(userId) : false;
+    canSubmitRef.current = !!userId && !isMember && !isPending;
+    setAlreadyMember(isMember);
+    setHasPendingInvite(isPending);
+    forceUpdate((n) => n + 1);
+  }, []);
+
   return (
     <div className="flex flex-col gap-[24px]">
-      <InputSelect
-        key={suggestions.length}
+      {hasPendingInvite && (
+        <StatusCard
+          type="info"
+          description="Este utilizador já foi convidado para esta organização. O convite encontra-se pendente de aceitação."
+        />
+      )}
+      <IsolatedSelect
+        key={`user-${openKey}`}
         label="Utilizador"
         placeholder="Pesquisar um utilizador"
         id="member-user"
+        onChangeRef={selectedUserIdRef}
         searchable
         searchInputPlaceholder="Escreva para pesquisar..."
         searchNoResultsText="Nenhum resultado encontrado"
         hasError={alreadyMember}
-        hasFeedback={alreadyMember}
-        feedbackState="danger"
         errorFeedbackText="Utilizador já está associado a esta organização"
-        onChange={(options: { value?: string }[]) => {
-          const userId = options?.[0]?.value || "";
-          selectedUserIdRef.current = userId;
-          const isMember = userId ? memberIds.includes(userId) : false;
-          setAlreadyMember(isMember);
-          setCanSubmit(!!userId && !isMember);
-        }}
+        onChangeCallback={onUserChangeCallback}
       >
-        <DropdownSection name="users">
-          {suggestions.map((user) => (
-            <DropdownOption key={user.id} value={user.id}>
-              {`${user.first_name} ${user.last_name}`}
-            </DropdownOption>
-          ))}
-        </DropdownSection>
-      </InputSelect>
+        {userDropdownChildren}
+      </IsolatedSelect>
 
-      <InputSelect
+      <IsolatedSelect
+        key={`role-${openKey}`}
         label="Papel do membro"
         placeholder="Selecionar uma opção"
         id="member-role"
+        onChangeRef={selectedRoleRef}
         defaultValue="editor"
-        onChange={(options: { value?: string }[]) => {
-          selectedRoleRef.current = options?.[0]?.value || "editor";
-        }}
       >
-        <DropdownSection name="roles">
-          <DropdownOption value="admin">Administrador</DropdownOption>
-          <DropdownOption value="editor">Editor</DropdownOption>
-        </DropdownSection>
-      </InputSelect>
+        {roleDropdownChildren}
+      </IsolatedSelect>
+
+      {addError && (
+        <p className="text-sm text-danger-600">{addError}</p>
+      )}
 
       <div className="flex gap-[16px]">
-        <Button appearance="outline" variant="neutral" onClick={() => hide()}>
+        <Button appearance="outline" variant="primary" onClick={() => hide()}>
           Cancelar
         </Button>
         <Button
           variant="primary"
           onClick={handleAdd}
-          disabled={!canSubmit || isSubmitting}
+          disabled={!canSubmitRef.current}
         >
-          {isSubmitting ? "A adicionar..." : "Adicionar à organização"}
+          Adicionar
         </Button>
       </div>
     </div>
@@ -188,15 +219,18 @@ function RemoveMemberPopupContent({
 
   return (
     <div className="flex flex-col gap-[24px]">
-      <p className="text-neutral-700">
+      <p className="text-neutral-900">
         Tem a certeza que deseja eliminar este membro?
       </p>
       <div className="flex gap-[16px]">
-        <Button appearance="outline" variant="neutral" onClick={() => hide()}>
+        <Button appearance="outline" variant="primary" onClick={() => hide()}>
           Cancelar
         </Button>
         <Button
           variant="danger"
+          hasIcon
+          leadingIcon="agora-line-trash"
+          leadingIconHover="agora-solid-trash"
           onClick={handleRemove}
           disabled={isSubmitting}
         >
@@ -211,68 +245,71 @@ interface EditRolePopupProps {
   orgId: string;
   member: OrganizationMember;
   onRoleUpdated: () => void;
+  openKey: number;
 }
 
 function EditRolePopupContent({
   orgId,
   member,
   onRoleUpdated,
+  openKey,
 }: EditRolePopupProps) {
   const { hide } = usePopupContext();
   const [selectedRole, setSelectedRole] = useState(member.role);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleUpdate = async () => {
-    if (selectedRole === member.role) {
-      hide();
-      return;
-    }
-    setIsSubmitting(true);
     try {
       await updateMemberRole(orgId, member.user.id, selectedRole);
       onRoleUpdated();
       hide();
     } catch (error) {
       console.error("Error updating role:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="flex flex-col gap-[24px]">
-      <p className="text-neutral-700">
+      <p className="text-neutral-900">
         Alterar o papel de{" "}
         <strong>
           {member.user.first_name} {member.user.last_name}
         </strong>
       </p>
 
-      <InputSelect
-        label="Papel do membro"
-        placeholder="Selecionar uma opção"
-        id="edit-member-role"
-        defaultValue={member.role}
-        onChange={(options: { value?: string }[]) =>
-          setSelectedRole(options?.[0]?.value || "editor")
-        }
-      >
-        <DropdownSection name="roles">
-          <DropdownOption value="admin">Administrador</DropdownOption>
-          <DropdownOption value="editor">Editor</DropdownOption>
-        </DropdownSection>
-      </InputSelect>
+      <div className="flex flex-col gap-[12px]">
+        <span className="text-primary-900 text-base font-medium leading-7">Papel do membro</span>
+        <div className="flex gap-[16px]">
+          <RadioButton
+            id="role-admin"
+            name={`role-${openKey}`}
+            value="admin"
+            label="Administrador"
+            checked={selectedRole === "admin"}
+            onChange={() => setSelectedRole("admin")}
+          />
+          <RadioButton
+            id="role-editor"
+            name={`role-${openKey}`}
+            value="editor"
+            label="Editor"
+            checked={selectedRole === "editor"}
+            onChange={() => setSelectedRole("editor")}
+          />
+        </div>
+      </div>
 
       <div className="flex gap-[16px]">
-        <Button appearance="outline" variant="neutral" onClick={() => hide()}>
+        <Button appearance="outline" variant="primary" onClick={() => hide()}>
           Cancelar
         </Button>
         <Button
           variant="primary"
+          hasIcon
+          trailingIcon="agora-line-check-circle"
+          trailingIconHover="agora-solid-check-circle"
           onClick={handleUpdate}
-          disabled={isSubmitting}
         >
-          {isSubmitting ? "A guardar..." : "Guardar"}
+          Guardar
         </Button>
       </div>
     </div>
@@ -309,7 +346,7 @@ function RefuseMembershipPopupContent({
 
   return (
     <div className="flex flex-col gap-[24px]">
-      <p className="text-neutral-700">
+      <p className="text-neutral-900">
         Recusar o pedido de adesão de{" "}
         <strong>
           {request.user.first_name} {request.user.last_name}
@@ -317,25 +354,17 @@ function RefuseMembershipPopupContent({
         ?
       </p>
 
-      <div className="flex flex-col gap-[8px]">
-        <label
-          htmlFor="refuse-comment"
-          className="text-primary-900 text-base font-medium leading-7"
-        >
-          Motivo da recusa
-        </label>
-        <textarea
-          id="refuse-comment"
-          className="w-full rounded-lg border border-neutral-300 p-[12px] text-sm"
-          rows={3}
-          placeholder="Indique o motivo da recusa (opcional)"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-      </div>
+      <InputTextArea
+        label="Motivo da recusa"
+        id="refuse-comment"
+        rows={3}
+        placeholder="Indique o motivo da recusa (opcional)"
+        value={comment}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setComment(e.target.value)}
+      />
 
       <div className="flex gap-[16px]">
-        <Button appearance="outline" variant="neutral" onClick={() => hide()}>
+        <Button appearance="outline" variant="primary" onClick={() => hide()}>
           Cancelar
         </Button>
         <Button
@@ -343,7 +372,7 @@ function RefuseMembershipPopupContent({
           onClick={handleRefuse}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "A recusar..." : "Recusar pedido"}
+          {isSubmitting ? "A recusar..." : "Recusar"}
         </Button>
       </div>
     </div>
@@ -353,6 +382,8 @@ function RefuseMembershipPopupContent({
 export default function MembersClient() {
   const { show } = usePopupContext();
   const { activeOrg, isLoading: isOrgLoading } = useActiveOrganization();
+  const [addMemberOpenKey, setAddMemberOpenKey] = useState(0);
+  const [editMemberOpenKey, setEditMemberOpenKey] = useState(0);
   const [members, setMembers] = useState<OrganizationMember[]>([]);
   const [pendingRequests, setPendingRequests] = useState<MembershipRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -505,21 +536,21 @@ export default function MembersClient() {
                     <div className="flex gap-[8px]">
                       <Button
                         variant="primary"
-                        appearance="outline"
+                        appearance="link"
                         onClick={() => handleAcceptRequest(request)}
                         disabled={requestAction === request.id}
                       >
-                        {requestAction === request.id
-                          ? "A aceitar..."
-                          : "Aceitar"}
+                        <span className="underline">
+                          {requestAction === request.id ? "A aceitar..." : "Aceitar"}
+                        </span>
                       </Button>
                       <Button
                         variant="danger"
-                        appearance="outline"
+                        appearance="link"
                         onClick={() => handleRefuseRequest(request)}
                         disabled={requestAction === request.id}
                       >
-                        Recusar
+                        <span className="underline">Recusar</span>
                       </Button>
                     </div>
                   </TableCell>
@@ -540,19 +571,22 @@ export default function MembersClient() {
           hasIcon={true}
           leadingIcon="agora-line-plus-circle"
           leadingIconHover="agora-solid-plus-circle"
-          onClick={() =>
+          onClick={() => {
+            const nextKey = addMemberOpenKey + 1;
+            setAddMemberOpenKey(nextKey);
             show(
               <AddMemberPopupContent
                 orgId={activeOrg!.id}
                 onMemberAdded={loadMembers}
+                openKey={nextKey}
               />,
               {
                 title: "Adicionar um membro à organização",
                 closeAriaLabel: "Fechar",
                 dimensions: "m",
               }
-            )
-          }
+            );
+          }}
         >
           Adicionar um membro
         </Button>
@@ -564,12 +598,12 @@ export default function MembersClient() {
           itemsPerPage: itemsPerPage,
           totalItems: members.length,
           availablePageSizes: [10, 20, 50],
-          currentPage: currentPage,
+          currentPage: currentPage - 1,
           buttonDropdownAriaLabel: "Selecionar itens por página",
           dropdownListAriaLabel: "Opções de itens por página",
           prevButtonAriaLabel: "Página anterior",
           nextButtonAriaLabel: "Próxima página",
-          onPageChange: (page: number) => setCurrentPage(page),
+          onPageChange: (page: number) => setCurrentPage(page + 1),
           onPageSizeChange: (size: number) => {
             setItemsPerPage(size);
             setCurrentPage(1);
@@ -617,7 +651,7 @@ export default function MembersClient() {
               </TableCell>
               <TableCell headerLabel="Estatuto">
                 <StatusDot variant={rolePillVariant(member.role)}>
-                  {roleLabels[member.role] || member.role.toUpperCase()}
+                  {roleLabels[member.role] || member.role}
                 </StatusDot>
               </TableCell>
               <TableCell headerLabel="Membro desde">
@@ -626,20 +660,23 @@ export default function MembersClient() {
               <TableCell headerLabel="Ações">
                 <div className="flex gap-[8px]">
                   <button
-                    onClick={() =>
+                    onClick={() => {
+                      const nextKey = editMemberOpenKey + 1;
+                      setEditMemberOpenKey(nextKey);
                       show(
                         <EditRolePopupContent
                           orgId={activeOrg!.id}
                           member={member}
                           onRoleUpdated={loadMembers}
+                          openKey={nextKey}
                         />,
                         {
                           title: "Editar papel do membro",
                           closeAriaLabel: "Fechar",
                           dimensions: "m",
                         }
-                      )
-                    }
+                      );
+                    }}
                     title="Editar papel"
                   >
                     <Icon

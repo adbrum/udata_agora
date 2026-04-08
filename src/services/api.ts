@@ -383,6 +383,9 @@ export async function fetchAdminDatasets(
       if (filters.granularity) params.set("granularity", filters.granularity);
       if (filters.sort) params.set("sort", filters.sort);
       if (filters.featured !== undefined) params.set("featured", String(filters.featured));
+      if (filters.private !== undefined) params.set("private", String(filters.private));
+      if (filters.archived !== undefined) params.set("archived", String(filters.archived));
+      if (filters.deleted !== undefined) params.set("deleted", String(filters.deleted));
 
       const arrayParams: [string, string | string[] | undefined][] = [
         ["tag", filters.tag],
@@ -589,12 +592,29 @@ export async function uploadOrgLogo(org: string, file: File): Promise<Organizati
 export async function fetchOrgDatasets(
   org: string,
   page: number = 1,
-  pageSize: number = 20
+  pageSize: number = 20,
+  filters?: {
+    q?: string;
+    sort?: string;
+    private?: boolean;
+    archived?: boolean;
+    deleted?: boolean;
+  }
 ): Promise<APIResponse<Dataset>> {
   try {
+    const params = new URLSearchParams({
+      page: String(page),
+      page_size: String(pageSize),
+      sort: filters?.sort || "-created",
+    });
+    if (filters?.q) params.set("q", filters.q);
+    if (filters?.private !== undefined) params.set("private", String(filters.private));
+    if (filters?.archived !== undefined) params.set("archived", String(filters.archived));
+    if (filters?.deleted !== undefined) params.set("deleted", String(filters.deleted));
+
     const res = await fetch(
-      `${API_BASE_URL}/organizations/${org}/datasets/?page=${page}&page_size=${pageSize}&sort=-created`,
-      { cache: "no-store" }
+      `${API_AUTH_URL}/organizations/${org}/datasets/?${params.toString()}`,
+      { cache: "no-store", credentials: "include" }
     );
 
     if (!res.ok) {
@@ -2527,13 +2547,24 @@ export async function addMember(
   userId: string,
   role: string
 ): Promise<OrganizationMember> {
-  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/member/${userId}/`, {
+  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/member/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
-    body: JSON.stringify({ role }),
+    body: JSON.stringify({ user: userId, role }),
   });
-  if (!res.ok) throw new Error(`Failed to add member: ${res.statusText}`);
+  if (!res.ok) {
+    let message = res.statusText;
+    try {
+      const body = await res.json();
+      const userError = body?.errors?.user;
+      message = (Array.isArray(userError) ? userError[0] : userError)
+        || body?.message
+        || (typeof body?.errors === "string" ? body.errors : null)
+        || message;
+    } catch {}
+    throw new Error(typeof message === "string" ? message : JSON.stringify(message));
+  }
   return await res.json();
 }
 

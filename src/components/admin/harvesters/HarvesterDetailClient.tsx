@@ -764,6 +764,9 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                     <Button
                       variant="primary"
                       type="submit"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       disabled={isSaving}
                     >
                       {isSaving ? "A guardar..." : "Guardar"}
@@ -878,7 +881,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                     type="danger"
                     description={
                       <>
-                        <strong>Atenção, esta ação não pode ser corrigida.</strong>
+                        <strong>Atenção Esta ação é irreversível.</strong>
                         <br />
                         <Button
                           appearance="link"

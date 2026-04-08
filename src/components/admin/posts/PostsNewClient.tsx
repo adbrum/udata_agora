@@ -153,7 +153,7 @@ export default function PostsNewClient() {
         <div className="admin-page__form-area">
           {/* Step 1: Descrição */}
           {currentStep === 1 && (
-            <form className="admin-page__form">
+            <form className="admin-page__form" onSubmit={(e) => e.preventDefault()}>
               <p className="text-neutral-900 text-base leading-7 pt-32">
                 Os campos marcados com um asterisco ( * ) são obrigatórios.
               </p>
@@ -238,7 +238,7 @@ export default function PostsNewClient() {
 
                 <InputSelect
                   label="Palavras-chave"
-                  placeholder="Pesquise por uma palavra-chave..."
+                  placeholder="Pesquise ou insira uma palavra-chave..."
                   id="article-keywords"
                   type="checkbox"
                   searchable
@@ -292,7 +292,7 @@ export default function PostsNewClient() {
 
           {/* Step 2: Conteúdo */}
           {currentStep === 2 && (
-            <form className="admin-page__form">
+            <form className="admin-page__form" onSubmit={(e) => e.preventDefault()}>
               <div className="admin-page__fields-group">
                 <InputTextArea
                   label="Conteúdo *"
@@ -318,7 +318,10 @@ export default function PostsNewClient() {
               <div className="admin-page__actions">
                 <Button
                   appearance="outline"
-                  variant="neutral"
+                  variant="primary"
+                  hasIcon
+                  leadingIcon="agora-line-arrow-left-circle"
+                  leadingIconHover="agora-solid-arrow-left-circle"
                   onClick={() =>
                     router.push("/pages/admin/system/posts/new?step=1")
                   }
@@ -327,6 +330,9 @@ export default function PostsNewClient() {
                 </Button>
                 <Button
                   variant="primary"
+                  hasIcon
+                  trailingIcon="agora-line-check-circle"
+                  trailingIconHover="agora-solid-check-circle"
                   onClick={handleSave}
                   disabled={isSaving}
                 >
