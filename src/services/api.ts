@@ -2547,11 +2547,11 @@ export async function addMember(
   userId: string,
   role: string
 ): Promise<OrganizationMember> {
-  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/member/${userId}/`, {
+  const res = await fetch(`${API_AUTH_URL}/organizations/${org}/member/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
-    body: JSON.stringify({ role }),
+    body: JSON.stringify({ user: userId, role }),
   });
   if (!res.ok) throw new Error(`Failed to add member: ${res.statusText}`);
   return await res.json();
