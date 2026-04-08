@@ -183,8 +183,8 @@ export default function ReusesClient() {
               icon={
                 <img src="/Icons/bar_chart.svg" alt="" className="w-[40px] h-[40px]" />
               }
-              title="Sem publicações"
-              description="Ainda não publicou uma reutilização."
+              title="Sem reutilizações"
+              description="Não publicou reutilizações."
               hasAnchor={false}
               extraDescription={
                 <div className="mt-24">

@@ -218,6 +218,16 @@ export default function PublicProfileClient() {
             <p className="text-neutral-900 text-xl font-semibold leading-8">
               {userName}
             </p>
+            {(displayUser as UserPublic)?.website && (
+              <a
+                href={(displayUser as UserPublic).website!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-500 text-sm leading-6 underline break-all"
+              >
+                {(displayUser as UserPublic).website}
+              </a>
+            )}
           </div>
 
           <div className="profile-card__links">
@@ -263,6 +273,14 @@ export default function PublicProfileClient() {
           )}
         </div>
       </div>
+
+      {/* Biography Section */}
+      {(displayUser as UserPublic)?.about && (
+        <div className="mt-[32px]">
+          <p className="font-medium text-neutral-900 text-base uppercase mb-8">Biografia</p>
+          <p className="text-neutral-900 text-base leading-7">{(displayUser as UserPublic).about}</p>
+        </div>
+      )}
 
       {/* Organizations Section */}
       {displayUser?.organizations && displayUser.organizations.length > 0 && (
@@ -507,7 +525,7 @@ export default function PublicProfileClient() {
             position="center"
             icon={<Icon name="agora-line-file" className="w-[40px] h-[40px] text-primary-500 icon-xl" />}
             title="Sem conjuntos de dados"
-            description="Este utilizador ainda não publicou conjuntos de dados."
+            description="Não publicou conjuntos de dados"
             hasAnchor={false}
           />
         ) : (
@@ -596,7 +614,7 @@ export default function PublicProfileClient() {
             position="center"
             icon={<img src="/Icons/bar_chart.svg" alt="" className="w-[40px] h-[40px]" />}
             title="Sem reutilizações"
-            description="Este utilizador ainda não publicou reutilizações."
+            description="Não publicou reutilizações."
             hasAnchor={false}
           />
         ) : (

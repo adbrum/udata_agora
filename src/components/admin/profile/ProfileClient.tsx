@@ -351,7 +351,7 @@ export default function ProfileClient() {
                         inputLabel="Selecione ou arraste o ficheiro"
                         removeFileButtonLabel="Remover ficheiro"
                         replaceFileButtonLabel="Substituir ficheiro"
-                        extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                        extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceites: JPG, JPEG, PNG."
                         accept=".jpg,.jpeg,.png"
                         maxSize={4194304}
                         maxCount={1}
@@ -363,7 +363,7 @@ export default function ProfileClient() {
                   <div className="flex items-end gap-[16px]">
                     <div className="flex-1">
                       <InputText
-                        label="Chave de API"
+                        label="Chave da API"
                         placeholder="Nenhuma chave gerada"
                         id="api-key"
                         value={apiKey}
@@ -629,7 +629,7 @@ export default function ProfileClient() {
                       />
                     }
                     title="Sem subscrições"
-                    description="Ainda não subscreveu nenhum conteúdo."
+                    description="Não segue conteúdos"
                     hasAnchor={false}
                   />
                 ) : (
@@ -690,7 +690,7 @@ export default function ProfileClient() {
                     />
                   }
                   title="Sem acompanhamentos"
-                  description="Ainda não acompanha nenhum conteúdo."
+                  description="Não tem seguidores."
                   hasAnchor={false}
                 />
               </div>
