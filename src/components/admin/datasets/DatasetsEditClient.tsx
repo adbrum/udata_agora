@@ -602,6 +602,7 @@ export default function DatasetsEditClient() {
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [discussionsLoading, setDiscussionsLoading] = useState(false);
   const [discussionsLoaded, setDiscussionsLoaded] = useState(false);
+  const [discussionsTotal, setDiscussionsTotal] = useState<number | null>(null);
 
   const [activities, setActivities] = useState<Activity[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(false);
@@ -675,6 +676,10 @@ export default function DatasetsEditClient() {
             if (res.data.length > 0) setLatestActivity(res.data[0]);
           })
           .catch((err) => console.error("Error loading latest activity:", err));
+
+        fetchDiscussions(ds.id, 1, 1)
+          .then((res) => setDiscussionsTotal(res.total))
+          .catch(() => {});
       } catch (error) {
         console.error("Error loading dataset:", error);
         setApiError("Erro ao carregar o conjunto de dados.");
@@ -691,6 +696,7 @@ export default function DatasetsEditClient() {
     fetchDiscussions(dataset.id)
       .then((res) => {
         setDiscussions(res.data);
+        setDiscussionsTotal(res.total);
         setDiscussionsLoaded(true);
       })
       .catch((err) => console.error("Error loading discussions:", err))
@@ -1769,7 +1775,7 @@ export default function DatasetsEditClient() {
 
         {/* Discussions Tab */}
         <Tab>
-          <TabHeader>Discussões ({discussions.length})</TabHeader>
+          <TabHeader>Discussões ({discussionsTotal ?? 0})</TabHeader>
           <TabBody>
             <div className="mt-[24px]">
               {discussionsLoading && (
