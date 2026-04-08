@@ -1709,6 +1709,16 @@ export default function DatasetsEditClient() {
                               />
                             </button>
                             <button
+                              className="text-primary-500 hover:text-primary-700"
+                              title="Editar recurso"
+                              onClick={() => handleResourceClick(resource)}
+                            >
+                              <Icon
+                                name="agora-line-edit"
+                                className="w-[20px] h-[20px]"
+                              />
+                            </button>
+                            <button
                               className="text-danger-500 hover:text-danger-700"
                               title="Eliminar ficheiro"
                               onClick={() => handleDeleteResource(resource)}
