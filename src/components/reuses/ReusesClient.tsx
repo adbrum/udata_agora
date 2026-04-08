@@ -412,6 +412,7 @@ export default function ReusesClient({
             <div className="xl:col-span-7 flex items-center justify-end py-16">
               <ToggleGroup
                 multiple={false}
+                value={sortDefault}
                 onChange={(val) => {
                   const selected = val.length > 0 ? val[0] : 'relevancia';
                   if (selected !== sortDefault) {

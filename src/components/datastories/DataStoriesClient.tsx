@@ -90,10 +90,11 @@ export default function DataStoriesClient({ currentPage }: DataStoriesClientProp
             <div className="xl:col-span-7 flex items-center justify-end py-16">
               <ToggleGroup
                 multiple={false}
+                value="recentes"
                 onChange={() => {}}
               >
-                <Toggle value="recentes" selected={true}>Mais recentes</Toggle>
-                <Toggle value="visualizados" selected={false}>Mais visualizados</Toggle>
+                <Toggle value="recentes">Mais recentes</Toggle>
+                <Toggle value="visualizados">Mais visualizados</Toggle>
               </ToggleGroup>
             </div>
           </div>
