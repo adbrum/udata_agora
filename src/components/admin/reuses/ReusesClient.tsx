@@ -101,7 +101,7 @@ export default function ReusesClient() {
             itemsPerPage: 5,
             totalItems: reuses.length,
             availablePageSizes: [5, 10, 20],
-            currentPage: 1,
+            currentPage: 0,
             buttonDropdownAriaLabel: "Selecionar linhas por página",
             dropdownListAriaLabel: "Opções de linhas por página",
             prevButtonAriaLabel: "Página anterior",

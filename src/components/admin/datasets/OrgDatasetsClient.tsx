@@ -135,12 +135,12 @@ export default function OrgDatasetsClient({ orgId }: OrgDatasetsClientProps) {
               itemsPerPage: itemsPerPage,
               totalItems: datasets.length,
               availablePageSizes: [10, 20, 50],
-              currentPage: currentPage,
+              currentPage: currentPage - 1,
               buttonDropdownAriaLabel: "Selecionar itens por página",
               dropdownListAriaLabel: "Opções de itens por página",
               prevButtonAriaLabel: "Página anterior",
               nextButtonAriaLabel: "Próxima página",
-              onPageChange: (page: number) => handlePageChange(page),
+              onPageChange: (page: number) => handlePageChange(page + 1),
               onPageSizeChange: (size: number) => handleItemsPerPageChange(String(size)),
             }}
           >
