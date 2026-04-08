@@ -1,0 +1,133 @@
+workflow:
+  rules:
+    - if: '$CI_MERGE_REQUEST_EVENT_TYPE != "detached"'
+
+stages:
+  - build-info
+  - pre-build
+  - code-quality
+  - publish
+
+# If variable expansion fails, activate in gitlab-rails console with the following command :
+# Feature.enable(:variable_inside_variable)
+variables:
+  KUBERNETES_RUNNER: k8s
+  PROJECT_PATH: '${CI_PROJECT_DIR}'
+  OUTPUT_PATH: '${PROJECT_PATH}/artifacts'
+  OUTPUT_PATH_TEMP: '${PROJECT_PATH}/tmp'
+
+# CREATE VERSION FILE TO USE IN FUTURE STAGES
+build-metadata:
+  stage: build-info
+  image: $BUILDAH_IMAGE
+  tags:
+    - $KUBERNETES_RUNNER
+  artifacts:
+    paths:
+      - $OUTPUT_PATH_TEMP
+    expire_in: 1h
+  script:
+    - mkdir -p $OUTPUT_PATH_TEMP
+    - cat package.json | grep -e '\"version\"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' > $OUTPUT_PATH_TEMP/version.ver
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH =~ /^feature/ || $CI_COMMIT_BRANCH =~ /release\/.*/ || $CI_COMMIT_BRANCH =~ /fix\/.*/ || $CI_COMMIT_BRANCH =~ /hotfix\/.*/ || $CI_COMMIT_BRANCH =~ /chore\/.*/  || $CI_COMMIT_BRANCH == "tst" || $CI_COMMIT_BRANCH =~ /^ppr/ || $CI_COMMIT_BRANCH =~ /^prd/'
+
+
+.prebuild:
+  stage: pre-build
+  image: $BUILDAH_IMAGE
+  tags:
+    - $KUBERNETES_RUNNER
+  variables:
+    BUILD_FOR_STAGE: "REPLACE_ME"
+  artifacts:
+    paths:
+      - $OUTPUT_PATH_TEMP
+      - $OUTPUT_PATH
+    expire_in: 1h
+  script:
+    - echo $BUILD_FOR_STAGE > $OUTPUT_PATH_TEMP/environment.env
+    - export IMAGE_NAME=$NEXUS_REGISTRY_PUSH_URL/portal-transparencia/app-fe-builder:$(cat $OUTPUT_PATH_TEMP/environment.env)-$(cat $OUTPUT_PATH_TEMP/version.ver)
+    - echo $IMAGE_NAME > $OUTPUT_PATH_TEMP/image-name.txt
+    - devopsbuildah build --build-arg BUILD_ENVIRONMENT=$BUILD_FOR_STAGE --build-arg BACKEND_URL="$BACKEND_URL" --build-arg BACKEND_HOST="$BACKEND_HOST --build-arg NEXT_PUBLIC_GA="$NEXT_PUBLIC_GA" --build-arg NEXT_PUBLIC_CMS_URL="$NEXT_PUBLIC_CMS_URL" --build-arg IMAGE_VERSION=$(cat $OUTPUT_PATH_TEMP/version.ver) -f builder.dockerfile -t $IMAGE_NAME .
+    - export containerId=$(devopsbuildah from $IMAGE_NAME)
+    - export mnt=$(devopsbuildah mount $containerId)
+    - cp -r "$mnt/fe-app/." "$OUTPUT_PATH"
+    - devopsbuildah umount "$containerId"
+
+create-app-builder-development:
+  extends: .prebuild
+  variables:
+    BUILD_FOR_STAGE: "dev"
+    NEXT_PUBLIC_CMS_URL: 'REPLACE_ME'
+    BACKEND_URL: 'REPLACE_ME'
+    BACKEND_HOST: 'REPLACE_ME'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH =~ /^feature/ || $CI_COMMIT_BRANCH =~ /release\/.*/ || $CI_COMMIT_BRANCH =~ /fix\/.*/ || $CI_COMMIT_BRANCH =~ /hotfix\/.*/ || $CI_COMMIT_BRANCH =~ /chore\/.*/' 
+
+create-app-builder-pre-production:
+  extends: .prebuild
+  variables:
+    BUILD_FOR_STAGE: "ppr"
+    NEXT_PUBLIC_CMS_URL: 'REPLACE_ME'
+    BACKEND_URL: 'REPLACE_ME'
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ "/^ppr/"'
+
+create-app-builder-tst:
+  extends: .prebuild
+  variables:
+    BUILD_FOR_STAGE: "tst"
+    NEXT_PUBLIC_CMS_URL: 'REPLACE_ME'
+    BACKEND_URL: 'REPLACE_ME'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "tst"'
+
+create-app-builder-production:
+  extends: .prebuild
+  variables:
+    BUILD_FOR_STAGE: "prd"
+    NEXT_PUBLIC_CMS_URL: 'REPLACE_ME'
+    NEXT_PUBLIC_GA: 'REPLACE_ME'
+    BACKEND_URL: 'REPLACE_ME'
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ "/^prd/"'
+
+sonarqube-check:
+  stage: code-quality
+  image:
+    name: $NEXUS_REGISTRY_PULL_URL/devops-common/sonar-scanner-cli-custom:5.0
+    entrypoint: [""]
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task    
+  script:
+    - cd $OUTPUT_PATH
+    - sonar-scanner -Dsonar.qualitygate.wait=true || echo "SonarQube Quality Gate failed, but pipeline will continue."
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+
+publish_image:
+  stage: publish
+  image: $BUILDAH_IMAGE
+  tags:
+    - $KUBERNETES_RUNNER
+  script:
+    - cp ./app-server.dockerfile $OUTPUT_PATH/
+    - export IMAGE_NAME=$NEXUS_REGISTRY_PUSH_URL/portal-transparencia/app-fe-site:$(cat $OUTPUT_PATH_TEMP/environment.env)-$(cat $OUTPUT_PATH_TEMP/version.ver)
+    - devopsbuildah build -f $OUTPUT_PATH/app-server.dockerfile -t $IMAGE_NAME $OUTPUT_PATH
+    - devopsbuildah push $IMAGE_NAME
+  dependencies:
+    - build-metadata
+    - create-app-builder-development
+    - create-app-builder-tst
+    - create-app-builder-pre-production
+    - create-app-builder-production
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "tst" || $CI_COMMIT_BRANCH =~ /^ppr/ || $CI_COMMIT_BRANCH =~ /^prd/'
+  artifacts:
+    paths:
+      - $OUTPUT_PATH_TEMP
+    expire_in: "7 days"
+
