@@ -92,15 +92,18 @@ export default function DatasetsClient() {
           case "public":
             return !d.private && !d.archived && !d.deleted;
           case "draft":
-            return !!d.private;
+            return !!d.private && !d.archived && !d.deleted;
           case "archived":
-            return !!d.archived;
+            return !!d.archived && !d.deleted;
           case "deleted":
             return !!d.deleted;
           default:
             return true;
         }
       });
+    } else {
+      // By default, hide deleted datasets
+      result = result.filter((d) => !d.deleted);
     }
 
     return result;
@@ -270,9 +273,15 @@ export default function DatasetsClient() {
                   </a>
                 </TableCell>
                 <TableCell headerLabel="Estado">
-                  <StatusDot variant={dataset.private ? "warning" : "success"}>
-                    {dataset.private ? "Rascunho" : "Público"}
-                  </StatusDot>
+                  {dataset.deleted ? (
+                    <StatusDot variant="danger">Excluído</StatusDot>
+                  ) : dataset.archived ? (
+                    <StatusDot variant="neutral">Arquivado</StatusDot>
+                  ) : dataset.private ? (
+                    <StatusDot variant="warning">Rascunho</StatusDot>
+                  ) : (
+                    <StatusDot variant="success">Público</StatusDot>
+                  )}
                 </TableCell>
                 <TableCell headerLabel="Criado em">
                   {formatDate(dataset.created_at)}
