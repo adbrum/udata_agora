@@ -7,6 +7,7 @@ import {
   Button,
   InputText,
   InputTextArea,
+  InputSelect,
   DropdownSection,
   DropdownOption,
   Icon,
@@ -17,6 +18,7 @@ import {
   updateCommunityResource,
   deleteCommunityResource,
   fetchResourceTypes,
+  fetchSchemas,
 } from "@/services/api";
 import type { CommunityResource, ResourceType } from "@/types/api";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -45,8 +47,11 @@ export default function CommunityResourceEditClient() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [format, setFormat] = useState("");
+  const [selectedType, setSelectedType] = useState("");
   const [mimeType, setMimeType] = useState("");
   const [schemaUrl, setSchemaUrl] = useState("");
+  const [schemas, setSchemas] = useState<string[]>([]);
+  const [selectedSchema, setSelectedSchema] = useState("");
   const [resourceTypes, setResourceTypes] = useState<ResourceType[]>([]);
   const selectedTypeRef = useRef("");
   const selectedFormatRef = useRef("");
@@ -58,18 +63,21 @@ export default function CommunityResourceEditClient() {
     async function loadData() {
       setIsLoading(true);
       try {
-        const [res, types] = await Promise.all([
+        const [res, types, availableSchemas] = await Promise.all([
           fetchCommunityResource(resourceId),
           fetchResourceTypes(),
+          fetchSchemas(),
         ]);
         setResource(res);
         setResourceUrl(res.url || "");
         setTitle(res.title);
         setDescription(res.description || "");
-        setFormat(res.format || "");
+        const normFormat = res.format?.toLowerCase() || "";
+        setFormat(normFormat);
         setMimeType(res.mime || "");
-        selectedTypeRef.current = res.filetype || "";
-        selectedFormatRef.current = res.format || "";
+        setSelectedType(res.type || "");
+        selectedTypeRef.current = res.type || "";
+        selectedFormatRef.current = normFormat;
         if (res.checksum) {
           setChecksumType(res.checksum.type || "");
           setChecksumValue(res.checksum.value || "");
@@ -77,6 +85,19 @@ export default function CommunityResourceEditClient() {
           setShowChecksum(true);
         }
         setResourceTypes(types);
+        setSchemas(availableSchemas);
+
+        if (res.schema) {
+          const name = res.schema.name || "";
+          const url = res.schema.url || "";
+          if (url && url.startsWith("http")) {
+            setSchemaUrl(url);
+          } else {
+            const schemaVal = name || url;
+            setSelectedSchema(schemaVal);
+            selectedSchemaRef.current = schemaVal;
+          }
+        }
       } catch (error) {
         console.error("Error loading community resource:", error);
         setApiError("Erro ao carregar recurso comunitário.");
@@ -94,6 +115,14 @@ export default function CommunityResourceEditClient() {
       return next;
     });
   };
+
+  const clearTypeError = React.useCallback(() => {
+    setFormErrors((prev) => { const next = { ...prev }; delete next.type; return next; });
+  }, []);
+
+  const clearFormatError = React.useCallback(() => {
+    setFormErrors((prev) => { const next = { ...prev }; delete next.format; return next; });
+  }, []);
 
   const handleSave = async () => {
     const errors: Record<string, boolean> = {};
@@ -115,11 +144,33 @@ export default function CommunityResourceEditClient() {
         title: title.trim(),
         description: description.trim() || undefined,
         url: resourceUrl.trim() || undefined,
-        filetype: selectedTypeRef.current || undefined,
+        type: selectedTypeRef.current || undefined,
         format: selectedFormatRef.current.trim() || undefined,
+        mime: mimeType.trim() || undefined,
+        schema: schemaUrl.trim() || selectedSchemaRef.current || undefined,
       });
 
       setResource(updated);
+      setSelectedType(updated.type || "");
+      const normFormat = updated.format?.toLowerCase() || "";
+      setFormat(normFormat);
+      setMimeType(updated.mime || "");
+      if (updated.schema) {
+        if (updated.schema.url && updated.schema.url.startsWith("http")) {
+          setSchemaUrl(updated.schema.url);
+          setSelectedSchema("");
+          selectedSchemaRef.current = "";
+        } else {
+          const schemaVal = updated.schema.name || updated.schema.url || "";
+          setSelectedSchema(schemaVal);
+          selectedSchemaRef.current = schemaVal;
+          setSchemaUrl("");
+        }
+      }
+      if (updated.checksum) {
+        setChecksumType(updated.checksum.type || "");
+        setChecksumValue(updated.checksum.value || "");
+      }
       setSuccessMessage("Recurso comunitário atualizado com sucesso.");
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err: unknown) {
@@ -147,23 +198,47 @@ export default function CommunityResourceEditClient() {
     () => (
       <DropdownSection name="types">
         {resourceTypes.map((t) => (
-          <DropdownOption key={t.id} value={t.id}>
+          <DropdownOption key={t.id} value={t.id} selected={t.id === selectedType}>
             {t.label}
           </DropdownOption>
         ))}
       </DropdownSection>
     ),
-    [resourceTypes],
+    [resourceTypes, selectedType],
   );
 
-  const schemaOptions = useMemo(
-    () => (
-      <DropdownSection name="schemas">
-        <DropdownOption value="">Nenhum</DropdownOption>
-      </DropdownSection>
-    ),
-    [],
+  const formatOptions = useMemo(
+    () => {
+      const standardFormats = ["csv", "json", "xml", "pdf", "xls", "xlsx", "ods", "doc", "docx", "zip", "gz", "tar", "shp", "geojson", "kml", "rdf", "ttl", "txt", "html"];
+      const currentFormat = format.toLowerCase();
+      const allFormats = (currentFormat && !standardFormats.includes(currentFormat))
+        ? [...standardFormats, currentFormat]
+        : standardFormats;
+
+      return (
+        <DropdownSection name="formats">
+          {allFormats.map((f) => (
+            <DropdownOption key={f} value={f} selected={f === currentFormat}>{f}</DropdownOption>
+          ))}
+        </DropdownSection>
+      );
+    },
+    [format],
   );
+
+  const schemaOptions = useMemo(() => {
+    const options = [
+      <DropdownOption key="none" value="">
+        Nenhum
+      </DropdownOption>,
+      ...schemas.map((s) => (
+        <DropdownOption key={s} value={s} selected={s === selectedSchema}>
+          {s}
+        </DropdownOption>
+      )),
+    ];
+    return <DropdownSection name="schemas">{options}</DropdownSection>;
+  }, [schemas, selectedSchema]);
 
   const auxiliarItems = [
     {
@@ -345,38 +420,39 @@ export default function CommunityResourceEditClient() {
             {/* SOMA DE VERIFICACAO */}
             <div className="flex flex-col items-start gap-[12px]">
               <h2 className="admin-page__section-title mb-0">Soma de verificação</h2>
-            {showChecksum ? (
-              <Button
-                variant="danger"
-                appearance="outline"
-                hasIcon
-                leadingIcon="agora-line-trash"
-                leadingIconHover="agora-solid-trash"
-                onClick={() => {
-                  setShowChecksum(false);
-                  setChecksumType("");
-                  setChecksumValue("");
-                }}
-              >
-                Eliminar
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                appearance="outline"
-                hasIcon
-                leadingIcon="agora-line-plus"
-                leadingIconHover="agora-solid-plus"
-                onClick={() => setShowChecksum(true)}
-              >
-                Adicionar
-              </Button>
-            )}
+              {showChecksum ? (
+                <Button
+                  variant="danger"
+                  appearance="outline"
+                  hasIcon
+                  leadingIcon="agora-line-trash"
+                  leadingIconHover="agora-solid-trash"
+                  onClick={() => {
+                    setShowChecksum(false);
+                    setChecksumType("");
+                    setChecksumValue("");
+                  }}
+                >
+                  Eliminar
+                </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  appearance="outline"
+                  hasIcon
+                  leadingIcon="agora-line-plus"
+                  leadingIconHover="agora-solid-plus"
+                  onClick={() => setShowChecksum(true)}
+                >
+                  Adicionar
+                </Button>
+              )}
             </div>
 
             {showChecksum && (
               <div className="admin-page__fields-group">
                 <IsolatedSelect
+                  key={`checksum-${resource?.id || "loading"}`}
                   label="Tipo de soma de verificação"
                   placeholder="SHA1"
                   id="checksum-type"
@@ -425,12 +501,13 @@ export default function CommunityResourceEditClient() {
 
               <div>
                 <IsolatedSelect
+                  key={`type-${resource?.id || "loading"}-${resourceTypes.length}`}
                   label="Tipo *"
-                  placeholder="Arquivos principais"
+                  placeholder="Ficheiros principais"
                   id="resource-type"
-                  defaultValue={resource?.filetype || ""}
+                  defaultValue={selectedType}
                   onChangeRef={selectedTypeRef}
-                  onChangeCallback={() => clearError("type")}
+                  onChangeCallback={clearTypeError}
                 >
                   {typeOptions}
                 </IsolatedSelect>
@@ -457,20 +534,15 @@ export default function CommunityResourceEditClient() {
 
               <div>
                 <IsolatedSelect
+                  key={`format-${resource?.id || "loading"}`}
                   label="Formato *"
                   placeholder="Selecione o formato"
                   id="resource-format"
                   defaultValue={format}
                   onChangeRef={selectedFormatRef}
-                  onChangeCallback={() => clearError("format")}
+                  onChangeCallback={clearFormatError}
                 >
-                  <DropdownSection name="formats">
-                    {["csv", "json", "xml", "pdf", "xls", "xlsx", "ods", "doc", "docx", "zip", "gz", "tar", "shp", "geojson", "kml", "rdf", "ttl", "txt", "html"].map((f) => (
-                      <DropdownOption key={f} value={f}>
-                        {f}
-                      </DropdownOption>
-                    ))}
-                  </DropdownSection>
+                  {formatOptions}
                 </IsolatedSelect>
                 {formErrors.format && (
                   <div className="feedback">
@@ -497,14 +569,28 @@ export default function CommunityResourceEditClient() {
             <h2 className="admin-page__section-title">Esquema de dados</h2>
 
             <div className="admin-page__fields-group">
-              <IsolatedSelect
+              <InputSelect
+                key={`schema-${resource?.id || "loading"}-${schemas.length}`}
                 label="Plano"
                 placeholder="Procure um esquema referenciado em dados.gov..."
                 id="resource-schema"
-                onChangeRef={selectedSchemaRef}
+                searchable
+                searchInputPlaceholder="Escreva para pesquisar..."
+                value={selectedSchema ? [selectedSchema] : []}
+                onChange={(options: any[]) => {
+                  if (options.length > 0) {
+                    const val = options[0].value;
+                    setSelectedSchema(val);
+                    selectedSchemaRef.current = val;
+                    setSchemaUrl("");
+                  } else {
+                    setSelectedSchema("");
+                    selectedSchemaRef.current = "";
+                  }
+                }}
               >
                 {schemaOptions}
-              </IsolatedSelect>
+              </InputSelect>
 
               <div className="admin-page__divider-or">
                 <span className="admin-page__divider-or-text">ou</span>
@@ -515,9 +601,13 @@ export default function CommunityResourceEditClient() {
                 placeholder="https://..."
                 id="resource-schema-url"
                 value={schemaUrl}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setSchemaUrl(e.target.value)
-                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setSchemaUrl(e.target.value);
+                  if (e.target.value) {
+                    setSelectedSchema("");
+                    selectedSchemaRef.current = "";
+                  }
+                }}
               />
             </div>
 
