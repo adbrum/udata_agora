@@ -501,7 +501,7 @@ export default function CommunityResourceEditClient() {
                 type="danger"
                 description={
                   <>
-                    <strong>Atenção, esta ação não pode ser corrigida.</strong>
+                    <strong>Atenção Esta ação é irreversível.</strong>
                     <br />
                     <Button
                       appearance="link"

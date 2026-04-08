@@ -82,7 +82,7 @@ export default function OrganizationsNewClient() {
   };
 
   const stepTitles: Record<number, string> = {
-    1: "Crie ou participe de uma organização em dados.gov",
+    1: "Crie ou integre uma organização em dados.gov em dados.gov",
     2: "Descreva sua organização",
     3: "Finalize sua organização",
   };

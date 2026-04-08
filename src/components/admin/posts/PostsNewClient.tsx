@@ -238,7 +238,7 @@ export default function PostsNewClient() {
 
                 <InputSelect
                   label="Palavras-chave"
-                  placeholder="Pesquise por uma palavra-chave..."
+                  placeholder="Pesquise ou insira uma palavra-chave..."
                   id="article-keywords"
                   type="checkbox"
                   searchable

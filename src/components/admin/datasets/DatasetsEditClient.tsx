@@ -125,8 +125,8 @@ function TransferDatasetPopupContent({
         </a>
       </p>
       <p>
-        <strong>Essa ação é irreversível.</strong>
-        Você não terá mais acesso para gerenciar esse conjunto de dados.
+        <strong>Essa ação é irreversível.</strong>&nbsp;
+        Poderá deixar de conseguir gerir este conjunto de dados.
       </p>
 
       <div className="flex flex-col gap-[8px]">
@@ -134,7 +134,7 @@ function TransferDatasetPopupContent({
           Encontre uma organização ou usuário
         </label>
         <InputText
-          placeholder="Procurar..."
+          placeholder="Selecione a identidade para a qual pretende transferir o conjunto de dados..."
           id="transfer-search"
           label=""
         />
@@ -142,17 +142,16 @@ function TransferDatasetPopupContent({
 
       <div className="admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center">
         <h3 className="text-primary-900 text-lg font-bold leading-7">
-          Você não pertence a nenhuma organização.
+          Não pertence a uma organização.
         </h3>
         <p className="text-neutral-700 text-base leading-7">
-          Recomendamos que publique em nome de uma organização se se tratar de uma
-          atividade profissional.
+          Quando o conjunto de dados for produzido no contexto de atividade profissional, é recomendável que seja publicado em nome da organização responsável.
         </p>
         <Link
           href="/pages/admin/organizations"
           className="inline-flex items-center text-primary-500 text-base hover:underline"
         >
-          <span className="mr-[5px]">Crie ou participe de uma organização</span>
+          <span className="mr-[5px]">Crie ou integre uma organização em dados.gov</span>
           <Icon name="agora-line-arrow-right-circle" className="w-5 h-5" />
         </Link>
       </div>
@@ -178,7 +177,7 @@ function TransferDatasetPopupContent({
           leadingIconHover="agora-solid-plane"
           onClick={onClose}
         >
-          Conjunto de dados de transferência
+          Transfira o conjunto de dados
         </Button>
       </div>
     </div>
@@ -1275,7 +1274,7 @@ export default function DatasetsEditClient() {
                         }}
                         disabled={isSubmitting}
                       >
-                        Publique o conjunto de dados
+                        Publicar o conjunto de dados
                       </Button>
                     </div>
                   </div>
@@ -1341,7 +1340,7 @@ export default function DatasetsEditClient() {
                     </div>
                     <IsolatedSelect
                       label="Palavras-chave"
-                      placeholder="Pesquise por uma palavra-chave..."
+                      placeholder="Pesquise ou insira uma palavra-chave..."
                       id="edit-keywords"
                       type="checkbox"
                       searchable
@@ -1361,7 +1360,7 @@ export default function DatasetsEditClient() {
                   <div className="admin-page__fields-group">
                     <IsolatedSelect
                       label="Licença"
-                      placeholder="Selecione uma licença"
+                      placeholder="Selecione uma licença…"
                       id="edit-license"
                       onChangeRef={selectedLicenseRef}
                     >
@@ -1373,7 +1372,7 @@ export default function DatasetsEditClient() {
                   <div className="admin-page__fields-group">
                     <IsolatedSelect
                       label="Frequência de atualização"
-                      placeholder="Selecione uma frequência"
+                      placeholder="Selecione uma frequência…"
                       id="edit-frequency"
                       onChangeRef={selectedFrequencyRef}
                     >
@@ -1432,7 +1431,7 @@ export default function DatasetsEditClient() {
                   <div className="admin-page__fields-group">
                     <IsolatedSelect
                       label="Cobertura espacial"
-                      placeholder="Pesquisar por cobertura espacial..."
+                      placeholder="Selecione uma cobertura espacial..."
                       id="edit-spatial-coverage"
                       type="checkbox"
                       searchable
@@ -1471,7 +1470,7 @@ export default function DatasetsEditClient() {
                       type="info"
                       description={
                         <>
-                          <strong>Atenção, esta ação não pode ser corrigida.</strong>
+                          <strong>Atenção Esta ação é irreversível.</strong>
                           <br />
                           <Button
                             appearance="link"
@@ -1486,7 +1485,7 @@ export default function DatasetsEditClient() {
                                   onClose={hide}
                                 />,
                                 {
-                                  title: "Conjunto de dados de transferência",
+                                  title: "Transfira o conjunto de dados",
                                   closeAriaLabel: "Fechar",
                                   dimensions: "m",
                                 },
@@ -1502,7 +1501,7 @@ export default function DatasetsEditClient() {
                       type="warning"
                       description={
                         <>
-                          <strong>Um conjunto de dados arquivado não está mais indexado, mas permanece acessível aos utilizadores por meio de um link direto.</strong>
+                          <strong>Um conjunto de dados arquivado deixa de estar indexado na plataforma, mas permanece acessível através de um link direto.</strong>
                           <br />
                           <Button
                             appearance="link"
@@ -1524,7 +1523,7 @@ export default function DatasetsEditClient() {
                       type="danger"
                       description={
                         <>
-                          <strong>Atenção, esta ação não pode ser corrigida.</strong>
+                          <strong>Atenção Esta ação é irreversível.</strong>
                           <br />
                           <Button
                             appearance="link"
@@ -1603,7 +1602,7 @@ export default function DatasetsEditClient() {
                         content: "A descrição resumida apresenta seu conjunto de dados em uma ou duas frases. Isso ajuda os utilizadores a entenderem rapidamente o conteúdo e melhora sua visibilidade nos resultados de pesquisa.",
                       },
                       {
-                        title: "Selecione uma licença",
+                        title: "Selecione uma licença…",
                         content: "As licenças definem as regras para a reutilização. Ao escolher uma licença de reutilização, garante que o conjunto de dados publicado será reutilizado de acordo com os termos de uso que definiu.",
                       },
                       {
