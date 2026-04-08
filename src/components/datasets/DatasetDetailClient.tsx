@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Button,
   Icon,
@@ -134,6 +135,7 @@ function getQualityMissing(quality?: Dataset['quality']): string[] {
 export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) {
   const { user, isAdmin } = useAuth();
   const { organizations } = useActiveOrganization();
+  const router = useRouter();
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -161,6 +163,10 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
   }, [slug, user]);
 
   const handleToggleFavorite = async () => {
+    if (!user) {
+      router.push('/pages/login');
+      return;
+    }
     if (!dataset || isTogglingFavorite) return;
     setIsTogglingFavorite(true);
     try {
