@@ -589,12 +589,29 @@ export async function uploadOrgLogo(org: string, file: File): Promise<Organizati
 export async function fetchOrgDatasets(
   org: string,
   page: number = 1,
-  pageSize: number = 20
+  pageSize: number = 20,
+  filters?: {
+    q?: string;
+    sort?: string;
+    private?: boolean;
+    archived?: boolean;
+    deleted?: boolean;
+  }
 ): Promise<APIResponse<Dataset>> {
   try {
+    const params = new URLSearchParams({
+      page: String(page),
+      page_size: String(pageSize),
+      sort: filters?.sort || "-created",
+    });
+    if (filters?.q) params.set("q", filters.q);
+    if (filters?.private !== undefined) params.set("private", String(filters.private));
+    if (filters?.archived !== undefined) params.set("archived", String(filters.archived));
+    if (filters?.deleted !== undefined) params.set("deleted", String(filters.deleted));
+
     const res = await fetch(
-      `${API_BASE_URL}/organizations/${org}/datasets/?page=${page}&page_size=${pageSize}&sort=-created`,
-      { cache: "no-store" }
+      `${API_AUTH_URL}/organizations/${org}/datasets/?${params.toString()}`,
+      { cache: "no-store", credentials: "include" }
     );
 
     if (!res.ok) {
