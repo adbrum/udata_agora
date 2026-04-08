@@ -383,6 +383,9 @@ export async function fetchAdminDatasets(
       if (filters.granularity) params.set("granularity", filters.granularity);
       if (filters.sort) params.set("sort", filters.sort);
       if (filters.featured !== undefined) params.set("featured", String(filters.featured));
+      if (filters.private !== undefined) params.set("private", String(filters.private));
+      if (filters.archived !== undefined) params.set("archived", String(filters.archived));
+      if (filters.deleted !== undefined) params.set("deleted", String(filters.deleted));
 
       const arrayParams: [string, string | string[] | undefined][] = [
         ["tag", filters.tag],

@@ -700,6 +700,9 @@ export interface DatasetFilters {
   badge?: string | string[];
   featured?: boolean;
   sort?: string;
+  private?: boolean;
+  archived?: boolean;
+  deleted?: boolean;
 }
 
 
