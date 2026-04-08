@@ -312,14 +312,13 @@ export default function CommunityResourceFormClient({
                     Não pertence a nenhuma organização.
                   </p>
                   <p className="admin-page__org-card-description">
-                    Recomendamos que publique em nome de uma organização se se tratar de uma
-                    atividade profissional.
+                    Quando o conjunto de dados for produzido no contexto de atividade profissional, é recomendável que seja publicado em nome da organização responsável.
                   </p>
                   <a
                     href="/pages/admin/organizations/new"
                     className="admin-page__org-card-link"
                   >
-                    Crie ou participe de uma organização
+                    Crie ou integre uma organização em dados.gov
                     <Icon name="agora-line-arrow-right-circle" className="w-[24px] h-[24px]" />
                   </a>
                 </div>
