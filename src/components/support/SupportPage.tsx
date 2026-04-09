@@ -72,7 +72,7 @@ const FAQ_DATA = [
     category: "Problemas técnicos no portal",
     items: [
       {
-        question: "Tem um erro no sistema?",
+        question: "Encontrou um erro no sistema?",
         answer: "",
         richAnswer: "problemas-tecnicos",
         defaultExpanded: true,
@@ -318,7 +318,7 @@ const SupportPage = () => {
                                     <p className="font-bold">Atualizar um dataset</p>
                                     <p>
                                       Pode editar o conjunto de dados e substituir ou acrescentar
-                                      recursos a qualquer momento.
+                                      recursos a qualquer momento
                                     </p>
                                   </div>
                                   <div>
@@ -626,7 +626,7 @@ const SupportPage = () => {
                                         style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
                                         onClick={() => window.open("https://dados.gov.pt/pt/organizations/instituto-nacional-de-estatistica/", "_blank")}
                                       >
-                                        dados.gov.
+                                        dados.gov
                                       </Button>
                                     </p>
                                   </div>
@@ -641,7 +641,7 @@ const SupportPage = () => {
                                         style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
                                         onClick={() => window.open("https://dados.gov.pt/pt/organizations/direcao-geral-do-territorio/", "_blank")}
                                       >
-                                        dados.gov.
+                                        dados.gov
                                       </Button>
                                     </p>
                                     <p>
@@ -710,7 +710,7 @@ const SupportPage = () => {
                                     <p>
                                       Abrir o separador{" "}
                                       <strong>&ldquo;Discussões&rdquo;</strong> na página do
-                                      conjunto de dados.
+                                      conjunto de dados
                                     </p>
                                   </div>
                                 </div>
@@ -846,13 +846,13 @@ const SupportPage = () => {
                       className="flex items-center w-full rounded-[4px] border-[2px] border-neutral-700 bg-white px-[16px]"
                       style={{ height: "60px" }}
                     >
-                      <span className="text-neutral-900 whitespace-nowrap text-base">
+                      {/*<span className="text-neutral-900 whitespace-nowrap text-base">
                         {TOGGLE_PREFIX_MAP[selectedToggle]} -&nbsp;
-                      </span>
+                      </span>*/}
                       <input
                         type="text"
                         className="flex-1 bg-transparent outline-none text-neutral-900 text-base placeholder:text-neutral-700"
-                        placeholder="..."
+                        placeholder=""
                         value={subjectBody}
                         onChange={(e) => setSubjectBody(e.target.value)}
                         required
