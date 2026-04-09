@@ -149,7 +149,7 @@ const SupportPage = () => {
             <label className="block text-[20px] font-bold text-white mt-[48px]">
               Antes de nos contactar, consulte o fórum e os nossos guias:
               <br />
-              poderá já encontrar a resposta à sua pergunta lá!
+              a sua questão poderá já estar respondida nesses pontos de suporte!
             </label>
 
             <div className="absolute w-full mb-64 bg-white text-neutral-900 shadow-lg dropdown"></div>
