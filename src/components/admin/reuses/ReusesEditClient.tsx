@@ -638,7 +638,7 @@ export default function ReusesEditClient() {
                       type="info"
                       description={
                         <>
-                          <strong>Transfira esta reutilização.</strong>
+                          <strong>Transferir esta reutilização.</strong>
                           <br />
                           Atenção, esta ação não pode ser cancelada.
                           <br />

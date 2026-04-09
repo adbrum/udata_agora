@@ -85,14 +85,14 @@ export default function OrgDatasetsNewClient() {
 
           <StatusCard
             type="info"
-            description="Se desejar realizar testes, utilize demo.dados.gov"
+            description="Se desejar realizar testes, utilize demo.dados.gov.pt"
           />
 
           <div className="datasets-new-page__cards mb-[32px]" style={{ maxWidth: "50%" }}>
             <CardAction
               variant="neutral-100"
               titleText="Publique um conjunto de dados"
-              descriptionText="Seja uma entidade da administração pública ou uma empresa pública, todos podem publicar em dados.gov!"
+              descriptionText="Seja uma entidade da administração pública ou uma empresa pública, todos podem publicar em dados.gov.pt!"
               icon={{ name: "agora-line-edit" }}
               button={{
                 children: "Comece a publicação",
@@ -110,7 +110,7 @@ export default function OrgDatasetsNewClient() {
                 É administrador e deseja automatizar a publicação dos seus dados?
               </p>
               <p className="text-neutral-700 text-sm leading-relaxed">
-                Pode automatizar a publicação através da API ou ligando o seu portal ao dados.gov
+                Pode automatizar a publicação através da API ou ligando o seu portal ao dados.gov.pt
                 através de um harvester de dados.
               </p>
               <div className="flex gap-4 flex-wrap">

@@ -304,7 +304,7 @@ export default function DataservicesClient({
           ]}
           subtitle={
             <p className="text-primary-100 max-w-[592px]">
-              Pesquise através de {total.toLocaleString('pt-PT')} APIs em dados.gov
+              Pesquise através de {total.toLocaleString('pt-PT')} APIs em dados.gov.pt
             </p>
           }
         >

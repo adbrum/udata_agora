@@ -22,7 +22,6 @@ import {
   TableCell,
   Pill,
   Switch,
-  RadioButton,
   ButtonUploader,
   CardNoResults,
   Tabs,
@@ -177,7 +176,7 @@ function TransferDatasetPopupContent({
           leadingIconHover="agora-solid-plane"
           onClick={onClose}
         >
-          Transfira o conjunto de dados
+          Transferir o conjunto de dados
         </Button>
       </div>
     </div>
@@ -566,14 +565,9 @@ export default function DatasetsEditClient() {
   const [temporalStart, setTemporalStart] = useState("");
   const [temporalEnd, setTemporalEnd] = useState("");
   const [featured, setFeatured] = useState(false);
-  const [accessType, setAccessType] = useState("open");
 
   // Refs for IsolatedSelect (avoid setState during render cycle)
   const keywordsRef = useRef("");
-  const restrictionCommunityRef = useRef("");
-  const restrictionEnterpriseRef = useRef("");
-  const restrictionPrivateRef = useRef("");
-  const restrictionReasonRef = useRef("");
   const spatialCoverageRef = useRef("");
   const spatialGranularityRef = useRef("");
 
@@ -644,8 +638,14 @@ export default function DatasetsEditClient() {
         setLoadedSpatialGranularity(spatialGranularity);
 
         if (ds.temporal_coverage) {
-          setTemporalStart(ds.temporal_coverage.start || "");
-          setTemporalEnd(ds.temporal_coverage.end || "");
+          const toDateOnly = (iso: string) => {
+            if (!iso) return "";
+            const d = new Date(iso);
+            if (isNaN(d.getTime())) return iso;
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+          };
+          setTemporalStart(toDateOnly(ds.temporal_coverage.start || ""));
+          setTemporalEnd(toDateOnly(ds.temporal_coverage.end || ""));
         }
         setLicenses(licensesData);
         setFrequencies(frequenciesData);
@@ -775,56 +775,6 @@ export default function DatasetsEditClient() {
     return <DropdownSection name="keywords">{options}</DropdownSection>;
   }, [selectedKeywordsSet, tagSuggestions, tagSearch]);
 
-  const communityOptions = useMemo(
-    () => (
-      <DropdownSection name="community">
-        <DropdownOption value="sim">Sim</DropdownOption>
-        <DropdownOption value="nao">Não</DropdownOption>
-        <DropdownOption value="condicional">Condicional</DropdownOption>
-      </DropdownSection>
-    ),
-    [],
-  );
-
-  const enterpriseOptions = useMemo(
-    () => (
-      <DropdownSection name="enterprise">
-        <DropdownOption value="sim">Sim</DropdownOption>
-        <DropdownOption value="nao">Não</DropdownOption>
-        <DropdownOption value="condicional">Condicional</DropdownOption>
-      </DropdownSection>
-    ),
-    [],
-  );
-
-  const privateOptions = useMemo(
-    () => (
-      <DropdownSection name="private">
-        <DropdownOption value="sim">Sim</DropdownOption>
-        <DropdownOption value="nao">Não</DropdownOption>
-        <DropdownOption value="condicional">Condicional</DropdownOption>
-      </DropdownSection>
-    ),
-    [],
-  );
-
-  const restrictionReasonOptions = useMemo(
-    () => (
-      <DropdownSection name="restriction-reason">
-        <DropdownOption value="confidencialidade-procedimentos">Confidencialidade dos procedimentos das autoridades públicas</DropdownOption>
-        <DropdownOption value="relacoes-internacionais">Relações internacionais, segurança pública ou defesa nacional</DropdownOption>
-        <DropdownOption value="curso-justica">Curso da justiça</DropdownOption>
-        <DropdownOption value="confidencialidade-comercial">Confidencialidade comercial ou industrial</DropdownOption>
-        <DropdownOption value="propriedade-intelectual">Direitos de propriedade intelectual</DropdownOption>
-        <DropdownOption value="dados-pessoais">Confidencialidade dos dados pessoais</DropdownOption>
-        <DropdownOption value="protecao-fornecedores">Proteção dos fornecedores voluntários de informações</DropdownOption>
-        <DropdownOption value="protecao-ambiental">Proteção ambiental</DropdownOption>
-        <DropdownOption value="outros">Outros</DropdownOption>
-      </DropdownSection>
-    ),
-    [],
-  );
-
   const allSpatialZones = useMemo(() => {
     const seen = new Set<string>();
     const merged: SpatialZone[] = [];
@@ -914,11 +864,15 @@ export default function DatasetsEditClient() {
         license: selectedLicenseRef.current || undefined,
         frequency: selectedFrequencyRef.current || undefined,
         temporal_coverage: temporalStart
-          ? { start: temporalStart, ...(temporalEnd ? { end: temporalEnd } : {}) }
+          ? {
+              start: new Date(temporalStart).toISOString(),
+              ...(temporalEnd ? { end: new Date(temporalEnd).toISOString() } : {}),
+            }
           : undefined,
         ...(granularity || zones
           ? {
               spatial: {
+                geom: dataset.spatial?.geom ?? null,
                 zones: zones ?? dataset.spatial?.zones ?? [],
                 granularity: granularity ?? null,
               },
@@ -1369,6 +1323,21 @@ export default function DatasetsEditClient() {
                         <span className="text-danger-600 text-sm">Campo obrigatório</span>
                       )}
                     </div>
+                    <InputTextArea
+                      label="Descrição resumida"
+                      placeholder="Insira a descrição aqui"
+                      id="edit-short-description"
+                      rows={3}
+                      maxLength={200}
+                      showCharCounter={true}
+                      value={shortDescription}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                        setShortDescription(e.target.value)
+                      }
+                      hasFeedback
+                      feedbackState="info"
+                      feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 197 caracteres da sua descrição, seguidos de '...' (máximo de 200 caracteres)."
+                    />
                     <IsolatedSelect
                       label="Palavras-chave"
                       placeholder="Pesquise ou insira uma palavra-chave..."
@@ -1377,6 +1346,7 @@ export default function DatasetsEditClient() {
                       searchable
                       searchInputPlaceholder="Escreva para pesquisar..."
                       searchNoResultsText="Nenhum resultado encontrado"
+                      defaultValue={loadedKeywords}
                       onChangeRef={keywordsRef}
                       onSearchCallback={(q) => {
                         if (!q) return;
@@ -1393,6 +1363,7 @@ export default function DatasetsEditClient() {
                       label="Licença"
                       placeholder="Selecione uma licença…"
                       id="edit-license"
+                      defaultValue={loadedLicense}
                       onChangeRef={selectedLicenseRef}
                     >
                       {licenseOptions}
@@ -1405,6 +1376,7 @@ export default function DatasetsEditClient() {
                       label="Frequência de atualização"
                       placeholder="Selecione uma frequência…"
                       id="edit-frequency"
+                      defaultValue={loadedFrequency}
                       onChangeRef={selectedFrequencyRef}
                     >
                       {frequencyOptions}
@@ -1468,6 +1440,7 @@ export default function DatasetsEditClient() {
                       searchable
                       searchInputPlaceholder="Escreva para pesquisar..."
                       searchNoResultsText="Nenhum resultado encontrado"
+                      defaultValue={loadedSpatialZones.join(",")}
                       onChangeRef={spatialCoverageRef}
                       onSearchCallback={(q) => {
                         if (!q) return;
@@ -1480,6 +1453,7 @@ export default function DatasetsEditClient() {
                       label="Granularidade espacial"
                       placeholder="Selecione uma granularidade..."
                       id="edit-spatial-granularity"
+                      defaultValue={loadedSpatialGranularity}
                       onChangeRef={spatialGranularityRef}
                     >
                       {spatialGranularityOptions}
@@ -1519,7 +1493,7 @@ export default function DatasetsEditClient() {
                                   onClose={hide}
                                 />,
                                 {
-                                  title: "Transfira o conjunto de dados",
+                                  title: "Transferir o conjunto de dados",
                                   closeAriaLabel: "Fechar",
                                   dimensions: "m",
                                 },

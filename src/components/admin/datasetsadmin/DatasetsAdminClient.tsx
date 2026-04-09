@@ -10,7 +10,6 @@ import {
   CardGeneral,
   InputText,
   InputTextArea,
-  RadioButton,
   Icon,
   StatusCard,
   Accordion,
@@ -67,7 +66,6 @@ export default function DatasetsAdminClient({
   const { user } = useAuth();
 
   // Form state
-  const [accessType, setAccessType] = useState("open");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showFileError, setShowFileError] = useState(false);
   const [datasetTitle, setDatasetTitle] = useState("");
@@ -553,7 +551,6 @@ export default function DatasetsAdminClient({
       ),
     },
     {
-<<<<<<< fix/LEDG-1493/fix-text
       title: "Selecionar uma licença",
       content: (
         <p>
@@ -562,11 +559,6 @@ export default function DatasetsAdminClient({
           termos de uso que definiu.
         </p>
       ),
-=======
-      title: "Selecione uma licença…",
-      content:
-        "As licenças definem as regras para a reutilização. Ao escolher uma licença de reutilização, garante que o conjunto de dados publicado será reutilizado de acordo com os termos de uso que definiu.",
->>>>>>> main
     },
     {
       title: "Escolher a frequência de atualização",
@@ -670,7 +662,7 @@ export default function DatasetsAdminClient({
                   <>
                     <strong>O que é um conjunto de dados?</strong>
                     <br />
-                    Em dados.gov, um conjunto de dados é um conjunto de ficheiros.
+                    Em dados.gov.pt, um conjunto de dados é um conjunto de ficheiros.
                   </>
                 }
               />
@@ -791,11 +783,7 @@ export default function DatasetsAdminClient({
                   />
                   <IsolatedSelect
                     label="Palavras-chave"
-<<<<<<< fix/LEDG-1493/fix-text
                     placeholder="Pesquise ou insira palavras-chave..."
-=======
-                    placeholder="Pesquise ou insira uma palavra-chave..."
->>>>>>> main
                     id="dataset-keywords"
                     type="checkbox"
                     searchable
@@ -812,96 +800,9 @@ export default function DatasetsAdminClient({
                 <h2 className="admin-page__section-title">Acesso</h2>
 
                 <div className="admin-page__fields-group">
-                  <div className="flex flex-col gap-[8px]">
-                    <span className="text-primary-900 text-base font-medium leading-7">
-                      Tipo de acesso
-                    </span>
-                    <div className="flex flex-col gap-4">
-                      <RadioButton
-                        label="Aberto"
-                        id="access-open"
-                        name="access-type"
-                        checked={accessType === "open"}
-                        onChange={() => setAccessType("open")}
-                      />
-                      <RadioButton
-                        label="Restrito"
-                        id="access-restricted"
-                        name="access-type"
-                        checked={accessType === "restricted"}
-                        onChange={() => setAccessType("restricted")}
-                      />
-                    </div>
-                  </div>
-
-                  {accessType === "restricted" && (
-                    <>
-                      <div className="grid grid-cols-3 gap-8 mt-4 items-end">
-                        <IsolatedSelect
-                          label="Comunidade e Administração"
-                          placeholder=""
-                          id="dataset-restriction-community"
-                          onChangeRef={dummyRef}
-                        >
-                          <DropdownSection name="community">
-                            <DropdownOption value="sim">Sim</DropdownOption>
-                            <DropdownOption value="nao">Não</DropdownOption>
-                            <DropdownOption value="condicional">Condicional</DropdownOption>
-                          </DropdownSection>
-                        </IsolatedSelect>
-                        <IsolatedSelect
-                          label="Empresa e Associação"
-                          placeholder=""
-                          id="dataset-restriction-enterprise"
-                          onChangeRef={dummyRef}
-                        >
-                          <DropdownSection name="enterprise">
-                            <DropdownOption value="sim">Sim</DropdownOption>
-                            <DropdownOption value="nao">Não</DropdownOption>
-                            <DropdownOption value="condicional">Condicional</DropdownOption>
-                          </DropdownSection>
-                        </IsolatedSelect>
-                        <IsolatedSelect
-                          label="Privado"
-                          placeholder=""
-                          id="dataset-restriction-private"
-                          onChangeRef={dummyRef}
-                        >
-                          <DropdownSection name="private">
-                            <DropdownOption value="sim">Sim</DropdownOption>
-                            <DropdownOption value="nao">Não</DropdownOption>
-                            <DropdownOption value="condicional">Condicional</DropdownOption>
-                          </DropdownSection>
-                        </IsolatedSelect>
-                      </div>
-                      <IsolatedSelect
-                        label="Motivo da restrição"
-                        placeholder=""
-                        id="dataset-restriction-reason"
-                        onChangeRef={dummyRef}
-                      >
-                        <DropdownSection name="restriction-reason">
-                          <DropdownOption value="confidencialidade-procedimentos">Confidencialidade dos procedimentos das autoridades públicas</DropdownOption>
-                          <DropdownOption value="relacoes-internacionais">Relações internacionais, segurança pública ou defesa nacional</DropdownOption>
-                          <DropdownOption value="curso-justica">Curso da justiça</DropdownOption>
-                          <DropdownOption value="confidencialidade-comercial">Confidencialidade comercial ou industrial</DropdownOption>
-                          <DropdownOption value="propriedade-intelectual">Direitos de propriedade intelectual</DropdownOption>
-                          <DropdownOption value="dados-pessoais">Confidencialidade dos dados pessoais</DropdownOption>
-                          <DropdownOption value="protecao-fornecedores">Proteção dos fornecedores voluntários de informações</DropdownOption>
-                          <DropdownOption value="protecao-ambiental">Proteção ambiental</DropdownOption>
-                          <DropdownOption value="outros">Outros</DropdownOption>
-                        </DropdownSection>
-                      </IsolatedSelect>
-                    </>
-                  )}
-
                   <IsolatedSelect
                     label="Licença"
-<<<<<<< fix/LEDG-1493/fix-text
                     placeholder="Selecione uma licença..."
-=======
-                    placeholder="Selecione uma licença…"
->>>>>>> main
                     id="dataset-license"
                     onChangeRef={selectedLicenseRef}
                   >

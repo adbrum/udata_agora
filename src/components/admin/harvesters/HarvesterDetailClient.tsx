@@ -323,7 +323,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
     {
       title: "Selecione o tipo de implementação",
       content:
-        "Escolha o formato dos metadados (por exemplo, DCAT, CKAN, etc.). Esse formato permite que o harvester saiba como ler e interpretar os seus metadados, para que possam ser transcritos corretamente em dados.gov.",
+        "Escolha o formato dos metadados (por exemplo, DCAT, CKAN, etc.). Esse formato permite que o harvester saiba como ler e interpretar os seus metadados, para que possam ser transcritos corretamente em dados.gov.pt.",
     },
   ];
 
@@ -890,7 +890,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                           trailingIcon="agora-line-arrow-right-circle"
                           trailingIconHover="agora-solid-arrow-right-circle"
                         >
-                          Elimine o harvester
+                          Eliminar o harvester
                         </Button>
                       </>
                     }

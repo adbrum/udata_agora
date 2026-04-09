@@ -22,9 +22,9 @@ const linkColumns = [
   {
     title: 'Desenvolvimento',
     links: [
-      { href: '/pages/docapi', label: 'API dos dados.gov' },
-      { href: 'https://github.com/opendatateam/udata', label: `Motor de código aberto: udata (${process.env.NEXT_PUBLIC_UDATA_VERSION})` },
-      { href: '#', label: 'Interface de utilizador de dados.gov: frontend' },
+      { href: '/pages/docapi', label: 'API dos dados.gov.pt' },
+      { href: 'https://github.com/opendatateam/udata', label: `Mecanismo de código aberto : udata (${process.env.NEXT_PUBLIC_UDATA_VERSION && process.env.NEXT_PUBLIC_UDATA_VERSION !== "unknown" ? process.env.NEXT_PUBLIC_UDATA_VERSION : "10.4.3"})` },
+      { href: '#', label: `Extensão do tema udata : udata-front (${process.env.NEXT_PUBLIC_UDATA_FRONT_VERSION && process.env.NEXT_PUBLIC_UDATA_FRONT_VERSION !== "unknown" ? process.env.NEXT_PUBLIC_UDATA_FRONT_VERSION : "6.2.4"})` },
     ],
   },
 ];
@@ -99,7 +99,7 @@ export const Footer = () => {
         brandImage={{
           image: {
             src: '/Logos/logo.svg',
-            alt: 'dados.gov',
+            alt: 'dados.gov.pt',
             style: { height: '43px', width: 'auto' }
           }
         }}

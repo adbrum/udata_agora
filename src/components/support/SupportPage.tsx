@@ -135,7 +135,7 @@ const SupportPage = () => {
             <span className="text-[32px] text-white font-[500] mb-[10px]">
               Bem-vindo à página de suporte da
             </span>
-            <span className="text-[32px] text-white font-[500]">plataforma data.gov</span>
+            <span className="text-[32px] text-white font-[500]">portal dados.gov.pt</span>
           </>
         }
         breadcrumbItems={[
@@ -353,7 +353,7 @@ const SupportPage = () => {
                                         style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
                                         onClick={() => window.open("https://dados.gov.pt/", "_blank")}
                                       >
-                                        Dados.gov
+                                        dados.gov.pt
                                       </Button>
                                     </p>
                                   </div>
@@ -473,7 +473,7 @@ const SupportPage = () => {
                                       Pedido de remoção de dados pessoais
                                     </p>
                                     <p>
-                                      Contactar a equipa do dados.gov na página de{" "}
+                                      Contactar a equipa do dados.gov.pt na página de{" "}
                                       <Button
                                         appearance="link"
                                         variant="neutral"
@@ -494,7 +494,7 @@ const SupportPage = () => {
                                       Erros de login / publicação / upload / pesquisa / comentários
                                     </p>
                                     <p>
-                                      Contactar a equipa do dados.gov na página de{" "}
+                                      Contactar a equipa do dados.gov.pt na página de{" "}
                                       <Button
                                         appearance="link"
                                         variant="neutral"
@@ -511,7 +511,7 @@ const SupportPage = () => {
                                       Página ou funcionalidade indisponível
                                     </p>
                                     <p>
-                                      Contactar a equipa do dados.gov na página de{" "}
+                                      Contactar a equipa do dados.gov.pt na página de{" "}
                                       <Button
                                         appearance="link"
                                         variant="neutral"
@@ -626,7 +626,7 @@ const SupportPage = () => {
                                         style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
                                         onClick={() => window.open("https://dados.gov.pt/pt/organizations/instituto-nacional-de-estatistica/", "_blank")}
                                       >
-                                        dados.gov
+                                        dados.gov.pt
                                       </Button>
                                     </p>
                                   </div>
@@ -641,7 +641,7 @@ const SupportPage = () => {
                                         style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
                                         onClick={() => window.open("https://dados.gov.pt/pt/organizations/direcao-geral-do-territorio/", "_blank")}
                                       >
-                                        dados.gov
+                                        dados.gov.pt
                                       </Button>
                                     </p>
                                     <p>
@@ -686,7 +686,7 @@ const SupportPage = () => {
                                         style={{ minHeight: 'auto', height: 'auto', minWidth: 'auto' }}
                                         onClick={() => window.open("https://dados.gov.pt/pt/organizations/ebupi-estrutura-de-missao-para-a-expansao-do-sistema-de-informacao-cadastral-simplificado/#/presentation", "_blank")}
                                       >
-                                        dados.gov
+                                        dados.gov.pt
                                       </Button>
                                     </p>
                                     <p>
@@ -705,7 +705,7 @@ const SupportPage = () => {
                                   </div>
                                   <div>
                                     <p className="font-bold">
-                                      Questões sobre um dataset no dados.gov
+                                      Questões sobre um dataset no dados.gov.pt
                                     </p>
                                     <p>
                                       Abrir o separador{" "}

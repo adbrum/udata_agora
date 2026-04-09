@@ -191,7 +191,7 @@ export function AdminSideNavigation() {
                     name="agora-line-home"
                     className="admin-sidebar-nav__group-icon"
                   />
-                  Ir para dados.gov
+                  Ir para dados.gov.pt
                 </Link>
               ),
             }}

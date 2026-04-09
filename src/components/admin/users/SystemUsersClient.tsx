@@ -4,8 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Breadcrumb,
   CardNoResults,
+  DropdownOption,
+  DropdownSection,
   Icon,
   InputSearchBar,
+  InputSelect,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -17,12 +20,15 @@ import PublishDropdown from "@/components/admin/PublishDropdown";
 import { fetchUsers } from "@/services/api";
 import { UserAdmin } from "@/types/api";
 
-type SortField = "name" | "created_at";
+type SortField = "name" | "created_at" | "datasets" | "reuses" | "followers";
 type SortOrder = "ascending" | "descending" | "none";
 
 const SORT_FIELD_MAP: Record<SortField, string> = {
   name: "last_name",
   created_at: "created",
+  datasets: "datasets",
+  reuses: "reuses",
+  followers: "followers",
 };
 
 const formatDate = (dateStr: string) => {
@@ -34,6 +40,11 @@ const formatDate = (dateStr: string) => {
   }
 };
 
+const getUserProfile = (user: UserAdmin): string => {
+  if (user.roles?.includes("admin")) return "Admin";
+  return "Editor";
+};
+
 export default function SystemUsersClient() {
   const [users, setUsers] = useState<UserAdmin[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -43,6 +54,7 @@ export default function SystemUsersClient() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>("none");
+  const [profileFilter, setProfileFilter] = useState("");
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadData = useCallback(async () => {
@@ -58,7 +70,8 @@ export default function SystemUsersClient() {
         currentPage,
         searchQuery.trim() || undefined,
         sortParam,
-        pageSize
+        pageSize,
+        profileFilter || undefined
       );
       setUsers(response.data || []);
       setTotalItems(response.total || 0);
@@ -67,7 +80,7 @@ export default function SystemUsersClient() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, pageSize, searchQuery, sortField, sortOrder]);
+  }, [currentPage, pageSize, searchQuery, sortField, sortOrder, profileFilter]);
 
   useEffect(() => {
     loadData();
@@ -124,6 +137,21 @@ export default function SystemUsersClient() {
             }}
           />
         </div>
+        <InputSelect
+          label=""
+          hideLabel
+          placeholder="Filtrar por perfil"
+          id="filter-profile"
+          onChange={(options) => {
+            setProfileFilter(options.length > 0 ? (options[0].value as string) : "");
+            setCurrentPage(1);
+          }}
+        >
+          <DropdownSection name="profile">
+            <DropdownOption value="admin">Admin</DropdownOption>
+            <DropdownOption value="editor">Editor</DropdownOption>
+          </DropdownSection>
+        </InputSelect>
       </div>
 
       {isLoading ? (
@@ -163,8 +191,28 @@ export default function SystemUsersClient() {
               >
                 Criado em
               </TableHeaderCell>
-              <TableHeaderCell>Conjuntos de dados</TableHeaderCell>
-              <TableHeaderCell>Reutilizações</TableHeaderCell>
+              <TableHeaderCell
+                sortType="numeric"
+                sortOrder={getSortOrder("datasets")}
+                onSortChange={handleSort("datasets")}
+              >
+                Conjuntos de dados
+              </TableHeaderCell>
+              <TableHeaderCell
+                sortType="numeric"
+                sortOrder={getSortOrder("reuses")}
+                onSortChange={handleSort("reuses")}
+              >
+                Reutilizações
+              </TableHeaderCell>
+              <TableHeaderCell
+                sortType="numeric"
+                sortOrder={getSortOrder("followers")}
+                onSortChange={handleSort("followers")}
+              >
+                Seguidores
+              </TableHeaderCell>
+              <TableHeaderCell>Perfis</TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHeader>
@@ -195,6 +243,12 @@ export default function SystemUsersClient() {
                 </TableCell>
                 <TableCell headerLabel="Reutilizações">
                   {user.reuses_count ?? 0}
+                </TableCell>
+                <TableCell headerLabel="Seguidores">
+                  {user.metrics?.followers ?? 0}
+                </TableCell>
+                <TableCell headerLabel="Perfis">
+                  {getUserProfile(user)}
                 </TableCell>
                 <TableCell headerLabel="Ações">
                   <div className="flex gap-[8px]">

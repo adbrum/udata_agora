@@ -2199,3 +2199,20 @@ div.max-w-ch,
   background: var(--color-neutral-100, #f3f4f6);
   font-weight: 600;
 }
+
+/* ==========================================================================
+   [10] MARKDOWN CONTENT OVERRIDES
+   ========================================================================== */
+
+.markdown-container ul {
+  list-style: disc !important;
+  padding-left: 2em !important;
+}
+
+.markdown-container a {
+  text-decoration: underline !important;
+}
+
+.markdown-container p {
+  margin-bottom: 1em !important;
+}
