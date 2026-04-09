@@ -18,8 +18,8 @@ export default function ReusesNewClient() {
 
   const stepTitles: Record<number, string> = {
     1: "Descreva a sua reutilização",
-    2: "Conectar conjuntos de dados e APIs",
-    3: "Finalizar a publicação",
+    2: "Associe os conjuntos de dados e APIs",
+    3: "Finalize a publicação da sua reutilização",
   };
 
   return (
@@ -35,7 +35,7 @@ export default function ReusesNewClient() {
       </div>
 
       <div className="admin-page__header">
-        <h1 className="admin-page__title">Formulário de inscrição</h1>
+        <h1 className="admin-page__title">Formulário de publicação de uma reutilização</h1>
         <PublishDropdown />
       </div>
 
