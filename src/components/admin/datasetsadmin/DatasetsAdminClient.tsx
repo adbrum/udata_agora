@@ -897,11 +897,7 @@ export default function DatasetsAdminClient({
 
                   <IsolatedSelect
                     label="Licença"
-<<<<<<< fix/LEDG-1493/fix-text
                     placeholder="Selecione uma licença..."
-=======
-                    placeholder="Selecione uma licença…"
->>>>>>> main
                     id="dataset-license"
                     onChangeRef={selectedLicenseRef}
                   >
