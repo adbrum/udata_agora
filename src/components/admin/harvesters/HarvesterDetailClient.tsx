@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Breadcrumb,
   Button,
@@ -73,6 +73,8 @@ const JOB_STATUS_LABELS: Record<string, string> = {
 
 export default function HarvesterDetailClient({ slug }: HarvesterDetailClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isConfigTab = searchParams.get("tab") === "config";
   const { user } = useAuth();
   const [source, setSource] = useState<HarvestSource | null>(null);
   const [jobs, setJobs] = useState<HarvestJob[]>([]);
@@ -410,7 +412,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
 
       {/* Tabs */}
       <Tabs>
-        <Tab>
+        <Tab active={isConfigTab ? undefined : true}>
           <TabHeader>Trabalhos</TabHeader>
           <TabBody>
             {jobs.length === 0 ? (
@@ -547,7 +549,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
           </TabBody>
         </Tab>
 
-        <Tab>
+        <Tab active={isConfigTab ? true : undefined}>
           <TabHeader>Configuração</TabHeader>
           <TabBody>
             <div className="admin-page__body">
