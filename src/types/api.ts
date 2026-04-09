@@ -302,6 +302,7 @@ export interface DatasetUpdatePayload {
   temporal_coverage?: TemporalCoverage;
   spatial?: SpatialCoverage;
   private?: boolean;
+  featured?: boolean;
   archived?: string | null;
   organization?: string;
   extras?: Record<string, unknown>;
