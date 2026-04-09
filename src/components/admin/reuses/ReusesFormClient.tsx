@@ -240,61 +240,74 @@ export default function ReusesFormClient({
   };
   const auxiliarItemsStep1 = [
     {
-      title: "Dê um nome à sua reutilização.",
-      content:
-        'Prefira um título que permita entender como os dados são usados, em vez do nome do site ou aplicativo ("Mecanismo de Busca de Acordos Comerciais" em vez de "Acordos-Comerciais.fr", por exemplo).',
+      title: "Dar um título",
+      content: (
+        <p>
+          Prefira um título que explique claramente como a reutilização utiliza os dados, em vez
+          de usar apenas o nome do site ou da aplicação. Por exemplo: “Sistema de Pesquisa de
+          Acordos Comerciais” em vez de “acordoscomerciais.pt”.
+        </p>
+      ),
       hasError: !!formErrors.reuseName,
     },
     {
-      title: "Qual link preencher?",
-      content:
-        "Insira o link para a página onde o conteúdo reutilizado está visível. Dê preferência ao link para o próprio conteúdo reutilizado, e não para a página inicial. Certifique-se de que o link permaneça estável ao longo do tempo.",
+      title: "Adicionar um link",
+      content: (
+        <p>
+          Insira o link da página onde a reutilização pode ser consultada. Prefira o link direto
+          para o conteúdo e certifique-se de que o endereço permanece estável.
+        </p>
+      ),
       hasError: !!formErrors.reuseLink,
     },
     {
-      title: "Escolha um tipo",
-      content:
-        "Indique o tipo em que deve ser classificada a reutilização (API, aplicação, artigo de imprensa, visualização, etc.).",
+      title: "Escolher um tipo",
+      content: (
+        <p>
+          Indique o tipo em que deve ser classificada a reutilização (API, aplicação, artigo de
+          imprensa, visualização, etc.).
+        </p>
+      ),
       hasError: !!formErrors.reuseType,
     },
     {
-      title: "Escolha um tema",
-      content: "Escolha o tema associado à sua reutilização.",
+      title: "Escolher um tema",
+      content: <p>Escolha o tema associado à sua reutilização.</p>,
       hasError: !!formErrors.reuseTopic,
     },
     {
-      title: "Descreva a sua reutilização.",
-      content:
-        "Pode fornecer detalhes como a forma como a reutilização foi criada, o que permite fazer ou demonstrar, e até mesmo falar mais sobre si e o contexto desta reutilização. É melhor manter um tom neutro: se a reutilização soar muito como uma mensagem promocional, podemos removê-la.",
+      title: "Descrever a reutilização",
+      content: (
+        <p>
+          Pode indicar, de forma objetiva, como a reutilização foi desenvolvida, o que permite
+          realizar ou demonstrar e, se relevante, acrescentar informação sobre o contexto em que a
+          reutilização foi criada. Recomenda-se manter um tom neutro; conteúdos com caráter
+          excessivamente promocional poderão não ser aceites.
+        </p>
+      ),
       hasError: !!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength,
     },
     {
       title: "Adicionar palavras-chave",
       content: (
-        <>
-          <p>
-            As palavras-chave aparecem na página de destino e melhoram o posicionamento nos
-            mecanismos de pesquisa. Para cada palavra-chave, pode obter uma lista de
-            reutilizações para as quais essa palavra-chave também foi atribuída.
-          </p>
-          <p className="font-bold mt-3">Sugestões automáticas</p>
-          <p className="mt-2">
-            Com base no conteúdo que reutiliza, podem ser sugeridas palavras-chave
-            automaticamente. Pode aceitá-las, modificá-las ou excluí-las.
-          </p>
-          <p className="mt-3">
-            <a href="#" className="text-primary-600 underline">
-              A IA baseia-se exclusivamente nas informações que forneceu e, por vezes, pode
-              cometer erros: releia sempre a proposta antes de validar.
-            </a>
-          </p>
-        </>
+        <p>
+          As palavras-chave são apresentadas na página da reutilização e melhoram a sua
+          visibilidade nos motores de pesquisa. Ao selecionar uma palavra-chave, pode consultar
+          outras reutilizações às quais essa mesma palavra foi associada. Com base no conteúdo da
+          reutilização, podem ser sugeridas palavras-chave automaticamente. Pode aceitá-las,
+          modificá-las ou excluí-las.
+        </p>
       ),
     },
     {
-      title: "Escolha uma imagem",
-      content:
-        'Se a sua reutilização assumir a forma de uma representação gráfica, pode fornecer uma pré-visualização para outros utilizadores usando uma imagem ou captura de ecrã. Esta imagem aparecerá na secção "Reutilizações" da página do conjunto de dados associado. Quando relevante, as capturas de ecrã ilustram melhor a reutilização e, portanto, são preferíveis a logotipos ou ilustrações, por exemplo.',
+      title: "Escolher uma imagem",
+      content: (
+        <p>
+          Se a sua reutilização tiver uma componente visual, pode apresentar uma pré-visualização
+          através de uma imagem ou de uma captura de ecrã (preferíveis a logótipos ou a simples
+          ilustrações). Esta imagem será exibida na secção “Reutilizações” na listagem das mesmas.
+        </p>
+      ),
       hasError: !!formErrors.reuseCoverImage,
     },
   ];
@@ -351,9 +364,9 @@ export default function ReusesFormClient({
                   <>
                     <strong>O que é reutilização?</strong>
                     <br />
-                    A reutilização é um exemplo de uso de dados públicos. Publicar uma
-                    reutilização pode ajudar a ganhar visibilidade e iniciar um diálogo
-                    com o produtor do conjunto de dados.
+                    Uma reutilização mostra de que forma os dados públicos podem ser utilizados. Ao
+                    publicar a sua reutilização, aumenta a visibilidade do seu trabalho e pode
+                    estabelecer contacto direto com a entidade que produz o conjunto de dados.
                   </>
                 }
               />
@@ -371,7 +384,7 @@ export default function ReusesFormClient({
                 <h2 className="admin-page__section-title">Produtor</h2>
 
                 <IsolatedSelect
-                  label="Verifique a identidade que deseja usar na publicação."
+                  label="Confirme a identidade que pretende utilizar na publicação."
                   placeholder="Selecione o produtor..."
                   id="producer-identity"
                   onChangeRef={selectedProducerRef}
@@ -381,11 +394,11 @@ export default function ReusesFormClient({
 
                 <div className="admin-page__org-card">
                   <p className="admin-page__org-card-title">
-                    Não pertence a nenhuma organização.
+                    Não pertence a uma organização.
                   </p>
                   <p className="admin-page__org-card-description">
-                    Recomendamos que publique em nome de uma organização se se
-                    tratar de uma atividade profissional.
+                    Quando a reutilização for produzida no contexto de atividade profissional, é
+                    recomendável que seja publicada em nome da organização responsável.
                   </p>
                   <a
                     href="/pages/admin/organizations/new"
@@ -472,7 +485,7 @@ export default function ReusesFormClient({
                   />
                   <IsolatedSelect
                     label="Palavras-chave"
-                    placeholder="Selecione palavras-chave..."
+                    placeholder="Pesquise ou insira palavras-chave…"
                     id="reuse-keywords"
                     type="checkbox"
                     searchable
@@ -549,7 +562,7 @@ export default function ReusesFormClient({
               <div className="mb-[24px]">
                 <StatusCard
                   type="info"
-                  description="É importante vincular todos os conjuntos de dados utilizados, pois isso ajuda a compreender as referências cruzadas necessárias e a melhorar a visibilidade da sua reutilização."
+                  description="É importante associar todos os conjuntos de dados, pois ajuda a compreender as referências cruzadas e a melhorar a visibilidade da sua reutilização."
                 />
               </div>
               {apiError && (
@@ -618,8 +631,8 @@ export default function ReusesFormClient({
                 )}
 
                 <InputSelect
-                  label="Pesquisar um conjunto de dados"
-                  placeholder="Procurando um conjunto de dados..."
+                  label="Ficheiro com um conjunto de dados"
+                  placeholder="Selecione um conjunto de dados…"
                   id="reuse-dataset-search"
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
@@ -943,7 +956,7 @@ export default function ReusesFormClient({
                     }
                   }}
                 >
-                  {isSubmitting ? "A guardar..." : "Salvar rascunho"}
+                  {isSubmitting ? "A guardar..." : "Guardar o rascunho"}
                 </Button>
                 <Button
                   variant="primary"
@@ -962,7 +975,7 @@ export default function ReusesFormClient({
                     }
                   }}
                 >
-                  {isSubmitting ? "A publicar..." : "Publicar reutilização"}
+                  {isSubmitting ? "A publicar..." : "Publicar a reutilização"}
                 </Button>
               </div>
             </>
