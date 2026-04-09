@@ -82,7 +82,7 @@ export default function OrganizationsNewClient() {
   };
 
   const stepTitles: Record<number, string> = {
-    1: "Crie ou integre uma organização em dados.gov",
+    1: "Crie ou integre uma organização em dados.gov.pt",
     2: "Descreva a sua organização",
     3: "Finalize sua organização",
   };
@@ -210,7 +210,7 @@ export default function OrganizationsNewClient() {
               <div>
                 <InputSelect
                   label="Organização"
-                  placeholder="Pesquisar uma organização em dados.gov…"
+                  placeholder="Pesquisar uma organização em dados.gov.pt…"
                   id="search-organization"
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."

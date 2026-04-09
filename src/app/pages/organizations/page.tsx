@@ -4,7 +4,7 @@ import { OrganizationFilters } from '@/types/api';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Organizações - dados.gov',
+    title: 'Organizações - dados.gov.pt',
     description: 'Explore as organizações que publicam dados abertos em Portugal.',
 };
 

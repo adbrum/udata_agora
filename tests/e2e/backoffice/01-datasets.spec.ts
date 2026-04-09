@@ -14,8 +14,8 @@ test.describe("Backoffice - Datasets CRUD", () => {
       await page.waitForLoadState("networkidle");
       await page.waitForTimeout(2000);
 
-      // The datasets list page has a "Publicar dados.gov" dropdown or a "Publique no portal" button
-      const publishBtn = page.getByText("Publicar dados.gov").first();
+      // The datasets list page has a "Publicar dados.gov.pt" dropdown or a "Publique no portal" button
+      const publishBtn = page.getByText("Publicar dados.gov.pt").first();
       const emptyStateBtn = page.getByText("Publique no portal").first();
       if (await emptyStateBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
         await emptyStateBtn.click();

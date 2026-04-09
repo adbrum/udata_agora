@@ -222,7 +222,7 @@ export const Header = () => {
             key: "dados-gov",
             iconDefault: "agora-line-info-mark",
             iconHover: "agora-solid-info-mark",
-            title: "O que é o dados.gov",
+            title: "O que é o dados.gov.pt",
             description: "Sobre o portal",
             href: "/pages/faqs/about_dadosgov",
           },
@@ -259,7 +259,7 @@ export const Header = () => {
             iconDefault: "agora-line-user-group",
             iconHover: "agora-solid-user-group",
             title: "Desenvolvimento",
-            description: "Plataforma e código",
+            description: "Portal e código",
             href: "#",
             isSubmenuTrigger: true,
           },
@@ -316,7 +316,7 @@ export const Header = () => {
             <Link href="/" className="flex items-center">
               <NextImage
                 src="/Logos/logo.svg"
-                alt="dados.gov"
+                alt="dados.gov.pt"
                 height={43}
                 width={251}
                 priority

@@ -662,7 +662,7 @@ export default function DatasetsAdminClient({
                   <>
                     <strong>O que é um conjunto de dados?</strong>
                     <br />
-                    Em dados.gov, um conjunto de dados é um conjunto de ficheiros.
+                    Em dados.gov.pt, um conjunto de dados é um conjunto de ficheiros.
                   </>
                 }
               />
