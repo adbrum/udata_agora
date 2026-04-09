@@ -12,7 +12,7 @@ import {
   InputSelect,
   DropdownSection,
   DropdownOption,
-  ButtonUploader,
+  DragAndDropUploader,
   CardGeneral,
   CardLinks,
 } from "@ama-pt/agora-design-system";
@@ -64,6 +64,8 @@ export default function ReusesFormClient({
   const [reuseTypes, setReuseTypes] = useState<ReuseType[]>([]);
   const [reuseTopics, setReuseTopics] = useState<ReuseTopic[]>([]);
   const [tags, setTags] = useState<TagSuggestion[]>([]);
+  const [keywordSearch, setKeywordSearch] = useState("");
+  const [selectedKeywordsValue, setSelectedKeywordsValue] = useState("");
 
   // Step 2 state
   const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
@@ -84,6 +86,36 @@ export default function ReusesFormClient({
     setDatasetLinkErrors({});
     setApiLinkErrors({});
   }, [currentStep]);
+
+  const keywordsChildren = useMemo(() => {
+    const trimmed = keywordSearch.trim().toLowerCase();
+    const showCreate = trimmed.length > 0 && !tags.some((t) => t.text.toLowerCase() === trimmed);
+    const options = [
+      ...tags.map((tag) => (
+        <DropdownOption key={tag.text} value={tag.text}>
+          {tag.text}
+        </DropdownOption>
+      )),
+      ...(showCreate
+        ? [
+            <DropdownOption key={`__create__${trimmed}`} value={keywordSearch.trim()}>
+              Criar &quot;{keywordSearch.trim()}&quot;
+            </DropdownOption>,
+          ]
+        : []),
+    ];
+    return <DropdownSection name="keywords">{options}</DropdownSection>;
+  }, [tags, keywordSearch]);
+
+  const handleKeywordChange = useCallback((value: string) => {
+    setSelectedKeywordsValue(value);
+    const selected = value.split(",").filter(Boolean);
+    selected.forEach((v) => {
+      if (!tags.some((t) => t.text === v)) {
+        setTags((prev) => [...prev, { text: v }]);
+      }
+    });
+  }, [tags]);
 
   const handleStep1Next = async () => {
     const errors: Record<string, boolean> = {};
@@ -471,7 +503,8 @@ export default function ReusesFormClient({
                     placeholder="Insira a descrição aqui"
                     id="reuse-description"
                     rows={4}
-                    maxLength={246}
+                    maxLength={200}
+                    showCharCounter
                     value={reuseDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setReuseDescription(e.target.value);
@@ -489,17 +522,14 @@ export default function ReusesFormClient({
                     id="reuse-keywords"
                     type="checkbox"
                     searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchInputPlaceholder="Escreva para pesquisar ou criar…"
                     searchNoResultsText="Nenhum resultado encontrado"
                     onChangeRef={selectedKeywordsRef}
+                    defaultValue={selectedKeywordsValue}
+                    onSearchCallback={setKeywordSearch}
+                    onChangeCallback={handleKeywordChange}
                   >
-                    <DropdownSection name="keywords">
-                      {tags.map((tag) => (
-                        <DropdownOption key={tag.text} value={tag.text}>
-                          {tag.text}
-                        </DropdownOption>
-                      ))}
-                    </DropdownSection>
+                    {keywordsChildren}
                   </IsolatedSelect>
 
                   <div>
@@ -507,15 +537,20 @@ export default function ReusesFormClient({
                       Imagem de capa *
                     </span>
                     <div className="mt-2">
-                      <ButtonUploader
-                        label="Ficheiros"
-                        inputLabel="Selecione ou arraste o ficheiro"
+                      <DragAndDropUploader
+                        key={reuseCoverImageFile?.name}
+                        dragAndDropLabel="Arraste e largue a imagem aqui"
+                        inputLabel="Selecionar ficheiro"
+                        separatorLabel="ou"
                         removeFileButtonLabel="Remover ficheiro"
                         replaceFileButtonLabel="Substituir ficheiro"
                         extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceites: JPG, JPEG, PNG."
                         accept=".jpg,.jpeg,.png"
                         maxSize={4194304}
                         maxCount={1}
+                        maxSizeExceededErrorLabel="O ficheiro excede o tamanho máximo de 4 MB."
+                        forbiddenExtensionErrorLabel="Formato de ficheiro não permitido."
+                        files={reuseCoverImageFile ? [reuseCoverImageFile] : undefined}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const files = e.target.files;
                           setReuseCoverImageFile(files && files.length > 0 ? files[0] : null);
