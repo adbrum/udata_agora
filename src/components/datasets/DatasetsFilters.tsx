@@ -13,8 +13,7 @@ import {
   suggestTags,
   suggestSpatialZones,
 } from "@/services/api";
-import { Organization, License, Frequency, Granularity, SiteMetrics } from "@/types/api";
-import { CategoryToggles } from "@/components/CategoryToggles";
+import { Organization, License, Frequency, Granularity } from "@/types/api";
 
 interface FilterOption {
   id: string;
@@ -76,12 +75,7 @@ const DATASET_TOGGLE_FILTERS = {
 
 type ToggleFilterKey = keyof typeof DATASET_TOGGLE_FILTERS;
 
-interface DatasetsFiltersProps {
-  siteMetrics?: SiteMetrics;
-  searchQuery?: string;
-}
-
-export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersProps) => {
+export const DatasetsFilters = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -281,12 +275,6 @@ export const DatasetsFilters = ({ siteMetrics, searchQuery }: DatasetsFiltersPro
 
   return (
     <div className="h-full">
-      {siteMetrics && (
-        <div>
-          <CategoryToggles siteMetrics={siteMetrics} searchQuery={searchQuery} />
-        </div>
-      )}
-
       <div className="flex flex-col gap-32 mt-[36px] mb-[36px]">
         <h2 className="font-bold text-xl text-neutral-900">Filtros</h2>
         {(Object.keys(DATASET_TOGGLE_FILTERS) as ToggleFilterKey[]).map((filterKey) => {

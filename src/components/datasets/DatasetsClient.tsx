@@ -218,7 +218,7 @@ export default function DatasetsClient({
             {/* Sidebar */}
             {filtersOpen && (
               <div className="xl:col-span-5 xl:block">
-                <DatasetsFilters siteMetrics={siteMetrics} searchQuery={currentQuery} />
+                <DatasetsFilters />
               </div>
             )}
 

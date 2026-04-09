@@ -14,6 +14,7 @@ const linkColumns = [
   {
     title: 'Portal',
     links: [
+      { href: '/pages/posts', label: 'Notícias' },
       { href: '/pages/faqs/about_dadosgov', label: 'Sobre nós' },
       { href: '/pages/support', label: 'Contactar-nos' },
       { href: '/pages/faqs/terms', label: 'Termos de utilização' },

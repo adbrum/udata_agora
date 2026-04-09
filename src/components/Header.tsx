@@ -274,15 +274,6 @@ export const Header = () => {
           //   href: "#",
           //   isSubmenuTrigger: true,
           // },
-          {
-            type: "card",
-            key: "noticias",
-            iconDefault: "agora-line-mega-phone",
-            iconHover: "agora-solid-mega-phone",
-            title: "Notícias",
-            description: "Últimas novidades",
-            href: "/pages/posts",
-          },
           // Minicursos ocultos temporariamente
           // {
           //   type: "card",
