@@ -2974,7 +2974,8 @@ export async function fetchUsers(
   page: number = 1,
   q?: string,
   sort?: string,
-  pageSize: number = 20
+  pageSize: number = 20,
+  role?: string
 ): Promise<APIResponse<UserAdmin>> {
   try {
     const params = new URLSearchParams();
@@ -2982,6 +2983,7 @@ export async function fetchUsers(
     params.set("page_size", String(pageSize));
     if (q) params.set("q", q);
     if (sort) params.set("sort", sort);
+    if (role) params.set("role", role);
 
     const res = await fetch(`${API_AUTH_URL}/users/?${params.toString()}`, {
       cache: "no-store",
