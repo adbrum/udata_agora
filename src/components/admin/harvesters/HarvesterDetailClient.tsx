@@ -890,7 +890,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                           trailingIcon="agora-line-arrow-right-circle"
                           trailingIconHover="agora-solid-arrow-right-circle"
                         >
-                          Elimine o harvester
+                          Eliminar o harvester
                         </Button>
                       </>
                     }
