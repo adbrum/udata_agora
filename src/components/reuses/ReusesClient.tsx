@@ -113,8 +113,8 @@ const REUSE_TOGGLE_FILTERS = {
     options: [
       { id: "all", label: "Todos", count: "2,8 mil" },
       { id: "visualization", label: "Visualização", count: "1,1 mil" },
-      { id: "application", label: "Aplicativo", count: "1 mil" },
-      { id: "blog_post", label: "Postagem no blog", count: "238" },
+      { id: "application", label: "Aplicação", count: "1 mil" },
+      { id: "blog_post", label: "Partilha no portal", count: "238" },
       { id: "press_article", label: "Artigo de imprensa", count: "184" },
       { id: "api", label: "API", count: "129" },
       { id: "scientific", label: "Publicação científica", count: "68" },
