@@ -222,7 +222,7 @@ export default function HarvestersNewClient() {
   const stepTitles: Record<number, string> = {
     1: "Descreva o seu harvester",
     2: "Visualize o seu harvester",
-    3: "Finalizar",
+    3: "Finalize a publicação do seu harvester",
   };
 
   const auxiliarItems = [
@@ -282,7 +282,7 @@ export default function HarvestersNewClient() {
             { label: "Administração", url: "/pages/admin" },
             { label: "Harvesters", url: "/pages/admin/system/harvesters" },
             {
-              label: "Formulário de publicação",
+              label: "Formulário de publicação de um harvester",
               url: "/pages/admin/harvesters/new",
             },
           ]}
@@ -290,7 +290,7 @@ export default function HarvestersNewClient() {
       </div>
 
       <div className="admin-page__header">
-        <h1 className="admin-page__title">Formulário de publicação</h1>
+        <h1 className="admin-page__title">Formulário de publicação de um harvester</h1>
         <PublishDropdown />
       </div>
 
@@ -366,7 +366,7 @@ export default function HarvestersNewClient() {
                 <div className="admin-page__fields-group">
                   <InputText
                     label="Nome *"
-                    placeholder=""
+                    placeholder="Insira o nome aqui"
                     id="harvester-name"
                     value={harvesterName}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -381,7 +381,7 @@ export default function HarvestersNewClient() {
 
                   <InputTextArea
                     label="Descrição"
-                    placeholder=""
+                    placeholder="Insira a descrição aqui"
                     id="harvester-description"
                     rows={6}
                     value={harvesterDescription}
@@ -392,7 +392,7 @@ export default function HarvestersNewClient() {
 
                   <InputText
                     label="URL *"
-                    placeholder=""
+                    placeholder="Insira o url aqui"
                     id="harvester-url"
                     value={harvesterUrl}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -411,7 +411,7 @@ export default function HarvestersNewClient() {
                 <div className="admin-page__fields-group">
                   <IsolatedSelect
                     label="Tipo *"
-                    placeholder=""
+                    placeholder="Selecione um tipo..."
                     id="harvester-type"
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
@@ -620,7 +620,7 @@ export default function HarvestersNewClient() {
                         onChange={() => setIsEnabled((v) => !v)}
                       />
                       <Switch
-                        label="Arquivamento automático"
+                        label="Arquivo automático"
                         checked={isAutoArchive}
                         onChange={() => setIsAutoArchive((v) => !v)}
                       />
@@ -820,12 +820,12 @@ export default function HarvestersNewClient() {
                   description={
                     <>
                       <strong>
-                        Seu harvester foi criado e está a aguardar validação pela equipa de
+                        O seu harvester foi criado e está a aguardar validação pela equipa de
                         administração.
                       </strong>
                       <br />
-                      Informe-nos através do formulário de contato abaixo se deseja que validemos
-                      seu harvester. Você será notificado da aprovação (ou rejeição).
+                      Informe-nos através do formulário de contacto abaixo se deseja que validemos
+                      o seu harvester. Será notificado da aprovação (ou rejeição).
                     </>
                   }
                 />
@@ -856,7 +856,7 @@ export default function HarvestersNewClient() {
                     )
                   }
                 >
-                  Vá até a administração
+                  Ver na administração
                 </Button>
                 <Button
                   appearance="outline"
@@ -866,7 +866,7 @@ export default function HarvestersNewClient() {
                   trailingIconHover="agora-solid-external-link"
                   onClick={() => router.push("/pages/support")}
                 >
-                  Validação da solicitação
+                  Solicitar validação do harvester
                 </Button>
               </div>
             </div>

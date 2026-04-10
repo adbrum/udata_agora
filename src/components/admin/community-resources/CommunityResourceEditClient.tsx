@@ -572,7 +572,7 @@ export default function CommunityResourceEditClient() {
               <InputSelect
                 key={`schema-${resource?.id || "loading"}-${schemas.length}`}
                 label="Plano"
-                placeholder="Procure um esquema referenciado em dados.gov..."
+                placeholder="Procure um esquema referenciado em dados.gov.pt..."
                 id="resource-schema"
                 searchable
                 searchInputPlaceholder="Escreva para pesquisar..."
