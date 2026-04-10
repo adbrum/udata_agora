@@ -13,5 +13,6 @@ export default async function DataStoriesPage({
 }) {
     const resolvedSearchParams = await searchParams;
     const page = Number(resolvedSearchParams?.page) || 1;
+
     return <DataStoriesClient currentPage={page} />;
 }
