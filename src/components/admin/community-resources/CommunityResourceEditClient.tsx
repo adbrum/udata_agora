@@ -331,14 +331,14 @@ export default function CommunityResourceEditClient() {
       ),
     },
     {
-      title: "Escolha um tipo MIME",
+      title: "Escolher um tipo de recurso",
       content:
-        "Especifique o tipo MIME correspondente ao formato do recurso remoto (por exemplo, application/pdf, text/csv). Se necessário, utilize uma ferramenta online para o detetar.",
+        "Especifique o tipo de recurso correspondente ao formato do recurso remoto (por exemplo, application/pdf, text/csv). Se necessário, utilize uma ferramenta online para detetá-lo.",
     },
     {
-      title: "Selecione um esquema",
+      title: "Selecionar um esquema",
       content:
-        "É possível identificar um esquema de dados existente visitando o site schema.data.gouv.fr, que contém uma lista de esquemas de dados existentes.",
+        "É possível identificar um esquema de dados existente ao visitar o site schema.data.gouv.fr, que contém uma lista de esquemas de dados existentes.",
     },
   ];
 
