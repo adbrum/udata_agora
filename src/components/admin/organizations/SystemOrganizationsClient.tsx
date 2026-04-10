@@ -172,7 +172,7 @@ export default function SystemOrganizationsClient() {
               <TableRow key={org.id}>
                 <TableCell headerLabel="Nome">
                   <a
-                    href={`/pages/organizations/${org.slug}`}
+                    href={`/pages/admin/org/${org.id}/profile`}
                     className="text-primary-600 underline"
                   >
                     {org.name}
