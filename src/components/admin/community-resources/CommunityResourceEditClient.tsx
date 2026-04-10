@@ -394,7 +394,7 @@ export default function CommunityResourceEditClient() {
 
           <form className="admin-page__form">
             <p className="text-neutral-900 text-base leading-7">
-              Os campos marcados com um asterisco ( * ) sao obrigatorios.
+              Os campos marcados com um asterisco ( * ) sao obrigatórios.
             </p>
 
             {/* PENHORA */}
@@ -403,7 +403,7 @@ export default function CommunityResourceEditClient() {
             <div className="admin-page__fields-group">
               <InputText
                 label="Link exato para o ficheiro *"
-                placeholder="https://..."
+                placeholder="Insira o link para o ficheiro"
                 id="resource-url"
                 value={resourceUrl}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -419,7 +419,7 @@ export default function CommunityResourceEditClient() {
 
             {/* SOMA DE VERIFICACAO */}
             <div className="flex flex-col items-start gap-[12px]">
-              <h2 className="admin-page__section-title mb-0">Soma de verificação</h2>
+              <h2 className="admin-page__section-title mb-0">Selo de verificação</h2>
               {showChecksum ? (
                 <Button
                   variant="danger"
@@ -555,7 +555,7 @@ export default function CommunityResourceEditClient() {
               </div>
 
               <InputText
-                label="Tipo mime"
+                label="Tipo de recurso"
                 placeholder="application/pdf"
                 id="resource-mime"
                 value={mimeType}
@@ -572,7 +572,7 @@ export default function CommunityResourceEditClient() {
               <InputSelect
                 key={`schema-${resource?.id || "loading"}-${schemas.length}`}
                 label="Plano"
-                placeholder="Procure um esquema referenciado em dados.gov..."
+                placeholder="Procure um esquema referenciado em dados.gov.pt..."
                 id="resource-schema"
                 searchable
                 searchInputPlaceholder="Escreva para pesquisar..."
@@ -597,8 +597,8 @@ export default function CommunityResourceEditClient() {
               </div>
 
               <InputText
-                label="Adicione um link para o diagrama."
-                placeholder="https://..."
+                label="Adicione um link para o diagrama"
+                placeholder="Insira o link para o diagrama"
                 id="resource-schema-url"
                 value={schemaUrl}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
