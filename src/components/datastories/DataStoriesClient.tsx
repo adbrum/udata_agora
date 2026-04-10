@@ -1,36 +1,38 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { CardLinks, InputSearch, ToggleGroup, Toggle } from '@ama-pt/agora-design-system';
-import PageBanner from '@/components/PageBanner';
-import { Pagination } from '@/components/Pagination';
+import React from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { CardLinks, InputSearch, ToggleGroup, Toggle } from "@ama-pt/agora-design-system";
+import PageBanner from "@/components/PageBanner";
+import { Pagination } from "@/components/Pagination";
 
 // Dummy data for Data Stories
 const dummyDataStories = [
   {
-    id: '1',
-    slug: 'servicos-publicos/o-canal-presencial',
-    title: 'Serviços Públicos: o canal presencial',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    organization: { name: 'Serviços Públicos' },
-    image: '/laptop.png',
-    created_at: '2024-03-11T12:00:00Z',
+    id: "1",
+    slug: "servicos-publicos/o-canal-presencial",
+    title: "Serviços Públicos: o canal presencial",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    organization: { name: "Serviços Públicos" },
+    image: "/laptop.png",
+    created_at: "2024-03-11T12:00:00Z",
     metrics: { views: 1250, reuses: 45, followers: 12 },
-    datasets: [1, 2, 3]
+    datasets: [1, 2, 3],
   },
   {
-    id: '2',
-    slug: 'territorios-inteligentes/pressao-turistica-em-portugal',
-    title: 'Territórios Inteligentes: Pressão turística em Portugal',
-    description: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    organization: { name: 'Territórios Inteligentes' },
-    image: '/laptop.png',
-    created_at: '2024-03-10T12:00:00Z',
+    id: "2",
+    slug: "territorios-inteligentes/pressao-turistica-em-portugal",
+    title: "Territórios Inteligentes: Pressão turística em Portugal",
+    description:
+      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    organization: { name: "Territórios Inteligentes" },
+    image: "/laptop.png",
+    created_at: "2024-03-10T12:00:00Z",
     metrics: { views: 890, reuses: 23, followers: 8 },
-    datasets: [1, 2]
-  }
+    datasets: [1, 2],
+  },
 ];
 
 interface DataStoriesClientProps {
@@ -39,10 +41,9 @@ interface DataStoriesClientProps {
 
 export default function DataStoriesClient({ currentPage }: DataStoriesClientProps) {
   const router = useRouter();
-  const total = 48; // Dummy total to show pagination
+  const total: number = 48; // Dummy total to show pagination
   const pageSize = 12;
-  const [searchQuery, setSearchQuery] = React.useState('');
-
+  const [searchQuery, setSearchQuery] = React.useState("");
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 datastories">
@@ -52,12 +53,14 @@ export default function DataStoriesClient({ currentPage }: DataStoriesClientProp
           backgroundImageUrl="/Banner/hero-bg.png"
           backgroundPosition="center right"
           breadcrumbItems={[
-            { label: 'Home', url: '/' },
-            { label: 'Data Stories', url: '/pages/datastories' }
+            { label: "Home", url: "/" },
+            { label: "Data Stories", url: "/pages/datastories" },
           ]}
           subtitle={
             <p className="text-primary-100 max-w-[592px]">
-              Pesquise através de {total} data stories em dados.gov.pt
+              {total === 0
+                ? "Não existem resultados disponíveis para a sua pesquisa"
+                : `Pesquise através de ${total} data stories em dados.gov.pt`}
             </p>
           }
         />
@@ -88,11 +91,7 @@ export default function DataStoriesClient({ currentPage }: DataStoriesClientProp
               </span>
             </div>
             <div className="xl:col-span-7 flex items-center justify-end py-16">
-              <ToggleGroup
-                multiple={false}
-                value="recentes"
-                onChange={() => {}}
-              >
+              <ToggleGroup multiple={false} value="recentes" onChange={() => {}}>
                 <Toggle value="recentes">Mais recentes</Toggle>
                 <Toggle value="visualizados">Mais visualizados</Toggle>
               </ToggleGroup>
@@ -120,47 +119,43 @@ export default function DataStoriesClient({ currentPage }: DataStoriesClientProp
                           {story.description}
                         </p>
                       }
-                      date={
-                        <span className="font-[300]">
-                          Publicado em 11 de março de 2024
-                        </span>
-                      }
+                      date={<span className="font-[300]">Publicado em 11 de março de 2024</span>}
                       links={[
                         {
-                          href: '#',
+                          href: "#",
                           hasIcon: true,
-                          leadingIcon: 'agora-line-eye',
-                          leadingIconHover: 'agora-solid-eye',
-                          trailingIcon: '',
-                          trailingIconHover: '',
-                          children: story.metrics.views.toLocaleString('pt-PT'),
-                          title: 'Visualizações',
+                          leadingIcon: "agora-line-eye",
+                          leadingIconHover: "agora-solid-eye",
+                          trailingIcon: "",
+                          trailingIconHover: "",
+                          children: story.metrics.views.toLocaleString("pt-PT"),
+                          title: "Visualizações",
                           onClick: (e: React.MouseEvent) => e.preventDefault(),
-                          className: 'text-[#034AD8]',
+                          className: "text-[#034AD8]",
                         },
                         {
-                          href: '#',
+                          href: "#",
                           hasIcon: true,
-                          leadingIcon: 'agora-line-layers-menu',
-                          leadingIconHover: 'agora-solid-layers-menu',
-                          trailingIcon: '',
-                          trailingIconHover: '',
+                          leadingIcon: "agora-line-layers-menu",
+                          leadingIconHover: "agora-solid-layers-menu",
+                          trailingIcon: "",
+                          trailingIconHover: "",
                           children: `${story.datasets.length}`,
-                          title: 'Datasets',
+                          title: "Datasets",
                           onClick: (e: React.MouseEvent) => e.preventDefault(),
-                          className: 'text-[#034AD8]',
+                          className: "text-[#034AD8]",
                         },
                         {
-                          href: '#',
+                          href: "#",
                           hasIcon: true,
-                          leadingIcon: 'agora-line-star',
-                          leadingIconHover: 'agora-solid-star',
-                          trailingIcon: '',
-                          trailingIconHover: '',
+                          leadingIcon: "agora-line-star",
+                          leadingIconHover: "agora-solid-star",
+                          trailingIcon: "",
+                          trailingIconHover: "",
                           children: story.metrics.followers,
-                          title: 'Favoritos',
+                          title: "Favoritos",
                           onClick: (e: React.MouseEvent) => e.preventDefault(),
-                          className: 'text-[#034AD8]',
+                          className: "text-[#034AD8]",
                         },
                       ]}
                       mainLink={
