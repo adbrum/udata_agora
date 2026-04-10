@@ -18,6 +18,7 @@ import {
   Tab,
   TabHeader,
   TabBody,
+  usePopupContext,
 } from "@ama-pt/agora-design-system";
 import {
   fetchPost,
@@ -34,9 +35,38 @@ const RichTextEditor = dynamic(() => import("./RichTextEditor"), {
   loading: () => <p>A carregar editor...</p>,
 });
 
+function DeletePostPopupContent({
+  onClose,
+  onConfirm,
+}: {
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-[16px]">
+      <p>Essa ação não pode ser desfeita.</p>
+      <div className="flex justify-end gap-16 pt-16">
+        <Button appearance="outline" variant="neutral" onClick={onClose}>
+          Cancelar
+        </Button>
+        <Button
+          variant="danger"
+          onClick={onConfirm}
+          hasIcon
+          leadingIcon="agora-line-trash"
+          leadingIconHover="agora-solid-trash"
+        >
+          Eliminar
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function PostsEditClient() {
   const params = useParams();
   const router = useRouter();
+  const { show, hide } = usePopupContext();
   const postId = params.postId as string;
 
   const [post, setPost] = useState<Post | null>(null);
@@ -455,7 +485,20 @@ export default function PostsEditClient() {
                           hasIcon
                           trailingIcon="agora-line-arrow-right-circle"
                           trailingIconHover="agora-solid-arrow-right-circle"
-                          onClick={handleDelete}
+                          onClick={() => {
+                            show(
+                              <DeletePostPopupContent
+                                onClose={hide}
+                                onConfirm={handleDelete}
+                              />,
+                              {
+                                title:
+                                  "Tem a certeza que quer eliminar este artigo?",
+                                closeAriaLabel: "Fechar",
+                                dimensions: "m",
+                              },
+                            );
+                          }}
                           disabled={isSaving}
                         >
                           Eliminar o artigo
