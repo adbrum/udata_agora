@@ -827,13 +827,29 @@ export default function ReusesFormClient({
                     disabled={isSubmitting}
                     onClick={async () => {
                       if (!createdReuse) return;
+
+                      const hasDropdownDataset = !!selectedDataset;
+                      const hasUrlDatasets = datasetLinks.some((l) => l.url.trim());
+                      if (!hasDropdownDataset && !hasUrlDatasets) {
+                        setApiError("Associe pelo menos um conjunto de dados antes de avançar.");
+                        return;
+                      }
+
                       setIsSubmitting(true);
                       setApiError(null);
                       try {
+                        if (selectedDataset) {
+                          const updated = await linkDatasetToReuse(createdReuse.id, selectedDataset.id);
+                          setCreatedReuse(updated);
+                        }
                         for (const link of datasetLinks) {
-                          if (link.url.trim()) {
-                            await linkDatasetToReuse(createdReuse.id, link.url.trim());
-                          }
+                          const trimmed = link.url.trim();
+                          if (!trimmed) continue;
+                          const idMatch = trimmed.match(/datasets\/([a-f0-9]{24})\/?/);
+                          const slugMatch = trimmed.match(/datasets\/([^/]+)\/?$/);
+                          const datasetRef = idMatch ? idMatch[1] : slugMatch ? slugMatch[1] : trimmed;
+                          const updated = await linkDatasetToReuse(createdReuse.id, datasetRef);
+                          setCreatedReuse(updated);
                         }
                         for (const link of apiLinks) {
                           if (link.url.trim()) {
@@ -849,7 +865,7 @@ export default function ReusesFormClient({
                             .join(", ");
                           setApiError(messages);
                         } else {
-                          setApiError("Erro ao associar dados. Tente novamente.");
+                          setApiError("Erro ao associar dados. Verifique os links inseridos e tente novamente.");
                         }
                       } finally {
                         setIsSubmitting(false);
