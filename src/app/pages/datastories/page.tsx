@@ -1,5 +1,4 @@
 import DataStoriesClient from '@/components/datastories/DataStoriesClient';
-import { fetchSiteInfo } from '@/services/api';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -14,7 +13,6 @@ export default async function DataStoriesPage({
 }) {
     const resolvedSearchParams = await searchParams;
     const page = Number(resolvedSearchParams?.page) || 1;
-    const siteInfo = await fetchSiteInfo();
 
-    return <DataStoriesClient currentPage={page} siteMetrics={siteInfo.metrics} />;
+    return <DataStoriesClient currentPage={page} />;
 }
