@@ -2,11 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {
-  fetchUser,
-  fetchUserActivity,
-  updateUser,
-} from "@/services/api";
+import { fetchUser, fetchUserActivity, updateUser } from "@/services/api";
 import { Activity, UserAdmin } from "@/types/api";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -163,9 +159,7 @@ export default function UserProfileClient() {
                 {user.organizations[0].name}
               </p>
             )}
-            <p className="text-neutral-900 text-xl font-semibold leading-8">
-              {displayName}
-            </p>
+            <p className="text-neutral-900 text-xl font-semibold leading-8">{displayName}</p>
             {lastModified && (
               <p className="text-neutral-900 text-base leading-7">
                 <span className="font-semibold">Membro desde:</span> {lastModified}
@@ -197,21 +191,15 @@ export default function UserProfileClient() {
               <div
                 className="admin-page__form mt-[24px]"
                 style={{
-                  maxWidth:
-                    "calc(100% - var(--admin-auxiliar-width) - var(--admin-auxiliar-gap))",
+                  maxWidth: "calc(100% - var(--admin-auxiliar-width) - var(--admin-auxiliar-gap))",
                 }}
               >
                 <h2 className="admin-page__section-title">EDITAR PERFIL</h2>
 
                 {saveSuccess && (
-                  <StatusCard
-                    type="success"
-                    description="Perfil guardado com sucesso."
-                  />
+                  <StatusCard type="success" description="Perfil guardado com sucesso." />
                 )}
-                {saveError && (
-                  <StatusCard type="danger" description={saveError} />
-                )}
+                {saveError && <StatusCard type="danger" description={saveError} />}
 
                 <div className="admin-page__fields-group">
                   <div className="flex gap-[18px]">
@@ -228,8 +216,8 @@ export default function UserProfileClient() {
                     </div>
                     <div className="flex-1">
                       <InputText
-                        label="Ultimo nome *"
-                        placeholder="Insira o apelido aqui"
+                        label="Último nome *"
+                        placeholder="Insira o último nome aqui"
                         id="last-name"
                         value={lastName}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -241,7 +229,7 @@ export default function UserProfileClient() {
 
                   <InputTextArea
                     label="Biografia"
-                    placeholder="Insira a descricao aqui"
+                    placeholder="Insira a descrição aqui"
                     id="biography"
                     rows={4}
                     value={about}
@@ -262,7 +250,8 @@ export default function UserProfileClient() {
 
                   {user.email && (
                     <InputText
-                      label="Endereco de e-mail"
+                      label="Endereço de e-mail"
+                      placeholder="Insira o endereço de e-mail aqui"
                       id="email"
                       value={user.email}
                       readOnly
@@ -296,10 +285,7 @@ export default function UserProfileClient() {
                     className="datasets-page__empty"
                     position="center"
                     icon={
-                      <Icon
-                        name="agora-line-edit"
-                        className="w-12 h-12 text-primary-500 icon-xl"
-                      />
+                      <Icon name="agora-line-edit" className="w-12 h-12 text-primary-500 icon-xl" />
                     }
                     title="Sem atividades"
                     description="Nenhuma atividade registada."
@@ -307,63 +293,54 @@ export default function UserProfileClient() {
                   />
                 ) : (
                   <div className="space-y-32">
-                    {Object.entries(groupActivitiesByMonth(activities)).map(
-                      ([month, acts]) => (
-                        <div key={month}>
-                          <h3 className="text-neutral-900 text-sm font-medium mb-16">
-                            {month}
-                          </h3>
-                          <div className="relative border-l-2 border-neutral-200 ml-4">
-                            {acts.map((act, idx) => (
-                              <div
-                                key={idx}
-                                className="flex items-start gap-16 pb-16 ml-16 relative"
-                              >
-                                <div className="absolute -left-[25px] top-1 w-8 h-8 rounded-full bg-neutral-300" />
-                                <div className="flex-1 flex items-start justify-between">
-                                  <div>
-                                    <span className="text-sm">
-                                      <Icon
-                                        name="agora-line-user"
-                                        className="w-4 h-4 inline text-primary-600 mr-4"
-                                      />
-                                      <span className="text-primary-600 font-medium">
-                                        {act.actor.first_name} {act.actor.last_name}
-                                      </span>
-                                      {" \u25BA "}
-                                      <span className="text-neutral-900">{act.label}</span>
+                    {Object.entries(groupActivitiesByMonth(activities)).map(([month, acts]) => (
+                      <div key={month}>
+                        <h3 className="text-neutral-900 text-sm font-medium mb-16">{month}</h3>
+                        <div className="relative border-l-2 border-neutral-200 ml-4">
+                          {acts.map((act, idx) => (
+                            <div key={idx} className="flex items-start gap-16 pb-16 ml-16 relative">
+                              <div className="absolute -left-[25px] top-1 w-8 h-8 rounded-full bg-neutral-300" />
+                              <div className="flex-1 flex items-start justify-between">
+                                <div>
+                                  <span className="text-sm">
+                                    <Icon
+                                      name="agora-line-user"
+                                      className="w-4 h-4 inline text-primary-600 mr-4"
+                                    />
+                                    <span className="text-primary-600 font-medium">
+                                      {act.actor.first_name} {act.actor.last_name}
                                     </span>
-                                    {act.related_to_url && (
-                                      <div>
-                                        <a
-                                          href={act.related_to_url}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-primary-600 text-sm underline"
-                                        >
-                                          {act.related_to}
-                                          <Icon
-                                            name="agora-line-external-link"
-                                            className="w-3 h-3 inline ml-4"
-                                          />
-                                        </a>
-                                      </div>
-                                    )}
-                                  </div>
-                                  <span className="text-neutral-900 text-sm whitespace-nowrap ml-16">
-                                    {format(
-                                      new Date(act.created_at),
-                                      "d 'de' MMMM 'de' yyyy",
-                                      { locale: pt }
-                                    )}
+                                    {" \u25BA "}
+                                    <span className="text-neutral-900">{act.label}</span>
                                   </span>
+                                  {act.related_to_url && (
+                                    <div>
+                                      <a
+                                        href={act.related_to_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary-600 text-sm underline"
+                                      >
+                                        {act.related_to}
+                                        <Icon
+                                          name="agora-line-external-link"
+                                          className="w-3 h-3 inline ml-4"
+                                        />
+                                      </a>
+                                    </div>
+                                  )}
                                 </div>
+                                <span className="text-neutral-900 text-sm whitespace-nowrap ml-16">
+                                  {format(new Date(act.created_at), "d 'de' MMMM 'de' yyyy", {
+                                    locale: pt,
+                                  })}
+                                </span>
                               </div>
-                            ))}
-                          </div>
+                            </div>
+                          ))}
                         </div>
-                      )
-                    )}
+                      </div>
+                    ))}
                     {totalActivityPages > 1 && (
                       <div className="flex items-center justify-center gap-8 mt-32">
                         <Button
@@ -381,9 +358,7 @@ export default function UserProfileClient() {
                           variant="primary"
                           appearance="outline"
                           onClick={() =>
-                            setActivityPage((p) =>
-                              Math.min(totalActivityPages, p + 1)
-                            )
+                            setActivityPage((p) => Math.min(totalActivityPages, p + 1))
                           }
                           disabled={activityPage === totalActivityPages}
                         >
