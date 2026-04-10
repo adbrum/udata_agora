@@ -30,6 +30,7 @@ export default function OrgProfileClient() {
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [nameError, setNameError] = useState(false);
 
   useEffect(() => {
     if (!orgId) {
@@ -58,6 +59,11 @@ export default function OrgProfileClient() {
 
   const handleSave = async () => {
     if (!org) return;
+    if (!name.trim()) {
+      setNameError(true);
+      return;
+    }
+    setNameError(false);
     setIsSaving(true);
     try {
       await updateOrganization(org.id, {
@@ -172,7 +178,14 @@ export default function OrgProfileClient() {
                 placeholder="Insira o nome aqui"
                 id="org-name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (e.target.value.trim()) setNameError(false);
+                }}
+                hasError={nameError}
+                hasFeedback={nameError}
+                feedbackState="danger"
+                errorFeedbackText="Campo obrigatório"
               />
 
               <InputText

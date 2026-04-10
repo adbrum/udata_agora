@@ -765,22 +765,6 @@ export default function DatasetsAdminClient({
                     feedbackText="Recomenda-se que a descrição tenha pelo menos 1000 caracteres."
                     errorFeedbackText="Campo obrigatório"
                   />
-                  <InputTextArea
-                    label="Descrição resumida"
-                    placeholder="Insira a descrição aqui"
-                    id="dataset-short-description"
-                    rows={3}
-                    maxLength={200}
-                    showCharCounter={true}
-                    value={datasetShortDescription}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                      setDatasetShortDescription(e.target.value);
-                      if (e.target.value.trim()) clearError("datasetShortDescription");
-                    }}
-                    hasFeedback
-                    feedbackState="info"
-                    feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 197 caracteres da sua descrição, seguidos de '...' (máximo de 200 caracteres)."
-                  />
                   <IsolatedSelect
                     label="Palavras-chave"
                     placeholder="Pesquise ou insira palavras-chave..."
