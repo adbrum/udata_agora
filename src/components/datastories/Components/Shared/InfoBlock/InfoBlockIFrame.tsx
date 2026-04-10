@@ -35,7 +35,7 @@ export default function InfoBlockIFrame({
 
     return (
         <div
-            className={twJoin("relative overflow-hidden pb-[56%] flex item-center justify-center", className)}
+            className={twJoin("relative overflow-hidden pb-[56%] flex item-center justify-center h-full", className)}
         >
             <iframe
                 ref={iframeRef}
