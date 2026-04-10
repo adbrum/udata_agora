@@ -752,7 +752,7 @@ export default function DatasetsAdminClient({
                     placeholder="Insira a descrição aqui"
                     id="dataset-description"
                     rows={4}
-                    maxLength={246}
+                    maxLength={1000}
                     showCharCounter={true}
                     value={datasetDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -760,9 +760,9 @@ export default function DatasetsAdminClient({
                       if (e.target.value.trim()) clearError("datasetDescription");
                     }}
                     hasError={!!formErrors.datasetDescription}
-                    hasFeedback={!!formErrors.datasetDescription || datasetDescription.length < 200}
+                    hasFeedback={!!formErrors.datasetDescription || datasetDescription.length < 1000}
                     feedbackState={formErrors.datasetDescription ? "danger" : "warning"}
-                    feedbackText="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
+                    feedbackText="Recomenda-se que a descrição tenha pelo menos 1000 caracteres."
                     errorFeedbackText="Campo obrigatório"
                   />
                   <InputTextArea
