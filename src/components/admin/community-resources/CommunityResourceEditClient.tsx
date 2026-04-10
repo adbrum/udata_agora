@@ -245,7 +245,7 @@ export default function CommunityResourceEditClient() {
       title: "Escolha o link correto",
       hasError: !!formErrors.url,
       content:
-        "É recomendável criar um link para o próprio arquivo em vez de uma página da web para permitir que o {site} o analise.",
+        "É recomendável criar um link para o próprio arquivo em vez de uma página da web para permitir que o site o analise.",
     },
     {
       title: "Soma de verificação",
@@ -253,11 +253,11 @@ export default function CommunityResourceEditClient() {
         "O checksum permite ao utilizador verificar se os dados descarregados não foram corrompidos ou alterados.",
     },
     {
-      title: "Dê um nome ao link",
+      title: "Dar um nome ao link",
       hasError: !!formErrors.title,
       content: (
         <>
-          Recomenda-se escolher um título que informe claramente qualquer utilizador sobre o conteúdo
+          Recomenda-se a escolha de um título que informe claramente qualquer utilizador sobre o conteúdo
           do arquivo. Algumas práticas a evitar:
           <ul className="list-disc pl-16 mt-8">
             <li>atribuir um título muito genérico (por exemplo, &quot;list.csv&quot;);</li>
@@ -267,14 +267,14 @@ export default function CommunityResourceEditClient() {
               interoperabilidade de arquivos);
             </li>
             <li>
-              dar um título demasiado técnico e derivado de nomenclaturas da indústria.
+              dar um título que seja demasiado técnico e derivado de nomenclaturas da indústria.
             </li>
           </ul>
         </>
       ),
     },
     {
-      title: "Publique os tipos de ficheiros corretos",
+      title: "Publicar os tipos de ficheiros corretos",
       hasError: !!formErrors.type,
       content: (
         <>
@@ -313,7 +313,7 @@ export default function CommunityResourceEditClient() {
           Os formatos devem ser:
           <ul className="list-disc pl-16 mt-8">
             <li>
-              Aberto: um formato aberto não adiciona especificações técnicas que restrinjam o uso
+              aberto: um formato aberto não adiciona especificações técnicas que restrinjam o uso
               dos dados (por exemplo, o uso de software pago);
             </li>
             <li>
