@@ -748,7 +748,7 @@ export default function DatasetsAdminClient({
                     }}
                   />
                   <InputTextArea
-                    label="Descrição*"
+                    label="Descrição *"
                     placeholder="Insira a descrição aqui"
                     id="dataset-description"
                     rows={4}
@@ -765,7 +765,7 @@ export default function DatasetsAdminClient({
                     feedbackText="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
                     errorFeedbackText="Campo obrigatório"
                   />
-                  <InputTextArea
+                  {/*<InputTextArea
                     label="Descrição resumida"
                     placeholder="Insira a descrição aqui"
                     id="dataset-short-description"
@@ -780,7 +780,7 @@ export default function DatasetsAdminClient({
                     hasFeedback
                     feedbackState="info"
                     feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 197 caracteres da sua descrição, seguidos de '...' (máximo de 200 caracteres)."
-                  />
+                  />*/}
                   <IsolatedSelect
                     label="Palavras-chave"
                     placeholder="Pesquise ou insira palavras-chave..."
