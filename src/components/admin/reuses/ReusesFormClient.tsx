@@ -136,6 +136,10 @@ export default function ReusesFormClient({
     const url = reuseLink.trim().match(/^https?:\/\//) ? reuseLink.trim() : `https://${reuseLink.trim()}`;
 
     try {
+      const selectedTags = selectedKeywordsValue
+        ? selectedKeywordsValue.split(",").filter(Boolean)
+        : [];
+
       const reuse = await createReuse({
         title: reuseName.trim(),
         description: reuseDescription.trim(),
@@ -143,6 +147,7 @@ export default function ReusesFormClient({
         type: selectedReuseTypeRef.current,
         topic: selectedReuseTopicRef.current || undefined,
         private: true,
+        ...(selectedTags.length > 0 ? { tags: selectedTags } : {}),
         ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
           ? { organization: selectedProducerRef.current }
           : {}),
@@ -498,24 +503,28 @@ export default function ReusesFormClient({
                   >
                     {topicOptions}
                   </IsolatedSelect>
-                  <InputTextArea
-                    label="Descrição *"
-                    placeholder="Insira a descrição aqui"
-                    id="reuse-description"
-                    rows={4}
-                    maxLength={200}
-                    showCharCounter
-                    value={reuseDescription}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                      setReuseDescription(e.target.value);
-                      if (e.target.value.trim()) clearError("reuseDescription");
-                      if (e.target.value.trim().length >= 200) clearError("reuseDescriptionLength");
-                    }}
-                    hasError={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
-                    hasFeedback={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
-                    feedbackState={formErrors.reuseDescriptionLength ? "warning" : "danger"}
-                    errorFeedbackText={formErrors.reuseDescription ? "Campo obrigatório" : "A descrição deve ter pelo menos 200 caracteres"}
-                  />
+                  <div>
+                    <InputTextArea
+                      label="Descrição *"
+                      placeholder="Insira a descrição aqui"
+                      id="reuse-description"
+                      rows={4}
+                      showCharCounter
+                      value={reuseDescription}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                        setReuseDescription(e.target.value);
+                        if (e.target.value.trim()) clearError("reuseDescription");
+                        if (e.target.value.trim().length >= 200) clearError("reuseDescriptionLength");
+                      }}
+                      hasError={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
+                      hasFeedback={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
+                      feedbackState={formErrors.reuseDescriptionLength ? "warning" : "danger"}
+                      errorFeedbackText={formErrors.reuseDescription ? "Campo obrigatório" : "A descrição deve ter pelo menos 200 caracteres"}
+                    />
+                    <p className="text-neutral-600 text-sm mt-1">
+                      Recomenda-se que a descrição tenha pelo menos 200 caracteres.
+                    </p>
+                  </div>
                   <IsolatedSelect
                     label="Palavras-chave"
                     placeholder="Pesquise ou insira palavras-chave…"
@@ -818,13 +827,29 @@ export default function ReusesFormClient({
                     disabled={isSubmitting}
                     onClick={async () => {
                       if (!createdReuse) return;
+
+                      const hasDropdownDataset = !!selectedDataset;
+                      const hasUrlDatasets = datasetLinks.some((l) => l.url.trim());
+                      if (!hasDropdownDataset && !hasUrlDatasets) {
+                        setApiError("Associe pelo menos um conjunto de dados antes de avançar.");
+                        return;
+                      }
+
                       setIsSubmitting(true);
                       setApiError(null);
                       try {
+                        if (selectedDataset) {
+                          const updated = await linkDatasetToReuse(createdReuse.id, selectedDataset.id);
+                          setCreatedReuse(updated);
+                        }
                         for (const link of datasetLinks) {
-                          if (link.url.trim()) {
-                            await linkDatasetToReuse(createdReuse.id, link.url.trim());
-                          }
+                          const trimmed = link.url.trim();
+                          if (!trimmed) continue;
+                          const idMatch = trimmed.match(/datasets\/([a-f0-9]{24})\/?/);
+                          const slugMatch = trimmed.match(/datasets\/([^/]+)\/?$/);
+                          const datasetRef = idMatch ? idMatch[1] : slugMatch ? slugMatch[1] : trimmed;
+                          const updated = await linkDatasetToReuse(createdReuse.id, datasetRef);
+                          setCreatedReuse(updated);
                         }
                         for (const link of apiLinks) {
                           if (link.url.trim()) {
@@ -840,7 +865,7 @@ export default function ReusesFormClient({
                             .join(", ");
                           setApiError(messages);
                         } else {
-                          setApiError("Erro ao associar dados. Tente novamente.");
+                          setApiError("Erro ao associar dados. Verifique os links inseridos e tente novamente.");
                         }
                       } finally {
                         setIsSubmitting(false);
