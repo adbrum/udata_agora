@@ -37,10 +37,18 @@ export default function OrganizationsNewClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [orgSuggestions, setOrgSuggestions] = useState<OrganizationSuggestion[]>([]);
+  const [orgSearchQuery, setOrgSearchQuery] = useState("");
 
   useEffect(() => {
     suggestOrganizations("", 20).then(setOrgSuggestions);
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      suggestOrganizations(orgSearchQuery, 20).then(setOrgSuggestions);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [orgSearchQuery]);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -215,6 +223,7 @@ export default function OrganizationsNewClient() {
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
                   searchNoResultsText="Nenhum resultado encontrado"
+                  onSearchInputChange={(value: string) => setOrgSearchQuery(value)}
                   onChange={(options: { value?: string }[]) => {
                     const selectedId = options?.[0]?.value;
                     if (selectedId) {
