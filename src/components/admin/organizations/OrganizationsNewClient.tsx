@@ -210,7 +210,7 @@ export default function OrganizationsNewClient() {
               <div>
                 <InputSelect
                   label="Organização"
-                  placeholder="Pesquisar uma organização em dados.gov.pt…"
+                  placeholder="Pesquisar uma organização em dados.gov.pt..."
                   id="search-organization"
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
@@ -310,7 +310,7 @@ export default function OrganizationsNewClient() {
                   />
 
                   <InputText
-                    label="Site da Internet"
+                    label="Website"
                     placeholder="Insira o URL aqui"
                     id="org-website"
                     value={orgWebsite}
@@ -324,7 +324,7 @@ export default function OrganizationsNewClient() {
 
                 <div className="admin-page__fields-group">
                   <ButtonUploader
-                    label="Ficheiros"
+                    label="Ficheiro"
                     inputLabel="Selecione ou arraste o ficheiro"
                     removeFileButtonLabel="Remover ficheiro"
                     replaceFileButtonLabel="Substituir ficheiro"

@@ -164,9 +164,9 @@ export default function OrgProfileClient() {
       <div className="admin-page__body">
         <div className="admin-page__form-area">
           <div className="admin-page__form">
-            <h2 className="admin-page__section-title">EDITAR ORGANIZAÇÃO</h2>
+            <h2 className="admin-page__section-title hidden">EDITAR ORGANIZAÇÃO</h2>
 
-            <div className="admin-page__fields-group">
+            <div className="admin-page__fields-group pt-32">
               <InputText
                 label="Nome *"
                 placeholder="Insira o nome aqui"
@@ -206,7 +206,7 @@ export default function OrgProfileClient() {
                 </span>
                 <div className="mt-2">
                   <ButtonUploader
-                    label="Ficheiros"
+                    label="Ficheiro"
                     inputLabel="Selecione ou arraste o ficheiro"
                     removeFileButtonLabel="Remover ficheiro"
                     replaceFileButtonLabel="Substituir ficheiro"
