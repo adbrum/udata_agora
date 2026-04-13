@@ -1333,7 +1333,7 @@ export default function DatasetsEditClient() {
                         <span className="text-danger-600 text-sm">Campo obrigatório</span>
                       )}
                     </div>
-                    <InputTextArea
+                    {/*<InputTextArea
                       label="Descrição resumida"
                       placeholder="Insira a descrição aqui"
                       id="edit-short-description"
@@ -1347,7 +1347,7 @@ export default function DatasetsEditClient() {
                       hasFeedback
                       feedbackState="info"
                       feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 197 caracteres da sua descrição, seguidos de '...' (máximo de 200 caracteres)."
-                    />
+                    />*/}
                     <IsolatedSelect
                       label="Palavras-chave"
                       placeholder="Pesquise ou insira uma palavra-chave..."
