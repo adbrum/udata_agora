@@ -408,7 +408,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
             Informe-nos através do formulário de contacto abaixo se deseja que validemos o seu harvester. Será notificado da aprovação (ou rejeição).
           </p>
           <a href="#" className="flex items-center gap-8 text-sm text-primary-600">
-            Validação da solicitação
+            Solicitar validação do harvester
             <Icon name="agora-line-arrow-right-circle" className="w-[20px] h-[20px]" />
           </a>
         </div>
@@ -765,7 +765,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                       disabled={isPreviewing}
                       onClick={handlePreview}
                     >
-                      {isPreviewing ? "A pré-visualizar..." : "Pré-visualização"}
+                      {isPreviewing ? "A pré-visualizar..." : "Pré-visualizar"}
                     </Button>
                     <Button
                       variant="primary"
@@ -887,7 +887,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                     type="danger"
                     description={
                       <>
-                        <strong>Atenção Esta ação é irreversível.</strong>
+                        <strong>Atenção esta ação é irreversível.</strong>
                         <br />
                         <Button
                           appearance="link"

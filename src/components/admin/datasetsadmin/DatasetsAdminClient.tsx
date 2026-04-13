@@ -713,7 +713,7 @@ export default function DatasetsAdminClient({
                     variant="primary"
                     onClick={() => router.push("/pages/admin/organizations/new")}
                   >
-                    Crie ou integre uma organização em dados.gov
+                    Crie ou integre uma organização em dados.gov.pt
                   </Button>
                 </div>
               )}
