@@ -68,7 +68,7 @@ function AddMemberPopupContent({ orgId, onMemberAdded, openKey }: AddMemberPopup
   const memberIdsRef = useRef<string[]>([]);
   const pendingUserIdsRef = useRef<string[]>([]);
   const selectedUserIdRef = useRef("");
-  const selectedRoleRef = useRef("editor");
+  const [selectedRole, setSelectedRole] = useState("editor");
   const canSubmitRef = useRef(false);
   const [, forceUpdate] = useState(0);
   const [alreadyMember, setAlreadyMember] = useState(false);
@@ -105,18 +105,11 @@ function AddMemberPopupContent({ orgId, onMemberAdded, openKey }: AddMemberPopup
     </DropdownSection>
   ), [suggestions]);
 
-  const roleDropdownChildren = useMemo(() => (
-    <DropdownSection name="roles">
-      <DropdownOption value="admin">Administrador</DropdownOption>
-      <DropdownOption value="editor">Editor</DropdownOption>
-    </DropdownSection>
-  ), []);
-
   const handleAdd = async () => {
     if (!canSubmitRef.current) return;
     setAddError(null);
     try {
-      await addMember(orgId, selectedUserIdRef.current, selectedRoleRef.current);
+      await addMember(orgId, selectedUserIdRef.current, selectedRole);
       onMemberAdded();
       hide();
     } catch (error) {
@@ -143,32 +136,51 @@ function AddMemberPopupContent({ orgId, onMemberAdded, openKey }: AddMemberPopup
           description="Este utilizador já foi convidado para esta organização. O convite encontra-se pendente de aceitação."
         />
       )}
-      <IsolatedSelect
-        key={`user-${openKey}`}
-        label="Utilizador"
-        placeholder="Pesquisar um utilizador"
-        id="member-user"
-        onChangeRef={selectedUserIdRef}
-        searchable
-        searchInputPlaceholder="Escreva para pesquisar..."
-        searchNoResultsText="Nenhum resultado encontrado"
-        hasError={alreadyMember}
-        errorFeedbackText="Utilizador já está associado a esta organização"
-        onChangeCallback={onUserChangeCallback}
-      >
-        {userDropdownChildren}
-      </IsolatedSelect>
+      <div className="flex flex-col gap-[4px]">
+        <span className="text-primary-900 text-base font-medium leading-7">
+          Utilizador <span className="text-danger-600">*</span>
+        </span>
+        <IsolatedSelect
+          key={`user-${openKey}`}
+          label="Utilizador"
+          hideLabel
+          placeholder="Pesquisar um utilizador"
+          id="member-user"
+          onChangeRef={selectedUserIdRef}
+          searchable
+          searchInputPlaceholder="Escreva para pesquisar..."
+          searchNoResultsText="Nenhum resultado encontrado"
+          hasError={alreadyMember}
+          errorFeedbackText="Utilizador já está associado a esta organização"
+          onChangeCallback={onUserChangeCallback}
+        >
+          {userDropdownChildren}
+        </IsolatedSelect>
+      </div>
 
-      <IsolatedSelect
-        key={`role-${openKey}`}
-        label="Papel do membro"
-        placeholder="Selecionar uma opção"
-        id="member-role"
-        onChangeRef={selectedRoleRef}
-        defaultValue="editor"
-      >
-        {roleDropdownChildren}
-      </IsolatedSelect>
+      <div className="flex flex-col gap-[12px]">
+        <span className="text-primary-900 text-base font-medium leading-7">
+          Papel do membro <span className="text-danger-600">*</span>
+        </span>
+        <div className="flex gap-[24px]">
+          <RadioButton
+            id={`role-admin-${openKey}`}
+            name={`role-${openKey}`}
+            value="admin"
+            label="Administrador"
+            checked={selectedRole === "admin"}
+            onChange={() => setSelectedRole("admin")}
+          />
+          <RadioButton
+            id={`role-editor-${openKey}`}
+            name={`role-${openKey}`}
+            value="editor"
+            label="Editor"
+            checked={selectedRole === "editor"}
+            onChange={() => setSelectedRole("editor")}
+          />
+        </div>
+      </div>
 
       {addError && (
         <p className="text-sm text-danger-600">{addError}</p>

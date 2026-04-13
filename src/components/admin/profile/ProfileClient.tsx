@@ -127,6 +127,7 @@ export default function ProfileClient() {
   const totalActivityPages = Math.ceil(activityTotal / activityPageSize);
 
   const handleSave = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsSaving(true);
     setSaveSuccess(false);
     setSaveError("");
@@ -140,7 +141,7 @@ export default function ProfileClient() {
       setProfile(updated);
       setSaveSuccess(true);
       await refresh();
-      setTimeout(() => setSaveSuccess(false), 3000);
+      setTimeout(() => setSaveSuccess(false), 10000);
     } catch (error) {
       console.error("Error saving profile:", error);
       setSaveError("Erro ao guardar o perfil. Tente novamente.");
