@@ -43,6 +43,7 @@ export default function CommunityResourceEditClient() {
   const [checksumType, setChecksumType] = useState("");
   const [checksumValue, setChecksumValue] = useState("");
   const [showChecksum, setShowChecksum] = useState(false);
+  const [saveCount, setSaveCount] = useState(0);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [format, setFormat] = useState("");
@@ -164,8 +165,13 @@ export default function CommunityResourceEditClient() {
         format: selectedFormatRef.current.trim() || undefined,
         mime: mimeType.trim() || undefined,
         schema: schemaPayload,
+        checksum:
+          showChecksum && selectedChecksumTypeRef.current
+            ? { type: selectedChecksumTypeRef.current, value: checksumValue }
+            : null,
       });
       setResource(updated);
+      setSaveCount((c) => c + 1);
       setSelectedType(updated.type || "");
       const normFormat = updated.format?.toLowerCase() || "";
       setFormat(normFormat);
@@ -474,7 +480,7 @@ export default function CommunityResourceEditClient() {
             {showChecksum && (
               <div className="admin-page__fields-group">
                 <IsolatedSelect
-                  key={`checksum-${resource?.id || "loading"}`}
+                  key={`checksum-${resource?.id || "loading"}-${saveCount}`}
                   label="Tipo de soma de verificação"
                   placeholder="SHA1"
                   id="checksum-type"
@@ -482,10 +488,10 @@ export default function CommunityResourceEditClient() {
                   onChangeRef={selectedChecksumTypeRef}
                 >
                   <DropdownSection name="checksum-types">
-                    <DropdownOption value="sha1">SHA1</DropdownOption>
-                    <DropdownOption value="sha256">SHA256</DropdownOption>
-                    <DropdownOption value="md5">MD5</DropdownOption>
-                    <DropdownOption value="crc">CRC</DropdownOption>
+                    <DropdownOption value="sha1" selected={checksumType === "sha1"}>SHA1</DropdownOption>
+                    <DropdownOption value="sha256" selected={checksumType === "sha256"}>SHA256</DropdownOption>
+                    <DropdownOption value="md5" selected={checksumType === "md5"}>MD5</DropdownOption>
+                    <DropdownOption value="crc" selected={checksumType === "crc"}>CRC</DropdownOption>
                   </DropdownSection>
                 </IsolatedSelect>
 
