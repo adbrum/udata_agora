@@ -597,7 +597,7 @@ export default function CommunityResourceFormClient({
                 type="success"
                 description={
                   <>
-                    <strong>Seu recurso comunitário foi criado!</strong>
+                    <strong>O seu recurso comunitário foi criado!</strong>
                     <br />
                     Veja na página pública.
                   </>

@@ -50,7 +50,7 @@ export default function CommunityResourceEditClient() {
   const [mimeType, setMimeType] = useState("");
   const [schemaUrl, setSchemaUrl] = useState("");
   const [schemas, setSchemas] = useState<string[]>([]);
-  const [selectedSchema, setSelectedSchema] = useState("");
+  const [loadedSchema, setLoadedSchema] = useState("");
   const [resourceTypes, setResourceTypes] = useState<ResourceType[]>([]);
   const selectedTypeRef = useRef("");
   const selectedFormatRef = useRef("");
@@ -93,7 +93,7 @@ export default function CommunityResourceEditClient() {
             setSchemaUrl(url);
           } else {
             const schemaVal = name || url;
-            setSelectedSchema(schemaVal);
+            setLoadedSchema(schemaVal);
             selectedSchemaRef.current = schemaVal;
           }
         }
@@ -123,6 +123,10 @@ export default function CommunityResourceEditClient() {
     setFormErrors((prev) => { const next = { ...prev }; delete next.format; return next; });
   }, []);
 
+  const clearSchemaUrl = React.useCallback(() => {
+    setSchemaUrl("");
+  }, []);
+
   const handleSave = async () => {
     const errors: Record<string, boolean> = {};
     if (!title.trim()) errors.title = true;
@@ -145,13 +149,13 @@ export default function CommunityResourceEditClient() {
     try {
       const schemaUrlVal = schemaUrl.trim();
       const schemaNameVal = selectedSchemaRef.current;
+      console.log("[debug] schemaUrl:", schemaUrlVal, "schemaRef:", schemaNameVal, "loadedSchema:", loadedSchema);
       const schemaPayload = schemaUrlVal
         ? { url: schemaUrlVal }
         : schemaNameVal
           ? { name: schemaNameVal }
           : null;
 
-      console.log("[schema debug] payload:", schemaPayload);
       const updated = await updateCommunityResource(resourceId, {
         title: title.trim(),
         description: description.trim() || undefined,
@@ -161,8 +165,6 @@ export default function CommunityResourceEditClient() {
         mime: mimeType.trim() || undefined,
         schema: schemaPayload,
       });
-      console.log("[schema debug] response schema:", updated.schema);
-
       setResource(updated);
       setSelectedType(updated.type || "");
       const normFormat = updated.format?.toLowerCase() || "";
@@ -171,14 +173,13 @@ export default function CommunityResourceEditClient() {
       if (updated.schema) {
         if (updated.schema.url && updated.schema.url.startsWith("http")) {
           setSchemaUrl(updated.schema.url);
-          setSelectedSchema("");
           selectedSchemaRef.current = "";
         } else {
-          const schemaVal = updated.schema.name || updated.schema.url || "";
-          setSelectedSchema(schemaVal);
-          selectedSchemaRef.current = schemaVal;
+          selectedSchemaRef.current = updated.schema.name || updated.schema.url || "";
           setSchemaUrl("");
         }
+      } else {
+        selectedSchemaRef.current = "";
       }
       if (updated.checksum) {
         setChecksumType(updated.checksum.type || "");
@@ -240,33 +241,26 @@ export default function CommunityResourceEditClient() {
   );
 
   const schemaOptions = useMemo(() => {
-    // Use the loaded resource's schema for dynamic option addition (not selectedSchema state),
-    // so user interaction with the dropdown does not trigger a re-render cascade that causes
-    // Agora InputSelect to reset its internal state (React 19 incompatibility).
-    const savedSchemaName = (() => {
-      if (!resource?.schema) return "";
-      const { url, name } = resource.schema as { url?: string; name?: string };
-      if (url && url.startsWith("http")) return "";
-      return name || url || "";
-    })();
-
+    // Depend on loadedSchema (set only at initial load) instead of resource?.schema,
+    // so setResource(updated) after save does not recompute children and re-render
+    // the IsolatedSelect, which would trigger Agora's React 19 setState-in-render bug.
     const list =
-      savedSchemaName && !schemas.includes(savedSchemaName)
-        ? [savedSchemaName, ...schemas]
+      loadedSchema && !schemas.includes(loadedSchema)
+        ? [loadedSchema, ...schemas]
         : schemas;
 
     const options = [
-      <DropdownOption key="none" value="">
+      <DropdownOption key="none" value="" selected={loadedSchema === ""}>
         Nenhum
       </DropdownOption>,
       ...list.map((s) => (
-        <DropdownOption key={s} value={s}>
+        <DropdownOption key={s} value={s} selected={s === loadedSchema}>
           {s}
         </DropdownOption>
       )),
     ];
     return <DropdownSection name="schemas">{options}</DropdownSection>;
-  }, [schemas, resource?.schema]);
+  }, [schemas, loadedSchema]);
 
   const auxiliarItems = [
     {
@@ -604,11 +598,9 @@ export default function CommunityResourceEditClient() {
                 id="resource-schema"
                 searchable
                 searchInputPlaceholder="Escreva para pesquisar..."
-                defaultValue={selectedSchema}
+                defaultValue={loadedSchema}
                 onChangeRef={selectedSchemaRef}
-                onChangeCallback={() => {
-                  setSchemaUrl("");
-                }}
+                onChangeCallback={clearSchemaUrl}
               >
                 {schemaOptions}
               </IsolatedSelect>
@@ -625,7 +617,6 @@ export default function CommunityResourceEditClient() {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setSchemaUrl(e.target.value);
                   if (e.target.value) {
-                    setSelectedSchema("");
                     selectedSchemaRef.current = "";
                   }
                 }}
