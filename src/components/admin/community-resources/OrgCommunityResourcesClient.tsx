@@ -189,6 +189,9 @@ export default function OrgCommunityResourcesClient() {
                   <TableCell headerLabel="Ações">
                     <div className="flex gap-[8px]">
                       <Icon name="agora-line-eye" className="w-[20px] h-[20px]" />
+                      <a href={`/pages/admin/community-resources/edit?resource_id=${resource.id}`}>
+                        <Icon name="agora-line-edit" className="w-[20px] h-[20px]" />
+                      </a>
                     </div>
                   </TableCell>
                 </TableRow>
