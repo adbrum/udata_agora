@@ -29,13 +29,9 @@ const markdownComponents = {
     </h2>
   ),
   h3: ({ children }: any) => (
-    <h3 className="font-bold text-[16px] leading-[28px] text-[#021c51] mb-[16px]">
-      {children}
-    </h3>
+    <h3 className="font-bold text-[16px] leading-[28px] text-[#021c51] mb-[16px]">{children}</h3>
   ),
-  p: ({ children }: any) => (
-    <p className="text-[16px] leading-[28px] mb-[16px]">{children}</p>
-  ),
+  p: ({ children }: any) => <p className="text-[16px] leading-[28px] mb-[16px]">{children}</p>,
   a: ({ href, children }: any) => {
     const linkOverrides: Record<string, { href: string; text?: string }> = {
       "/docapi/": { href: "/pages/faqs/api-documentation" },
@@ -48,10 +44,11 @@ const markdownComponents = {
       "https://ogp.eportugal.gov.pt/": {
         href: "https://online-learning.iscte-iul.pt/login/required?show_warning=true",
       },
-      "https://online-learning.iscte-iul.pt/bo/courses/plano-nacional-de-acao-de-administracao-aberta-pt": {
-        href: "https://online-learning.iscte-iul.pt/login/required?show_warning=true",
-        text: "https://online-learning.iscte-iul.pt/login/required?show_warning=true",
-      },
+      "https://online-learning.iscte-iul.pt/bo/courses/plano-nacional-de-acao-de-administracao-aberta-pt":
+        {
+          href: "https://online-learning.iscte-iul.pt/login/required?show_warning=true",
+          text: "https://online-learning.iscte-iul.pt/login/required?show_warning=true",
+        },
       "/pt/pages/faqs/about_opendata/": { href: "/pages/about-open-data" },
       "/pages/faqs/licenses/": { href: "https://dados.gov.pt/pt/" },
     };
@@ -116,7 +113,7 @@ export function GitHubArticlePage({
   breadcrumbItems,
   initialContent = "",
 }: GitHubArticlePageProps) {
-  const editUrl = `${githubPagesConfig.repoBaseUrl}/${slug}.md`;
+  const editUrl = "/pages/support"; //`${githubPagesConfig.repoBaseUrl}/${slug}.md`;
   const cleanContent = sanitizeMarkdown(initialContent);
 
   return (
@@ -127,7 +124,6 @@ export function GitHubArticlePage({
           <div className="pt-[32px] mb-[64px]">
             <Breadcrumb items={breadcrumbItems} />
           </div>
-
         </div>
 
         <div className="bg-[#F7F8FA] pt-[64px] pb-[38px] pl-[112px] pr-[112px]">
@@ -155,6 +151,13 @@ export function GitHubArticlePage({
                   <h1 className="text-[32px] font-medium text-[#021C51] mb-16 leading-tight max-w-[800px]">
                     Ações
                   </h1>
+                  <p className="text-[16px] leading-[28px] text-[#2b363c]">
+                    Encontrou algo a melhorar nesta página ou tem uma sugestão?
+                    <br />
+                    Ajude-nos a melhorar esta página.
+                    <br />
+                    Pode propor alterações diretamente no GitHub ou enviar-nos feedback.
+                  </p>
                   <Link
                     href={editUrl}
                     target="_blank"
@@ -166,10 +169,8 @@ export function GitHubArticlePage({
                 </div>
               </div>
             </div>
-
           </div>
         </div>
-
       </main>
     </div>
   );
