@@ -86,6 +86,7 @@ export default function UserProfileClient() {
   const totalActivityPages = Math.ceil(activityTotal / activityPageSize);
 
   const handleSave = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsSaving(true);
     setSaveSuccess(false);
     setSaveError("");
@@ -99,7 +100,7 @@ export default function UserProfileClient() {
       if (updated) {
         setUser(updated);
         setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
+        setTimeout(() => setSaveSuccess(false), 10000);
       }
     } catch (error) {
       console.error("Error saving user:", error);

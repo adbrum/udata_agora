@@ -1037,6 +1037,7 @@ export default function SystemEditorialClient() {
   }, [saveMessage]);
 
   const handleSave = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsSaving(true);
     try {
       const datasetIds = featuredDatasets.map((d) => d.id);

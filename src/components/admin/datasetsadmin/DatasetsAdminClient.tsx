@@ -194,8 +194,12 @@ export default function DatasetsAdminClient({
       setDraftContacts((prev) =>
         prev.map((d) => (d.id === draftId ? { ...d, errors } : d)),
       );
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
       const payload: Parameters<typeof createContactPoint>[0] = {
@@ -752,7 +756,7 @@ export default function DatasetsAdminClient({
                     placeholder="Insira a descrição aqui"
                     id="dataset-description"
                     rows={4}
-                    maxLength={246}
+                    maxLength={1000}
                     showCharCounter={true}
                     value={datasetDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -760,26 +764,10 @@ export default function DatasetsAdminClient({
                       if (e.target.value.trim()) clearError("datasetDescription");
                     }}
                     hasError={!!formErrors.datasetDescription}
-                    hasFeedback={!!formErrors.datasetDescription || datasetDescription.length < 200}
+                    hasFeedback={!!formErrors.datasetDescription || datasetDescription.length < 1000}
                     feedbackState={formErrors.datasetDescription ? "danger" : "warning"}
-                    feedbackText="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
+                    feedbackText="Recomenda-se que a descrição tenha pelo menos 1000 caracteres."
                     errorFeedbackText="Campo obrigatório"
-                  />
-                  <InputTextArea
-                    label="Descrição resumida"
-                    placeholder="Insira a descrição aqui"
-                    id="dataset-short-description"
-                    rows={3}
-                    maxLength={200}
-                    showCharCounter={true}
-                    value={datasetShortDescription}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                      setDatasetShortDescription(e.target.value);
-                      if (e.target.value.trim()) clearError("datasetShortDescription");
-                    }}
-                    hasFeedback
-                    feedbackState="info"
-                    feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 197 caracteres da sua descrição, seguidos de '...' (máximo de 200 caracteres)."
                   />
                   <IsolatedSelect
                     label="Palavras-chave"

@@ -34,13 +34,22 @@ export default function OrganizationsNewClient() {
   const [orgDescription, setOrgDescription] = useState("");
   const [orgWebsite, setOrgWebsite] = useState("");
   const [orgLogo, setOrgLogo] = useState<File | null>(null);
+  const [orgLogoPreview, setOrgLogoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [orgSuggestions, setOrgSuggestions] = useState<OrganizationSuggestion[]>([]);
+  const [orgSearchQuery, setOrgSearchQuery] = useState("");
 
   useEffect(() => {
     suggestOrganizations("", 20).then(setOrgSuggestions);
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      suggestOrganizations(orgSearchQuery, 20).then(setOrgSuggestions);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [orgSearchQuery]);
 
   const clearError = (field: string) => {
     if (formErrors[field]) {
@@ -215,6 +224,7 @@ export default function OrganizationsNewClient() {
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
                   searchNoResultsText="Nenhum resultado encontrado"
+                  onSearchInputChange={(value: string) => setOrgSearchQuery(value)}
                   onChange={(options: { value?: string }[]) => {
                     const selectedId = options?.[0]?.value;
                     if (selectedId) {
@@ -335,8 +345,24 @@ export default function OrganizationsNewClient() {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const file = e.target.files?.[0] || null;
                       setOrgLogo(file);
+                      if (file) {
+                        const url = URL.createObjectURL(file);
+                        setOrgLogoPreview(url);
+                      } else {
+                        setOrgLogoPreview(null);
+                      }
                     }}
                   />
+                  {orgLogoPreview && (
+                    <div className="mt-[12px]">
+                      <p className="text-sm text-neutral-600 mb-[8px]">Pré-visualização:</p>
+                      <img
+                        src={orgLogoPreview}
+                        alt="Pré-visualização do logotipo"
+                        className="max-h-[120px] max-w-[240px] object-contain border border-neutral-200 rounded-[8px] p-[8px]"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="admin-page__actions">

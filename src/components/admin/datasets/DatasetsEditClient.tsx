@@ -365,6 +365,7 @@ function ResourceEditPopupContent({
   const [error, setError] = useState<string | null>(null);
 
   const handleSave = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (!title.trim()) return;
     setIsSaving(true);
     setError(null);
@@ -840,8 +841,12 @@ export default function DatasetsEditClient() {
     if (!description.trim()) errors.description = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setFormErrors({});
     setApiError(null);
     setApiSuccess(null);
@@ -881,6 +886,7 @@ export default function DatasetsEditClient() {
       });
       setDataset(updated);
       setApiSuccess("Conjunto de dados atualizado com sucesso.");
+      setTimeout(() => setApiSuccess(null), 10000);
     } catch (error: unknown) {
       const err = error as { status?: number; data?: Record<string, unknown> };
       if (err.data && typeof err.data === "object") {
@@ -958,6 +964,7 @@ export default function DatasetsEditClient() {
       const updated = await fetchDataset(slug);
       setDataset(updated);
       setApiSuccess("Ficheiro(s) carregado(s) com sucesso.");
+      setTimeout(() => setApiSuccess(null), 10000);
     } catch (error) {
       const err = error as { status?: number; data?: Record<string, unknown>; message?: string };
       console.error("Error uploading resource:", err.status, err.data ?? err.message ?? error);
@@ -993,6 +1000,7 @@ export default function DatasetsEditClient() {
             prev ? { ...prev, resources: prev.resources.filter((r) => r.id !== resource.id) } : prev
           );
           setApiSuccess("Ficheiro eliminado com sucesso.");
+          setTimeout(() => setApiSuccess(null), 10000);
         }}
       />,
       {
@@ -1022,6 +1030,7 @@ export default function DatasetsEditClient() {
               hide();
               await refreshDataset();
               setApiSuccess("Recurso atualizado com sucesso.");
+              setTimeout(() => setApiSuccess(null), 10000);
             }}
             onCancel={hide}
           />,
@@ -1148,8 +1157,8 @@ export default function DatasetsEditClient() {
         <h1 className="admin-page__title">{dataset.title}</h1>
       </div>
 
-      {apiError && <StatusCard type="danger" description={apiError} />}
-      {apiSuccess && <StatusCard type="success" description={apiSuccess} />}
+      {apiError && <div className="my-[24px]"><StatusCard type="danger" description={apiError} /></div>}
+      {apiSuccess && <div className="my-[24px]"><StatusCard type="success" description={apiSuccess} /></div>}
 
       <div className="admin-edit-info">
         <div className="admin-edit-info__badges">
@@ -1253,6 +1262,7 @@ export default function DatasetsEditClient() {
                             const updated = await updateDataset(dataset.id, { private: false });
                             setDataset(updated);
                             setApiSuccess("Conjunto de dados publicado com sucesso.");
+                            setTimeout(() => setApiSuccess(null), 10000);
                           } catch {
                             setApiError("Erro ao publicar o conjunto de dados.");
                           }
