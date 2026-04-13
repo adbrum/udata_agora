@@ -101,7 +101,7 @@ export default function ArticleClient({ currentPage }: { currentPage: number }) 
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     async function loadPosts() {

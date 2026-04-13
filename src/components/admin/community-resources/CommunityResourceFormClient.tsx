@@ -318,7 +318,7 @@ export default function CommunityResourceFormClient({
                     href="/pages/admin/organizations/new"
                     className="admin-page__org-card-link"
                   >
-                    Crie ou integre uma organização em dados.gov
+                    Crie ou integre uma organização em dados.gov.pt
                     <Icon name="agora-line-arrow-right-circle" className="w-[24px] h-[24px]" />
                   </a>
                 </div>
@@ -597,7 +597,7 @@ export default function CommunityResourceFormClient({
                 type="success"
                 description={
                   <>
-                    <strong>Seu recurso comunitário foi criado!</strong>
+                    <strong>O seu recurso comunitário foi criado!</strong>
                     <br />
                     Veja na página pública.
                   </>
@@ -654,25 +654,19 @@ export default function CommunityResourceFormClient({
                     }
                     blockedLink={true}
                   />
-                  <div className="flex justify-end mt-[8px]">
-                    <Button
-                      appearance="solid"
-                      variant="danger"
-                      hasIcon
-                      leadingIcon="agora-line-trash"
-                      leadingIconHover="agora-solid-trash"
-                      onClick={async () => {
-                        try {
-                          const { deleteCommunityResource } = await import("@/services/api");
-                          await deleteCommunityResource(createdResource.id);
-                          router.push("/pages/admin/me/community-resources");
-                        } catch {
-                          setApiError("Erro ao eliminar recurso.");
-                        }
-                      }}
-                    >
-                      Eliminar
-                    </Button>
+                  <div className="admin-page__actions flex justify-end gap-[18px] mt-[8px]">
+                    {createdResource.dataset?.page && (
+                      <Button
+                        appearance="link"
+                        variant="primary"
+                        hasIcon
+                        trailingIcon="agora-line-external-link"
+                        trailingIconHover="agora-solid-external-link"
+                        onClick={() => window.open(createdResource.dataset!.page, "_blank")}
+                      >
+                        Ver na página pública
+                      </Button>
+                    )}
                   </div>
                 </>
               )}

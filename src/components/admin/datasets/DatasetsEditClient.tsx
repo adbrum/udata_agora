@@ -124,13 +124,13 @@ function TransferDatasetPopupContent({
         </a>
       </p>
       <p>
-        <strong>Essa ação é irreversível.</strong>&nbsp;
+        <strong>Esta ação é irreversível.</strong>&nbsp;
         Poderá deixar de conseguir gerir este conjunto de dados.
       </p>
 
       <div className="flex flex-col gap-[8px]">
         <label className="text-primary-900 text-base font-medium leading-7">
-          Encontre uma organização ou usuário
+          Organização ou utilizador
         </label>
         <InputText
           placeholder="Selecione a identidade para a qual pretende transferir o conjunto de dados..."
@@ -150,7 +150,7 @@ function TransferDatasetPopupContent({
           href="/pages/admin/organizations"
           className="inline-flex items-center text-primary-500 text-base hover:underline"
         >
-          <span className="mr-[5px]">Crie ou integre uma organização em dados.gov</span>
+          <span className="mr-[5px]">Crie ou integre uma organização em dados.gov.pt</span>
           <Icon name="agora-line-arrow-right-circle" className="w-5 h-5" />
         </Link>
       </div>
@@ -365,6 +365,7 @@ function ResourceEditPopupContent({
   const [error, setError] = useState<string | null>(null);
 
   const handleSave = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (!title.trim()) return;
     setIsSaving(true);
     setError(null);
@@ -840,8 +841,12 @@ export default function DatasetsEditClient() {
     if (!description.trim()) errors.description = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setFormErrors({});
     setApiError(null);
     setApiSuccess(null);
@@ -881,6 +886,7 @@ export default function DatasetsEditClient() {
       });
       setDataset(updated);
       setApiSuccess("Conjunto de dados atualizado com sucesso.");
+      setTimeout(() => setApiSuccess(null), 10000);
     } catch (error: unknown) {
       const err = error as { status?: number; data?: Record<string, unknown> };
       if (err.data && typeof err.data === "object") {
@@ -958,6 +964,7 @@ export default function DatasetsEditClient() {
       const updated = await fetchDataset(slug);
       setDataset(updated);
       setApiSuccess("Ficheiro(s) carregado(s) com sucesso.");
+      setTimeout(() => setApiSuccess(null), 10000);
     } catch (error) {
       const err = error as { status?: number; data?: Record<string, unknown>; message?: string };
       console.error("Error uploading resource:", err.status, err.data ?? err.message ?? error);
@@ -993,6 +1000,7 @@ export default function DatasetsEditClient() {
             prev ? { ...prev, resources: prev.resources.filter((r) => r.id !== resource.id) } : prev
           );
           setApiSuccess("Ficheiro eliminado com sucesso.");
+          setTimeout(() => setApiSuccess(null), 10000);
         }}
       />,
       {
@@ -1022,6 +1030,7 @@ export default function DatasetsEditClient() {
               hide();
               await refreshDataset();
               setApiSuccess("Recurso atualizado com sucesso.");
+              setTimeout(() => setApiSuccess(null), 10000);
             }}
             onCancel={hide}
           />,
@@ -1148,8 +1157,8 @@ export default function DatasetsEditClient() {
         <h1 className="admin-page__title">{dataset.title}</h1>
       </div>
 
-      {apiError && <StatusCard type="danger" description={apiError} />}
-      {apiSuccess && <StatusCard type="success" description={apiSuccess} />}
+      {apiError && <div className="my-[24px]"><StatusCard type="danger" description={apiError} /></div>}
+      {apiSuccess && <div className="my-[24px]"><StatusCard type="success" description={apiSuccess} /></div>}
 
       <div className="admin-edit-info">
         <div className="admin-edit-info__badges">
@@ -1253,6 +1262,7 @@ export default function DatasetsEditClient() {
                             const updated = await updateDataset(dataset.id, { private: false });
                             setDataset(updated);
                             setApiSuccess("Conjunto de dados publicado com sucesso.");
+                            setTimeout(() => setApiSuccess(null), 10000);
                           } catch {
                             setApiError("Erro ao publicar o conjunto de dados.");
                           }
@@ -1274,7 +1284,7 @@ export default function DatasetsEditClient() {
                   </p>
 
                   <div>
-                    <h2 className="admin-page__section-title admin-page__section-title--no-top">APRESENTOU</h2>
+                    <h2 className="admin-page__section-title admin-page__section-title--no-top">Destaque</h2>
                     <Switch
                       id="edit-featured"
                       label="Destaque"
@@ -1323,7 +1333,7 @@ export default function DatasetsEditClient() {
                         <span className="text-danger-600 text-sm">Campo obrigatório</span>
                       )}
                     </div>
-                    <InputTextArea
+                    {/*<InputTextArea
                       label="Descrição resumida"
                       placeholder="Insira a descrição aqui"
                       id="edit-short-description"
@@ -1337,7 +1347,7 @@ export default function DatasetsEditClient() {
                       hasFeedback
                       feedbackState="info"
                       feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 197 caracteres da sua descrição, seguidos de '...' (máximo de 200 caracteres)."
-                    />
+                    />*/}
                     <IsolatedSelect
                       label="Palavras-chave"
                       placeholder="Pesquise ou insira uma palavra-chave..."
@@ -1361,7 +1371,7 @@ export default function DatasetsEditClient() {
                   <div className="admin-page__fields-group">
                     <IsolatedSelect
                       label="Licença"
-                      placeholder="Selecione uma licença…"
+                      placeholder="Selecione uma licença..."
                       id="edit-license"
                       defaultValue={loadedLicense}
                       onChangeRef={selectedLicenseRef}
@@ -1374,7 +1384,7 @@ export default function DatasetsEditClient() {
                   <div className="admin-page__fields-group">
                     <IsolatedSelect
                       label="Frequência de atualização"
-                      placeholder="Selecione uma frequência…"
+                      placeholder="Selecione uma frequência..."
                       id="edit-frequency"
                       defaultValue={loadedFrequency}
                       onChangeRef={selectedFrequencyRef}
@@ -1469,7 +1479,7 @@ export default function DatasetsEditClient() {
                       onClick={handleSaveMetadata}
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? "A guardar..." : "Guardar alterações"}
+                      {isSubmitting ? "A guardar..." : "Guardar"}
                     </Button>
                   </div>
 
@@ -1493,14 +1503,14 @@ export default function DatasetsEditClient() {
                                   onClose={hide}
                                 />,
                                 {
-                                  title: "Transferir o conjunto de dados",
+                                  title: "Transfira o conjunto de dados",
                                   closeAriaLabel: "Fechar",
                                   dimensions: "m",
                                 },
                               );
                             }}
                           >
-                            Transferir o conjunto de dados
+                            Transfira o conjunto de dados
                           </Button>
                         </>
                       }
@@ -1615,7 +1625,7 @@ export default function DatasetsEditClient() {
                         content: "A descrição resumida apresenta seu conjunto de dados em uma ou duas frases. Isso ajuda os utilizadores a entenderem rapidamente o conteúdo e melhora sua visibilidade nos resultados de pesquisa.",
                       },
                       {
-                        title: "Selecione uma licença…",
+                        title: "Selecione uma licença...",
                         content: "As licenças definem as regras para a reutilização. Ao escolher uma licença de reutilização, garante que o conjunto de dados publicado será reutilizado de acordo com os termos de uso que definiu.",
                       },
                       {

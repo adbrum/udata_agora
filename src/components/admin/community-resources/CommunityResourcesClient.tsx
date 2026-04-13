@@ -6,10 +6,7 @@ import {
   Breadcrumb,
   CardNoResults,
   Icon,
-  InputSelect,
   InputSearchBar,
-  DropdownSection,
-  DropdownOption,
   Table,
   TableHeader,
   TableHeaderCell,
@@ -43,7 +40,6 @@ export default function CommunityResourcesClient() {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>("none");
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => {
     async function loadResources() {
@@ -72,25 +68,8 @@ export default function CommunityResourcesClient() {
       );
     }
 
-    if (statusFilter) {
-      result = result.filter((r) => {
-        switch (statusFilter) {
-          case "public":
-            return !r.archived && !r.deleted;
-          case "archived":
-            return !!r.archived;
-          case "deleted":
-            return !!r.deleted;
-          case "draft":
-            return false;
-          default:
-            return true;
-        }
-      });
-    }
-
     return result;
-  }, [allResources, searchQuery, statusFilter]);
+  }, [allResources, searchQuery]);
 
   const sortedResources = useMemo(() => {
     if (sortOrder === "none") return filteredResources;
@@ -167,25 +146,6 @@ export default function CommunityResourcesClient() {
             }}
           />
         </div>
-        <InputSelect
-          label=""
-          hideLabel
-          placeholder="Filtrar por estado"
-          id="filter-status"
-          onChange={(options) => {
-            setStatusFilter(
-              options.length > 0 ? (options[0].value as string) : ""
-            );
-            setCurrentPage(1);
-          }}
-        >
-          <DropdownSection name="status">
-            <DropdownOption value="public">Público</DropdownOption>
-            <DropdownOption value="archived">Arquivo</DropdownOption>
-            <DropdownOption value="draft">Rascunho</DropdownOption>
-            <DropdownOption value="deleted">Excluído</DropdownOption>
-          </DropdownSection>
-        </InputSelect>
       </div>
 
       {!isLoading && resources.length > 0 ? (
