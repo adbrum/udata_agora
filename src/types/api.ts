@@ -904,6 +904,7 @@ export interface CommunityResourceUpdatePayload {
   filesize?: number;
   dataset?: string;
   schema?: { name?: string; url?: string; version?: string } | null;
+  checksum?: { type: string; value: string } | null;
 }
 
 export interface HarvestError {
