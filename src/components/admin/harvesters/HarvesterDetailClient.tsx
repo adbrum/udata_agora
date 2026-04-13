@@ -190,11 +190,15 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
     if (!harvesterUrl.trim()) errors.harvesterUrl = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
 
     if (!source) return;
 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsSaving(true);
     setSaveSuccess(false);
     setSaveError(null);

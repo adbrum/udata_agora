@@ -890,7 +890,7 @@ export interface CommunityResourceCreatePayload {
   format?: string;
   dataset: string;
   organization?: string;
-  schema?: string;
+  schema?: { name?: string; url?: string; version?: string } | null;
 }
 
 export interface CommunityResourceUpdatePayload {
@@ -903,7 +903,7 @@ export interface CommunityResourceUpdatePayload {
   mime?: string;
   filesize?: number;
   dataset?: string;
-  schema?: string;
+  schema?: { name?: string; url?: string; version?: string } | null;
 }
 
 export interface HarvestError {

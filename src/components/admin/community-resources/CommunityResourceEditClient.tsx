@@ -7,7 +7,6 @@ import {
   Button,
   InputText,
   InputTextArea,
-  InputSelect,
   DropdownSection,
   DropdownOption,
   Icon,
@@ -29,7 +28,7 @@ export default function CommunityResourceEditClient() {
   const searchParams = useSearchParams();
   const params = useParams();
   const router = useRouter();
-  const { displayName } = useCurrentUser();
+  useCurrentUser();
   const resourceId = (params?.resourceId as string) || searchParams.get("resource_id") || searchParams.get("id") || "";
 
   const [resource, setResource] = useState<CommunityResource | null>(null);
@@ -132,14 +131,27 @@ export default function CommunityResourceEditClient() {
     if (!selectedFormatRef.current) errors.format = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setFormErrors({});
     setApiError(null);
     setSuccessMessage(null);
     setIsSubmitting(true);
 
     try {
+      const schemaUrlVal = schemaUrl.trim();
+      const schemaNameVal = selectedSchemaRef.current;
+      const schemaPayload = schemaUrlVal
+        ? { url: schemaUrlVal }
+        : schemaNameVal
+          ? { name: schemaNameVal }
+          : null;
+
+      console.log("[schema debug] payload:", schemaPayload);
       const updated = await updateCommunityResource(resourceId, {
         title: title.trim(),
         description: description.trim() || undefined,
@@ -147,8 +159,9 @@ export default function CommunityResourceEditClient() {
         type: selectedTypeRef.current || undefined,
         format: selectedFormatRef.current.trim() || undefined,
         mime: mimeType.trim() || undefined,
-        schema: schemaUrl.trim() || selectedSchemaRef.current || undefined,
+        schema: schemaPayload,
       });
+      console.log("[schema debug] response schema:", updated.schema);
 
       setResource(updated);
       setSelectedType(updated.type || "");
@@ -227,18 +240,33 @@ export default function CommunityResourceEditClient() {
   );
 
   const schemaOptions = useMemo(() => {
+    // Use the loaded resource's schema for dynamic option addition (not selectedSchema state),
+    // so user interaction with the dropdown does not trigger a re-render cascade that causes
+    // Agora InputSelect to reset its internal state (React 19 incompatibility).
+    const savedSchemaName = (() => {
+      if (!resource?.schema) return "";
+      const { url, name } = resource.schema as { url?: string; name?: string };
+      if (url && url.startsWith("http")) return "";
+      return name || url || "";
+    })();
+
+    const list =
+      savedSchemaName && !schemas.includes(savedSchemaName)
+        ? [savedSchemaName, ...schemas]
+        : schemas;
+
     const options = [
       <DropdownOption key="none" value="">
         Nenhum
       </DropdownOption>,
-      ...schemas.map((s) => (
-        <DropdownOption key={s} value={s} selected={s === selectedSchema}>
+      ...list.map((s) => (
+        <DropdownOption key={s} value={s}>
           {s}
         </DropdownOption>
       )),
     ];
     return <DropdownSection name="schemas">{options}</DropdownSection>;
-  }, [schemas, selectedSchema]);
+  }, [schemas, resource?.schema]);
 
   const auxiliarItems = [
     {
@@ -569,35 +597,28 @@ export default function CommunityResourceEditClient() {
             <h2 className="admin-page__section-title">Esquema de dados</h2>
 
             <div className="admin-page__fields-group">
-              <InputSelect
+              <IsolatedSelect
                 key={`schema-${resource?.id || "loading"}-${schemas.length}`}
                 label="Plano"
                 placeholder="Procure um esquema referenciado em dados.gov..."
                 id="resource-schema"
                 searchable
                 searchInputPlaceholder="Escreva para pesquisar..."
-                value={selectedSchema ? [selectedSchema] : []}
-                onChange={(options: any[]) => {
-                  if (options.length > 0) {
-                    const val = options[0].value;
-                    setSelectedSchema(val);
-                    selectedSchemaRef.current = val;
-                    setSchemaUrl("");
-                  } else {
-                    setSelectedSchema("");
-                    selectedSchemaRef.current = "";
-                  }
+                defaultValue={selectedSchema}
+                onChangeRef={selectedSchemaRef}
+                onChangeCallback={() => {
+                  setSchemaUrl("");
                 }}
               >
                 {schemaOptions}
-              </InputSelect>
+              </IsolatedSelect>
 
               <div className="admin-page__divider-or">
                 <span className="admin-page__divider-or-text">ou</span>
               </div>
 
               <InputText
-                label="Adicione um link para o diagrama."
+                label="Adicione um link para o diagrama"
                 placeholder="https://..."
                 id="resource-schema-url"
                 value={schemaUrl}

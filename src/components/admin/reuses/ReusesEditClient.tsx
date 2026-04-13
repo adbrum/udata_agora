@@ -296,8 +296,12 @@ export default function ReusesEditClient() {
     if (!description.trim()) errors.description = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setFormErrors({});
     setApiError(null);
     setApiSuccess(null);

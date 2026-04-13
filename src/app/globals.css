@@ -1309,7 +1309,7 @@ body:has(.admin-wrapper)>div>header.sticky {
 }
 
 .admin-page__breadcrumb {
-  margin-bottom: 64px;
+  margin-bottom: 24px;
 }
 
 .admin-page__header {
