@@ -19,6 +19,9 @@ import { CommunityResource } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 
+type SortOrder = "none" | "ascending" | "descending";
+type SortField = "title" | "created_at" | "last_modified";
+
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
   return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
@@ -31,6 +34,18 @@ export default function OrgCommunityResourcesClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>("none");
+
+  const handleSort = (field: SortField) => (newOrder: SortOrder) => {
+    setSortField(field);
+    setSortOrder(newOrder);
+    setCurrentPage(1);
+  };
+
+  const getSortOrder = (field: SortField): SortOrder => {
+    return sortField === field ? sortOrder : "none";
+  };
 
   useEffect(() => {
     if (!activeOrg) {
@@ -51,10 +66,29 @@ export default function OrgCommunityResourcesClient() {
     loadResources();
   }, [activeOrg]);
 
+  const sortedResources = useMemo(() => {
+    if (sortOrder === "none") return resources;
+    return [...resources].sort((a, b) => {
+      let cmp = 0;
+      switch (sortField) {
+        case "title":
+          cmp = (a.title || "").localeCompare(b.title || "");
+          break;
+        case "created_at":
+          cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          break;
+        case "last_modified":
+          cmp = new Date(a.last_modified).getTime() - new Date(b.last_modified).getTime();
+          break;
+      }
+      return sortOrder === "descending" ? -cmp : cmp;
+    });
+  }, [resources, sortField, sortOrder]);
+
   const paginatedResources = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    return resources.slice(start, start + itemsPerPage);
-  }, [resources, currentPage, itemsPerPage]);
+    return sortedResources.slice(start, start + itemsPerPage);
+  }, [sortedResources, currentPage, itemsPerPage]);
 
   if (isOrgLoading) return <p>A carregar...</p>;
   if (!activeOrg) {
@@ -132,22 +166,34 @@ export default function OrgCommunityResourcesClient() {
           >
             <TableHeader>
               <TableRow>
-                <TableHeaderCell sortType="date" sortOrder="none">
+                <TableHeaderCell
+                  sortType="date"
+                  sortOrder={getSortOrder("title")}
+                  onSortChange={handleSort("title")}
+                >
                   Título
                 </TableHeaderCell>
                 <TableHeaderCell>Estado</TableHeaderCell>
-                <TableHeaderCell sortType="date" sortOrder="none">
+                <TableHeaderCell
+                  sortType="date"
+                  sortOrder={getSortOrder("created_at")}
+                  onSortChange={handleSort("created_at")}
+                >
                   Criado em
                 </TableHeaderCell>
-                <TableHeaderCell sortType="date" sortOrder="none">
+                <TableHeaderCell
+                  sortType="date"
+                  sortOrder={getSortOrder("last_modified")}
+                  onSortChange={handleSort("last_modified")}
+                >
                   Última modificação
                 </TableHeaderCell>
                 <TableHeaderCell>Ações</TableHeaderCell>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedResources.map((resource, index) => (
-                <TableRow key={index}>
+              {paginatedResources.map((resource) => (
+                <TableRow key={resource.id}>
                   <TableCell headerLabel="Título">
                     <span className="text-primary-600">{resource.title}</span>
                   </TableCell>
