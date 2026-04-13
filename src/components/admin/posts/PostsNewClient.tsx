@@ -66,8 +66,12 @@ export default function PostsNewClient() {
   const handleSave = async () => {
     if (!articleContent.trim()) {
       setFormErrors({ articleContent: true });
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsSaving(true);
     setSaveError(null);
     try {
@@ -92,7 +96,7 @@ export default function PostsNewClient() {
   };
 
   const stepTitles: Record<number, string> = {
-    1: "Descreva seu item",
+    1: "Crie o seu artigo",
     2: "Conteúdo",
   };
 
@@ -104,7 +108,7 @@ export default function PostsNewClient() {
             { label: "Bem-vindo", url: "/pages/admin" },
             { label: "Artigos", url: "/pages/admin/system/posts" },
             {
-              label: "Formulário de inscrição",
+              label: "Formulário de publicação de um artigo",
               url: "/pages/admin/system/posts/new",
             },
           ]}
@@ -112,7 +116,7 @@ export default function PostsNewClient() {
       </div>
 
       <div className="admin-page__header">
-        <h1 className="admin-page__title">Formulário de inscrição</h1>
+        <h1 className="admin-page__title">Formulário de publicação de um artigo</h1>
         <PublishDropdown />
       </div>
 
@@ -120,9 +124,7 @@ export default function PostsNewClient() {
       <div className="admin-page__step-header">
         <p className="admin-page__step-text">
           <span className="text-primary-600 font-bold">Passo {currentStep} - </span>
-          <span className="text-primary-900 font-bold">
-            {stepTitles[currentStep]}
-          </span>
+          <span className="text-primary-900 font-bold">{stepTitles[currentStep]}</span>
         </p>
       </div>
 
@@ -134,9 +136,7 @@ export default function PostsNewClient() {
             <div
               key={i}
               className={`admin-page__stepper-segment ${
-                i < filledSegments
-                  ? "admin-page__stepper-segment--filled"
-                  : ""
+                i < filledSegments ? "admin-page__stepper-segment--filled" : ""
               }`}
             />
           ))}
@@ -178,7 +178,7 @@ export default function PostsNewClient() {
 
                 <InputTextArea
                   label="Cabeçalho *"
-                  placeholder="Insira aqui"
+                  placeholder="Insira o cabeçalho aqui"
                   id="article-header"
                   rows={3}
                   value={articleHeader}
@@ -238,7 +238,7 @@ export default function PostsNewClient() {
 
                 <InputSelect
                   label="Palavras-chave"
-                  placeholder="Pesquise ou insira uma palavra-chave..."
+                  placeholder="Pesquise uma palavra-chave..."
                   id="article-keywords"
                   type="checkbox"
                   searchable
@@ -264,7 +264,7 @@ export default function PostsNewClient() {
                   <div className="mt-2">
                     <ButtonUploader
                       label="Ficheiros"
-                      inputLabel="Selecione ou arraste o ficheiro"
+                      inputLabel="Selecione um ficheiro"
                       removeFileButtonLabel="Remover ficheiro"
                       replaceFileButtonLabel="Substituir ficheiro"
                       extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceites: JPG, JPEG, PNG."
@@ -311,9 +311,7 @@ export default function PostsNewClient() {
                 />
               </div>
 
-              {saveError && (
-                <p className="text-danger-600 text-sm mb-16">{saveError}</p>
-              )}
+              {saveError && <p className="text-danger-600 text-sm mb-16">{saveError}</p>}
 
               <div className="admin-page__actions">
                 <Button
@@ -322,9 +320,7 @@ export default function PostsNewClient() {
                   hasIcon
                   leadingIcon="agora-line-arrow-left-circle"
                   leadingIconHover="agora-solid-arrow-left-circle"
-                  onClick={() =>
-                    router.push("/pages/admin/system/posts/new?step=1")
-                  }
+                  onClick={() => router.push("/pages/admin/system/posts/new?step=1")}
                 >
                   Anterior
                 </Button>
@@ -342,7 +338,6 @@ export default function PostsNewClient() {
             </form>
           )}
         </div>
-
       </div>
     </div>
   );

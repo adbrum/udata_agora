@@ -136,6 +136,10 @@ export default function ReusesFormClient({
     const url = reuseLink.trim().match(/^https?:\/\//) ? reuseLink.trim() : `https://${reuseLink.trim()}`;
 
     try {
+      const selectedTags = selectedKeywordsValue
+        ? selectedKeywordsValue.split(",").filter(Boolean)
+        : [];
+
       const reuse = await createReuse({
         title: reuseName.trim(),
         description: reuseDescription.trim(),
@@ -143,6 +147,7 @@ export default function ReusesFormClient({
         type: selectedReuseTypeRef.current,
         topic: selectedReuseTopicRef.current || undefined,
         private: true,
+        ...(selectedTags.length > 0 ? { tags: selectedTags } : {}),
         ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
           ? { organization: selectedProducerRef.current }
           : {}),
@@ -436,7 +441,7 @@ export default function ReusesFormClient({
                     href="/pages/admin/organizations/new"
                     className="admin-page__org-card-link"
                   >
-                    Crie ou integre uma organização em dados.gov
+                    Crie ou integre uma organização em dados.gov.pt
                     <Icon
                       name="agora-line-arrow-right-circle"
                       className="w-[24px] h-[24px]"
@@ -503,26 +508,26 @@ export default function ReusesFormClient({
                     placeholder="Insira a descrição aqui"
                     id="reuse-description"
                     rows={4}
-                    maxLength={200}
-                    showCharCounter
+                    maxLength={1000}
+                    showCharCounter={true}
                     value={reuseDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setReuseDescription(e.target.value);
                       if (e.target.value.trim()) clearError("reuseDescription");
-                      if (e.target.value.trim().length >= 200) clearError("reuseDescriptionLength");
                     }}
-                    hasError={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
-                    hasFeedback={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
-                    feedbackState={formErrors.reuseDescriptionLength ? "warning" : "danger"}
-                    errorFeedbackText={formErrors.reuseDescription ? "Campo obrigatório" : "A descrição deve ter pelo menos 200 caracteres"}
+                    hasError={!!formErrors.reuseDescription}
+                    hasFeedback={!!formErrors.reuseDescription || reuseDescription.length < 1000}
+                    feedbackState={formErrors.reuseDescription ? "danger" : "warning"}
+                    feedbackText="Recomenda-se que a descrição tenha pelo menos 1000 caracteres."
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <IsolatedSelect
                     label="Palavras-chave"
-                    placeholder="Pesquise ou insira palavras-chave…"
+                    placeholder="Pesquise ou insira palavras-chave..."
                     id="reuse-keywords"
                     type="checkbox"
                     searchable
-                    searchInputPlaceholder="Escreva para pesquisar ou criar…"
+                    searchInputPlaceholder="Escreva para pesquisar ou criar..."
                     searchNoResultsText="Nenhum resultado encontrado"
                     onChangeRef={selectedKeywordsRef}
                     defaultValue={selectedKeywordsValue}
@@ -667,7 +672,7 @@ export default function ReusesFormClient({
 
                 <InputSelect
                   label="Ficheiro com um conjunto de dados"
-                  placeholder="Selecione um conjunto de dados…"
+                  placeholder="Selecione um conjunto de dados..."
                   id="reuse-dataset-search"
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
@@ -818,13 +823,29 @@ export default function ReusesFormClient({
                     disabled={isSubmitting}
                     onClick={async () => {
                       if (!createdReuse) return;
+
+                      const hasDropdownDataset = !!selectedDataset;
+                      const hasUrlDatasets = datasetLinks.some((l) => l.url.trim());
+                      if (!hasDropdownDataset && !hasUrlDatasets) {
+                        setApiError("Associe pelo menos um conjunto de dados antes de avançar.");
+                        return;
+                      }
+
                       setIsSubmitting(true);
                       setApiError(null);
                       try {
+                        if (selectedDataset) {
+                          const updated = await linkDatasetToReuse(createdReuse.id, selectedDataset.id);
+                          setCreatedReuse(updated);
+                        }
                         for (const link of datasetLinks) {
-                          if (link.url.trim()) {
-                            await linkDatasetToReuse(createdReuse.id, link.url.trim());
-                          }
+                          const trimmed = link.url.trim();
+                          if (!trimmed) continue;
+                          const idMatch = trimmed.match(/datasets\/([a-f0-9]{24})\/?/);
+                          const slugMatch = trimmed.match(/datasets\/([^/]+)\/?$/);
+                          const datasetRef = idMatch ? idMatch[1] : slugMatch ? slugMatch[1] : trimmed;
+                          const updated = await linkDatasetToReuse(createdReuse.id, datasetRef);
+                          setCreatedReuse(updated);
                         }
                         for (const link of apiLinks) {
                           if (link.url.trim()) {
@@ -840,7 +861,7 @@ export default function ReusesFormClient({
                             .join(", ");
                           setApiError(messages);
                         } else {
-                          setApiError("Erro ao associar dados. Tente novamente.");
+                          setApiError("Erro ao associar dados. Verifique os links inseridos e tente novamente.");
                         }
                       } finally {
                         setIsSubmitting(false);

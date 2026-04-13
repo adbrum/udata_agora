@@ -7,7 +7,6 @@ import {
   Button,
   InputText,
   InputTextArea,
-  InputSelect,
   DropdownSection,
   DropdownOption,
   Icon,
@@ -29,7 +28,7 @@ export default function CommunityResourceEditClient() {
   const searchParams = useSearchParams();
   const params = useParams();
   const router = useRouter();
-  const { displayName } = useCurrentUser();
+  useCurrentUser();
   const resourceId = (params?.resourceId as string) || searchParams.get("resource_id") || searchParams.get("id") || "";
 
   const [resource, setResource] = useState<CommunityResource | null>(null);
@@ -51,7 +50,7 @@ export default function CommunityResourceEditClient() {
   const [mimeType, setMimeType] = useState("");
   const [schemaUrl, setSchemaUrl] = useState("");
   const [schemas, setSchemas] = useState<string[]>([]);
-  const [selectedSchema, setSelectedSchema] = useState("");
+  const [loadedSchema, setLoadedSchema] = useState("");
   const [resourceTypes, setResourceTypes] = useState<ResourceType[]>([]);
   const selectedTypeRef = useRef("");
   const selectedFormatRef = useRef("");
@@ -94,7 +93,7 @@ export default function CommunityResourceEditClient() {
             setSchemaUrl(url);
           } else {
             const schemaVal = name || url;
-            setSelectedSchema(schemaVal);
+            setLoadedSchema(schemaVal);
             selectedSchemaRef.current = schemaVal;
           }
         }
@@ -124,6 +123,10 @@ export default function CommunityResourceEditClient() {
     setFormErrors((prev) => { const next = { ...prev }; delete next.format; return next; });
   }, []);
 
+  const clearSchemaUrl = React.useCallback(() => {
+    setSchemaUrl("");
+  }, []);
+
   const handleSave = async () => {
     const errors: Record<string, boolean> = {};
     if (!title.trim()) errors.title = true;
@@ -132,14 +135,27 @@ export default function CommunityResourceEditClient() {
     if (!selectedFormatRef.current) errors.format = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setFormErrors({});
     setApiError(null);
     setSuccessMessage(null);
     setIsSubmitting(true);
 
     try {
+      const schemaUrlVal = schemaUrl.trim();
+      const schemaNameVal = selectedSchemaRef.current;
+      console.log("[debug] schemaUrl:", schemaUrlVal, "schemaRef:", schemaNameVal, "loadedSchema:", loadedSchema);
+      const schemaPayload = schemaUrlVal
+        ? { url: schemaUrlVal }
+        : schemaNameVal
+          ? { name: schemaNameVal }
+          : null;
+
       const updated = await updateCommunityResource(resourceId, {
         title: title.trim(),
         description: description.trim() || undefined,
@@ -147,9 +163,8 @@ export default function CommunityResourceEditClient() {
         type: selectedTypeRef.current || undefined,
         format: selectedFormatRef.current.trim() || undefined,
         mime: mimeType.trim() || undefined,
-        schema: schemaUrl.trim() || selectedSchemaRef.current || undefined,
+        schema: schemaPayload,
       });
-
       setResource(updated);
       setSelectedType(updated.type || "");
       const normFormat = updated.format?.toLowerCase() || "";
@@ -158,21 +173,20 @@ export default function CommunityResourceEditClient() {
       if (updated.schema) {
         if (updated.schema.url && updated.schema.url.startsWith("http")) {
           setSchemaUrl(updated.schema.url);
-          setSelectedSchema("");
           selectedSchemaRef.current = "";
         } else {
-          const schemaVal = updated.schema.name || updated.schema.url || "";
-          setSelectedSchema(schemaVal);
-          selectedSchemaRef.current = schemaVal;
+          selectedSchemaRef.current = updated.schema.name || updated.schema.url || "";
           setSchemaUrl("");
         }
+      } else {
+        selectedSchemaRef.current = "";
       }
       if (updated.checksum) {
         setChecksumType(updated.checksum.type || "");
         setChecksumValue(updated.checksum.value || "");
       }
       setSuccessMessage("Recurso comunitário atualizado com sucesso.");
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setTimeout(() => setSuccessMessage(null), 10000);
     } catch (err: unknown) {
       const error = err as { status?: number; data?: Record<string, unknown> };
       if (error?.status === 401) {
@@ -227,25 +241,33 @@ export default function CommunityResourceEditClient() {
   );
 
   const schemaOptions = useMemo(() => {
+    // Depend on loadedSchema (set only at initial load) instead of resource?.schema,
+    // so setResource(updated) after save does not recompute children and re-render
+    // the IsolatedSelect, which would trigger Agora's React 19 setState-in-render bug.
+    const list =
+      loadedSchema && !schemas.includes(loadedSchema)
+        ? [loadedSchema, ...schemas]
+        : schemas;
+
     const options = [
-      <DropdownOption key="none" value="">
+      <DropdownOption key="none" value="" selected={loadedSchema === ""}>
         Nenhum
       </DropdownOption>,
-      ...schemas.map((s) => (
-        <DropdownOption key={s} value={s} selected={s === selectedSchema}>
+      ...list.map((s) => (
+        <DropdownOption key={s} value={s} selected={s === loadedSchema}>
           {s}
         </DropdownOption>
       )),
     ];
     return <DropdownSection name="schemas">{options}</DropdownSection>;
-  }, [schemas, selectedSchema]);
+  }, [schemas, loadedSchema]);
 
   const auxiliarItems = [
     {
       title: "Escolha o link correto",
       hasError: !!formErrors.url,
       content:
-        "É recomendável criar um link para o próprio arquivo em vez de uma página da web para permitir que o {site} o analise.",
+        "É recomendável criar um link para o próprio arquivo em vez de uma página da web para permitir que o site o analise.",
     },
     {
       title: "Soma de verificação",
@@ -253,11 +275,11 @@ export default function CommunityResourceEditClient() {
         "O checksum permite ao utilizador verificar se os dados descarregados não foram corrompidos ou alterados.",
     },
     {
-      title: "Dê um nome ao link",
+      title: "Dar um nome ao link",
       hasError: !!formErrors.title,
       content: (
         <>
-          Recomenda-se escolher um título que informe claramente qualquer utilizador sobre o conteúdo
+          Recomenda-se a escolha de um título que informe claramente qualquer utilizador sobre o conteúdo
           do arquivo. Algumas práticas a evitar:
           <ul className="list-disc pl-16 mt-8">
             <li>atribuir um título muito genérico (por exemplo, &quot;list.csv&quot;);</li>
@@ -267,14 +289,14 @@ export default function CommunityResourceEditClient() {
               interoperabilidade de arquivos);
             </li>
             <li>
-              dar um título demasiado técnico e derivado de nomenclaturas da indústria.
+              dar um título que seja demasiado técnico e derivado de nomenclaturas da indústria.
             </li>
           </ul>
         </>
       ),
     },
     {
-      title: "Publique os tipos de ficheiros corretos",
+      title: "Publicar os tipos de ficheiros corretos",
       hasError: !!formErrors.type,
       content: (
         <>
@@ -313,7 +335,7 @@ export default function CommunityResourceEditClient() {
           Os formatos devem ser:
           <ul className="list-disc pl-16 mt-8">
             <li>
-              Aberto: um formato aberto não adiciona especificações técnicas que restrinjam o uso
+              aberto: um formato aberto não adiciona especificações técnicas que restrinjam o uso
               dos dados (por exemplo, o uso de software pago);
             </li>
             <li>
@@ -331,14 +353,14 @@ export default function CommunityResourceEditClient() {
       ),
     },
     {
-      title: "Escolha um tipo MIME",
+      title: "Escolher um tipo de recurso",
       content:
-        "Especifique o tipo MIME correspondente ao formato do recurso remoto (por exemplo, application/pdf, text/csv). Se necessário, utilize uma ferramenta online para o detetar.",
+        "Especifique o tipo de recurso correspondente ao formato do recurso remoto (por exemplo, application/pdf, text/csv). Se necessário, utilize uma ferramenta online para detetá-lo.",
     },
     {
-      title: "Selecione um esquema",
+      title: "Selecionar um esquema",
       content:
-        "É possível identificar um esquema de dados existente visitando o site schema.data.gouv.fr, que contém uma lista de esquemas de dados existentes.",
+        "É possível identificar um esquema de dados existente ao visitar o site schema.data.gouv.fr, que contém uma lista de esquemas de dados existentes.",
     },
   ];
 
@@ -394,7 +416,7 @@ export default function CommunityResourceEditClient() {
 
           <form className="admin-page__form">
             <p className="text-neutral-900 text-base leading-7">
-              Os campos marcados com um asterisco ( * ) sao obrigatorios.
+              Os campos marcados com um asterisco ( * ) sao obrigatórios.
             </p>
 
             {/* PENHORA */}
@@ -403,7 +425,7 @@ export default function CommunityResourceEditClient() {
             <div className="admin-page__fields-group">
               <InputText
                 label="Link exato para o ficheiro *"
-                placeholder="https://..."
+                placeholder="Insira o link para o ficheiro"
                 id="resource-url"
                 value={resourceUrl}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -419,7 +441,7 @@ export default function CommunityResourceEditClient() {
 
             {/* SOMA DE VERIFICACAO */}
             <div className="flex flex-col items-start gap-[12px]">
-              <h2 className="admin-page__section-title mb-0">Soma de verificação</h2>
+              <h2 className="admin-page__section-title mb-0">Selo de verificação</h2>
               {showChecksum ? (
                 <Button
                   variant="danger"
@@ -555,7 +577,7 @@ export default function CommunityResourceEditClient() {
               </div>
 
               <InputText
-                label="Tipo mime"
+                label="Tipo de recurso"
                 placeholder="application/pdf"
                 id="resource-mime"
                 value={mimeType}
@@ -569,42 +591,32 @@ export default function CommunityResourceEditClient() {
             <h2 className="admin-page__section-title">Esquema de dados</h2>
 
             <div className="admin-page__fields-group">
-              <InputSelect
+              <IsolatedSelect
                 key={`schema-${resource?.id || "loading"}-${schemas.length}`}
                 label="Plano"
-                placeholder="Procure um esquema referenciado em dados.gov..."
+                placeholder="Procure um esquema referenciado em dados.gov.pt..."
                 id="resource-schema"
                 searchable
                 searchInputPlaceholder="Escreva para pesquisar..."
-                value={selectedSchema ? [selectedSchema] : []}
-                onChange={(options: any[]) => {
-                  if (options.length > 0) {
-                    const val = options[0].value;
-                    setSelectedSchema(val);
-                    selectedSchemaRef.current = val;
-                    setSchemaUrl("");
-                  } else {
-                    setSelectedSchema("");
-                    selectedSchemaRef.current = "";
-                  }
-                }}
+                defaultValue={loadedSchema}
+                onChangeRef={selectedSchemaRef}
+                onChangeCallback={clearSchemaUrl}
               >
                 {schemaOptions}
-              </InputSelect>
+              </IsolatedSelect>
 
               <div className="admin-page__divider-or">
                 <span className="admin-page__divider-or-text">ou</span>
               </div>
 
               <InputText
-                label="Adicione um link para o diagrama."
-                placeholder="https://..."
+                label="Adicione um link para o diagrama"
+                placeholder="Insira o link para o diagrama"
                 id="resource-schema-url"
                 value={schemaUrl}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setSchemaUrl(e.target.value);
                   if (e.target.value) {
-                    setSelectedSchema("");
                     selectedSchemaRef.current = "";
                   }
                 }}

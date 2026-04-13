@@ -318,7 +318,7 @@ export default function CommunityResourceFormClient({
                     href="/pages/admin/organizations/new"
                     className="admin-page__org-card-link"
                   >
-                    Crie ou integre uma organização em dados.gov
+                    Crie ou integre uma organização em dados.gov.pt
                     <Icon name="agora-line-arrow-right-circle" className="w-[24px] h-[24px]" />
                   </a>
                 </div>
@@ -597,7 +597,7 @@ export default function CommunityResourceFormClient({
                 type="success"
                 description={
                   <>
-                    <strong>Seu recurso comunitário foi criado!</strong>
+                    <strong>O seu recurso comunitário foi criado!</strong>
                     <br />
                     Veja na página pública.
                   </>

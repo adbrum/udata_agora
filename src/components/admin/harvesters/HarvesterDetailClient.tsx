@@ -190,11 +190,15 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
     if (!harvesterUrl.trim()) errors.harvesterUrl = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
 
     if (!source) return;
 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsSaving(true);
     setSaveSuccess(false);
     setSaveError(null);
@@ -227,7 +231,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
       ]);
       setSource(updated as HarvestSource);
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      setTimeout(() => setSaveSuccess(false), 10000);
     } catch (err) {
       const e = err as { status?: number; data?: unknown };
       console.error("Error saving harvester:", e.status, e.data ?? err);
@@ -404,7 +408,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
             Informe-nos através do formulário de contacto abaixo se deseja que validemos o seu harvester. Será notificado da aprovação (ou rejeição).
           </p>
           <a href="#" className="flex items-center gap-8 text-sm text-primary-600">
-            Validação da solicitação
+            Solicitar validação do harvester
             <Icon name="agora-line-arrow-right-circle" className="w-[20px] h-[20px]" />
           </a>
         </div>
@@ -761,7 +765,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                       disabled={isPreviewing}
                       onClick={handlePreview}
                     >
-                      {isPreviewing ? "A pré-visualizar..." : "Pré-visualização"}
+                      {isPreviewing ? "A pré-visualizar..." : "Pré-visualizar"}
                     </Button>
                     <Button
                       variant="primary"
@@ -883,7 +887,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                     type="danger"
                     description={
                       <>
-                        <strong>Atenção Esta ação é irreversível.</strong>
+                        <strong>Atenção esta ação é irreversível.</strong>
                         <br />
                         <Button
                           appearance="link"

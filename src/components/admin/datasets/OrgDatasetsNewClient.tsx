@@ -152,7 +152,7 @@ export default function OrgDatasetsNewClient() {
                 É administrador e deseja catalogar os seus dados?
               </p>
               <p className="text-neutral-700 text-sm leading-relaxed">
-                Pode utilizar o serviço de catalogação e publicação do dados.gov, que permite aos
+                Pode utilizar o serviço de catalogação e publicação do dados.gov.pt, que permite aos
                 organismos da Administração Pública Central organizarem e disponibilizarem o seu
                 catálogo de dados abertos.
               </p>

@@ -431,13 +431,6 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
 
                   {/* Sidebar Metadata */}
                   <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-16" ref={descSidebarRef}>
-                    <div className="bg-white p-32 rounded-4">
-                      <h3 className="text-sm font-bold tracking-wider mb-8">Tipo</h3>
-                      <p className="font-medium text-neutral-900">
-                        {REUSE_TYPE_LABELS[reuse.type] || reuse.type || 'Aplicação'}
-                      </p>
-                    </div>
-
                     {reuse.tags && reuse.tags.length > 0 && (
                       <div className="bg-white p-32 rounded-4">
                         <h3 className="text-sm font-bold tracking-wider mb-8">Tags</h3>
@@ -474,16 +467,6 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                       </p>
                     </div>
 
-                    <div className="bg-white p-32 rounded-4">
-                      <h3 className="text-sm font-bold tracking-wider mb-8">Vistas</h3>
-                      <div className="text-2xl text-neutral-900 mb-8">
-                        {reuse.metrics?.views
-                          ? reuse.metrics.views >= 1000
-                            ? (reuse.metrics.views / 1000).toLocaleString('pt-PT') + ' mil'
-                            : reuse.metrics.views.toLocaleString('pt-PT')
-                          : '0'}
-                      </div>
-                    </div>
                   </aside>
                 </div>
               )}
@@ -733,7 +716,7 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                               hasIcon: false,
                               children: (
                                 <span className="flex items-center gap-8">
-                                  <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" className="w-[24px] h-[24px]" />
+                                  <img src="/Icons/bar_chart.svg" alt="" aria-hidden="true" className="w-[24px] h-[24px] [filter:invert(18%)_sepia(99%)_saturate(2000%)_hue-rotate(211deg)_brightness(92%)_contrast(97%)]" />
                                   <span>{dataset.metrics?.reuses || 0}</span>
                                 </span>
                               ),
