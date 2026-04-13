@@ -114,6 +114,7 @@ export default function PostsEditClient() {
   }, [postId]);
 
   const handleSaveMetadata = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (!articleTitle.trim()) return;
 
     setIsSaving(true);
@@ -133,6 +134,7 @@ export default function PostsEditClient() {
       if (result) {
         setPost(result);
         setApiSuccess("Metadados guardados com sucesso.");
+        setTimeout(() => setApiSuccess(null), 10000);
       } else {
         setApiError("Erro ao guardar. Verifique a autenticação.");
       }
@@ -144,6 +146,7 @@ export default function PostsEditClient() {
   };
 
   const handleSaveContent = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (!articleContent.trim()) return;
 
     setIsSaving(true);
@@ -159,6 +162,7 @@ export default function PostsEditClient() {
       if (result) {
         setPost(result);
         setApiSuccess("Conteúdo guardado com sucesso.");
+        setTimeout(() => setApiSuccess(null), 10000);
       } else {
         setApiError("Erro ao guardar. Verifique a autenticação.");
       }
@@ -183,6 +187,7 @@ export default function PostsEditClient() {
       if (result) {
         setPost(result);
         setApiSuccess("Artigo despublicado com sucesso.");
+        setTimeout(() => setApiSuccess(null), 10000);
       } else {
         setApiError("Erro ao despublicar. Verifique a autenticação.");
       }
@@ -227,6 +232,7 @@ export default function PostsEditClient() {
       if (result) {
         setPost(result);
         setApiSuccess("Imagem carregada com sucesso.");
+        setTimeout(() => setApiSuccess(null), 10000);
       } else {
         setApiError("Erro ao carregar a imagem.");
       }

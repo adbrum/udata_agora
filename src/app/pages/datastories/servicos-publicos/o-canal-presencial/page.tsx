@@ -58,7 +58,7 @@ export default function DataStoryDetailPage() {
             extraPy: 'pt-[64px]',
             iFrame: {
                 className: '!h-[1250px]',
-                src: 'https://app.powerbi.com/view?r=eyJrIjoiYTM0NTQxODgtM2U5MS00MzkzLTgzOGEtOTUwN2ZlNmViNzc5IiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
+                src: 'https://app.powerbi.com/view?r=eyJrIjoiZmZiZjM4YjYtOWRmMS00OWQ4LWEyNGMtZGJhYzkwNDY1MmI5IiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
         },
         {
@@ -67,8 +67,8 @@ export default function DataStoryDetailPage() {
             className: 'bg-primary-100',
             extraPy: 'pt-[64px]',
             iFrame: {
-                className: 'w-full h-[820px] bg-white',
-                src: '',
+                className: '!h-[820px]',
+                src: 'https://app.powerbi.com/view?r=eyJrIjoiYzhiNGNmNmUtOGIzZi00OGU2LWI0ZGYtNGNhM2FkZGYzYWMzIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
         },
         {
@@ -77,8 +77,8 @@ export default function DataStoryDetailPage() {
             className: 'bg-primary-100',
             extraPy: 'pt-[64px]',
             iFrame: {
-                className: 'w-full h-[1530px] bg-white',
-                src: '',
+                className: '!h-[1250px]',
+                src: 'https://app.powerbi.com/view?r=eyJrIjoiYzBjYzFlY2QtYTdkZC00OWVjLThkODgtOTcyMzE1MjgxMWQ4IiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
         },
         {

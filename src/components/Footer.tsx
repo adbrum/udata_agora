@@ -16,7 +16,7 @@ const linkColumns = [
     links: [
       { href: '/pages/posts', label: 'Notícias' },
       { href: '/pages/faqs/about_dadosgov', label: 'Sobre nós' },
-      { href: '/pages/support', label: 'Contactar-nos' },
+      { href: '/pages/support', label: 'Ajuda e contactos' },
       { href: '/pages/faqs/terms', label: 'Termos de utilização' },
     ],
   },

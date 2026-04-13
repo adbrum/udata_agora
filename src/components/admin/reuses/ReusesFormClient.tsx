@@ -441,7 +441,7 @@ export default function ReusesFormClient({
                     href="/pages/admin/organizations/new"
                     className="admin-page__org-card-link"
                   >
-                    Crie ou integre uma organização em dados.gov
+                    Crie ou integre uma organização em dados.gov.pt
                     <Icon
                       name="agora-line-arrow-right-circle"
                       className="w-[24px] h-[24px]"
@@ -503,35 +503,31 @@ export default function ReusesFormClient({
                   >
                     {topicOptions}
                   </IsolatedSelect>
-                  <div>
-                    <InputTextArea
-                      label="Descrição *"
-                      placeholder="Insira a descrição aqui"
-                      id="reuse-description"
-                      rows={4}
-                      showCharCounter
-                      value={reuseDescription}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                        setReuseDescription(e.target.value);
-                        if (e.target.value.trim()) clearError("reuseDescription");
-                        if (e.target.value.trim().length >= 200) clearError("reuseDescriptionLength");
-                      }}
-                      hasError={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
-                      hasFeedback={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
-                      feedbackState={formErrors.reuseDescriptionLength ? "warning" : "danger"}
-                      errorFeedbackText={formErrors.reuseDescription ? "Campo obrigatório" : "A descrição deve ter pelo menos 200 caracteres"}
-                    />
-                    <p className="text-neutral-600 text-sm mt-1">
-                      Recomenda-se que a descrição tenha pelo menos 200 caracteres.
-                    </p>
-                  </div>
+                  <InputTextArea
+                    label="Descrição *"
+                    placeholder="Insira a descrição aqui"
+                    id="reuse-description"
+                    rows={4}
+                    maxLength={1000}
+                    showCharCounter={true}
+                    value={reuseDescription}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                      setReuseDescription(e.target.value);
+                      if (e.target.value.trim()) clearError("reuseDescription");
+                    }}
+                    hasError={!!formErrors.reuseDescription}
+                    hasFeedback={!!formErrors.reuseDescription || reuseDescription.length < 1000}
+                    feedbackState={formErrors.reuseDescription ? "danger" : "warning"}
+                    feedbackText="Recomenda-se que a descrição tenha pelo menos 1000 caracteres."
+                    errorFeedbackText="Campo obrigatório"
+                  />
                   <IsolatedSelect
                     label="Palavras-chave"
-                    placeholder="Pesquise ou insira palavras-chave…"
+                    placeholder="Pesquise ou insira palavras-chave..."
                     id="reuse-keywords"
                     type="checkbox"
                     searchable
-                    searchInputPlaceholder="Escreva para pesquisar ou criar…"
+                    searchInputPlaceholder="Escreva para pesquisar ou criar..."
                     searchNoResultsText="Nenhum resultado encontrado"
                     onChangeRef={selectedKeywordsRef}
                     defaultValue={selectedKeywordsValue}
@@ -676,7 +672,7 @@ export default function ReusesFormClient({
 
                 <InputSelect
                   label="Ficheiro com um conjunto de dados"
-                  placeholder="Selecione um conjunto de dados…"
+                  placeholder="Selecione um conjunto de dados..."
                   id="reuse-dataset-search"
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
