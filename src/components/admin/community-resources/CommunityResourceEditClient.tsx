@@ -134,6 +134,7 @@ export default function CommunityResourceEditClient() {
     if (!resourceUrl.trim()) errors.url = true;
     if (!selectedTypeRef.current) errors.type = true;
     if (!selectedFormatRef.current) errors.format = true;
+    if (showChecksum && !checksumValue.trim()) errors.checksumValue = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       requestAnimationFrame(() => {
@@ -165,10 +166,11 @@ export default function CommunityResourceEditClient() {
         format: selectedFormatRef.current.trim() || undefined,
         mime: mimeType.trim() || undefined,
         schema: schemaPayload,
-        checksum:
-          showChecksum && selectedChecksumTypeRef.current
-            ? { type: selectedChecksumTypeRef.current, value: checksumValue }
-            : null,
+        ...(showChecksum
+          ? checksumValue
+            ? { checksum: { type: selectedChecksumTypeRef.current || checksumType, value: checksumValue } }
+            : {}
+          : { checksum: null }),
       });
       setResource(updated);
       setSaveCount((c) => c + 1);
@@ -486,6 +488,12 @@ export default function CommunityResourceEditClient() {
                   id="checksum-type"
                   defaultValue={checksumType}
                   onChangeRef={selectedChecksumTypeRef}
+                  onChangeCallback={(newType) => {
+                    if (newType !== checksumType) {
+                      setChecksumType(newType);
+                      setChecksumValue("");
+                    }
+                  }}
                 >
                   <DropdownSection name="checksum-types">
                     <DropdownOption value="sha1" selected={checksumType === "sha1"}>SHA1</DropdownOption>
@@ -496,14 +504,20 @@ export default function CommunityResourceEditClient() {
                 </IsolatedSelect>
 
                 <InputText
-                  label="Valor de checksum"
-                  placeholder=""
+                  label="Valor de checksum *"
+                  placeholder="Introduza o valor do hash"
                   id="checksum-value"
                   value={checksumValue}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setChecksumValue(e.target.value)
-                  }
-                  readOnly
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    if (e.nativeEvent.isTrusted) {
+                      setChecksumValue(e.target.value);
+                      if (e.target.value.trim()) setFormErrors((prev) => { const next = { ...prev }; delete next.checksumValue; return next; });
+                    }
+                  }}
+                  hasError={!!formErrors.checksumValue}
+                  hasFeedback={!!formErrors.checksumValue}
+                  feedbackState="danger"
+                  errorFeedbackText="Campo obrigatório"
                 />
               </div>
             )}
