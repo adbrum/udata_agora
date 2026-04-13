@@ -231,7 +231,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
       ]);
       setSource(updated as HarvestSource);
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      setTimeout(() => setSaveSuccess(false), 10000);
     } catch (err) {
       const e = err as { status?: number; data?: unknown };
       console.error("Error saving harvester:", e.status, e.data ?? err);

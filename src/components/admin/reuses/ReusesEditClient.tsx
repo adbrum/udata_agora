@@ -317,6 +317,7 @@ export default function ReusesEditClient() {
       });
       setReuse(updated);
       setApiSuccess("Reutilização atualizada com sucesso.");
+      setTimeout(() => setApiSuccess(null), 10000);
     } catch (error: unknown) {
       const err = error as { status?: number; data?: Record<string, unknown> };
       if (err.data && typeof err.data === "object") {
@@ -451,12 +452,12 @@ export default function ReusesEditClient() {
               <div className="admin-page__form-area">
                 <div className="dataset-edit-visibility-banner">
                   <StatusCard
-                    type="warning"
+                    type="info"
                     description={
                       <>
                         Modificar a visibilidade da reutilização
                         <br />
-                        <span className="text-primary-600">
+                        <span className="text-neutral-900 uppercase">
                           {reuse.private ? "rascunho" : "público"}
                         </span>
                       </>
@@ -477,6 +478,7 @@ export default function ReusesEditClient() {
                               ? "Reutilização guardada como rascunho."
                               : "Reutilização publicada com sucesso."
                           );
+                          setTimeout(() => setApiSuccess(null), 10000);
                         } catch {
                           setApiError("Erro ao alterar a visibilidade.");
                         }
@@ -613,6 +615,7 @@ export default function ReusesEditClient() {
                               const updated = await uploadReuseImage(reuse.id, files[0]);
                               setReuse(updated);
                               setApiSuccess("Imagem de capa atualizada com sucesso.");
+                              setTimeout(() => setApiSuccess(null), 10000);
                             } catch {
                               setApiError("Erro ao carregar imagem de capa.");
                             } finally {
@@ -1060,6 +1063,7 @@ export default function ReusesEditClient() {
                           setDatasetLinks([{ url: "" }]);
                           setSelectedDataset(null);
                           setApiSuccess("Conjuntos de dados associados com sucesso.");
+                          setTimeout(() => setApiSuccess(null), 10000);
                         } catch {
                           setApiError("Erro ao associar conjuntos de dados.");
                         } finally {
@@ -1219,6 +1223,7 @@ export default function ReusesEditClient() {
                           setReuse(updated);
                           setApiLinks([{ url: "" }]);
                           setApiSuccess("APIs associadas com sucesso.");
+                          setTimeout(() => setApiSuccess(null), 10000);
                         } catch {
                           setApiError("Erro ao associar APIs.");
                         } finally {

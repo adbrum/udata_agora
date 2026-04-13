@@ -185,7 +185,7 @@ export default function CommunityResourceEditClient() {
         setChecksumValue(updated.checksum.value || "");
       }
       setSuccessMessage("Recurso comunitário atualizado com sucesso.");
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setTimeout(() => setSuccessMessage(null), 10000);
     } catch (err: unknown) {
       const error = err as { status?: number; data?: Record<string, unknown> };
       if (error?.status === 401) {
