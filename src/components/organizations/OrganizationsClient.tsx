@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import React from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Button,
   InputSearch,
@@ -10,16 +10,22 @@ import {
   CardGeneral,
   ToggleGroup,
   Toggle,
-  CardNoResults
-} from '@ama-pt/agora-design-system';
-import { Pagination } from '@/components/Pagination';
-import { OrganizationsFilters } from './OrganizationsFilters';
-import { APIResponse, OrgBadges, Organization, OrganizationFilters, SiteMetrics } from '@/types/api';
+  CardNoResults,
+} from "@ama-pt/agora-design-system";
+import { Pagination } from "@/components/Pagination";
+import { OrganizationsFilters } from "./OrganizationsFilters";
+import {
+  APIResponse,
+  OrgBadges,
+  Organization,
+  OrganizationFilters,
+  SiteMetrics,
+} from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
-import { formatDistanceToNow } from 'date-fns';
-import { pt } from 'date-fns/locale';
+import { formatDistanceToNow } from "date-fns";
+import { pt } from "date-fns/locale";
 
-import PageBanner from '@/components/PageBanner';
+import PageBanner from "@/components/PageBanner";
 
 interface OrganizationsClientProps {
   initialData: APIResponse<Organization>;
@@ -31,17 +37,17 @@ interface OrganizationsClientProps {
 }
 
 const SORT_OPTIONS: Record<string, string> = {
-  relevancia: '',
-  mais_dados: '-datasets',
-  mais_reutilizacoes: '-reuses',
-  subscritores: '-followers',
+  relevancia: "",
+  mais_dados: "-datasets",
+  mais_reutilizacoes: "-reuses",
+  subscritores: "-followers",
 };
 
 const SORT_LABELS: Record<string, string> = {
-  relevancia: 'Relevância',
-  mais_dados: 'Mais dados',
-  mais_reutilizacoes: 'Mais reutilizações',
-  subscritores: 'Subscritores',
+  relevancia: "Relevância",
+  mais_dados: "Mais dados",
+  mais_reutilizacoes: "Mais reutilizações",
+  subscritores: "Subscritores",
 };
 
 export default function OrganizationsClient({
@@ -55,22 +61,21 @@ export default function OrganizationsClient({
   const router = useRouter();
   const { data: organizations, total, page_size } = initialData;
 
-  const currentQuery = initialFilters.q || '';
-  const currentSort = initialFilters.sort || '';
+  const currentQuery = initialFilters.q || "";
+  const currentSort = initialFilters.sort || "";
   const [searchQuery, setSearchQuery] = React.useState(currentQuery);
   const [filtersOpen, setFiltersOpen] = React.useState(false);
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const currentSortKey = Object.entries(SORT_OPTIONS).find(
-    ([, v]) => v === currentSort
-  )?.[0] || 'relevancia';
+  const currentSortKey =
+    Object.entries(SORT_OPTIONS).find(([, v]) => v === currentSort)?.[0] || "relevancia";
 
   const buildUrl = React.useCallback(
     (overrides: Record<string, string | null>) => {
       const params = new URLSearchParams();
-      if (initialFilters.q) params.set('q', initialFilters.q);
-      if (initialFilters.badge) params.set('badge', initialFilters.badge);
-      if (initialFilters.sort) params.set('sort', initialFilters.sort);
+      if (initialFilters.q) params.set("q", initialFilters.q);
+      if (initialFilters.badge) params.set("badge", initialFilters.badge);
+      if (initialFilters.sort) params.set("sort", initialFilters.sort);
       for (const [key, value] of Object.entries(overrides)) {
         if (value) {
           params.set(key, value);
@@ -78,9 +83,9 @@ export default function OrganizationsClient({
           params.delete(key);
         }
       }
-      params.set('page', '1');
+      params.set("page", "1");
       const qs = params.toString();
-      return `/pages/organizations${qs ? `?${qs}` : ''}`;
+      return `/pages/organizations${qs ? `?${qs}` : ""}`;
     },
     [initialFilters]
   );
@@ -89,10 +94,7 @@ export default function OrganizationsClient({
     if (searchQuery === currentQuery) return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      router.replace(
-        buildUrl({ q: searchQuery.trim() || null }),
-        { scroll: false }
-      );
+      router.replace(buildUrl({ q: searchQuery.trim() || null }), { scroll: false });
     }, 200);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -101,10 +103,7 @@ export default function OrganizationsClient({
 
   const handleSearch = React.useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    router.replace(
-      buildUrl({ q: searchQuery.trim() || null }),
-      { scroll: false }
-    );
+    router.replace(buildUrl({ q: searchQuery.trim() || null }), { scroll: false });
   }, [searchQuery, router, buildUrl]);
 
   const handleSort = React.useCallback(
@@ -125,13 +124,14 @@ export default function OrganizationsClient({
           backgroundPosition="center right"
           //containerClassName="dataset"
           breadcrumbItems={[
-            { label: 'Home', url: '/' },
-            { label: 'Organizações', url: '/pages/organizations' }
+            { label: "Home", url: "/" },
+            { label: "Organizações", url: "/pages/organizations" },
           ]}
           subtitle={
             <p className="text-primary-100 max-w-[592px]">
-              Pesquise através de {total.toLocaleString('pt-PT')} organizações
-              em dados.gov.pt
+              {total === 0
+                ? "Não existem resultados disponíveis para a sua pesquisa"
+                : `Pesquise através de ${total.toLocaleString("pt-PT")} organizações em dados.gov.pt`}
             </p>
           }
         >
@@ -147,7 +147,9 @@ export default function OrganizationsClient({
               id="organizations-search"
               value={searchQuery}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-              onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') handleSearch(); }}
+              onKeyDown={(e: React.KeyboardEvent) => {
+                if (e.key === "Enter") handleSearch();
+              }}
             />
             <div className="mt-8 text-s-regular text-neutral-900">
               Exemplos: &quot;educação&quot;, &quot;saúde pública&quot;, &quot;ambiente&quot;
@@ -165,15 +167,20 @@ export default function OrganizationsClient({
                 variant="neutral"
                 hasIcon
                 {...(filtersOpen
-                  ? { leadingIcon: "agora-line-chevron-left", leadingIconHover: "agora-solid-chevron-left" }
-                  : { trailingIcon: "agora-line-chevron-right", trailingIconHover: "agora-solid-chevron-right" }
-                )}
+                  ? {
+                      leadingIcon: "agora-line-chevron-left",
+                      leadingIconHover: "agora-solid-chevron-left",
+                    }
+                  : {
+                      trailingIcon: "agora-line-chevron-right",
+                      trailingIconHover: "agora-solid-chevron-right",
+                    })}
                 onClick={() => setFiltersOpen(!filtersOpen)}
               >
                 {filtersOpen ? "Ocultar filtros" : "Abrir filtros"}
               </Button>
               <span className="text-neutral-900 text-l-regular whitespace-nowrap">
-                {total.toLocaleString('pt-PT')} Resultados
+                {total.toLocaleString("pt-PT")} Resultados
               </span>
             </div>
             <div className="xl:col-span-7 flex items-center justify-end py-16">
@@ -181,18 +188,14 @@ export default function OrganizationsClient({
                 multiple={false}
                 value={currentSortKey}
                 onChange={(val) => {
-                  const selected = val.length > 0 ? val[0] : 'relevancia';
+                  const selected = val.length > 0 ? val[0] : "relevancia";
                   if (selected !== currentSortKey) {
                     handleSort(selected);
                   }
                 }}
               >
                 {Object.entries(SORT_LABELS).map(([key, label]) => (
-                  <Toggle
-                    key={key}
-                    value={key}
-                    selected={currentSortKey === key}
-                  >
+                  <Toggle key={key} value={key} selected={currentSortKey === key}>
                     {label}
                   </Toggle>
                 ))}
@@ -201,18 +204,24 @@ export default function OrganizationsClient({
           </div>
           <div className="divider-neutral-200 mb-24" />
 
-          <div className={`grid grid-filters gap-x-[32px] ${filtersOpen ? "md:grid-cols-3 xl:grid-cols-12" : ""}`}>
+          <div
+            className={`grid grid-filters gap-x-[32px] ${filtersOpen ? "md:grid-cols-3 xl:grid-cols-12" : ""}`}
+          >
             {/* Sidebar */}
             {filtersOpen && (
               <div className="xl:col-span-5 xl:block">
-                <OrganizationsFilters siteMetrics={siteMetrics} orgBadges={orgBadges} orgBadgeCounts={orgBadgeCounts} initialFilters={initialFilters} />
+                <OrganizationsFilters
+                  siteMetrics={siteMetrics}
+                  orgBadges={orgBadges}
+                  orgBadgeCounts={orgBadgeCounts}
+                  initialFilters={initialFilters}
+                />
               </div>
             )}
 
             {/* Results Area */}
             <div className={filtersOpen ? "xl:col-span-7" : "col-span-full"}>
               <div>
-
                 <div
                   className="gap-32"
                   style={{
@@ -226,7 +235,8 @@ export default function OrganizationsClient({
                     organizations.map((org) => {
                       const formatMetric = (value: number | undefined) => {
                         if (!value) return "0";
-                        if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(".", ",") + " M";
+                        if (value >= 1_000_000)
+                          return (value / 1_000_000).toFixed(1).replace(".", ",") + " M";
                         if (value >= 1_000) return (value / 1_000).toFixed(0) + " mil";
                         return String(value);
                       };
@@ -255,8 +265,13 @@ export default function OrganizationsClient({
                             subtitleText={
                               (
                                 <div className="flex flex-col">
-                                  <span style={{ fontSize: "16px" }} className="text-neutral-900">{timeAgo}</span>
-                                  <span style={{ fontSize: "16px", fontWeight: 300 }} className="text-neutral-900 mt-4">
+                                  <span style={{ fontSize: "16px" }} className="text-neutral-900">
+                                    {timeAgo}
+                                  </span>
+                                  <span
+                                    style={{ fontSize: "16px", fontWeight: 300 }}
+                                    className="text-neutral-900 mt-4"
+                                  >
                                     Organização
                                   </span>
                                 </div>
@@ -273,9 +288,16 @@ export default function OrganizationsClient({
                                   )}
                                   <div className="mt-auto">
                                     <div className="flex items-center flex-wrap gap-8 text-xs mt-12 text-neutral-700">
-                                      <div className="flex items-center gap-8" title="Visualizações">
+                                      <div
+                                        className="flex items-center gap-8"
+                                        title="Visualizações"
+                                      >
                                         <Icon
-                                          name={org.metrics?.views ? "agora-solid-eye" : "agora-line-eye"}
+                                          name={
+                                            org.metrics?.views
+                                              ? "agora-solid-eye"
+                                              : "agora-line-eye"
+                                          }
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"
@@ -284,20 +306,36 @@ export default function OrganizationsClient({
                                       </div>
                                       <div className="flex items-center gap-8" title="Datasets">
                                         <Icon
-                                          name={org.metrics?.datasets ? "agora-solid-layers-menu" : "agora-line-layers-menu"}
+                                          name={
+                                            org.metrics?.datasets
+                                              ? "agora-solid-layers-menu"
+                                              : "agora-line-layers-menu"
+                                          }
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"
                                         />
                                         <span>{org.metrics?.datasets || 0}</span>
                                       </div>
-                                      <div className="flex items-center gap-8" title="Reutilizações">
-                                        <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                      <div
+                                        className="flex items-center gap-8"
+                                        title="Reutilizações"
+                                      >
+                                        <img
+                                          src="/Icons/bar_chart.svg"
+                                          className="w-16 h-16"
+                                          alt=""
+                                          aria-hidden="true"
+                                        />
                                         <span>{org.metrics?.reuses || 0}</span>
                                       </div>
                                       <div className="flex items-center gap-8" title="Favoritos">
                                         <Icon
-                                          name={org.metrics?.followers ? "agora-solid-star" : "agora-line-star"}
+                                          name={
+                                            org.metrics?.followers
+                                              ? "agora-solid-star"
+                                              : "agora-line-star"
+                                          }
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"
@@ -327,10 +365,20 @@ export default function OrganizationsClient({
                   ) : (
                     <div className="col-span-full">
                       <CardNoResults
-                        icon={<Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />}
+                        icon={
+                          <Icon name="agora-line-search" className="w-12 h-12 text-primary-500" />
+                        }
                         title="Nenhuma organização encontrada"
-                        subtitle={<span className="font-bold">Não existem organizações que correspondam aos filtros aplicados.</span>}
-                        description={<div className="max-w-[592px] mx-auto">Experimente remover filtros ou usar outros termos de pesquisa.</div>}
+                        subtitle={
+                          <span className="font-bold">
+                            Não existem organizações que correspondam aos filtros aplicados.
+                          </span>
+                        }
+                        description={
+                          <div className="max-w-[592px] mx-auto">
+                            Experimente remover filtros ou usar outros termos de pesquisa.
+                          </div>
+                        }
                         position="center"
                         hasAnchor={false}
                       />

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -280,13 +280,14 @@ export default function DataStoriesClient({ currentPage, initialFilters }: DataS
           backgroundImageUrl="/Banner/hero-bg.png"
           backgroundPosition="center right"
           breadcrumbItems={[
-            { label: 'Home', url: '/' },
-            { label: 'Data Stories', url: '/pages/datastories' },
+            { label: "Home", url: "/" },
+            { label: "Data Stories", url: "/pages/datastories" },
           ]}
           subtitle={
             <p className="text-primary-100 max-w-[592px]">
-              Pesquise através de {ALL_DATA_STORIES.length.toLocaleString('pt-PT')} data stories
-              em dados.gov.pt
+              {total === 0
+                ? "Não existem resultados disponíveis para a sua pesquisa"
+                : `Pesquise através de ${total} data stories em dados.gov.pt`}
             </p>
           }
         />
