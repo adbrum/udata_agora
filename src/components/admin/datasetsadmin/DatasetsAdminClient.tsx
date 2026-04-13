@@ -194,8 +194,12 @@ export default function DatasetsAdminClient({
       setDraftContacts((prev) =>
         prev.map((d) => (d.id === draftId ? { ...d, errors } : d)),
       );
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
       const payload: Parameters<typeof createContactPoint>[0] = {

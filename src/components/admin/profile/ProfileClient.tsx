@@ -127,6 +127,7 @@ export default function ProfileClient() {
   const totalActivityPages = Math.ceil(activityTotal / activityPageSize);
 
   const handleSave = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsSaving(true);
     setSaveSuccess(false);
     setSaveError("");

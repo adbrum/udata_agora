@@ -66,8 +66,12 @@ export default function PostsNewClient() {
   const handleSave = async () => {
     if (!articleContent.trim()) {
       setFormErrors({ articleContent: true });
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsSaving(true);
     setSaveError(null);
     try {

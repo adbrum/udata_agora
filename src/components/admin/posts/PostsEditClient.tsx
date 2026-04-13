@@ -114,6 +114,7 @@ export default function PostsEditClient() {
   }, [postId]);
 
   const handleSaveMetadata = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (!articleTitle.trim()) return;
 
     setIsSaving(true);
@@ -144,6 +145,7 @@ export default function PostsEditClient() {
   };
 
   const handleSaveContent = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (!articleContent.trim()) return;
 
     setIsSaving(true);
