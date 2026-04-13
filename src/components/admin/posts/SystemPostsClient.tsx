@@ -45,6 +45,7 @@ export default function SystemPostsClient() {
   const [pageSize, setPageSize] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortOrder, setSortOrder] = useState<SortOrder>("none");
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -77,6 +78,13 @@ export default function SystemPostsClient() {
           return true;
         });
       }
+      if (statusFilter) {
+        data = data.filter((p) => {
+          if (statusFilter === "published") return !!p.published;
+          if (statusFilter === "draft") return !p.published;
+          return true;
+        });
+      }
       if (sortField && sortOrder !== "none") {
         data = [...data].sort((a, b) => {
           if (sortField === "name") {
@@ -99,7 +107,7 @@ export default function SystemPostsClient() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, pageSize, searchQuery, typeFilter, sortField, sortOrder]);
+  }, [currentPage, pageSize, searchQuery, typeFilter, statusFilter, sortField, sortOrder]);
 
   useEffect(() => {
     loadData();
@@ -159,7 +167,7 @@ export default function SystemPostsClient() {
         <InputSelect
           label=""
           hideLabel
-          placeholder="Todos"
+          placeholder="Filtrar por tipo"
           id="filter-type"
           onChange={(options) => {
             setTypeFilter(
@@ -169,9 +177,25 @@ export default function SystemPostsClient() {
           }}
         >
           <DropdownSection name="type">
-            <DropdownOption value="">Todos</DropdownOption>
             <DropdownOption value="news">Notícias</DropdownOption>
             <DropdownOption value="page">Página</DropdownOption>
+          </DropdownSection>
+        </InputSelect>
+        <InputSelect
+          label=""
+          hideLabel
+          placeholder="Filtrar por estado"
+          id="filter-status"
+          onChange={(options) => {
+            setStatusFilter(
+              options.length > 0 ? (options[0].value as string) : ""
+            );
+            setCurrentPage(1);
+          }}
+        >
+          <DropdownSection name="status">
+            <DropdownOption value="published">Publicado</DropdownOption>
+            <DropdownOption value="draft">Rascunho</DropdownOption>
           </DropdownSection>
         </InputSelect>
         <Button
