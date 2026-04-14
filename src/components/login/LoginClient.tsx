@@ -20,16 +20,24 @@ import { fetchCsrfToken, login } from "@/services/api";
 
 function LoginContent() {
   const [cmdModalOpen, setCmdModalOpen] = useState(false);
+  const [ccModalOpen, setCcModalOpen] = useState(false);
+  const [eidasModalOpen, setEidasModalOpen] = useState(false);
   const [isHoveredClose, setIsHoveredClose] = useState(false);
   const [isHoveredNacional, setIsHoveredNacional] = useState(false);
   const [isHoveredEstrangeiro, setIsHoveredEstrangeiro] = useState(false);
+  const [isHoveredCCCreate, setIsHoveredCCCreate] = useState(false);
+  const [isHoveredEidasCreate, setIsHoveredEidasCreate] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isHoveredCC, setIsHoveredCC] = useState(false);
   const [isHoveredEidas, setIsHoveredEidas] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   const [migrationRequired, setMigrationRequired] = useState(false);
   const [citizenType, setCitizenType] = useState<string | null>(null);
   const [termsCmdAccepted, setTermsCmdAccepted] = useState(false);
+  const [termsCCAccepted, setTermsCCAccepted] = useState(false);
   const [termsEidasAccepted, setTermsEidasAccepted] = useState(false);
 
   const samlEnabled = process.env.NEXT_PUBLIC_SAML_ENABLED === "true";
@@ -91,6 +99,10 @@ function LoginContent() {
     submitSamlForm("/saml/login");
   };
 
+  const handleCCLogin = () => {
+    submitSamlForm("/saml/cc/login");
+  };
+
   const handleEidasLogin = () => {
     submitSamlForm("/saml/eidas/login");
   };
@@ -149,14 +161,145 @@ function LoginContent() {
     <main className="flex-grow bg-white min-h-screen relative">
       <div className="container mx-auto px-16 pt-32 pb-64 max-w-7xl login-page">
         {/* Breadcrumb */}
-        {!cmdModalOpen && (
+        {!cmdModalOpen && !ccModalOpen && !eidasModalOpen && (
           <div>
             <Breadcrumb items={breadcrumbItems} />
           </div>
         )}
 
         {/* Main Content */}
-        {cmdModalOpen ? (
+        {eidasModalOpen ? (
+          <div className="mt-24 flex flex-col gap-24">
+            <div className="flex justify-end">
+              <button
+                onClick={() => setEidasModalOpen(false)}
+                onMouseEnter={() => setIsHoveredClose(true)}
+                onMouseLeave={() => setIsHoveredClose(false)}
+                className="flex items-center gap-8 text-sm text-neutral-900 hover:text-neutral-700"
+              >
+                Fechar
+                <Icon
+                  name={isHoveredClose ? "agora-solid-x" : "agora-line-x"}
+                  className="w-20 h-20"
+                />
+              </button>
+            </div>
+            <h2 className="text-xl-bold text-brand-blue-dark">
+              O que precisa para criar uma conta?
+            </h2>
+            <ul className="flex flex-col gap-16">
+              <li className="flex items-start gap-16">
+                <Icon name="agora-line-check" className="w-20 h-20 text-primary-600 shrink-0 mt-2" />
+                <span>
+                  Ter um mecanismo de identificação eletrónica emitida por outro Estado-Membro da
+                  União Europeia que já tenha infraestruturas de autenticação (eIDAS) disponível.
+                </span>
+              </li>
+            </ul>
+            <div className="flex flex-col gap-24 mt-32 items-start">
+              <a
+                href="https://www.autenticacao.gov.pt/eidas"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-600 flex items-center gap-8 text-sm"
+                onMouseEnter={() => setIsHoveredEidasCreate(true)}
+                onMouseLeave={() => setIsHoveredEidasCreate(false)}
+              >
+                Criar conta com Autenticação Europeia
+                <Icon
+                  name={isHoveredEidasCreate ? "agora-solid-arrow-right-circle" : "agora-line-arrow-right-circle"}
+                  className="w-20 h-20"
+                />
+              </a>
+            </div>
+          </div>
+        ) : ccModalOpen ? (
+          <div className="mt-24 flex flex-col gap-24">
+            <div className="flex justify-end">
+              <button
+                onClick={() => setCcModalOpen(false)}
+                onMouseEnter={() => setIsHoveredClose(true)}
+                onMouseLeave={() => setIsHoveredClose(false)}
+                className="flex items-center gap-8 text-sm text-neutral-900 hover:text-neutral-700"
+              >
+                Fechar
+                <Icon
+                  name={isHoveredClose ? "agora-solid-x" : "agora-line-x"}
+                  className="w-20 h-20"
+                />
+              </button>
+            </div>
+            <h2 className="text-xl-bold text-brand-blue-dark">
+              O que precisa para criar uma conta?
+            </h2>
+            <ul className="flex flex-col gap-16">
+              <li className="flex items-start gap-16">
+                <Icon name="agora-line-check" className="w-20 h-20 text-primary-600 shrink-0 mt-2" />
+                <span>
+                  Ser portador de Cartão de Cidadão válido.{" "}
+                  <a
+                    href="https://www.autenticacao.gov.pt/cc-video-tutorial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Ver vídeo tutorial
+                  </a>
+                  .
+                </span>
+              </li>
+              <li className="flex items-start gap-16">
+                <Icon name="agora-line-check" className="w-20 h-20 text-primary-600 shrink-0 mt-2" />
+                <span>
+                  Precisa de ter um Cartão de Cidadão válido, PIN de autenticação, leitor de cartões,
+                  e de ter o plugin Autenticação.gov instalado no seu computador.{" "}
+                  <a
+                    href="https://www.autenticacao.gov.pt/cc-software"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold underline"
+                  >
+                    Faça o download do plugin em Autenticacao.gov
+                  </a>
+                  .
+                </span>
+              </li>
+              <li className="flex items-start gap-16">
+                <Icon name="agora-line-check" className="w-20 h-20 text-primary-600 shrink-0 mt-2" />
+                <span>
+                  O registo com Cartão de Cidadão permite a realização de todos os serviços online
+                  disponibilizados neste portal. Este registo será feito através dos meios de
+                  identificação eletrónica disponíveis em{" "}
+                  <a
+                    href="https://www.autenticacao.gov.pt"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold underline"
+                  >
+                    autenticação.gov
+                  </a>
+                  .
+                </span>
+              </li>
+            </ul>
+            <div className="flex flex-col gap-24 mt-32 items-start">
+              <a
+                href="https://www.autenticacao.gov.pt/cc-pedido"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-600 flex items-center gap-8 text-sm"
+                onMouseEnter={() => setIsHoveredCCCreate(true)}
+                onMouseLeave={() => setIsHoveredCCCreate(false)}
+              >
+                Criar conta com o Cartão de Cidadão
+                <Icon
+                  name={isHoveredCCCreate ? "agora-solid-arrow-right-circle" : "agora-line-arrow-right-circle"}
+                  className="w-20 h-20"
+                />
+              </a>
+            </div>
+          </div>
+        ) : cmdModalOpen ? (
           <div className="mt-24 flex flex-col gap-24">
             <div className="flex justify-end">
               <button
@@ -337,46 +480,132 @@ function LoginContent() {
             </TabBody>
           </Tab>
           <Tab>
+            <TabHeader>Cartão de Cidadão</TabHeader>
+            <TabBody>
+              <div className="rounded-8">
+                <div className="flex flex-col gap-40">
+                  <div className="flex items-center justify-between gap-32">
+                    <div className="flex flex-col gap-8">
+                      <h2 className="text-base font-bold text-brand-blue-dark">
+                        Antes de começar...
+                      </h2>
+                      <p className="text-[#2B363C]">
+                        Precisa do Cartão de Cidadão válido, PIN de autenticação, leitor de
+                        cartões, e de ter o plugin Autenticação.gov instalado no seu computador.
+                      </p>
+                    </div>
+                    <div className="shrink-0">
+                      <NextImage
+                        src="/cardpersonal.svg"
+                        alt="Cartão de Cidadão"
+                        width={160}
+                        height={100}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-sm text-neutral-900 my-32">
+                    <strong>Não tem autenticação com Cartão de Cidadão?</strong>{" "}
+                    <button
+                      className="text-primary-600 underline hover:text-primary-800 text-sm"
+                      onClick={() => setCcModalOpen(true)}
+                    >
+                      Descubra como criar conta
+                    </button>
+                  </p>
+                  <div className="w-full h-[2px] bg-neutral-400 my-[32px]"></div>
+                  <div className="flex flex-col gap-24">
+                    <div className="flex flex-col gap-8 mt-8">
+                      <h3 className="text-l-bold text-brand-blue-dark">Termos e condições</h3>
+                      <p className="text-sm">
+                        Deve ler atentamente os{" "}
+                        <a
+                          href="/pages/faqs/terms"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary-600 underline hover:text-primary-800"
+                        >
+                          Termos e condições para o tratamento dos seus dados
+                        </a>
+                      </p>
+                      <Checkbox
+                        id="terms-cc"
+                        className="text-sm text-neutral-700 leading-relaxed"
+                        onChange={(e) => setTermsCCAccepted(e.target.checked)}
+                      >
+                        Declaro que li e aceito os termos e condições para o tratamento dos
+                        meus dados pessoais no acesso e utilização da Área Reservada do
+                        dadosgov.pt.
+                      </Checkbox>
+                    </div>
+                  </div>
+                  <div className="mt-16">
+                    <Button
+                      variant="primary"
+                      className="px-48 h-56 text-lg font-bold shadow-md hover:shadow-lg transition-all"
+                      hasIcon={true}
+                      trailingIcon={
+                        isHoveredCC
+                          ? "agora-solid-arrow-right-circle"
+                          : "agora-line-arrow-right-circle"
+                      }
+                      onMouseEnter={() => setIsHoveredCC(true)}
+                      onMouseLeave={() => setIsHoveredCC(false)}
+                      onClick={handleCCLogin}
+                      disabled={!samlEnabled || !termsCCAccepted}
+                    >
+                      Entrar com Cartão de Cidadão
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabBody>
+          </Tab>
+          <Tab>
             <TabHeader>Autenticação europeia (eIDAS)</TabHeader>
             <TabBody>
               <div className="rounded-8">
                 <div className="flex flex-col gap-40">
-                  <div className="grid gap-32 xs:grid-cols-4 md:grid-cols-8 xl:grid-cols-12">
-                    <div className="xs:col-span-4 md:col-span-5 xl:col-span-7">
-                      <div className="bg-[#E9EBFF] rounded-8 w-fit p-16 mb-32">
-                        <Icon
-                          name="agora-line-globe"
-                          className="w-24 h-24 text-brand-blue-primary"
-                        />
-                      </div>
-                      <div>
-                        <h2 className="text-xl-bold text-brand-blue-dark mb-8">
-                          Para se autenticar ou criar conta
-                        </h2>
-                        <p className="text-neutral-900">
-                          Precisa de ter um meio de autenticação digital disponibilizado pelo seu
-                          país de origem na União Europeia (UE). Este meio de autenticação está
-                          disponível para a qualquer cidadã/o da UE.
-                        </p>
-                        <p className="text-sm text-neutral-900 mt-8">
-                          Ainda não tem conta? Ao autenticar-se com o eIDAS, a sua conta será
-                          criada automaticamente.
-                        </p>
-                      </div>
+                  <div className="flex items-center justify-between gap-32">
+                    <div className="flex flex-col gap-8">
+                      <h2 className="text-base font-bold text-brand-blue-dark">
+                        Antes de começar...
+                      </h2>
+                      <p className="text-[#2B363C]">
+                        Precisa de ter um meio de autenticação digital disponibilizado pelo seu
+                        país de origem na União Europeia (UE). Este meio de autenticação está
+                        disponível para a qualquer cidadã/o da UE.
+                      </p>
                     </div>
-                    <div className="xs:col-span-4 md:col-span-3 xl:col-span-5 flex items-center justify-start md:justify-end">
-                      <div className="w-[278px] md:flex md:justify-end xl:flex xl:justify-end mt-64">
-                        <NextImage
-                          src="/eidas.svg"
-                          alt="eIDAS"
-                          width={240}
-                          height={48}
-                          className="h-48 w-auto"
-                        />
-                      </div>
+                    <div className="shrink-0 flex items-center gap-[32px]">
+                      <NextImage
+                        src="/eidas.svg"
+                        alt="eIDAS"
+                        width={64}
+                        height={64}
+                      />
+                      <NextImage
+                        src="/Logos/your_europe.svg"
+                        alt="Your Europe"
+                        width={120}
+                        height={48}
+                      />
                     </div>
                   </div>
-                  <div className="w-full h-[2px] bg-neutral-400 mt-32 mb-16"></div>
+                  <p className="text-sm text-neutral-900 mt-32">
+                    <strong>Não tem Autenticação Europeia?</strong>{" "}
+                    <button
+                      className="text-primary-600 underline hover:text-primary-800 text-sm"
+                      onClick={() => setEidasModalOpen(true)}
+                    >
+                      Descubra como criar conta
+                    </button>
+                  </p>
+                  <div className="w-full h-[2px] bg-neutral-400 my-[32px]"></div>
+                  <p className="text-sm text-neutral-900">
+                    Precisa <strong>fornecer documentos</strong> que foram emitidos por uma entidade
+                    pública de <strong>outro Estado-Membro</strong> da UE? Agora já é possível
+                    recupera-los diretamente do portal emissor entrando com a sua autenticação Europeia.
+                  </p>
                   <div className="flex flex-col gap-24">
                     <div className="mt-8">
                       <Checkbox
@@ -421,14 +650,26 @@ function LoginContent() {
             </TabBody>
           </Tab>
           <Tab>
-            <TabHeader>Iniciar sessão</TabHeader>
+            <TabHeader>E-mail e palavra-passe</TabHeader>
             <TabBody>
               <div className="rounded-8">
-                <div className="flex flex-col gap-32 max-w-[560px]">
-                  <div className="bg-[#E9EBFF] rounded-8 w-fit p-16">
-                    <Icon name="agora-line-user" className="w-24 h-24 text-brand-blue-primary" />
+                <div className="flex flex-col gap-40">
+                  <div className="flex items-center justify-between gap-32">
+                    <div className="flex flex-col gap-8">
+                      <h2 className="text-base font-bold text-brand-blue-dark">
+                        Antes de começar...
+                      </h2>
+                      <p className="text-[#2B363C]">
+                        Apenas utilizadores antigos, que tenham criado conta com email e
+                        palavra-passe, conseguem autenticar-se desta forma.
+                      </p>
+                    </div>
+                    <div className="shrink-0 bg-primary-600 rounded-8 p-16 icon-white">
+                      <Icon name="agora-solid-social-security" className="w-24 h-24" />
+                    </div>
                   </div>
-
+                  <div className="w-full h-[2px] bg-neutral-400 my-[32px]"></div>
+                  <div className="flex flex-col gap-32 max-w-[560px]">
                   {migrationRequired ? (
                     <>
                       <div>
@@ -479,9 +720,6 @@ function LoginContent() {
                   ) : (
                     <>
                       <div>
-                        <h2 className="text-xl-bold text-brand-blue-dark mb-8">
-                          Iniciar sessão
-                        </h2>
                         <p className="text-neutral-900">
                           Os campos marcados com um asterisco ( * ) são obrigatórios.
                         </p>
@@ -509,6 +747,7 @@ function LoginContent() {
                           type="email"
                           className="w-full"
                           disabled={isLoading}
+                          onChange={(e) => setLoginEmail(e.target.value)}
                         />
 
                         <div className="flex flex-col gap-8">
@@ -519,28 +758,19 @@ function LoginContent() {
                             name="password"
                             className="w-full"
                             disabled={isLoading}
+                            onChange={(e) => setLoginPassword(e.target.value)}
                           />
                         </div>
 
                         <div className="flex items-center text-neutral-900">
                           <Checkbox
-                            label="Recordar palavra-passe"
+                            label="Lembrar palavra-passe"
                             id="remember-me"
                             name="remember-me"
                           />
                         </div>
-                        <div className="mt-8">
-                          <Button
-                            variant="primary"
-                            type="submit"
-                            className="px-48 h-56 text-lg font-bold shadow-md hover:shadow-lg transition-all"
-                            disabled={isLoading}
-                          >
-                            {isLoading ? "A iniciar sessão..." : "Iniciar sessão"}
-                          </Button>
-                        </div>
 
-                        <div className="flex items-center justify-center mt-24 gap-4">
+                        <div className="flex items-center mt-24 gap-4">
                           <span className="text-sm text-neutral-900">
                             Esqueceu-se da palavra-passe?
                           </span>
@@ -552,9 +782,20 @@ function LoginContent() {
                             Recuperar palavra-passe
                           </Button>
                         </div>
+                        <div className="mt-8">
+                          <Button
+                            variant="primary"
+                            type="submit"
+                            className="px-48 h-56 text-lg font-bold shadow-md hover:shadow-lg transition-all"
+                            disabled={isLoading || !loginEmail || !loginPassword}
+                          >
+                            {isLoading ? "A autenticar..." : "Autenticar"}
+                          </Button>
+                        </div>
                       </form>
                     </>
                   )}
+                  </div>
                 </div>
               </div>
             </TabBody>

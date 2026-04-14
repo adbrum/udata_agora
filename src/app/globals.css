@@ -1076,7 +1076,8 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   background-color: var(--color-primary-100);
 }
 
-.login-page .agora-tabs.desktop.vertically .tab-panel-content:before {
+.login-page .agora-tabs.desktop.vertically .tab-panel-content::before,
+.login-page .agora-tabs.desktop.vertically .tab-panel-content::after {
   display: none;
 }
 
@@ -1086,6 +1087,10 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
   padding-right: 64px;
   max-width: 100%;
   width: 100%;
+}
+
+.login-page .icon-white svg {
+  fill: white;
 }
 
 /* 6.3 Page Detail & Links */
