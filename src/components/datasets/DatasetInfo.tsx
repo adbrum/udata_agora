@@ -201,7 +201,7 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
             {dataset.spatial?.zones && dataset.spatial.zones.length > 0 && (
               <div>
                 <p className="font-bold text-neutral-900 text-sm mb-8">Zonas</p>
-                <span className="text-primary-600 text-sm">
+                <span className="text-neutral-900 text-sm">
                   {dataset.spatial.zones.map(formatZone).join(", ")}
                 </span>
               </div>

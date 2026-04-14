@@ -1993,7 +1993,8 @@ export async function fetchTopic(slugOrId: string): Promise<Topic | null> {
 
 export async function replyToDiscussion(
   discussionId: string,
-  comment: string
+  comment: string,
+  options?: { organization?: string }
 ): Promise<Discussion | null> {
   try {
     const res = await fetch(
@@ -2002,7 +2003,7 @@ export async function replyToDiscussion(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ comment }),
+        body: JSON.stringify({ comment, organization: options?.organization }),
       }
     );
 
