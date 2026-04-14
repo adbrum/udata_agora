@@ -292,19 +292,19 @@ export default function ReusesClient({
       const tag = overrides.tag ?? initialFilters?.tag;
       const organization = overrides.organization ?? initialFilters?.organization;
       const sort = "sort" in overrides ? overrides.sort : initialFilters?.sort;
-      const page = overrides.page ?? currentPage;
+      //const page = overrides.page ?? currentPage;
 
       if (q) params.set("q", q);
       if (type) params.set("type", type);
       if (tag) params.set("tag", tag);
       if (organization) params.set("organization", organization);
       if (sort) params.set("sort", sort);
-      if (page > 1) params.set("page", String(page));
+      //if (page > 1) params.set("page", String(page));
 
       const qs = params.toString();
       return `/pages/reuses${qs ? `?${qs}` : ""}`;
     },
-    [initialFilters, currentPage]
+    [initialFilters /*, currentPage*/]
   );
 
   useEffect(() => {
