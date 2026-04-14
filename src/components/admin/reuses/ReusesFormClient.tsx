@@ -124,7 +124,6 @@ export default function ReusesFormClient({
     if (!selectedReuseTypeRef.current) errors.reuseType = true;
     if (!selectedReuseTopicRef.current) errors.reuseTopic = true;
     if (!reuseDescription.trim()) errors.reuseDescription = true;
-    if (!reuseCoverImageFile) errors.reuseCoverImage = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -345,7 +344,6 @@ export default function ReusesFormClient({
           ilustrações). Esta imagem será exibida na secção “Reutilizações” na listagem das mesmas.
         </p>
       ),
-      hasError: !!formErrors.reuseCoverImage,
     },
   ];
 
@@ -539,7 +537,7 @@ export default function ReusesFormClient({
 
                   <div>
                     <span className="text-primary-900 text-base font-medium leading-7">
-                      Imagem de capa *
+                      Imagem de capa
                     </span>
                     <div className="mt-2">
                       <DragAndDropUploader
@@ -561,10 +559,8 @@ export default function ReusesFormClient({
                           setReuseCoverImageFile(files && files.length > 0 ? files[0] : null);
                           clearError("reuseCoverImage");
                         }}
-                        hasError={!!formErrors.reuseCoverImage}
-                        hasFeedback={!!formErrors.reuseCoverImage}
-                        feedbackState="danger"
-                        feedbackText="Campo obrigatório"
+                        hasError={false}
+                        hasFeedback={false}
                       />
                     </div>
                   </div>
