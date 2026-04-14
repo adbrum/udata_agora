@@ -59,6 +59,12 @@ export default function DatasetsClient({
   const [searchQuery, setSearchQuery] = React.useState(currentQuery);
   const [filtersOpen, setFiltersOpen] = React.useState(false);
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleSearchRef = React.useRef<() => void>(() => {});
+
+  // Sync local state when URL changes externally (e.g. header SearchDropdown navigation)
+  React.useEffect(() => {
+    setSearchQuery(initialFilters.q || "");
+  }, [initialFilters.q]);
 
   const currentSortKey =
     Object.entries(SORT_OPTIONS).find(([, v]) => v === currentSort)?.[0] || "relevancia";
@@ -130,6 +136,8 @@ export default function DatasetsClient({
     router.replace(buildUrl({ q: searchQuery.trim() || null }), { scroll: false });
   }, [searchQuery, router, buildUrl]);
 
+  handleSearchRef.current = handleSearch;
+
   const handleSort = React.useCallback(
     (selectedKey: string) => {
       const sortValue = SORT_OPTIONS[selectedKey] || null;
@@ -172,7 +180,7 @@ export default function DatasetsClient({
               value={searchQuery}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
               onKeyDown={(e: React.KeyboardEvent) => {
-                if (e.key === "Enter") handleSearch();
+                if (e.key === "Enter") handleSearchRef.current();
               }}
             />
             <div className="mt-8 text-s-regular text-neutral-900">

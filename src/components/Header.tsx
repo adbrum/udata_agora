@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import {
   Header as AgoraHeader,
   Brand,
@@ -34,6 +34,7 @@ export const Header = () => {
   const headerRef = useRef<any>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user, samlLogin } = useAuth();
 
   // Create DOM nodes for "Administração" and "Desconectar" portals
@@ -90,13 +91,15 @@ export const Header = () => {
     } else {
       setSelectedArea('1');
     }
+  }, [pathname]);
 
-    // Force close all menus/panels on route change via design system API
+  // Force close all menus/panels on any navigation (pathname OR query string change)
+  React.useEffect(() => {
     if (headerRef.current?.closeAll) {
       headerRef.current.closeAll();
     }
     setSubmenu(null);
-  }, [pathname]);
+  }, [pathname, searchParams]);
 
   // Mark header when on auth pages so CSS can style the "Autenticar" button
   const isAuthPage = pathname === '/pages/login' || pathname === '/pages/login';
