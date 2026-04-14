@@ -76,7 +76,8 @@ export default function DatasetsAdminClient({
   const selectedLicenseRef = useRef("");
   const selectedFrequencyRef = useRef("");
   const selectedKeywordsRef = useRef("");
-  const dummyRef = useRef("");
+  const spatialCoverageRef = useRef("");
+  const spatialGranularityRef = useRef("");
   const [temporalStart, setTemporalStart] = useState("");
   const [temporalEnd, setTemporalEnd] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
@@ -109,38 +110,57 @@ export default function DatasetsAdminClient({
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
   const [tags, setTags] = useState<TagSuggestion[]>([]);
+  const producerDefaultValue =
+    selectedProducer ||
+    selectedProducerRef.current ||
+    createdDataset?.organization?.id ||
+    (createdDataset ? "user" : "");
+  const licenseDefaultValue =
+    selectedLicenseRef.current || createdDataset?.license || "";
+  const frequencyDefaultValue =
+    selectedFrequencyRef.current || createdDataset?.frequency || "";
+  const spatialCoverageDefaultValue = spatialCoverageRef.current;
+  const spatialGranularityDefaultValue = spatialGranularityRef.current;
 
   const producerOptions = useMemo(() => {
     const options = [
-      <DropdownOption key="user" value="user">
+      <DropdownOption key="user" value="user" selected={producerDefaultValue === "user"}>
         {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
       </DropdownOption>,
       ...(user?.organizations || []).map((org) => (
-        <DropdownOption key={org.id} value={org.id}>
+        <DropdownOption key={org.id} value={org.id} selected={producerDefaultValue === org.id}>
           {org.name}
         </DropdownOption>
       )),
     ];
     return <DropdownSection name="identity">{options}</DropdownSection>;
-  }, [user]);
+  }, [user, producerDefaultValue]);
 
   const licenseOptions = useMemo(() => {
     const options = licenses.map((license) => (
-      <DropdownOption key={license.id} value={license.id}>
+      <DropdownOption
+        key={license.id}
+        value={license.id}
+        selected={licenseDefaultValue === license.id}
+      >
         {license.title}
       </DropdownOption>
     ));
     return <DropdownSection name="licenses">{options}</DropdownSection>;
-  }, [licenses]);
+  }, [licenses, licenseDefaultValue]);
 
   const frequencyOptions = useMemo(() => {
     const options = frequencies.map((freq) => (
-      <DropdownOption key={freq.id} value={freq.id}>
+      <DropdownOption
+        key={freq.id}
+        value={freq.id}
+        selected={frequencyDefaultValue === freq.id}
+      >
         {getFrequencyLabel(freq.id, freq.label)}
       </DropdownOption>
     ));
     return <DropdownSection name="frequencies">{options}</DropdownSection>;
-  }, [frequencies]);
+  }, [frequencies, frequencyDefaultValue]);
 
   const tagOptions = useMemo(() => {
     const options = tags.map((tag) => (
@@ -847,6 +867,7 @@ export default function DatasetsAdminClient({
                     label="Licença"
                     placeholder="Selecione uma licença..."
                     id="dataset-license"
+                    defaultValue={licenseDefaultValue}
                     onChangeRef={selectedLicenseRef}
                   >
                     {licenseOptions}
@@ -1035,6 +1056,7 @@ export default function DatasetsAdminClient({
                     label="Frequência de atualização *"
                     placeholder="Selecione uma frequência..."
                     id="dataset-frequency"
+                    defaultValue={frequencyDefaultValue}
                     onChangeRef={selectedFrequencyRef}
                     hasError={!!formErrors.datasetFrequency}
                     errorFeedbackText="Campo obrigatório"
@@ -1046,6 +1068,7 @@ export default function DatasetsAdminClient({
                     <InputDate
                       label="Cobertura temporal (Data de início)"
                       id="dataset-date-start"
+                      defaultValue={temporalStart}
                       dayInputPlaceholder="dd"
                       monthInputPlaceholder="mm"
                       yearInputPlaceholder="aaaa"
@@ -1071,6 +1094,7 @@ export default function DatasetsAdminClient({
                     <InputDate
                       label="Data de fim"
                       id="dataset-date-end"
+                      defaultValue={temporalEnd}
                       dayInputPlaceholder="dd"
                       monthInputPlaceholder="mm"
                       yearInputPlaceholder="aaaa"
@@ -1100,15 +1124,28 @@ export default function DatasetsAdminClient({
                     label="Cobertura espacial"
                     placeholder="Selecione uma cobertura espacial..."
                     id="dataset-spatial-coverage"
+                    defaultValue={spatialCoverageDefaultValue}
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
-                    onChangeRef={dummyRef}
+                    onChangeRef={spatialCoverageRef}
                   >
                     <DropdownSection name="spatial-coverage">
-                      <DropdownOption value="national">Nacional</DropdownOption>
-                      <DropdownOption value="regional">Regional</DropdownOption>
-                      <DropdownOption value="local">Local</DropdownOption>
+                      <DropdownOption
+                        value="national"
+                        selected={spatialCoverageDefaultValue === "national"}
+                      >
+                        Nacional
+                      </DropdownOption>
+                      <DropdownOption
+                        value="regional"
+                        selected={spatialCoverageDefaultValue === "regional"}
+                      >
+                        Regional
+                      </DropdownOption>
+                      <DropdownOption value="local" selected={spatialCoverageDefaultValue === "local"}>
+                        Local
+                      </DropdownOption>
                     </DropdownSection>
                   </IsolatedSelect>
 
@@ -1116,16 +1153,37 @@ export default function DatasetsAdminClient({
                     label="Granularidade espacial"
                     placeholder="Selecione uma granularidade espacial..."
                     id="dataset-spatial-granularity"
+                    defaultValue={spatialGranularityDefaultValue}
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
-                    onChangeRef={dummyRef}
+                    onChangeRef={spatialGranularityRef}
                   >
                     <DropdownSection name="spatial-granularity">
-                      <DropdownOption value="country">País</DropdownOption>
-                      <DropdownOption value="district">Distrito</DropdownOption>
-                      <DropdownOption value="municipality">Município</DropdownOption>
-                      <DropdownOption value="parish">Freguesia</DropdownOption>
+                      <DropdownOption
+                        value="country"
+                        selected={spatialGranularityDefaultValue === "country"}
+                      >
+                        País
+                      </DropdownOption>
+                      <DropdownOption
+                        value="district"
+                        selected={spatialGranularityDefaultValue === "district"}
+                      >
+                        Distrito
+                      </DropdownOption>
+                      <DropdownOption
+                        value="municipality"
+                        selected={spatialGranularityDefaultValue === "municipality"}
+                      >
+                        Município
+                      </DropdownOption>
+                      <DropdownOption
+                        value="parish"
+                        selected={spatialGranularityDefaultValue === "parish"}
+                      >
+                        Freguesia
+                      </DropdownOption>
                     </DropdownSection>
                   </IsolatedSelect>
                 </div>
