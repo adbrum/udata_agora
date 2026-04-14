@@ -244,7 +244,8 @@ export default function SystemHarvestersClient() {
                   </TableCell>
                   <TableCell headerLabel="Ações">
                     <a
-                      href={`/pages/admin/harvesters/${harvester.id}`}
+                      href={`/pages/admin/harvesters/${harvester.id}?tab=config`}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <Icon
                         name="agora-line-edit"

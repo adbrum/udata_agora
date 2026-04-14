@@ -12,7 +12,7 @@ import {
   InputSelect,
   DropdownSection,
   DropdownOption,
-  ButtonUploader,
+  DragAndDropUploader,
   CardGeneral,
   CardLinks,
 } from "@ama-pt/agora-design-system";
@@ -64,6 +64,8 @@ export default function ReusesFormClient({
   const [reuseTypes, setReuseTypes] = useState<ReuseType[]>([]);
   const [reuseTopics, setReuseTopics] = useState<ReuseTopic[]>([]);
   const [tags, setTags] = useState<TagSuggestion[]>([]);
+  const [keywordSearch, setKeywordSearch] = useState("");
+  const [selectedKeywordsValue, setSelectedKeywordsValue] = useState("");
 
   // Step 2 state
   const [datasetLinks, setDatasetLinks] = useState([{ url: "" }]);
@@ -85,6 +87,36 @@ export default function ReusesFormClient({
     setApiLinkErrors({});
   }, [currentStep]);
 
+  const keywordsChildren = useMemo(() => {
+    const trimmed = keywordSearch.trim().toLowerCase();
+    const showCreate = trimmed.length > 0 && !tags.some((t) => t.text.toLowerCase() === trimmed);
+    const options = [
+      ...tags.map((tag) => (
+        <DropdownOption key={tag.text} value={tag.text}>
+          {tag.text}
+        </DropdownOption>
+      )),
+      ...(showCreate
+        ? [
+            <DropdownOption key={`__create__${trimmed}`} value={keywordSearch.trim()}>
+              Criar &quot;{keywordSearch.trim()}&quot;
+            </DropdownOption>,
+          ]
+        : []),
+    ];
+    return <DropdownSection name="keywords">{options}</DropdownSection>;
+  }, [tags, keywordSearch]);
+
+  const handleKeywordChange = useCallback((value: string) => {
+    setSelectedKeywordsValue(value);
+    const selected = value.split(",").filter(Boolean);
+    selected.forEach((v) => {
+      if (!tags.some((t) => t.text === v)) {
+        setTags((prev) => [...prev, { text: v }]);
+      }
+    });
+  }, [tags]);
+
   const handleStep1Next = async () => {
     const errors: Record<string, boolean> = {};
     if (!reuseName.trim()) errors.reuseName = true;
@@ -104,6 +136,10 @@ export default function ReusesFormClient({
     const url = reuseLink.trim().match(/^https?:\/\//) ? reuseLink.trim() : `https://${reuseLink.trim()}`;
 
     try {
+      const selectedTags = selectedKeywordsValue
+        ? selectedKeywordsValue.split(",").filter(Boolean)
+        : [];
+
       const reuse = await createReuse({
         title: reuseName.trim(),
         description: reuseDescription.trim(),
@@ -111,6 +147,7 @@ export default function ReusesFormClient({
         type: selectedReuseTypeRef.current,
         topic: selectedReuseTopicRef.current || undefined,
         private: true,
+        ...(selectedTags.length > 0 ? { tags: selectedTags } : {}),
         ...(selectedProducerRef.current && selectedProducerRef.current !== "user"
           ? { organization: selectedProducerRef.current }
           : {}),
@@ -240,61 +277,74 @@ export default function ReusesFormClient({
   };
   const auxiliarItemsStep1 = [
     {
-      title: "Dê um nome à sua reutilização.",
-      content:
-        'Prefira um título que permita entender como os dados são usados, em vez do nome do site ou aplicativo ("Mecanismo de Busca de Acordos Comerciais" em vez de "Acordos-Comerciais.fr", por exemplo).',
+      title: "Dar um título",
+      content: (
+        <p>
+          Prefira um título que explique claramente como a reutilização utiliza os dados, em vez
+          de usar apenas o nome do site ou da aplicação. Por exemplo: “Sistema de Pesquisa de
+          Acordos Comerciais” em vez de “acordoscomerciais.pt”.
+        </p>
+      ),
       hasError: !!formErrors.reuseName,
     },
     {
-      title: "Qual link preencher?",
-      content:
-        "Insira o link para a página onde o conteúdo reutilizado está visível. Dê preferência ao link para o próprio conteúdo reutilizado, e não para a página inicial. Certifique-se de que o link permaneça estável ao longo do tempo.",
+      title: "Adicionar um link",
+      content: (
+        <p>
+          Insira o link da página onde a reutilização pode ser consultada. Prefira o link direto
+          para o conteúdo e certifique-se de que o endereço permanece estável.
+        </p>
+      ),
       hasError: !!formErrors.reuseLink,
     },
     {
-      title: "Escolha um tipo",
-      content:
-        "Indique o tipo em que deve ser classificada a reutilização (API, aplicação, artigo de imprensa, visualização, etc.).",
+      title: "Escolher um tipo",
+      content: (
+        <p>
+          Indique o tipo em que deve ser classificada a reutilização (API, aplicação, artigo de
+          imprensa, visualização, etc.).
+        </p>
+      ),
       hasError: !!formErrors.reuseType,
     },
     {
-      title: "Escolha um tema",
-      content: "Escolha o tema associado à sua reutilização.",
+      title: "Escolher um tema",
+      content: <p>Escolha o tema associado à sua reutilização.</p>,
       hasError: !!formErrors.reuseTopic,
     },
     {
-      title: "Descreva a sua reutilização.",
-      content:
-        "Pode fornecer detalhes como a forma como a reutilização foi criada, o que permite fazer ou demonstrar, e até mesmo falar mais sobre si e o contexto desta reutilização. É melhor manter um tom neutro: se a reutilização soar muito como uma mensagem promocional, podemos removê-la.",
+      title: "Descrever a reutilização",
+      content: (
+        <p>
+          Pode indicar, de forma objetiva, como a reutilização foi desenvolvida, o que permite
+          realizar ou demonstrar e, se relevante, acrescentar informação sobre o contexto em que a
+          reutilização foi criada. Recomenda-se manter um tom neutro; conteúdos com caráter
+          excessivamente promocional poderão não ser aceites.
+        </p>
+      ),
       hasError: !!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength,
     },
     {
       title: "Adicionar palavras-chave",
       content: (
-        <>
-          <p>
-            As palavras-chave aparecem na página de destino e melhoram o posicionamento nos
-            mecanismos de pesquisa. Para cada palavra-chave, pode obter uma lista de
-            reutilizações para as quais essa palavra-chave também foi atribuída.
-          </p>
-          <p className="font-bold mt-3">Sugestões automáticas</p>
-          <p className="mt-2">
-            Com base no conteúdo que reutiliza, podem ser sugeridas palavras-chave
-            automaticamente. Pode aceitá-las, modificá-las ou excluí-las.
-          </p>
-          <p className="mt-3">
-            <a href="#" className="text-primary-600 underline">
-              A IA baseia-se exclusivamente nas informações que forneceu e, por vezes, pode
-              cometer erros: releia sempre a proposta antes de validar.
-            </a>
-          </p>
-        </>
+        <p>
+          As palavras-chave são apresentadas na página da reutilização e melhoram a sua
+          visibilidade nos motores de pesquisa. Ao selecionar uma palavra-chave, pode consultar
+          outras reutilizações às quais essa mesma palavra foi associada. Com base no conteúdo da
+          reutilização, podem ser sugeridas palavras-chave automaticamente. Pode aceitá-las,
+          modificá-las ou excluí-las.
+        </p>
       ),
     },
     {
-      title: "Escolha uma imagem",
-      content:
-        'Se a sua reutilização assumir a forma de uma representação gráfica, pode fornecer uma pré-visualização para outros utilizadores usando uma imagem ou captura de ecrã. Esta imagem aparecerá na secção "Reutilizações" da página do conjunto de dados associado. Quando relevante, as capturas de ecrã ilustram melhor a reutilização e, portanto, são preferíveis a logotipos ou ilustrações, por exemplo.',
+      title: "Escolher uma imagem",
+      content: (
+        <p>
+          Se a sua reutilização tiver uma componente visual, pode apresentar uma pré-visualização
+          através de uma imagem ou de uma captura de ecrã (preferíveis a logótipos ou a simples
+          ilustrações). Esta imagem será exibida na secção “Reutilizações” na listagem das mesmas.
+        </p>
+      ),
       hasError: !!formErrors.reuseCoverImage,
     },
   ];
@@ -351,9 +401,9 @@ export default function ReusesFormClient({
                   <>
                     <strong>O que é reutilização?</strong>
                     <br />
-                    A reutilização é um exemplo de uso de dados públicos. Publicar uma
-                    reutilização pode ajudar a ganhar visibilidade e iniciar um diálogo
-                    com o produtor do conjunto de dados.
+                    Uma reutilização mostra de que forma os dados públicos podem ser utilizados. Ao
+                    publicar a sua reutilização, aumenta a visibilidade do seu trabalho e pode
+                    estabelecer contacto direto com a entidade que produz o conjunto de dados.
                   </>
                 }
               />
@@ -371,7 +421,7 @@ export default function ReusesFormClient({
                 <h2 className="admin-page__section-title">Produtor</h2>
 
                 <IsolatedSelect
-                  label="Verifique a identidade que deseja usar na publicação."
+                  label="Confirme a identidade que pretende utilizar na publicação."
                   placeholder="Selecione o produtor..."
                   id="producer-identity"
                   onChangeRef={selectedProducerRef}
@@ -381,17 +431,17 @@ export default function ReusesFormClient({
 
                 <div className="admin-page__org-card">
                   <p className="admin-page__org-card-title">
-                    Não pertence a nenhuma organização.
+                    Não pertence a uma organização.
                   </p>
                   <p className="admin-page__org-card-description">
-                    Recomendamos que publique em nome de uma organização se se
-                    tratar de uma atividade profissional.
+                    Quando a reutilização for produzida no contexto de atividade profissional, é
+                    recomendável que seja publicada em nome da organização responsável.
                   </p>
                   <a
                     href="/pages/admin/organizations/new"
                     className="admin-page__org-card-link"
                   >
-                    Crie ou participe de uma organização
+                    Crie ou integre uma organização em dados.gov.pt
                     <Icon
                       name="agora-line-arrow-right-circle"
                       className="w-[24px] h-[24px]"
@@ -458,35 +508,33 @@ export default function ReusesFormClient({
                     placeholder="Insira a descrição aqui"
                     id="reuse-description"
                     rows={4}
-                    maxLength={246}
+                    maxLength={1000}
+                    showCharCounter={true}
                     value={reuseDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                       setReuseDescription(e.target.value);
                       if (e.target.value.trim()) clearError("reuseDescription");
-                      if (e.target.value.trim().length >= 200) clearError("reuseDescriptionLength");
                     }}
-                    hasError={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
-                    hasFeedback={!!formErrors.reuseDescription || !!formErrors.reuseDescriptionLength}
-                    feedbackState={formErrors.reuseDescriptionLength ? "warning" : "danger"}
-                    errorFeedbackText={formErrors.reuseDescription ? "Campo obrigatório" : "A descrição deve ter pelo menos 200 caracteres"}
+                    hasError={!!formErrors.reuseDescription}
+                    hasFeedback={!!formErrors.reuseDescription || reuseDescription.length < 1000}
+                    feedbackState={formErrors.reuseDescription ? "danger" : "warning"}
+                    feedbackText="Recomenda-se que a descrição tenha pelo menos 1000 caracteres."
+                    errorFeedbackText="Campo obrigatório"
                   />
                   <IsolatedSelect
                     label="Palavras-chave"
-                    placeholder="Selecione palavras-chave..."
+                    placeholder="Pesquise ou insira palavras-chave..."
                     id="reuse-keywords"
                     type="checkbox"
                     searchable
-                    searchInputPlaceholder="Escreva para pesquisar..."
+                    searchInputPlaceholder="Escreva para pesquisar ou criar..."
                     searchNoResultsText="Nenhum resultado encontrado"
                     onChangeRef={selectedKeywordsRef}
+                    defaultValue={selectedKeywordsValue}
+                    onSearchCallback={setKeywordSearch}
+                    onChangeCallback={handleKeywordChange}
                   >
-                    <DropdownSection name="keywords">
-                      {tags.map((tag) => (
-                        <DropdownOption key={tag.text} value={tag.text}>
-                          {tag.text}
-                        </DropdownOption>
-                      ))}
-                    </DropdownSection>
+                    {keywordsChildren}
                   </IsolatedSelect>
 
                   <div>
@@ -494,15 +542,20 @@ export default function ReusesFormClient({
                       Imagem de capa *
                     </span>
                     <div className="mt-2">
-                      <ButtonUploader
-                        label="Ficheiros"
-                        inputLabel="Selecione ou arraste o ficheiro"
+                      <DragAndDropUploader
+                        key={reuseCoverImageFile?.name}
+                        dragAndDropLabel="Arraste e largue a imagem aqui"
+                        inputLabel="Selecionar ficheiro"
+                        separatorLabel="ou"
                         removeFileButtonLabel="Remover ficheiro"
                         replaceFileButtonLabel="Substituir ficheiro"
-                        extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                        extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceites: JPG, JPEG, PNG."
                         accept=".jpg,.jpeg,.png"
                         maxSize={4194304}
                         maxCount={1}
+                        maxSizeExceededErrorLabel="O ficheiro excede o tamanho máximo de 4 MB."
+                        forbiddenExtensionErrorLabel="Formato de ficheiro não permitido."
+                        files={reuseCoverImageFile ? [reuseCoverImageFile] : undefined}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const files = e.target.files;
                           setReuseCoverImageFile(files && files.length > 0 ? files[0] : null);
@@ -549,7 +602,7 @@ export default function ReusesFormClient({
               <div className="mb-[24px]">
                 <StatusCard
                   type="info"
-                  description="É importante vincular todos os conjuntos de dados utilizados, pois isso ajuda a compreender as referências cruzadas necessárias e a melhorar a visibilidade da sua reutilização."
+                  description="É importante associar todos os conjuntos de dados, pois ajuda a compreender as referências cruzadas e a melhorar a visibilidade da sua reutilização."
                 />
               </div>
               {apiError && (
@@ -618,8 +671,8 @@ export default function ReusesFormClient({
                 )}
 
                 <InputSelect
-                  label="Pesquisar um conjunto de dados"
-                  placeholder="Procurando um conjunto de dados..."
+                  label="Ficheiro com um conjunto de dados"
+                  placeholder="Selecione um conjunto de dados..."
                   id="reuse-dataset-search"
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
@@ -770,13 +823,29 @@ export default function ReusesFormClient({
                     disabled={isSubmitting}
                     onClick={async () => {
                       if (!createdReuse) return;
+
+                      const hasDropdownDataset = !!selectedDataset;
+                      const hasUrlDatasets = datasetLinks.some((l) => l.url.trim());
+                      if (!hasDropdownDataset && !hasUrlDatasets) {
+                        setApiError("Associe pelo menos um conjunto de dados antes de avançar.");
+                        return;
+                      }
+
                       setIsSubmitting(true);
                       setApiError(null);
                       try {
+                        if (selectedDataset) {
+                          const updated = await linkDatasetToReuse(createdReuse.id, selectedDataset.id);
+                          setCreatedReuse(updated);
+                        }
                         for (const link of datasetLinks) {
-                          if (link.url.trim()) {
-                            await linkDatasetToReuse(createdReuse.id, link.url.trim());
-                          }
+                          const trimmed = link.url.trim();
+                          if (!trimmed) continue;
+                          const idMatch = trimmed.match(/datasets\/([a-f0-9]{24})\/?/);
+                          const slugMatch = trimmed.match(/datasets\/([^/]+)\/?$/);
+                          const datasetRef = idMatch ? idMatch[1] : slugMatch ? slugMatch[1] : trimmed;
+                          const updated = await linkDatasetToReuse(createdReuse.id, datasetRef);
+                          setCreatedReuse(updated);
                         }
                         for (const link of apiLinks) {
                           if (link.url.trim()) {
@@ -792,7 +861,7 @@ export default function ReusesFormClient({
                             .join(", ");
                           setApiError(messages);
                         } else {
-                          setApiError("Erro ao associar dados. Tente novamente.");
+                          setApiError("Erro ao associar dados. Verifique os links inseridos e tente novamente.");
                         }
                       } finally {
                         setIsSubmitting(false);
@@ -860,8 +929,8 @@ export default function ReusesFormClient({
                     {
                       href: "#",
                       hasIcon: true,
-                      leadingIcon: "agora-line-calendar",
-                      leadingIconHover: "agora-solid-calendar",
+                      leadingIcon: "agora-line-layers-menu",
+                      leadingIconHover: "agora-solid-layers-menu",
                       trailingIcon: "",
                       trailingIconHover: "",
                       trailingIconActive: "",
@@ -943,7 +1012,7 @@ export default function ReusesFormClient({
                     }
                   }}
                 >
-                  {isSubmitting ? "A guardar..." : "Salvar rascunho"}
+                  {isSubmitting ? "A guardar..." : "Guardar o rascunho"}
                 </Button>
                 <Button
                   variant="primary"
@@ -962,7 +1031,7 @@ export default function ReusesFormClient({
                     }
                   }}
                 >
-                  {isSubmitting ? "A publicar..." : "Publicar reutilização"}
+                  {isSubmitting ? "A publicar..." : "Publicar a reutilização"}
                 </Button>
               </div>
             </>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Breadcrumb,
   Button,
@@ -73,6 +73,8 @@ const JOB_STATUS_LABELS: Record<string, string> = {
 
 export default function HarvesterDetailClient({ slug }: HarvesterDetailClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isConfigTab = searchParams.get("tab") === "config";
   const { user } = useAuth();
   const [source, setSource] = useState<HarvestSource | null>(null);
   const [jobs, setJobs] = useState<HarvestJob[]>([]);
@@ -188,11 +190,15 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
     if (!harvesterUrl.trim()) errors.harvesterUrl = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
 
     if (!source) return;
 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsSaving(true);
     setSaveSuccess(false);
     setSaveError(null);
@@ -225,7 +231,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
       ]);
       setSource(updated as HarvestSource);
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      setTimeout(() => setSaveSuccess(false), 10000);
     } catch (err) {
       const e = err as { status?: number; data?: unknown };
       console.error("Error saving harvester:", e.status, e.data ?? err);
@@ -323,7 +329,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
     {
       title: "Selecione o tipo de implementação",
       content:
-        "Escolha o formato dos metadados (por exemplo, DCAT, CKAN, etc.). Esse formato permite que o harvester saiba como ler e interpretar os seus metadados, para que possam ser transcritos corretamente em dados.gov.",
+        "Escolha o formato dos metadados (por exemplo, DCAT, CKAN, etc.). Esse formato permite que o harvester saiba como ler e interpretar os seus metadados, para que possam ser transcritos corretamente em dados.gov.pt.",
     },
   ];
 
@@ -402,7 +408,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
             Informe-nos através do formulário de contacto abaixo se deseja que validemos o seu harvester. Será notificado da aprovação (ou rejeição).
           </p>
           <a href="#" className="flex items-center gap-8 text-sm text-primary-600">
-            Validação da solicitação
+            Solicitar validação do harvester
             <Icon name="agora-line-arrow-right-circle" className="w-[20px] h-[20px]" />
           </a>
         </div>
@@ -410,7 +416,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
 
       {/* Tabs */}
       <Tabs>
-        <Tab>
+        <Tab active={isConfigTab ? undefined : true}>
           <TabHeader>Trabalhos</TabHeader>
           <TabBody>
             {jobs.length === 0 ? (
@@ -547,7 +553,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
           </TabBody>
         </Tab>
 
-        <Tab>
+        <Tab active={isConfigTab ? true : undefined}>
           <TabHeader>Configuração</TabHeader>
           <TabBody>
             <div className="admin-page__body">
@@ -759,11 +765,14 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                       disabled={isPreviewing}
                       onClick={handlePreview}
                     >
-                      {isPreviewing ? "A pré-visualizar..." : "Pré-visualização"}
+                      {isPreviewing ? "A pré-visualizar..." : "Pré-visualizar"}
                     </Button>
                     <Button
                       variant="primary"
                       type="submit"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       disabled={isSaving}
                     >
                       {isSaving ? "A guardar..." : "Guardar"}
@@ -878,7 +887,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                     type="danger"
                     description={
                       <>
-                        <strong>Atenção, esta ação não pode ser corrigida.</strong>
+                        <strong>Atenção esta ação é irreversível.</strong>
                         <br />
                         <Button
                           appearance="link"
@@ -887,7 +896,7 @@ export default function HarvesterDetailClient({ slug }: HarvesterDetailClientPro
                           trailingIcon="agora-line-arrow-right-circle"
                           trailingIconHover="agora-solid-arrow-right-circle"
                         >
-                          Elimine o harvester
+                          Eliminar o harvester
                         </Button>
                       </>
                     }

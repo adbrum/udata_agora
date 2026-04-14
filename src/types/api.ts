@@ -68,6 +68,8 @@ export interface MembershipRequest {
   created: string;
   status: "pending" | "accepted" | "refused";
   comment: string;
+  kind: "request" | "invitation";
+  role: string;
 }
 
 export interface OrgRole {
@@ -210,6 +212,8 @@ export interface ResourceUpdatePayload {
   url?: string;
   filetype?: string;
   format?: string;
+  mime?: string;
+  filesize?: number;
 }
 
 export interface DatasetPermissions {
@@ -298,7 +302,8 @@ export interface DatasetUpdatePayload {
   temporal_coverage?: TemporalCoverage;
   spatial?: SpatialCoverage;
   private?: boolean;
-  archived?: string;
+  featured?: boolean;
+  archived?: string | null;
   organization?: string;
   extras?: Record<string, unknown>;
 }
@@ -698,6 +703,9 @@ export interface DatasetFilters {
   badge?: string | string[];
   featured?: boolean;
   sort?: string;
+  private?: boolean;
+  archived?: boolean;
+  deleted?: boolean;
 }
 
 
@@ -858,6 +866,7 @@ export interface CommunityResource {
   description: string | null;
   url: string;
   filetype: string | null;
+  type: string | null;
   format: string | null;
   filesize: number | null;
   mime: string | null;
@@ -869,6 +878,7 @@ export interface CommunityResource {
   last_modified: string;
   archived: boolean;
   deleted: boolean;
+  schema: SchemaRef | null;
 }
 
 export interface CommunityResourceCreatePayload {
@@ -880,6 +890,7 @@ export interface CommunityResourceCreatePayload {
   format?: string;
   dataset: string;
   organization?: string;
+  schema?: { name?: string; url?: string; version?: string } | null;
 }
 
 export interface CommunityResourceUpdatePayload {
@@ -887,8 +898,12 @@ export interface CommunityResourceUpdatePayload {
   description?: string;
   url?: string;
   filetype?: string;
+  type?: string;
   format?: string;
+  mime?: string;
+  filesize?: number;
   dataset?: string;
+  schema?: { name?: string; url?: string; version?: string } | null;
 }
 
 export interface HarvestError {
@@ -925,13 +940,13 @@ export interface HarvestSourceValidation {
 export interface HarvestPreviewJob {
   id: string;
   status:
-    | "pending"
-    | "initializing"
-    | "initialized"
-    | "processing"
-    | "done"
-    | "done-errors"
-    | "failed";
+  | "pending"
+  | "initializing"
+  | "initialized"
+  | "processing"
+  | "done"
+  | "done-errors"
+  | "failed";
   created: string;
   started: string | null;
   ended: string | null;

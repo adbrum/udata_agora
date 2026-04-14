@@ -190,8 +190,8 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                                     {
                                                         href: '#',
                                                         hasIcon: true,
-                                                        leadingIcon: 'agora-line-calendar',
-                                                        leadingIconHover: 'agora-solid-calendar',
+                                                        leadingIcon: 'agora-line-layers-menu',
+                                                        leadingIconHover: 'agora-solid-layers-menu',
                                                         trailingIcon: '',
                                                         trailingIconHover: '',
                                                         trailingIconActive: '',
@@ -232,24 +232,6 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                     <TabHeader>Discussões ({discussionCount})</TabHeader>
                     {renderTabBody(
                         <div>
-                            <div className="mb-24">
-                                <StatusCard
-                                    type="info"
-                                    description={
-                                        <>
-                                            A sua questão é sobre outro tema que não este conjunto de dados?{" "}
-                                            <a
-                                                href="https://dados.gov.pt"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-primary-600 underline font-semibold"
-                                            >
-                                                Visite o nosso fórum <Icon name="agora-line-external-link" className="w-4 h-4 inline" />
-                                            </a>
-                                        </>
-                                    }
-                                />
-                            </div>
                             <div className="flex items-center justify-between mb-24">
                                 <h3 className="font-medium text-neutral-900 text-base">
                                     {discussionCount} {discussionCount === 1 ? "DISCUSSÃO" : "DISCUSSÕES"}
@@ -266,7 +248,13 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                         hasIcon={true}
                                         leadingIcon="agora-line-plus-circle"
                                         leadingIconHover="agora-solid-plus-circle"
-                                        onClick={() => setShowNewDiscussion(!showNewDiscussion)}
+                                        onClick={() => {
+                                            if (!user) {
+                                                window.location.href = "/pages/login";
+                                            } else {
+                                                setShowNewDiscussion(!showNewDiscussion);
+                                            }
+                                        }}
                                     >
                                         Iniciar nova discussão
                                     </Button>

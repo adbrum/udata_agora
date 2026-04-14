@@ -59,16 +59,16 @@ function TransferReusePopupContent({
         </a>
       </p>
       <p>
-        <strong>Essa ação é irreversível.</strong>
-        Você não terá mais acesso para gerenciar esse conjunto de dados.
+        <strong>Esta ação é irreversível.</strong>&nbsp;
+        Poderá deixar de conseguir gerir esta reutilização.
       </p>
 
       <div className="flex flex-col gap-[8px]">
         <label className="text-primary-900 text-base font-medium leading-7">
-          Encontre uma organização ou usuário
+          Organização ou utilizador
         </label>
         <InputText
-          placeholder="Procurar..."
+          placeholder="Selecione a identidade para a qual pretende transferir a reutilização..."
           id="transfer-reuse-search"
           label=""
         />
@@ -76,17 +76,17 @@ function TransferReusePopupContent({
 
       <div className="admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center">
         <h3 className="text-primary-900 text-lg font-bold leading-7">
-          Você não pertence a nenhuma organização
+          Não pertence a uma organização.
         </h3>
         <p className="text-neutral-700 text-base leading-7">
-          Recomendamos que você poste sob o nome de uma organização se for uma
-          atividade profissional.
+          Quando a reutilização for produzida no contexto de atividade profissional, é
+          recomendável que seja publicada em nome da organização responsável.
         </p>
         <Link
           href="/pages/admin/organizations"
           className="inline-flex items-center text-primary-500 text-base hover:underline"
         >
-          <span className="mr-[5px]">Crie ou participe de uma organização</span>
+          <span className="mr-[5px]">Crie ou integre uma organização em dados.gov.pt</span>
           <Icon name="agora-line-arrow-right-circle" className="w-5 h-5" />
         </Link>
       </div>
@@ -112,7 +112,7 @@ function TransferReusePopupContent({
           leadingIconHover="agora-solid-plane"
           onClick={onClose}
         >
-          Transferir essa reutilização
+          Transferir a reutilização
         </Button>
       </div>
     </div>
@@ -128,7 +128,7 @@ function DeleteReusePopupContent({
 }) {
   return (
     <div className="flex flex-col gap-[16px]">
-      <p>Essa ação não pode ser desfeita.</p>
+      <p>Esta ação é irreversível. Tem a certeza que quer eliminar esta reutilização?</p>
       <div className="flex justify-end gap-16 pt-16">
         <Button appearance="outline" variant="neutral" onClick={onClose}>
           Cancelar
@@ -296,8 +296,12 @@ export default function ReusesEditClient() {
     if (!description.trim()) errors.description = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setFormErrors({});
     setApiError(null);
     setApiSuccess(null);
@@ -313,6 +317,7 @@ export default function ReusesEditClient() {
       });
       setReuse(updated);
       setApiSuccess("Reutilização atualizada com sucesso.");
+      setTimeout(() => setApiSuccess(null), 10000);
     } catch (error: unknown) {
       const err = error as { status?: number; data?: Record<string, unknown> };
       if (err.data && typeof err.data === "object") {
@@ -447,12 +452,12 @@ export default function ReusesEditClient() {
               <div className="admin-page__form-area">
                 <div className="dataset-edit-visibility-banner">
                   <StatusCard
-                    type="warning"
+                    type="info"
                     description={
                       <>
                         Modificar a visibilidade da reutilização
                         <br />
-                        <span className="text-primary-600">
+                        <span className="text-neutral-900 uppercase">
                           {reuse.private ? "rascunho" : "público"}
                         </span>
                       </>
@@ -473,6 +478,7 @@ export default function ReusesEditClient() {
                               ? "Reutilização guardada como rascunho."
                               : "Reutilização publicada com sucesso."
                           );
+                          setTimeout(() => setApiSuccess(null), 10000);
                         } catch {
                           setApiError("Erro ao alterar a visibilidade.");
                         }
@@ -533,7 +539,7 @@ export default function ReusesEditClient() {
                     />
                     <InputSelect
                       label="Tipo *"
-                      placeholder="Procure por um tipo..."
+                      placeholder="Selecione um tipo..."
                       id="edit-type"
                       searchable
                       searchInputPlaceholder="Escreva para pesquisar..."
@@ -571,7 +577,7 @@ export default function ReusesEditClient() {
                     />
                     <InputSelect
                       label="Palavras-chave"
-                      placeholder="Pesquise por uma palavra-chave..."
+                      placeholder="Pesquise ou insira palavras-chave..."
                       id="edit-keywords"
                       type="checkbox"
                       searchable
@@ -596,7 +602,7 @@ export default function ReusesEditClient() {
                           inputLabel="Selecione ou arraste o ficheiro"
                           removeFileButtonLabel="Remover ficheiro"
                           replaceFileButtonLabel="Substituir ficheiro"
-                          extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                          extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceites: JPG, JPEG, PNG."
                           accept=".jpg,.jpeg,.png"
                           maxSize={4194304}
                           maxCount={1}
@@ -609,6 +615,7 @@ export default function ReusesEditClient() {
                               const updated = await uploadReuseImage(reuse.id, files[0]);
                               setReuse(updated);
                               setApiSuccess("Imagem de capa atualizada com sucesso.");
+                              setTimeout(() => setApiSuccess(null), 10000);
                             } catch {
                               setApiError("Erro ao carregar imagem de capa.");
                             } finally {
@@ -623,6 +630,9 @@ export default function ReusesEditClient() {
                   <div className="admin-page__actions flex justify-end mt-[24px]">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={handleSaveMetadata}
                       disabled={isSubmitting}
                     >
@@ -635,9 +645,7 @@ export default function ReusesEditClient() {
                       type="info"
                       description={
                         <>
-                          <strong>Transfira esta reutilização.</strong>
-                          <br />
-                          Atenção, esta ação não pode ser cancelada.
+                          <strong>Atenção esta ação é irreversível.</strong>
                           <br />
                           <Button
                             appearance="link"
@@ -652,14 +660,14 @@ export default function ReusesEditClient() {
                                   onClose={hide}
                                 />,
                                 {
-                                  title: "Transferir essa reutilização",
+                                  title: "Transfira a reutilização",
                                   closeAriaLabel: "Fechar",
                                   dimensions: "m",
                                 },
                               );
                             }}
                           >
-                            Transferir
+                            Transferir a reutilização
                           </Button>
                         </>
                       }
@@ -668,9 +676,10 @@ export default function ReusesEditClient() {
                       type="warning"
                       description={
                         <>
-                          <strong>Reutilização de ficheiros</strong>
-                          <br />
-                          Um arquivo reutilizado não é mais indexado, mas permanece acessível aos utilizadores por meio de um link direto.
+                          <strong>
+                            Uma reutilização arquivada deixa de estar indexada na plataforma, mas
+                            permanece acessível através de um link direto.
+                          </strong>
                           <br />
                           <Button
                             appearance="link"
@@ -679,7 +688,7 @@ export default function ReusesEditClient() {
                             trailingIcon="agora-line-arrow-right-circle"
                             trailingIconHover="agora-solid-arrow-right-circle"
                           >
-                            Arquivar
+                            Arquivar a reutilização
                           </Button>
                         </>
                       }
@@ -688,9 +697,7 @@ export default function ReusesEditClient() {
                       type="danger"
                       description={
                         <>
-                          <strong>Remova esta reutilização.</strong>
-                          <br />
-                          Atenção, esta ação não pode ser cancelada.
+                          <strong>Atenção esta ação é irreversível.</strong>
                           <br />
                           <Button
                             appearance="link"
@@ -705,8 +712,7 @@ export default function ReusesEditClient() {
                                   onConfirm={handleDeleteReuse}
                                 />,
                                 {
-                                  title:
-                                    "Tem a certeza que quer eliminar esta reutilização?",
+                                  title: "Elimine a reutilização",
                                   closeAriaLabel: "Fechar",
                                   dimensions: "m",
                                 },
@@ -714,7 +720,7 @@ export default function ReusesEditClient() {
                             }}
                             disabled={isSubmitting}
                           >
-                            Eliminar
+                            Eliminar a reutilização
                           </Button>
                         </>
                       }
@@ -1024,6 +1030,9 @@ export default function ReusesEditClient() {
                   <div className="admin-page__actions flex justify-end gap-[18px]">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={async () => {
                         if (!reuse) return;
                         const errors: Record<number, string> = {};
@@ -1050,6 +1059,7 @@ export default function ReusesEditClient() {
                           setDatasetLinks([{ url: "" }]);
                           setSelectedDataset(null);
                           setApiSuccess("Conjuntos de dados associados com sucesso.");
+                          setTimeout(() => setApiSuccess(null), 10000);
                         } catch {
                           setApiError("Erro ao associar conjuntos de dados.");
                         } finally {
@@ -1181,6 +1191,9 @@ export default function ReusesEditClient() {
                   <div className="admin-page__actions flex justify-end gap-[18px]">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={async () => {
                         if (!reuse) return;
                         const errors: Record<number, string> = {};
@@ -1206,6 +1219,7 @@ export default function ReusesEditClient() {
                           setReuse(updated);
                           setApiLinks([{ url: "" }]);
                           setApiSuccess("APIs associadas com sucesso.");
+                          setTimeout(() => setApiSuccess(null), 10000);
                         } catch {
                           setApiError("Erro ao associar APIs.");
                         } finally {

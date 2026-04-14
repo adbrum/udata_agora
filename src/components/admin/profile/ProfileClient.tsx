@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -13,8 +14,9 @@ import {
   generateApiKey,
   clearApiKey,
   requestEmailChange,
+  fetchMyFollowing,
 } from "@/services/api";
-import { Activity, UserPublic } from "@/types/api";
+import { Activity, UserFollowing, UserPublic } from "@/types/api";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import {
@@ -67,6 +69,9 @@ export default function ProfileClient() {
   const [activityTotal, setActivityTotal] = useState(0);
   const activityPageSize = 20;
 
+  const [subscriptions, setSubscriptions] = useState<UserFollowing[]>([]);
+  const [isLoadingSubscriptions, setIsLoadingSubscriptions] = useState(true);
+
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -104,9 +109,25 @@ export default function ProfileClient() {
     loadActivities();
   }, [user?.id, activityPage]);
 
+  useEffect(() => {
+    async function loadSubscriptions() {
+      setIsLoadingSubscriptions(true);
+      try {
+        const response = await fetchMyFollowing(1, 100);
+        setSubscriptions(response.data || []);
+      } catch (error) {
+        console.error("Error loading subscriptions:", error);
+      } finally {
+        setIsLoadingSubscriptions(false);
+      }
+    }
+    loadSubscriptions();
+  }, []);
+
   const totalActivityPages = Math.ceil(activityTotal / activityPageSize);
 
   const handleSave = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsSaving(true);
     setSaveSuccess(false);
     setSaveError("");
@@ -120,7 +141,7 @@ export default function ProfileClient() {
       setProfile(updated);
       setSaveSuccess(true);
       await refresh();
-      setTimeout(() => setSaveSuccess(false), 3000);
+      setTimeout(() => setSaveSuccess(false), 10000);
     } catch (error) {
       console.error("Error saving profile:", error);
       setSaveError("Erro ao guardar o perfil. Tente novamente.");
@@ -331,7 +352,7 @@ export default function ProfileClient() {
                         inputLabel="Selecione ou arraste o ficheiro"
                         removeFileButtonLabel="Remover ficheiro"
                         replaceFileButtonLabel="Substituir ficheiro"
-                        extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                        extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceites: JPG, JPEG, PNG."
                         accept=".jpg,.jpeg,.png"
                         maxSize={4194304}
                         maxCount={1}
@@ -343,7 +364,7 @@ export default function ProfileClient() {
                   <div className="flex items-end gap-[16px]">
                     <div className="flex-1">
                       <InputText
-                        label="Chave de API"
+                        label="Chave da API"
                         placeholder="Nenhuma chave gerada"
                         id="api-key"
                         value={apiKey}
@@ -596,19 +617,63 @@ export default function ProfileClient() {
             <TabHeader>Subscrições</TabHeader>
             <TabBody>
               <div className="mt-[24px]">
-                <CardNoResults
-                  className="datasets-page__empty"
-                  position="center"
-                  icon={
-                    <Icon
-                      name="agora-line-bell"
-                      className="w-12 h-12 text-primary-500 icon-xl"
-                    />
-                  }
-                  title="Sem subscrições"
-                  description="Ainda não subscreveu nenhum conteúdo."
-                  hasAnchor={false}
-                />
+                {isLoadingSubscriptions ? (
+                  <p className="text-neutral-900 text-base">A carregar subscrições...</p>
+                ) : subscriptions.length === 0 ? (
+                  <CardNoResults
+                    className="datasets-page__empty"
+                    position="center"
+                    icon={
+                      <Icon
+                        name="agora-line-bell"
+                        className="w-12 h-12 text-primary-500 icon-xl"
+                      />
+                    }
+                    title="Sem subscrições"
+                    description="Não segue conteúdos"
+                    hasAnchor={false}
+                  />
+                ) : (
+                  <div className="flex flex-col gap-16">
+                    {subscriptions.map((sub) => {
+                      const subName = sub.following.name || sub.following.title || "";
+                      const subAvatar = sub.following.avatar_thumbnail || sub.following.image_thumbnail;
+                      const initials = subName
+                        .split(" ")
+                        .map((w) => w.charAt(0).toUpperCase())
+                        .slice(0, 2)
+                        .join("");
+                      const classToPath: Record<string, string> = {
+                        Dataset: "/pages/datasets",
+                        Organization: "/pages/organizations",
+                        Reuse: "/pages/reuses",
+                        User: "/pages/users",
+                      };
+                      const basePath = classToPath[sub.following.class];
+                      const href = basePath && sub.following.slug
+                        ? `${basePath}/${sub.following.slug}`
+                        : null;
+                      const content = (
+                        <div className="flex items-center gap-16">
+                          <Avatar
+                            avatarType={subAvatar ? "image" : "initials"}
+                            srcPath={(subAvatar || initials) as unknown as undefined}
+                            alt={subName}
+                            className="w-[48px] h-[48px]"
+                          />
+                          <span className="text-neutral-900 text-base font-medium">{subName}</span>
+                        </div>
+                      );
+                      return href ? (
+                        <Link key={sub.id} href={href} className="hover:opacity-80 transition-opacity">
+                          {content}
+                        </Link>
+                      ) : (
+                        <div key={sub.id}>{content}</div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </TabBody>
           </Tab>
@@ -626,7 +691,7 @@ export default function ProfileClient() {
                     />
                   }
                   title="Sem acompanhamentos"
-                  description="Ainda não acompanha nenhum conteúdo."
+                  description="Não tem seguidores."
                   hasAnchor={false}
                 />
               </div>

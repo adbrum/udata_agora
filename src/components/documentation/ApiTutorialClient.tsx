@@ -1,26 +1,32 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Breadcrumb } from "@ama-pt/agora-design-system";
 
-const SWAGGER_JSON_URL = "https://dados.gov.pt/api/1/swagger.json";
+const SWAGGER_JSON_URL = "/api/1/swagger.json";
+const SWAGGER_CSS_ID = "swagger-ui-css";
+const SWAGGER_SCRIPT_ID = "swagger-ui-script";
 
 export default function ApiTutorialClient() {
   const swaggerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const swaggerUiCss = document.createElement("link");
-    swaggerUiCss.rel = "stylesheet";
-    swaggerUiCss.href =
-      "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui.min.css";
-    document.head.appendChild(swaggerUiCss);
+    let cancelled = false;
 
-    const script = document.createElement("script");
-    script.src =
-      "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-bundle.min.js";
-    script.onload = () => {
-      if (swaggerRef.current && (window as any).SwaggerUIBundle) {
+    // Add CSS if not already present
+    if (!document.getElementById(SWAGGER_CSS_ID)) {
+      const swaggerUiCss = document.createElement("link");
+      swaggerUiCss.id = SWAGGER_CSS_ID;
+      swaggerUiCss.rel = "stylesheet";
+      swaggerUiCss.href =
+        "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui.min.css";
+      document.head.appendChild(swaggerUiCss);
+    }
+
+    function initSwagger() {
+      if (cancelled || !swaggerRef.current) return;
+      if ((window as any).SwaggerUIBundle) {
         (window as any).SwaggerUIBundle({
           url: SWAGGER_JSON_URL,
           domNode: swaggerRef.current,
@@ -29,12 +35,23 @@ export default function ApiTutorialClient() {
           layout: "BaseLayout",
         });
       }
-    };
-    document.body.appendChild(script);
+    }
+
+    // Load script if not already present
+    const existingScript = document.getElementById(SWAGGER_SCRIPT_ID);
+    if (existingScript) {
+      initSwagger();
+    } else {
+      const script = document.createElement("script");
+      script.id = SWAGGER_SCRIPT_ID;
+      script.src =
+        "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-bundle.min.js";
+      script.onload = initSwagger;
+      document.body.appendChild(script);
+    }
 
     return () => {
-      document.head.removeChild(swaggerUiCss);
-      document.body.removeChild(script);
+      cancelled = true;
     };
   }, []);
 

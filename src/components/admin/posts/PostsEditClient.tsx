@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
   Button,
@@ -18,12 +18,14 @@ import {
   Tab,
   TabHeader,
   TabBody,
+  usePopupContext,
 } from "@ama-pt/agora-design-system";
 import {
   fetchPost,
   updatePost,
   uploadPostImage,
   suggestTags,
+  deletePost,
 } from "@/services/api";
 import type { Post, PostUpdatePayload, TagSuggestion } from "@/types/api";
 import dynamic from "next/dynamic";
@@ -33,8 +35,38 @@ const RichTextEditor = dynamic(() => import("./RichTextEditor"), {
   loading: () => <p>A carregar editor...</p>,
 });
 
+function DeletePostPopupContent({
+  onClose,
+  onConfirm,
+}: {
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-[16px]">
+      <p>Essa ação não pode ser desfeita.</p>
+      <div className="flex justify-end gap-16 pt-16">
+        <Button appearance="outline" variant="neutral" onClick={onClose}>
+          Cancelar
+        </Button>
+        <Button
+          variant="danger"
+          onClick={onConfirm}
+          hasIcon
+          leadingIcon="agora-line-trash"
+          leadingIconHover="agora-solid-trash"
+        >
+          Eliminar
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function PostsEditClient() {
   const params = useParams();
+  const router = useRouter();
+  const { show, hide } = usePopupContext();
   const postId = params.postId as string;
 
   const [post, setPost] = useState<Post | null>(null);
@@ -82,6 +114,7 @@ export default function PostsEditClient() {
   }, [postId]);
 
   const handleSaveMetadata = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (!articleTitle.trim()) return;
 
     setIsSaving(true);
@@ -101,6 +134,7 @@ export default function PostsEditClient() {
       if (result) {
         setPost(result);
         setApiSuccess("Metadados guardados com sucesso.");
+        setTimeout(() => setApiSuccess(null), 10000);
       } else {
         setApiError("Erro ao guardar. Verifique a autenticação.");
       }
@@ -112,6 +146,7 @@ export default function PostsEditClient() {
   };
 
   const handleSaveContent = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (!articleContent.trim()) return;
 
     setIsSaving(true);
@@ -127,6 +162,7 @@ export default function PostsEditClient() {
       if (result) {
         setPost(result);
         setApiSuccess("Conteúdo guardado com sucesso.");
+        setTimeout(() => setApiSuccess(null), 10000);
       } else {
         setApiError("Erro ao guardar. Verifique a autenticação.");
       }
@@ -151,11 +187,31 @@ export default function PostsEditClient() {
       if (result) {
         setPost(result);
         setApiSuccess("Artigo despublicado com sucesso.");
+        setTimeout(() => setApiSuccess(null), 10000);
       } else {
         setApiError("Erro ao despublicar. Verifique a autenticação.");
       }
     } catch {
       setApiError("Erro ao despublicar o artigo.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setIsSaving(true);
+    setApiError(null);
+    setApiSuccess(null);
+
+    try {
+      const success = await deletePost(postId);
+      if (success) {
+        router.push("/pages/admin/system/posts");
+      } else {
+        setApiError("Erro ao eliminar. Verifique a autenticação.");
+      }
+    } catch {
+      setApiError("Erro ao eliminar o artigo.");
     } finally {
       setIsSaving(false);
     }
@@ -176,6 +232,7 @@ export default function PostsEditClient() {
       if (result) {
         setPost(result);
         setApiSuccess("Imagem carregada com sucesso.");
+        setTimeout(() => setApiSuccess(null), 10000);
       } else {
         setApiError("Erro ao carregar a imagem.");
       }
@@ -364,7 +421,7 @@ export default function PostsEditClient() {
                           inputLabel="Selecione ou arraste o ficheiro"
                           removeFileButtonLabel="Remover ficheiro"
                           replaceFileButtonLabel="Substituir ficheiro"
-                          extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceitos: JPG, JPEG, PNG."
+                          extensionsInstructions="Tamanho máximo: 4 MB. Formatos aceites: JPG, JPEG, PNG."
                           accept=".jpg,.jpeg,.png"
                           maxSize={4194304}
                           maxCount={1}
@@ -386,6 +443,9 @@ export default function PostsEditClient() {
                   <div className="admin-page__actions">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={handleSaveMetadata}
                       disabled={isSaving}
                     >
@@ -393,29 +453,68 @@ export default function PostsEditClient() {
                     </Button>
                   </div>
                 </form>
+
+                <div className="dataset-edit-danger-actions">
+                  {post.published && (
+                    <StatusCard
+                      type="warning"
+                      description={
+                        <>
+                          <strong>Despublicar o artigo</strong>
+                          <br />
+                          Por favor, note que o item não será mais visível.
+                          <br />
+                          <Button
+                            appearance="link"
+                            variant="primary"
+                            hasIcon
+                            trailingIcon="agora-line-arrow-right-circle"
+                            trailingIconHover="agora-solid-arrow-right-circle"
+                            onClick={handleUnpublish}
+                            disabled={isSaving}
+                          >
+                            {isSaving ? "A despublicar..." : "Despublicar"}
+                          </Button>
+                        </>
+                      }
+                    />
+                  )}
+                  <StatusCard
+                    type="danger"
+                    description={
+                      <>
+                        <strong>Atenção, esta ação não pode ser corrigida.</strong>
+                        <br />
+                        <Button
+                          appearance="link"
+                          variant="primary"
+                          hasIcon
+                          trailingIcon="agora-line-arrow-right-circle"
+                          trailingIconHover="agora-solid-arrow-right-circle"
+                          onClick={() => {
+                            show(
+                              <DeletePostPopupContent
+                                onClose={hide}
+                                onConfirm={handleDelete}
+                              />,
+                              {
+                                title:
+                                  "Tem a certeza que quer eliminar este artigo?",
+                                closeAriaLabel: "Fechar",
+                                dimensions: "m",
+                              },
+                            );
+                          }}
+                          disabled={isSaving}
+                        >
+                          Eliminar o artigo
+                        </Button>
+                      </>
+                    }
+                  />
+                </div>
               </div>
             </div>
-
-            {post.published && (
-              <div className="mt-8 p-6 bg-danger-50 border border-danger-200 rounded-lg flex items-center justify-between">
-                <div>
-                  <p className="text-primary-900 font-bold">
-                    Despublicar o artigo
-                  </p>
-                  <p className="text-warning-700 text-sm">
-                    Por favor, note que o item não será mais visível.
-                  </p>
-                </div>
-                <Button
-                  variant="danger"
-                  appearance="outline"
-                  onClick={handleUnpublish}
-                  disabled={isSaving}
-                >
-                  Despublicar
-                </Button>
-              </div>
-            )}
           </TabBody>
         </Tab>
 
@@ -441,6 +540,9 @@ export default function PostsEditClient() {
                   <div className="admin-page__actions">
                     <Button
                       variant="primary"
+                      hasIcon
+                      trailingIcon="agora-line-check-circle"
+                      trailingIconHover="agora-solid-check-circle"
                       onClick={handleSaveContent}
                       disabled={isSaving}
                     >

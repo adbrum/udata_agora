@@ -302,7 +302,7 @@ export default function HarvestJobDetailClient({
             <TableRow>
               <TableHeaderCell>ID</TableHeaderCell>
               <TableHeaderCell>Status</TableHeaderCell>
-              <TableHeaderCell>Link dados.gov</TableHeaderCell>
+              <TableHeaderCell>Link dados.gov.pt</TableHeaderCell>
               <TableHeaderCell>Link fonte</TableHeaderCell>
               <TableHeaderCell>
                 <Icon name="agora-line-alert-triangle" className="w-[16px] h-[16px]" />
@@ -318,7 +318,7 @@ export default function HarvestJobDetailClient({
                     {ITEM_STATUS_LABELS[item.status] || item.status}
                   </StatusDot>
                 </TableCell>
-                <TableCell headerLabel="Link dados.gov">
+                <TableCell headerLabel="Link dados.gov.pt">
                   {item.dataset ? (
                     <a
                       href={`/pages/datasets/${item.dataset.id}`}

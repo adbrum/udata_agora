@@ -274,7 +274,7 @@ export default function ApiRegistrationClient({
                     href="/pages/admin/organizations/new"
                     className="admin-page__org-card-link"
                   >
-                    Crie ou participe de uma organização
+                    Crie ou integre uma organização em dados.gov.pt
                     <Icon
                       name="agora-line-arrow-right-circle"
                       className="w-[24px] h-[24px]"

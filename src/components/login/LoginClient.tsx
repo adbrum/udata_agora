@@ -232,7 +232,7 @@ export default function LoginClient() {
                           termos e condições relativos ao tratamento de dados
                           pessoais
                         </a>{" "}
-                        para a criação de conta e acesso ao portal dados.gov
+                        para a criação de conta e acesso ao portal dados.gov.pt
                       </Checkbox>
                     </div>
                   </div>
@@ -316,7 +316,7 @@ export default function LoginClient() {
                           termos e condições relativos ao tratamento de dados
                           pessoais
                         </a>{" "}
-                        para a criação de conta e acesso ao portal dados.gov
+                        para a criação de conta e acesso ao portal dados.gov.pt
                       </Checkbox>
                     </div>
                   </div>

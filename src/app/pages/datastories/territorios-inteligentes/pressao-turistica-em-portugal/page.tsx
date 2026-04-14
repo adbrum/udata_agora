@@ -8,7 +8,7 @@ import DataSourcesSection, { DataSourcesSectionProps } from '@/components/datast
 import { SourceInfoFooter } from '@/components/datastories/Components/Shared/SourceInfoFooter';
 
 export const metadata: Metadata = {
-    title: 'Data Story - dados.gov',
+    title: 'Data Story - dados.gov.pt',
 };
 
 export default function DataStoryDetailPage() {

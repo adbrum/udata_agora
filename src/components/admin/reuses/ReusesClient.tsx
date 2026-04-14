@@ -101,7 +101,7 @@ export default function ReusesClient() {
             itemsPerPage: 5,
             totalItems: reuses.length,
             availablePageSizes: [5, 10, 20],
-            currentPage: 1,
+            currentPage: 0,
             buttonDropdownAriaLabel: "Selecionar linhas por página",
             dropdownListAriaLabel: "Opções de linhas por página",
             prevButtonAriaLabel: "Página anterior",
@@ -183,8 +183,8 @@ export default function ReusesClient() {
               icon={
                 <img src="/Icons/bar_chart.svg" alt="" className="w-[40px] h-[40px]" />
               }
-              title="Sem publicações"
-              description="Ainda não publicou uma reutilização."
+              title="Sem reutilizações"
+              description="Não publicou reutilizações."
               hasAnchor={false}
               extraDescription={
                 <div className="mt-24">

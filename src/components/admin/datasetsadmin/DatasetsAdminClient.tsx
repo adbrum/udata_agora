@@ -2,12 +2,14 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
+import { pt } from "date-fns/locale";
 import {
   Button,
   CardGeneral,
   InputText,
   InputTextArea,
-  RadioButton,
   Icon,
   StatusCard,
   Accordion,
@@ -15,6 +17,7 @@ import {
   InputDate,
   DropdownSection,
   DropdownOption,
+  ProgressBar,
 } from "@ama-pt/agora-design-system";
 import {
   createDataset,
@@ -63,7 +66,6 @@ export default function DatasetsAdminClient({
   const { user } = useAuth();
 
   // Form state
-  const [accessType, setAccessType] = useState("open");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showFileError, setShowFileError] = useState(false);
   const [datasetTitle, setDatasetTitle] = useState("");
@@ -192,8 +194,12 @@ export default function DatasetsAdminClient({
       setDraftContacts((prev) =>
         prev.map((d) => (d.id === draftId ? { ...d, errors } : d)),
       );
+      requestAnimationFrame(() => {
+        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
       return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
       const payload: Parameters<typeof createContactPoint>[0] = {
@@ -452,7 +458,7 @@ export default function DatasetsAdminClient({
 
   const auxiliarItemsStep2 = [
     {
-      title: "Nomeando seu conjunto de dados",
+      title: "Dar um título",
       content: (
         <>
           <p>
@@ -467,12 +473,16 @@ export default function DatasetsAdminClient({
       hasError: !!formErrors.datasetTitle,
     },
     {
-      title: "Adicione uma sigla ao conjunto de dados.",
-      content:
-        "Tem a opção de adicionar uma sigla ao seu conjunto de dados. As letras que compõem essa sigla não precisam ser separadas por pontos.",
+      title: "Adicionar uma sigla",
+      content: (
+        <p>
+          Tem a opção de adicionar uma sigla ao seu conjunto de dados. As letras que compõem a
+          sigla não precisam de ser separadas por pontos.
+        </p>
+      ),
     },
     {
-      title: "Escreva uma boa descrição",
+      title: "Descrever os dados",
       content: (
         <>
           <p>
@@ -499,12 +509,12 @@ export default function DatasetsAdminClient({
       hasError: !!formErrors.datasetDescription,
     },
     {
-      title: "Escreva uma breve descrição.",
+      title: "Incluir uma descrição breve",
       content: (
         <>
           <p>
-            A descrição resumida apresenta seu conjunto de dados em uma ou duas frases. Isso ajuda
-            os utilizadores a entenderem rapidamente o conteúdo e melhora sua visibilidade nos
+            A descrição resumida apresenta o seu conjunto de dados numa ou duas frases. Facilita a
+            compreensão imediata do conteúdo pelos utilizadores e aumenta a sua visibilidade nos
             resultados de pesquisa.
           </p>
           <p className="font-bold mt-3">Sugestões automáticas</p>
@@ -527,9 +537,8 @@ export default function DatasetsAdminClient({
       content: (
         <>
           <p>
-            As palavras-chave descrevem seu conjunto de dados e facilitam sua descoberta. Elas
-            melhoram seu posicionamento nos mecanismos de pesquisa e ajudam os utilizadores a encontrar
-            com mais facilidade os dados que procuram.
+            As palavras-chave ajudam a caracterizar o conjunto de dados, tornam-no mais fácil de
+            encontrar e contribuem para um melhor posicionamento nos motores de busca.
           </p>
           <p className="font-bold mt-3">Sugestões automáticas</p>
           <p className="mt-2">
@@ -546,18 +555,27 @@ export default function DatasetsAdminClient({
       ),
     },
     {
-      title: "Selecione uma licença",
-      content:
-        "As licenças definem as regras para a reutilização. Ao escolher uma licença de reutilização, garante que o conjunto de dados publicado será reutilizado de acordo com os termos de uso que definiu.",
+      title: "Selecionar uma licença",
+      content: (
+        <p>
+          As licenças definem as regras para a reutilização. Ao escolher uma licença de
+          reutilização, garante que o conjunto de dados publicado será reutilizado de acordo com os
+          termos de uso que definiu.
+        </p>
+      ),
     },
     {
-      title: "Escolha a frequência de atualização.",
-      content:
-        "A frequência de atualização refere-se à frequência com que planeja atualizar os dados publicados. Essa frequência de atualização é apenas indicativa.",
+      title: "Escolher a frequência de atualização",
+      content: (
+        <p>
+          A frequência de atualização refere-se à frequência com que pretende atualizar os dados
+          publicados.
+        </p>
+      ),
       hasError: !!formErrors.datasetFrequency,
     },
     {
-      title: "Forneça a cobertura de tempo.",
+      title: "Fornecer a cobertura temporal",
       content: (
         <>
           <p>A abrangência temporal indica o período de tempo dos dados publicados.</p>
@@ -566,14 +584,13 @@ export default function DatasetsAdminClient({
       ),
     },
     {
-      title: "Complete as informações espaciais",
+      title: "Indicar a granularidade espacial",
       content: (
         <>
           <p>
-            A granularidade espacial indica o nível mais detalhado de informações geográficas que
-            seus dados podem abranger.
+            A granularidade espacial representa o grau de detalhe geográfico presente nos seus
+            dados, como, por exemplo, freguesia ou município.
           </p>
-          <p>Por exemplo: em nível departamental ou municipal.</p>
         </>
       ),
     },
@@ -584,7 +601,7 @@ export default function DatasetsAdminClient({
       title: "Escolher o formato certo",
       content: (
         <>
-          <p>Os formatos devem ser:</p>
+          <p>O formato deve ser:</p>
           <ul className="list-disc pl-5 mt-2 flex flex-col gap-2">
             <li>
               <strong>Aberto:</strong> um formato aberto não adiciona especificações técnicas que
@@ -595,10 +612,9 @@ export default function DatasetsAdminClient({
               que qualquer pessoa ou servidor pode reutilizar facilmente o conjunto de dados;
             </li>
             <li>
-              <strong>Utilizável em um sistema de processamento automatizado:</strong> um sistema de
-              processamento automatizado permite operações automáticas relacionadas ao processamento
-              de dados (por exemplo, um ficheiro CSV é facilmente utilizável por um sistema
-              automatizado, ao contrário de um ficheiro PDF).
+              <strong>Utilizável num sistema de processamento automatizado:</strong> permite
+              operações automáticas de processamento de dados (por exemplo, um ficheiro CSV é
+              facilmente utilizável por um sistema automatizado, ao contrário de um ficheiro PDF).
             </li>
           </ul>
         </>
@@ -609,19 +625,19 @@ export default function DatasetsAdminClient({
       content: (
         <>
           <p>
-            A descrição de um ficheiro facilita a reutilização de dados. Ela inclui, entre outras
+            A descrição de um ficheiro facilita a reutilização de dados. Inclui, entre outras
             coisas:
           </p>
           <ul className="list-disc pl-5 mt-2 flex flex-col gap-2">
-            <li>uma descrição geral do conjunto de dados;</li>
-            <li>uma descrição do método de produção de dados;</li>
-            <li>uma descrição do modelo de dados;</li>
-            <li>uma descrição do esquema de dados;</li>
-            <li>uma descrição dos metadados;</li>
+            <li>Uma descrição geral do conjunto de dados;</li>
+            <li>Uma descrição do método de produção de dados;</li>
+            <li>Uma descrição do modelo de dados;</li>
+            <li>Uma descrição do esquema de dados;</li>
+            <li>Uma descrição dos metadados;</li>
             <li>Uma descrição das principais mudanças.</li>
           </ul>
           <p className="text-red-500 mt-3 font-medium">
-            Não adicionou nenhum ficheiro de documentação nem descreveu seus ficheiros.
+            Não adicionou nenhum ficheiro de documentação nem descreveu os seus ficheiros.
           </p>
         </>
       ),
@@ -650,15 +666,18 @@ export default function DatasetsAdminClient({
                   <>
                     <strong>O que é um conjunto de dados?</strong>
                     <br />
-                    Em dados.gov, um conjunto de dados é um conjunto de ficheiros.
+                    Em dados.gov.pt, um conjunto de dados é um conjunto de ficheiros.
                   </>
                 }
               />
+              <p className="text-neutral-900 text-base leading-7 pt-32">
+                Os campos marcados com um asterisco ( * ) são obrigatórios.
+              </p>
               <h2 className="admin-page__section-title">Produtor</h2>
 
               <div className="admin-page__fields-group">
                 <span className="text-primary-900 text-base font-medium leading-7">
-                  Verifique a identidade que deseja usar na publicação.
+                  Confirme a identidade que pretende utilizar na publicação.
                 </span>
                 <IsolatedSelect
                   label="Produtor*"
@@ -685,17 +704,16 @@ export default function DatasetsAdminClient({
               {(!user?.organizations || user.organizations.length === 0) && (
                 <div className="admin-page__org-card flex flex-col items-center gap-[16px] bg-neutral-50 rounded-lg p-8 text-center mt-[24px]">
                   <h3 className="text-primary-900 text-lg font-bold leading-7">
-                    Você não pertence a nenhuma organização.
+                    Não pertence a uma organização.
                   </h3>
                   <p className="text-neutral-700 text-base leading-7">
-                    Recomendamos que publique em nome de uma organização se se tratar de uma
-                    atividade profissional.
+                    Quando o conjunto de dados for produzido no contexto de atividade profissional, é recomendável que seja publicado em nome da organização responsável.
                   </p>
                   <Button
                     variant="primary"
                     onClick={() => router.push("/pages/admin/organizations/new")}
                   >
-                    Crie ou participe de uma organização
+                    Crie ou integre uma organização em dados.gov.pt
                   </Button>
                 </div>
               )}
@@ -707,10 +725,6 @@ export default function DatasetsAdminClient({
                 className="admin-page__form"
                 onSubmit={(e) => e.preventDefault()}
               >
-                <p className="text-neutral-900 text-base leading-7 pt-32">
-                  Os campos marcados com um asterisco ( * ) são obrigatórios.
-                </p>
-
                 <h2 className="admin-page__section-title">Descrição</h2>
 
                 <div className="admin-page__fields-group">
@@ -738,11 +752,11 @@ export default function DatasetsAdminClient({
                     }}
                   />
                   <InputTextArea
-                    label="Descrição*"
+                    label="Descrição *"
                     placeholder="Insira a descrição aqui"
                     id="dataset-description"
                     rows={4}
-                    maxLength={246}
+                    maxLength={1000}
                     showCharCounter={true}
                     value={datasetDescription}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -750,12 +764,12 @@ export default function DatasetsAdminClient({
                       if (e.target.value.trim()) clearError("datasetDescription");
                     }}
                     hasError={!!formErrors.datasetDescription}
-                    hasFeedback={!!formErrors.datasetDescription || datasetDescription.length < 200}
+                    hasFeedback={!!formErrors.datasetDescription || datasetDescription.length < 1000}
                     feedbackState={formErrors.datasetDescription ? "danger" : "warning"}
-                    feedbackText="Recomenda-se que a descrição tenha pelo menos 200 caracteres."
+                    feedbackText="Recomenda-se que a descrição tenha pelo menos 1000 caracteres."
                     errorFeedbackText="Campo obrigatório"
                   />
-                  <InputTextArea
+                  {/*<InputTextArea
                     label="Descrição resumida"
                     placeholder="Insira a descrição aqui"
                     id="dataset-short-description"
@@ -770,10 +784,10 @@ export default function DatasetsAdminClient({
                     hasFeedback
                     feedbackState="info"
                     feedbackText="Se este campo for deixado em branco, serão utilizados os primeiros 197 caracteres da sua descrição, seguidos de '...' (máximo de 200 caracteres)."
-                  />
+                  />*/}
                   <IsolatedSelect
                     label="Palavras-chave"
-                    placeholder="Pesquise por uma palavra-chave..."
+                    placeholder="Pesquise ou insira palavras-chave..."
                     id="dataset-keywords"
                     type="checkbox"
                     searchable
@@ -790,92 +804,9 @@ export default function DatasetsAdminClient({
                 <h2 className="admin-page__section-title">Acesso</h2>
 
                 <div className="admin-page__fields-group">
-                  <div className="flex flex-col gap-[8px]">
-                    <span className="text-primary-900 text-base font-medium leading-7">
-                      Tipo de acesso
-                    </span>
-                    <div className="flex flex-col gap-4">
-                      <RadioButton
-                        label="Aberto"
-                        id="access-open"
-                        name="access-type"
-                        checked={accessType === "open"}
-                        onChange={() => setAccessType("open")}
-                      />
-                      <RadioButton
-                        label="Restrito"
-                        id="access-restricted"
-                        name="access-type"
-                        checked={accessType === "restricted"}
-                        onChange={() => setAccessType("restricted")}
-                      />
-                    </div>
-                  </div>
-
-                  {accessType === "restricted" && (
-                    <>
-                      <div className="grid grid-cols-3 gap-8 mt-4 items-end">
-                        <IsolatedSelect
-                          label="Comunidade e Administração"
-                          placeholder=""
-                          id="dataset-restriction-community"
-                          onChangeRef={dummyRef}
-                        >
-                          <DropdownSection name="community">
-                            <DropdownOption value="sim">Sim</DropdownOption>
-                            <DropdownOption value="nao">Não</DropdownOption>
-                            <DropdownOption value="condicional">Condicional</DropdownOption>
-                          </DropdownSection>
-                        </IsolatedSelect>
-                        <IsolatedSelect
-                          label="Empresa e Associação"
-                          placeholder=""
-                          id="dataset-restriction-enterprise"
-                          onChangeRef={dummyRef}
-                        >
-                          <DropdownSection name="enterprise">
-                            <DropdownOption value="sim">Sim</DropdownOption>
-                            <DropdownOption value="nao">Não</DropdownOption>
-                            <DropdownOption value="condicional">Condicional</DropdownOption>
-                          </DropdownSection>
-                        </IsolatedSelect>
-                        <IsolatedSelect
-                          label="Privado"
-                          placeholder=""
-                          id="dataset-restriction-private"
-                          onChangeRef={dummyRef}
-                        >
-                          <DropdownSection name="private">
-                            <DropdownOption value="sim">Sim</DropdownOption>
-                            <DropdownOption value="nao">Não</DropdownOption>
-                            <DropdownOption value="condicional">Condicional</DropdownOption>
-                          </DropdownSection>
-                        </IsolatedSelect>
-                      </div>
-                      <IsolatedSelect
-                        label="Motivo da restrição"
-                        placeholder=""
-                        id="dataset-restriction-reason"
-                        onChangeRef={dummyRef}
-                      >
-                        <DropdownSection name="restriction-reason">
-                          <DropdownOption value="confidencialidade-procedimentos">Confidencialidade dos procedimentos das autoridades públicas</DropdownOption>
-                          <DropdownOption value="relacoes-internacionais">Relações internacionais, segurança pública ou defesa nacional</DropdownOption>
-                          <DropdownOption value="curso-justica">Curso da justiça</DropdownOption>
-                          <DropdownOption value="confidencialidade-comercial">Confidencialidade comercial ou industrial</DropdownOption>
-                          <DropdownOption value="propriedade-intelectual">Direitos de propriedade intelectual</DropdownOption>
-                          <DropdownOption value="dados-pessoais">Confidencialidade dos dados pessoais</DropdownOption>
-                          <DropdownOption value="protecao-fornecedores">Proteção dos fornecedores voluntários de informações</DropdownOption>
-                          <DropdownOption value="protecao-ambiental">Proteção ambiental</DropdownOption>
-                          <DropdownOption value="outros">Outros</DropdownOption>
-                        </DropdownSection>
-                      </IsolatedSelect>
-                    </>
-                  )}
-
                   <IsolatedSelect
                     label="Licença"
-                    placeholder="Selecione uma licença"
+                    placeholder="Selecione uma licença..."
                     id="dataset-license"
                     onChangeRef={selectedLicenseRef}
                   >
@@ -1063,7 +994,7 @@ export default function DatasetsAdminClient({
                 <div className="admin-page__fields-group">
                   <IsolatedSelect
                     label="Frequência de atualização *"
-                    placeholder="Procure uma frequência..."
+                    placeholder="Selecione uma frequência..."
                     id="dataset-frequency"
                     onChangeRef={selectedFrequencyRef}
                     hasError={!!formErrors.datasetFrequency}
@@ -1117,7 +1048,7 @@ export default function DatasetsAdminClient({
                 <div className="admin-page__fields-group">
                   <IsolatedSelect
                     label="Cobertura espacial"
-                    placeholder="Procurando cobertura espacial..."
+                    placeholder="Selecione uma cobertura espacial..."
                     id="dataset-spatial-coverage"
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
@@ -1133,7 +1064,7 @@ export default function DatasetsAdminClient({
 
                   <IsolatedSelect
                     label="Granularidade espacial"
-                    placeholder="Procurando granularidade..."
+                    placeholder="Selecione uma granularidade espacial..."
                     id="dataset-spatial-granularity"
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
@@ -1239,28 +1170,123 @@ export default function DatasetsAdminClient({
                 type="success"
                 description={
                   <>
-                    <strong>Seu conjunto de dados foi criado!</strong>
+                    <strong>O seu conjunto de dados foi criado!</strong>
                     <br />
                     Agora pode publicar ou guardar como rascunho.
                   </>
                 }
               />
 
-              <CardGeneral
-                variant="white-outline"
-                isCardHorizontal
-                isBlockedLink
-                iconDefault="agora-line-layers-menu"
-                iconHover="agora-solid-layers-menu"
-                titleText={createdDataset?.title || datasetTitle || "Sem título"}
-                descriptionText={createdDataset?.description || datasetDescription || "Sem descrição"}
-                anchor={{
-                  href: createdDataset
-                    ? `/pages/datasets/${createdDataset.slug}`
-                    : `/pages/datasets/preview?title=${encodeURIComponent(datasetTitle)}&description=${encodeURIComponent(datasetDescription)}`,
-                  children: "",
-                }}
-              />
+              {(() => {
+                const qualityScore = createdDataset?.quality?.score != null
+                  ? Math.round(createdDataset.quality.score * 100)
+                  : 0;
+                const formatMetric = (value: number | undefined) => {
+                  if (!value) return "0";
+                  if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(".", ",") + " M";
+                  if (value >= 1_000) return (value / 1_000).toFixed(0) + " mil";
+                  return String(value);
+                };
+                const timeAgo = createdDataset?.last_modified
+                  ? formatDistanceToNow(new Date(createdDataset.last_modified), { locale: pt })
+                      .replace("aproximadamente ", "")
+                      .replace("quase ", "")
+                      .replace("menos de ", "")
+                      .replace("cerca de ", "")
+                  : "agora";
+                const href = createdDataset
+                  ? `/pages/datasets/${createdDataset.slug}`
+                  : `/pages/datasets/preview?title=${encodeURIComponent(datasetTitle)}&description=${encodeURIComponent(datasetDescription)}`;
+                return (
+                  <Link
+                    href={href}
+                    className="card-general-listing rounded-[4px] overflow-hidden flex flex-col"
+                  >
+                    <CardGeneral
+                      variant="neutral-100"
+                      image={{
+                        src: createdDataset?.organization?.logo || "/images/placeholders/organization.png",
+                        alt: createdDataset?.organization?.name || "Organização",
+                        height: "56px",
+                        className: "bg-primary-100 !object-contain !h-[56px]",
+                      }}
+                      subtitleText={
+                        (
+                          <div className="flex flex-col">
+                            <span style={{ fontSize: "16px" }} className="text-neutral-900">{timeAgo}</span>
+                            <span style={{ fontSize: "16px", fontWeight: 300 }} className="text-neutral-900 mt-4">
+                              {createdDataset?.organization?.name || "Sem Organização"}
+                            </span>
+                          </div>
+                        ) as unknown as string
+                      }
+                      titleText={createdDataset?.title || datasetTitle || "Sem título"}
+                      descriptionText={
+                        (
+                          <div className="flex flex-col grow">
+                            <p className="text-m-regular text-neutral-800 line-clamp-3 mb-16">
+                              {createdDataset?.description || datasetDescription || "Sem descrição"}
+                            </p>
+                            <div className={`mt-auto ${qualityScore <= 45 ? "quality-progress-warning" : qualityScore > 50 ? "quality-progress-success" : ""}`}>
+                              <ProgressBar
+                                value={qualityScore}
+                                max={100}
+                                hideLabel={true}
+                                hidePercentageValue={true}
+                              />
+                              <span className="text-[14px] text-neutral-900 mt-4 block">
+                                {qualityScore}% Qualidade dos metadados
+                              </span>
+                              <div className="flex items-center flex-wrap gap-8 text-xs mt-12 text-neutral-700">
+                                <div className="flex items-center gap-8" title="Visualizações">
+                                  <Icon
+                                    name={createdDataset?.metrics?.views ? "agora-solid-eye" : "agora-line-eye"}
+                                    dimensions="xs"
+                                    className="fill-neutral-700"
+                                    aria-hidden="true"
+                                  />
+                                  <span>{formatMetric(createdDataset?.metrics?.views)}</span>
+                                </div>
+                                <div className="flex items-center gap-8" title="Downloads">
+                                  <Icon
+                                    name={createdDataset?.metrics?.resources_downloads ? "agora-solid-download" : "agora-line-download"}
+                                    dimensions="xs"
+                                    className="fill-neutral-700"
+                                    aria-hidden="true"
+                                  />
+                                  <span>{formatMetric(createdDataset?.metrics?.resources_downloads)}</span>
+                                </div>
+                                <div className="flex items-center gap-8" title="Reutilizações">
+                                  <img src="/Icons/bar_chart.svg" className="w-16 h-16" alt="" aria-hidden="true" />
+                                  <span>{createdDataset?.metrics?.reuses || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-8" title="Favoritos">
+                                  <Icon
+                                    name={createdDataset?.metrics?.followers ? "agora-solid-star" : "agora-line-star"}
+                                    dimensions="xs"
+                                    className="fill-neutral-700"
+                                    aria-hidden="true"
+                                  />
+                                  <span>{formatMetric(createdDataset?.metrics?.followers)}</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-8 text-primary-600 mt-16">
+                                <Icon
+                                  name="agora-line-arrow-right-circle"
+                                  className="w-32 h-32"
+                                  aria-hidden="true"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ) as unknown as string
+                      }
+                      isBlockedLink={true}
+                      anchor={{ href }}
+                    />
+                  </Link>
+                );
+              })()}
 
               <Button
                 appearance="link"
@@ -1279,14 +1305,14 @@ export default function DatasetsAdminClient({
                   onClick={handleSaveDraft}
                   disabled={isSubmitting}
                 >
-                  Salvar rascunho
+                  Guardar o rascunho
                 </Button>
                 <Button
                   variant="primary"
                   onClick={handlePublish}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "A publicar..." : "Publique o conjunto de dados"}
+                  {isSubmitting ? "A publicar..." : "Publicar o conjunto de dados"}
                 </Button>
               </div>
             </>
