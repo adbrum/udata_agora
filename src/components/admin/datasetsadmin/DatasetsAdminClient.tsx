@@ -110,6 +110,7 @@ export default function DatasetsAdminClient({
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
   const [tags, setTags] = useState<TagSuggestion[]>([]);
+  const [selectedKeywordsValue, setSelectedKeywordsValue] = useState("");
   const producerDefaultValue =
     selectedProducer ||
     selectedProducerRef.current ||
@@ -119,6 +120,14 @@ export default function DatasetsAdminClient({
     selectedLicenseRef.current || createdDataset?.license || "";
   const frequencyDefaultValue =
     selectedFrequencyRef.current || createdDataset?.frequency || "";
+  const keywordsDefaultValue =
+    selectedKeywordsValue ||
+    selectedKeywordsRef.current ||
+    (createdDataset?.tags?.join(",") ?? "");
+  const selectedKeywords = keywordsDefaultValue
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean);
   const spatialCoverageDefaultValue = spatialCoverageRef.current;
   const spatialGranularityDefaultValue = spatialGranularityRef.current;
 
@@ -163,13 +172,36 @@ export default function DatasetsAdminClient({
   }, [frequencies, frequencyDefaultValue]);
 
   const tagOptions = useMemo(() => {
-    const options = tags.map((tag) => (
-      <DropdownOption key={tag.text} value={tag.text}>
-        {tag.text}
-      </DropdownOption>
-    ));
+    const selectedNotInSuggestions = selectedKeywords.filter(
+      (keyword) => !tags.some((tag) => tag.text === keyword),
+    );
+    const options = [
+      ...selectedNotInSuggestions.map((keyword) => (
+        <DropdownOption key={`selected-${keyword}`} value={keyword} selected>
+          {keyword}
+        </DropdownOption>
+      )),
+      ...tags.map((tag) => (
+        <DropdownOption
+          key={tag.text}
+          value={tag.text}
+          selected={selectedKeywords.includes(tag.text)}
+        >
+          {tag.text}
+        </DropdownOption>
+      )),
+    ];
     return <DropdownSection name="keywords">{options}</DropdownSection>;
-  }, [tags]);
+  }, [tags, selectedKeywords]);
+
+  useEffect(() => {
+    if (selectedKeywordsValue) return;
+    const restored =
+      selectedKeywordsRef.current || (createdDataset?.tags?.join(",") ?? "");
+    if (!restored) return;
+    setSelectedKeywordsValue(restored);
+    selectedKeywordsRef.current = restored;
+  }, [createdDataset, selectedKeywordsValue]);
 
   // Fetch contact points when an organization is selected as producer
   useEffect(() => {
@@ -852,7 +884,17 @@ export default function DatasetsAdminClient({
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
+                    defaultValue={keywordsDefaultValue}
                     onChangeRef={selectedKeywordsRef}
+                    onChangeCallback={(value) => {
+                      setSelectedKeywordsValue(value);
+                      const selected = value.split(",").filter(Boolean);
+                      selected.forEach((v) => {
+                        if (!tags.some((t) => t.text === v)) {
+                          setTags((prev) => [...prev, { text: v }]);
+                        }
+                      });
+                    }}
                   >
                     {tagOptions}
                   </IsolatedSelect>
