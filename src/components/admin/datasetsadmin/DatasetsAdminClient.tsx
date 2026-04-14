@@ -76,7 +76,8 @@ export default function DatasetsAdminClient({
   const selectedLicenseRef = useRef("");
   const selectedFrequencyRef = useRef("");
   const selectedKeywordsRef = useRef("");
-  const dummyRef = useRef("");
+  const spatialCoverageRef = useRef("");
+  const spatialGranularityRef = useRef("");
   const [temporalStart, setTemporalStart] = useState("");
   const [temporalEnd, setTemporalEnd] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
@@ -109,47 +110,98 @@ export default function DatasetsAdminClient({
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
   const [tags, setTags] = useState<TagSuggestion[]>([]);
+  const [selectedKeywordsValue, setSelectedKeywordsValue] = useState("");
+  const producerDefaultValue =
+    selectedProducer ||
+    selectedProducerRef.current ||
+    createdDataset?.organization?.id ||
+    (createdDataset ? "user" : "");
+  const licenseDefaultValue =
+    selectedLicenseRef.current || createdDataset?.license || "";
+  const frequencyDefaultValue =
+    selectedFrequencyRef.current || createdDataset?.frequency || "";
+  const keywordsDefaultValue =
+    selectedKeywordsValue ||
+    selectedKeywordsRef.current ||
+    (createdDataset?.tags?.join(",") ?? "");
+  const selectedKeywords = keywordsDefaultValue
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean);
+  const spatialCoverageDefaultValue = spatialCoverageRef.current;
+  const spatialGranularityDefaultValue = spatialGranularityRef.current;
 
   const producerOptions = useMemo(() => {
     const options = [
-      <DropdownOption key="user" value="user">
+      <DropdownOption key="user" value="user" selected={producerDefaultValue === "user"}>
         {user ? `${user.first_name} ${user.last_name}` : "Eu próprio"}
       </DropdownOption>,
       ...(user?.organizations || []).map((org) => (
-        <DropdownOption key={org.id} value={org.id}>
+        <DropdownOption key={org.id} value={org.id} selected={producerDefaultValue === org.id}>
           {org.name}
         </DropdownOption>
       )),
     ];
     return <DropdownSection name="identity">{options}</DropdownSection>;
-  }, [user]);
+  }, [user, producerDefaultValue]);
 
   const licenseOptions = useMemo(() => {
     const options = licenses.map((license) => (
-      <DropdownOption key={license.id} value={license.id}>
+      <DropdownOption
+        key={license.id}
+        value={license.id}
+        selected={licenseDefaultValue === license.id}
+      >
         {license.title}
       </DropdownOption>
     ));
     return <DropdownSection name="licenses">{options}</DropdownSection>;
-  }, [licenses]);
+  }, [licenses, licenseDefaultValue]);
 
   const frequencyOptions = useMemo(() => {
     const options = frequencies.map((freq) => (
-      <DropdownOption key={freq.id} value={freq.id}>
+      <DropdownOption
+        key={freq.id}
+        value={freq.id}
+        selected={frequencyDefaultValue === freq.id}
+      >
         {getFrequencyLabel(freq.id, freq.label)}
       </DropdownOption>
     ));
     return <DropdownSection name="frequencies">{options}</DropdownSection>;
-  }, [frequencies]);
+  }, [frequencies, frequencyDefaultValue]);
 
   const tagOptions = useMemo(() => {
-    const options = tags.map((tag) => (
-      <DropdownOption key={tag.text} value={tag.text}>
-        {tag.text}
-      </DropdownOption>
-    ));
+    const selectedNotInSuggestions = selectedKeywords.filter(
+      (keyword) => !tags.some((tag) => tag.text === keyword),
+    );
+    const options = [
+      ...selectedNotInSuggestions.map((keyword) => (
+        <DropdownOption key={`selected-${keyword}`} value={keyword} selected>
+          {keyword}
+        </DropdownOption>
+      )),
+      ...tags.map((tag) => (
+        <DropdownOption
+          key={tag.text}
+          value={tag.text}
+          selected={selectedKeywords.includes(tag.text)}
+        >
+          {tag.text}
+        </DropdownOption>
+      )),
+    ];
     return <DropdownSection name="keywords">{options}</DropdownSection>;
-  }, [tags]);
+  }, [tags, selectedKeywords]);
+
+  useEffect(() => {
+    if (selectedKeywordsValue) return;
+    const restored =
+      selectedKeywordsRef.current || (createdDataset?.tags?.join(",") ?? "");
+    if (!restored) return;
+    setSelectedKeywordsValue(restored);
+    selectedKeywordsRef.current = restored;
+  }, [createdDataset, selectedKeywordsValue]);
 
   // Fetch contact points when an organization is selected as producer
   useEffect(() => {
@@ -305,12 +357,79 @@ export default function DatasetsAdminClient({
     }
   };
 
-  const handleStep2Next = async () => {
+  const clearTemporalCoverageErrors = () => {
+    setFormErrors((prev) => {
+      const next = { ...prev };
+      delete next.temporalCoverage;
+      delete next.temporalCoverageInvalidFormat;
+      delete next.temporalCoverageBothRequired;
+      return next;
+    });
+  };
+
+  const parseInputDateToTime = (value: string): number | null => {
+    const raw = (value || "").trim();
+    if (!raw) return null;
+
+    // Supports "dd/mm/yyyy" and "dd-mm-yyyy"
+    const ptMatch = raw.match(/^(\d{2})[/-](\d{2})[/-](\d{4})$/);
+    if (ptMatch) {
+      const day = Number(ptMatch[1]);
+      const month = Number(ptMatch[2]);
+      const year = Number(ptMatch[3]);
+      const d = new Date(year, month - 1, day);
+      if (
+        d.getFullYear() === year &&
+        d.getMonth() === month - 1 &&
+        d.getDate() === day
+      ) {
+        return d.getTime();
+      }
+      return null;
+    }
+
+    // Supports ISO-like formats (e.g. yyyy-mm-dd)
+    const iso = new Date(raw);
+    const isoTime = iso.getTime();
+    return Number.isNaN(isoTime) ? null : isoTime;
+  };
+
+  const handleStep2Next = async (
+    e?: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     const errors: Record<string, boolean> = {};
     if (!selectedProducerRef.current) errors.datasetProducer = true;
     if (!datasetTitle.trim()) errors.datasetTitle = true;
     if (!datasetDescription.trim()) errors.datasetDescription = true;
     if (!selectedFrequencyRef.current) errors.datasetFrequency = true;
+    const startRaw = (temporalStart || "").trim();
+    const endRaw = (temporalEnd || "").trim();
+    const startTime = startRaw ? parseInputDateToTime(startRaw) : null;
+    const endTime = endRaw ? parseInputDateToTime(endRaw) : null;
+
+    if ((startRaw && !endRaw) || (!startRaw && endRaw)) {
+      errors.temporalCoverageBothRequired = true;
+    }
+    if ((startRaw && startTime === null) || (endRaw && endTime === null)) {
+      errors.temporalCoverageInvalidFormat = true;
+    }
+    if (
+      !errors.temporalCoverageBothRequired &&
+      !errors.temporalCoverageInvalidFormat &&
+      startTime !== null &&
+      endTime !== null &&
+      startTime > endTime
+    ) {
+      errors.temporalCoverage = true;
+    }
+    if (
+      (errors.temporalCoverage ||
+        errors.temporalCoverageInvalidFormat ||
+        errors.temporalCoverageBothRequired) &&
+      Object.keys(errors).length === 1
+    ) {
+      e?.preventDefault();
+    }
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -646,6 +765,15 @@ export default function DatasetsAdminClient({
 
   const auxiliarItems =
     currentStep === 3 || currentStep === 4 ? auxiliarItemsStep3 : auxiliarItemsStep2;
+  const hasTemporalCoverageError =
+    !!formErrors.temporalCoverage ||
+    !!formErrors.temporalCoverageInvalidFormat ||
+    !!formErrors.temporalCoverageBothRequired;
+  const temporalCoverageErrorText = formErrors.temporalCoverageInvalidFormat
+    ? "Formato de data inválido. Utilize o formato dd/mm/aaaa."
+    : formErrors.temporalCoverageBothRequired
+      ? "Preencha as duas datas da cobertura temporal ou remova a data preenchida."
+      : "A data de início não pode ser posterior à data de fim.";
 
   return (
     <>
@@ -793,7 +921,17 @@ export default function DatasetsAdminClient({
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
+                    defaultValue={keywordsDefaultValue}
                     onChangeRef={selectedKeywordsRef}
+                    onChangeCallback={(value) => {
+                      setSelectedKeywordsValue(value);
+                      const selected = value.split(",").filter(Boolean);
+                      selected.forEach((v) => {
+                        if (!tags.some((t) => t.text === v)) {
+                          setTags((prev) => [...prev, { text: v }]);
+                        }
+                      });
+                    }}
                   >
                     {tagOptions}
                   </IsolatedSelect>
@@ -808,6 +946,7 @@ export default function DatasetsAdminClient({
                     label="Licença"
                     placeholder="Selecione uma licença..."
                     id="dataset-license"
+                    defaultValue={licenseDefaultValue}
                     onChangeRef={selectedLicenseRef}
                   >
                     {licenseOptions}
@@ -996,6 +1135,7 @@ export default function DatasetsAdminClient({
                     label="Frequência de atualização *"
                     placeholder="Selecione uma frequência..."
                     id="dataset-frequency"
+                    defaultValue={frequencyDefaultValue}
                     onChangeRef={selectedFrequencyRef}
                     hasError={!!formErrors.datasetFrequency}
                     errorFeedbackText="Campo obrigatório"
@@ -1007,6 +1147,7 @@ export default function DatasetsAdminClient({
                     <InputDate
                       label="Cobertura temporal (Data de início)"
                       id="dataset-date-start"
+                      defaultValue={temporalStart}
                       dayInputPlaceholder="dd"
                       monthInputPlaceholder="mm"
                       yearInputPlaceholder="aaaa"
@@ -1020,11 +1161,19 @@ export default function DatasetsAdminClient({
                       todayLabel="Hoje"
                       cancelLabel="Cancelar"
                       okLabel="OK"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTemporalStart(e.target.value)}
+                      hasError={hasTemporalCoverageError}
+                      hasFeedback={hasTemporalCoverageError}
+                      feedbackState="danger"
+                      errorFeedbackText={temporalCoverageErrorText}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setTemporalStart(e.target.value);
+                        clearTemporalCoverageErrors();
+                      }}
                     />
                     <InputDate
                       label="Data de fim"
                       id="dataset-date-end"
+                      defaultValue={temporalEnd}
                       dayInputPlaceholder="dd"
                       monthInputPlaceholder="mm"
                       yearInputPlaceholder="aaaa"
@@ -1038,7 +1187,11 @@ export default function DatasetsAdminClient({
                       todayLabel="Hoje"
                       cancelLabel="Cancelar"
                       okLabel="OK"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTemporalEnd(e.target.value)}
+                      hasError={hasTemporalCoverageError}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setTemporalEnd(e.target.value);
+                        clearTemporalCoverageErrors();
+                      }}
                     />
                   </div>
                 </div>
@@ -1050,15 +1203,28 @@ export default function DatasetsAdminClient({
                     label="Cobertura espacial"
                     placeholder="Selecione uma cobertura espacial..."
                     id="dataset-spatial-coverage"
+                    defaultValue={spatialCoverageDefaultValue}
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
-                    onChangeRef={dummyRef}
+                    onChangeRef={spatialCoverageRef}
                   >
                     <DropdownSection name="spatial-coverage">
-                      <DropdownOption value="national">Nacional</DropdownOption>
-                      <DropdownOption value="regional">Regional</DropdownOption>
-                      <DropdownOption value="local">Local</DropdownOption>
+                      <DropdownOption
+                        value="national"
+                        selected={spatialCoverageDefaultValue === "national"}
+                      >
+                        Nacional
+                      </DropdownOption>
+                      <DropdownOption
+                        value="regional"
+                        selected={spatialCoverageDefaultValue === "regional"}
+                      >
+                        Regional
+                      </DropdownOption>
+                      <DropdownOption value="local" selected={spatialCoverageDefaultValue === "local"}>
+                        Local
+                      </DropdownOption>
                     </DropdownSection>
                   </IsolatedSelect>
 
@@ -1066,16 +1232,37 @@ export default function DatasetsAdminClient({
                     label="Granularidade espacial"
                     placeholder="Selecione uma granularidade espacial..."
                     id="dataset-spatial-granularity"
+                    defaultValue={spatialGranularityDefaultValue}
                     searchable
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
-                    onChangeRef={dummyRef}
+                    onChangeRef={spatialGranularityRef}
                   >
                     <DropdownSection name="spatial-granularity">
-                      <DropdownOption value="country">País</DropdownOption>
-                      <DropdownOption value="district">Distrito</DropdownOption>
-                      <DropdownOption value="municipality">Município</DropdownOption>
-                      <DropdownOption value="parish">Freguesia</DropdownOption>
+                      <DropdownOption
+                        value="country"
+                        selected={spatialGranularityDefaultValue === "country"}
+                      >
+                        País
+                      </DropdownOption>
+                      <DropdownOption
+                        value="district"
+                        selected={spatialGranularityDefaultValue === "district"}
+                      >
+                        Distrito
+                      </DropdownOption>
+                      <DropdownOption
+                        value="municipality"
+                        selected={spatialGranularityDefaultValue === "municipality"}
+                      >
+                        Município
+                      </DropdownOption>
+                      <DropdownOption
+                        value="parish"
+                        selected={spatialGranularityDefaultValue === "parish"}
+                      >
+                        Freguesia
+                      </DropdownOption>
                     </DropdownSection>
                   </IsolatedSelect>
                 </div>
