@@ -231,8 +231,7 @@ export default function HarvestersNewClient() {
       content: (
         <>
           <p className="auxiliar-list__content !p-0">
-            A criação de um coletor/harvester de dados deve ser feita em nome de uma organização e
-            requer permissões de administrador.
+            A criação de um harvester de dados deve ser feita em nome de uma organização e requer permissões de administrador.
           </p>
           <p className="auxiliar-list__content !p-0 mt-[8px]">
             Selecione uma organização da qual seja administrador. Se a sua organização ainda não
