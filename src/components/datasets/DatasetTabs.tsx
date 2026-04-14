@@ -339,6 +339,7 @@ export const DatasetTabs: React.FC<DatasetTabsProps> = ({ dataset }) => {
                                         hasIcon={true}
                                         leadingIcon="agora-line-plus-circle"
                                         leadingIconHover="agora-solid-plus-circle"
+                                        className="self-stretch"
                                         onClick={() => {
                                             if (!user) {
                                                 window.location.href = "/pages/login";
