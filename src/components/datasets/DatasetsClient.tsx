@@ -406,7 +406,7 @@ export default function DatasetsClient({
                   )}
                 </div>
 
-                <div className="pb-64 mt-8 flex justify-center">
+                <div className="pb-64 mt-64 flex justify-center">
                   <Pagination currentPage={currentPage} totalItems={total} pageSize={page_size} />
                 </div>
               </div>
