@@ -143,13 +143,13 @@ export default function DatasetsClient({
     <div className="min-h-screen flex flex-col font-sans text-neutral-900 bg-neutral-50 filters dataset">
       <main className="flex-grow bg-primary-50">
         <PageBanner
-          title="Conjunto de dados"
+          title="Conjuntos de dados"
           backgroundImageUrl="/Banner/hero-bg.png"
           backgroundPosition="center right"
           //containerClassName="dataset"
           breadcrumbItems={[
             { label: "Home", url: "/" },
-            { label: "Conjunto de dados", url: "/pages/datasets" },
+            { label: "Conjuntos de dados", url: "/pages/datasets" },
           ]}
           subtitle={
             <p className="text-primary-100 max-w-[592px]">
@@ -167,7 +167,7 @@ export default function DatasetsClient({
           <div className="max-w-[592px]">
             <InputSearch
               label="Pesquisar"
-              placeholder="Pesquisar conjunto de dados, organizações, temas..."
+              placeholder="Pesquisar por conjuntos de dados..."
               id="datasets-search"
               value={searchQuery}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
