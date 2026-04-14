@@ -150,20 +150,10 @@ export default function DataStoryDetailPage() {
                             <InfoBlock.Title titleLevel="h2" title={section.title} className='text-2xl font-bold text-primary-900' />
                             <InfoBlock.Description className='whitespace-pre-wrap text-m-light text-black max-w-[500px] ' description={section.description} />
                         </InfoBlock.Header>
-                        <div>
-                            <InfoBlock.IFrame
-                                src={section.iFrame.src}
-                                className={section.iFrame.className}
-
-                            />
-                            <SourceInfoFooter
-                                dataSource={section.source.dataSource}
-                                update={section.source.update}
-                                download={section.source.download}
-                                className='mt-16'
-                            />
-                        </div>
-
+                        <InfoBlock.IFrame
+                            src={section.iFrame.src}
+                            className={section.iFrame.className}
+                        />
                         <InfoBlock.Content>
                             <InfoBlock.Description className='text-m-regular text-black' description={section.label} />
                         </InfoBlock.Content>
