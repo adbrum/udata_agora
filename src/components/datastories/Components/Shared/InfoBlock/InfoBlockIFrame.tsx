@@ -1,5 +1,5 @@
 "use client"
-import React, { useMemo, useRef, useEffect } from 'react'
+import { useMemo, useRef } from 'react'
 import { twJoin } from 'tailwind-merge';
 
 export type IInfoBlockIFrame = {
