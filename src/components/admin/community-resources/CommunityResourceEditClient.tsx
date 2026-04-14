@@ -339,7 +339,7 @@ export default function CommunityResourceEditClient() {
               dos dados (por exemplo, o uso de software pago);
             </li>
             <li>
-              facilmente reutilizável: um formato facilmente reutilizável implica que qualquer
+              Facilmente reutilizável: um formato facilmente reutilizável implica que qualquer
               pessoa ou servidor pode reutilizar facilmente o conjunto de dados;
             </li>
             <li>

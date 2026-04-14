@@ -125,7 +125,7 @@ function TransferDatasetPopupContent({
       </p>
       <p>
         <strong>Esta ação é irreversível.</strong>&nbsp;
-        Poderá deixar de conseguir gerir este conjunto de dados.
+        Vai deixar de gerir este conjunto de dados
       </p>
 
       <div className="flex flex-col gap-[8px]">
@@ -1488,7 +1488,7 @@ export default function DatasetsEditClient() {
                       type="info"
                       description={
                         <>
-                          <strong>Atenção Esta ação é irreversível.</strong>
+                          <strong>Atenção esta ação é irreversível.</strong>
                           <br />
                           <Button
                             appearance="link"
@@ -1519,7 +1519,7 @@ export default function DatasetsEditClient() {
                       type="warning"
                       description={
                         <>
-                          <strong>Um conjunto de dados arquivado deixa de estar indexado na plataforma, mas permanece acessível através de um link direto.</strong>
+                          <strong>Um conjunto de dados arquivado deixa de estar indexado mas permanece acessível aos utilizadores por meio de um link direto.</strong>
                           <br />
                           <Button
                             appearance="link"
@@ -1546,7 +1546,7 @@ export default function DatasetsEditClient() {
                       type="danger"
                       description={
                         <>
-                          <strong>Atenção Esta ação é irreversível.</strong>
+                          <strong>Atenção esta ação é irreversível.</strong>
                           <br />
                           <Button
                             appearance="link"
