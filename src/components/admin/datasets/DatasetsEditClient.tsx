@@ -192,7 +192,7 @@ function DeleteDatasetPopupContent({
 }) {
   return (
     <div className="flex flex-col gap-[16px]">
-      <p>Essa ação é irreversível.</p>
+      <p>Essa ação é irreversível. Tem a certeza que quer eliminar este conjunto de dados?</p>
       <div className="flex justify-end gap-16 pt-16">
         <Button appearance="outline" variant="neutral" onClick={onClose}>
           Cancelar
@@ -1248,8 +1248,9 @@ export default function DatasetsEditClient() {
                         <>
                           <strong>Modifique a visibilidade do conjunto de dados.</strong>
                           <br />
-                          Este conjunto de dados é atualmente <strong>privado</strong>.
-                          {" Somente você ou membros da sua organização podem visualizá-lo e contribuir para ele."}
+                          Este conjunto de dados encontra‑se atualmente em <strong>modo privado</strong>.
+                          {" "}
+                          Apenas os membros da organização o podem visualizar e editar.
                         </>
                       }
                     />
@@ -1519,7 +1520,7 @@ export default function DatasetsEditClient() {
                       type="warning"
                       description={
                         <>
-                          <strong>Um conjunto de dados arquivado deixa de estar indexado mas permanece acessível aos utilizadores por meio de um link direto.</strong>
+                          <strong>Um conjunto de dados arquivado deixa de estar indexado no portal, mas permanece acessível através de um link direto.</strong>
                           <br />
                           <Button
                             appearance="link"
@@ -1564,7 +1565,7 @@ export default function DatasetsEditClient() {
                                 />,
                                 {
                                   title:
-                                    "Tem a certeza que quer eliminar este conjunto de dados?",
+                                    "Elimine o conjunto de dados",
                                   closeAriaLabel: "Fechar",
                                   dimensions: "m",
                                 },
