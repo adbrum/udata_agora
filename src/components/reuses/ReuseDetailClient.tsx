@@ -433,7 +433,7 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                   <aside className="xl:col-span-4 xl:block md:pt-64 flex flex-col gap-16" ref={descSidebarRef}>
                     {reuse.tags && reuse.tags.length > 0 && (
                       <div className="bg-white p-32 rounded-4">
-                        <h3 className="text-sm font-bold tracking-wider mb-8">Tags</h3>
+                        <h3 className="text-sm font-bold tracking-wider mb-8">Etiquetas</h3>
                         <div className="flex flex-col items-start gap-8">
                           {reuse.tags.map((tag) => (
                             <Pill
@@ -478,19 +478,7 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                   <div className="mb-24">
                     <StatusCard
                       type="info"
-                      description={
-                        <>
-                          Sua pergunta é sobre algo diferente de reutilização?{" "}
-                          <a
-                            href="https://dados.gov.pt"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary-600 underline font-semibold"
-                          >
-                            Visite nosso fórum. <Icon name="agora-line-external-link" className="w-4 h-4 inline" />
-                          </a>
-                        </>
-                      }
+                      description="A sua questão não é sobre a reutilização?"
                     />
                   </div>
                   <div className="flex items-center justify-between mb-24">
@@ -511,7 +499,7 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                         leadingIconHover="agora-solid-plus-circle"
                         onClick={() => setShowNewDiscussion(!showNewDiscussion)}
                       >
-                        Iniciar uma nova discussão
+                        Nova discussão
                       </Button>
                     </div>
                   </div>
@@ -545,7 +533,7 @@ export default function ReuseDetailClient({ slug }: ReuseDetailClientProps) {
                         <InputText label="Título *" value={newDiscTitle} onChange={(e) => setNewDiscTitle(e.target.value)} required />
                       </div>
                       <div className="mb-24">
-                        <InputTextArea label="A sua mensagem *" value={newDiscMessage} onChange={(e) => setNewDiscMessage(e.target.value)} rows={4} placeholder="Por favor, mantenha a cordialidade e uma postura construtiva. Evite partilhar informações pessoais." required />
+                        <InputTextArea label="Mensagem *" value={newDiscMessage} onChange={(e) => setNewDiscMessage(e.target.value)} rows={4} placeholder="Mantenha a cordialidade e postura construtiva. Não partilhe informações pessoais." required />
                       </div>
                       <div className="flex justify-end">
                         <Button variant="primary" appearance="solid" onClick={handleCreateDiscussion} disabled={isSubmitting || !newDiscTitle.trim() || !newDiscMessage.trim()}>
