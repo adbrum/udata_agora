@@ -48,7 +48,7 @@ export default function DataStoryDetailPage() {
             className: 'bg-primary-100',
             extraPy: 'py-[64px]',
             iFrame: {
-                className: '!h-[1130px]',
+                className: 'min-[1440px]:!h-[1130px] min-[1024px]:!h-[860px] min-[768px]:!h-[645px] min-[425px]:!h-[410px] min-[375px]:!h-[390px] min-[320px]:!h-[390px]',
                 src: 'https://app.powerbi.com/view?r=eyJrIjoiYzJkYTIyZTAtMzU4Yy00YWFiLWEzMDgtZThhOTBlYjkyYmM5IiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
         }, {
@@ -57,7 +57,7 @@ export default function DataStoryDetailPage() {
             className: 'bg-primary-100',
             extraPy: 'pt-[64px]',
             iFrame: {
-                className: '!h-[1250px]',
+                className: 'min-[1440px]:!h-[1080px] min-[1024px]:!h-[825px] min-[768px]:!h-[620px] min-[425px]:!h-[396px] min-[375px]:!h-[355px] min-[320px]:!h-[350px]',
                 src: 'https://app.powerbi.com/view?r=eyJrIjoiZmZiZjM4YjYtOWRmMS00OWQ4LWEyNGMtZGJhYzkwNDY1MmI5IiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
         },
@@ -67,7 +67,7 @@ export default function DataStoryDetailPage() {
             className: 'bg-primary-100',
             extraPy: 'pt-[64px]',
             iFrame: {
-                className: '!h-[820px]',
+                className: 'min-[1440px]:!h-[1250px] min-[1024px]:!h-[950px] min-[768px]:!h-[710px] min-[425px]:!h-[446px] min-[375px]:!h-[400px] min-[320px]:!h-[400px]',
                 src: 'https://app.powerbi.com/view?r=eyJrIjoiYzhiNGNmNmUtOGIzZi00OGU2LWI0ZGYtNGNhM2FkZGYzYWMzIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
         },
@@ -77,7 +77,7 @@ export default function DataStoryDetailPage() {
             className: 'bg-primary-100',
             extraPy: 'pt-[64px]',
             iFrame: {
-                className: '!h-[1250px]',
+                className: 'min-[1440px]:!h-[1250px] min-[1024px]:!h-[950px] min-[768px]:!h-[710px] min-[425px]:!h-[446px] min-[375px]:!h-[400px] min-[320px]:!h-[400px]',
                 src: 'https://app.powerbi.com/view?r=eyJrIjoiYzBjYzFlY2QtYTdkZC00OWVjLThkODgtOTcyMzE1MjgxMWQ4IiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
         },
@@ -87,7 +87,7 @@ export default function DataStoryDetailPage() {
             className: 'bg-primary-100',
             extraPy: 'py-[64px]',
             iFrame: {
-                className: '!h-[860px]',
+                className: 'min-[1440px]:!h-[860px] min-[1024px]:!h-[662px] min-[768px]:!h-[505px] min-[425px]:!h-[332px] min-[375px]:!h-[300px] min-[320px]:!h-[380px]',
                 src: 'https://app.powerbi.com/view?r=eyJrIjoiZWZmM2NiODItYTU0OC00YmU1LWI0M2QtMTUzNmRjODc0YmY2IiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
         }],

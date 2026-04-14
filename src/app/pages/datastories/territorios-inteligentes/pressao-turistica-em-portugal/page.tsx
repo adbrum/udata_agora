@@ -42,7 +42,7 @@ export default function DataStoryDetailPage() {
             className: 'bg-white',
             extraPy: 'pt-[64px]',
             iFrame: {
-                className: '',
+                className: 'min-[1440px]:!h-[890px] min-[1024px]:!h-[690px] min-[768px]:!h-[530px] min-[425px]:!h-[355px] min-[375px]:!h-[320px] min-[320px]:!h-[380px]',
                 src: 'https://app.powerbi.com/view?r=eyJrIjoiY2M1OTY2Y2EtZWVhMy00NGZlLTllYjItNDUyYTBlZmJkMDczIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
             source: {
@@ -57,7 +57,7 @@ export default function DataStoryDetailPage() {
             className: 'bg-white',
             extraPy: 'pt-[64px]',
             iFrame: {
-                className: '',
+                className: 'min-[1440px]:!h-[860px] min-[1024px]:!h-[662px] min-[768px]:!h-[505px] min-[425px]:!h-[332px] min-[375px]:!h-[300px] min-[320px]:!h-[380px]',
                 src: 'https://app.powerbi.com/view?r=eyJrIjoiMGYxNjMzNjgtYmFmYy00Njg2LWExY2QtMmY4MjgwNjM1YmExIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
             source: {
@@ -73,7 +73,7 @@ export default function DataStoryDetailPage() {
             className: 'bg-white',
             extraPy: 'pt-[64px]',
             iFrame: {
-                className: '',
+                className: 'min-[1440px]:!h-[860px] min-[1024px]:!h-[662px] min-[768px]:!h-[505px] min-[425px]:!h-[332px] min-[375px]:!h-[300px] min-[320px]:!h-[380px]',
                 src: 'https://app.powerbi.com/view?r=eyJrIjoiMzdlYWZjYjItZjMwZS00ZGZiLTgxY2MtMTE4YmJkY2I2ZmMwIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
             source: {
@@ -89,7 +89,7 @@ export default function DataStoryDetailPage() {
             className: 'bg-white',
             extraPy: 'py-[64px]',
             iFrame: {
-                className: '',
+                className: 'min-[1440px]:!h-[860px] min-[1024px]:!h-[662px] min-[768px]:!h-[505px] min-[425px]:!h-[332px] min-[375px]:!h-[300px] min-[320px]:!h-[380px]',
                 src: 'https://app.powerbi.com/view?r=eyJrIjoiODU5YzhhZDgtNTdlNC00MGIzLTlhMjgtZTRkNjZlYjc2NjIwIiwidCI6IjVmM2I0YTBjLTBiMWUtNDc3Ni05ZTk1LTY5MzNlNDQwOGU5NyIsImMiOjl9',
             },
             source: {
