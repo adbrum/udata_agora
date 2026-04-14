@@ -62,12 +62,43 @@ export default function DatasetsAdminClient({
   onDatasetCreated,
   onComplete,
 }: DatasetsAdminClientProps) {
+  const isValidHttpsUrl = (value: string): boolean => {
+    try {
+      const parsed = new URL(value);
+      if (parsed.protocol !== "https:") return false;
+      if (!parsed.hostname) return false;
+
+      const hostname = parsed.hostname.toLowerCase();
+      const isIpv4 =
+        /^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3}$/.test(
+          hostname,
+        );
+
+      const labels = hostname.split(".");
+      const hasValidDomainShape = labels.length >= 2;
+      const hasValidLabels = labels.every(
+        (label) =>
+          label.length > 0 &&
+          !label.startsWith("-") &&
+          !label.endsWith("-") &&
+          /^[a-z0-9-]+$/i.test(label),
+      );
+      const tld = labels[labels.length - 1] || "";
+      const hasValidTld = /^([a-z]{2,}|xn--[a-z0-9-]{2,})$/i.test(tld);
+
+      return isIpv4 || (hasValidDomainShape && hasValidLabels && hasValidTld);
+    } catch {
+      return false;
+    }
+  };
+
   const router = useRouter();
   const { user } = useAuth();
 
   // Form state
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showFileError, setShowFileError] = useState(false);
+  const [showInvalidUrlError, setShowInvalidUrlError] = useState(false);
   const [datasetTitle, setDatasetTitle] = useState("");
   const [datasetAcronym, setDatasetAcronym] = useState("");
   const [datasetDescription, setDatasetDescription] = useState("");
@@ -381,11 +412,20 @@ export default function DatasetsAdminClient({
   };
 
   const handleStep3Next = async () => {
+    const trimmedUrl = resourceUrl.trim();
     const hasFiles = uploadedFiles.length > 0;
-    const hasUrl = resourceUrl.trim().startsWith("https://");
+    const hasUrl = trimmedUrl.length > 0;
+    const hasValidUrl = hasUrl && isValidHttpsUrl(trimmedUrl);
 
     if (!hasFiles && !hasUrl) {
       setShowFileError(true);
+      setShowInvalidUrlError(false);
+      return;
+    }
+
+    if (hasUrl && !hasValidUrl) {
+      setShowInvalidUrlError(true);
+      setShowFileError(false);
       return;
     }
     if (!createdDataset) {
@@ -401,11 +441,11 @@ export default function DatasetsAdminClient({
           await uploadResource(createdDataset.id, file);
         }
       }
-      if (hasUrl) {
+      if (hasValidUrl) {
         await createResource(createdDataset.id, {
-          title: resourceUrl.trim(),
+          title: trimmedUrl,
           type: "main",
-          url: resourceUrl.trim(),
+          url: trimmedUrl,
           filetype: "remote",
           format: "",
         });
@@ -1125,16 +1165,33 @@ export default function DatasetsAdminClient({
                 <FileUploadModal
                   uploadedFiles={uploadedFiles}
                   resourceUrl={resourceUrl}
+                  hasValidUrl={isValidHttpsUrl(resourceUrl.trim())}
                   hasError={showFileError}
                   onFilesChange={(files) => {
                     setUploadedFiles(files);
-                    if (files.length > 0) setShowFileError(false);
+                    if (files.length > 0) {
+                      setShowFileError(false);
+                      setShowInvalidUrlError(false);
+                    }
                   }}
                   onUrlChange={(url) => {
                     setResourceUrl(url);
-                    if (url.trim().startsWith("https://")) setShowFileError(false);
+                    const trimmedUrl = url.trim();
+                    if (!trimmedUrl) {
+                      setShowInvalidUrlError(false);
+                      return;
+                    }
+                    if (isValidHttpsUrl(trimmedUrl)) {
+                      setShowFileError(false);
+                      setShowInvalidUrlError(false);
+                    }
                   }}
                 />
+                {showInvalidUrlError && (
+                  <span className="text-danger-500 text-sm">
+                    Formato de URL inválido. Insira um URL https:// com domínio válido.
+                  </span>
+                )}
 
                 <div className="admin-page__actions">
                   <Button

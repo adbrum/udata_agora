@@ -7,6 +7,7 @@ import FileUploadPopupContent from "@/components/admin/FileUploadPopupContent";
 interface FileUploadModalProps {
   uploadedFiles: File[];
   resourceUrl: string;
+  hasValidUrl: boolean;
   onFilesChange: (files: File[]) => void;
   onUrlChange: (url: string) => void;
   hasError?: boolean;
@@ -15,13 +16,13 @@ interface FileUploadModalProps {
 export default function FileUploadModal({
   uploadedFiles,
   resourceUrl,
+  hasValidUrl,
   onFilesChange,
   onUrlChange,
   hasError,
 }: FileUploadModalProps) {
   const { show } = usePopupContext();
-
-  const hasSelection = uploadedFiles.length > 0 || resourceUrl.trim().startsWith("https://");
+  const hasSelection = uploadedFiles.length > 0 || hasValidUrl;
 
   const handleOpen = () => {
     show(
@@ -60,10 +61,8 @@ export default function FileUploadModal({
           {uploadedFiles.length > 0 && (
             <span>{uploadedFiles.length} ficheiro(s) selecionado(s)</span>
           )}
-          {uploadedFiles.length > 0 && resourceUrl.trim().startsWith("https://") && (
-            <span> · </span>
-          )}
-          {resourceUrl.trim().startsWith("https://") && <span>Link adicionado</span>}
+          {uploadedFiles.length > 0 && hasValidUrl && <span> · </span>}
+          {hasValidUrl && <span>Link adicionado</span>}
         </span>
       )}
       {hasError && !hasSelection && (
