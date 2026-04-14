@@ -123,8 +123,14 @@ const SupportPage = () => {
 
   const TOGGLE_SUBJECT_LABEL_MAP: Record<string, string> = {
     question: "O assunto da sua pergunta *",
-    bug: "O assunto do seu bug *",
+    bug: "O assunto do seu problema *",
     feedback: "O assunto do seu feedback *",
+  };
+
+  const TOGGLE_CONTENT_LABEL_MAP: Record<string, string> = {
+    question: "A sua pergunta *",
+    bug: "Descreva o problema *",
+    feedback: "Descreva a situação *",
   };
 
   return (
@@ -140,7 +146,7 @@ const SupportPage = () => {
         }
         breadcrumbItems={[
           { label: "Home", url: "/" },
-          { label: "Apoiar", url: "#" },
+          { label: "Ajuda e contactos", url: "#" },
         ]}
         backgroundImageUrl="/Banner/hero-bg.png"
         backgroundPosition="inherit"
@@ -593,7 +599,7 @@ const SupportPage = () => {
                                       >
                                         suporte
                                       </Button>{" "}
-                                      escolhendo &ldquo;Reportar um bug&rdquo;.
+                                      escolhendo &ldquo;Reportar um problema&rdquo;.
                                     </p>
                                   </div>
                                 </div>
@@ -954,7 +960,7 @@ const SupportPage = () => {
               leadingIconHover="agora-solid-alert-triangle"
               hasIcon={true}
             >
-              Reportar um bug
+              Reportar um problema
             </Toggle>
             <Toggle
               value="feedback"
@@ -1002,7 +1008,8 @@ const SupportPage = () => {
                 </div>
 
                 <div className="mt-[20px]">
-                  <InputTextArea label="A sua pergunta *" required rows={5} />
+                  <InputTextArea label={TOGGLE_CONTENT_LABEL_MAP[selectedToggle]}
+                    required rows={5} />
                 </div>
 
                 <div className="mt-[20px]">
