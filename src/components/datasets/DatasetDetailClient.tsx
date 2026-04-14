@@ -160,6 +160,20 @@ function getQualityMissing(quality?: Dataset["quality"]): string[] {
   return QUALITY_CRITERIA.filter(([key]) => quality[key] !== true).map(([, label]) => label);
 }
 
+const CONTACT_ROLE_LABELS: Record<string, string> = {
+  contact: "Contacto",
+  creator: "Criador",
+  publisher: "Publicador",
+  rightsHolder: "Titular de Direitos",
+  custodian: "Custódio",
+  distributor: "Distribuidor",
+  originator: "Originador",
+  principalInvestigator: "Investigador Principal",
+  processor: "Processador",
+  resourceProvider: "Fornecedor de Recurso",
+  user: "Utilizador",
+};
+
 export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) {
   const { user, isAdmin } = useAuth();
   const { organizations } = useActiveOrganization();
@@ -340,8 +354,39 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
                         rel="noopener noreferrer"
                         className="text-primary-600 underline"
                       >
-                        <span className="text-m-semibold">Licença:</span> {dataset.license}
+                        <span className="text-m-semibold">Licença:</span>{" "}
+                        {dataset.license_title || dataset.license}
                       </a>
+                    </div>
+                  )}
+                  {dataset.contact_points && dataset.contact_points.length > 0 && (
+                    <div className="border-t border-neutral-200 pt-16 flex flex-col gap-12">
+                      {dataset.contact_points.map((cp) => (
+                        <div key={cp.id} className="text-sm">
+                          <div className="text-m-semibold mb-4">
+                            {CONTACT_ROLE_LABELS[cp.role] ?? cp.role}
+                          </div>
+                          <div className="text-neutral-900 mb-4">{cp.name}</div>
+                          {cp.email && (
+                            <a
+                              href={`mailto:${cp.email}`}
+                              className="text-primary-600 underline break-all block"
+                            >
+                              {cp.email}
+                            </a>
+                          )}
+                          {cp.contact_form && (
+                            <a
+                              href={cp.contact_form}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary-600 underline block"
+                            >
+                              Formulário de contacto
+                            </a>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
