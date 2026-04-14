@@ -357,6 +357,16 @@ export default function DatasetsAdminClient({
     }
   };
 
+  const clearTemporalCoverageErrors = () => {
+    setFormErrors((prev) => {
+      const next = { ...prev };
+      delete next.temporalCoverage;
+      delete next.temporalCoverageInvalidFormat;
+      delete next.temporalCoverageBothRequired;
+      return next;
+    });
+  };
+
   const parseInputDateToTime = (value: string): number | null => {
     const raw = (value || "").trim();
     if (!raw) return null;
@@ -392,14 +402,32 @@ export default function DatasetsAdminClient({
     if (!datasetTitle.trim()) errors.datasetTitle = true;
     if (!datasetDescription.trim()) errors.datasetDescription = true;
     if (!selectedFrequencyRef.current) errors.datasetFrequency = true;
-    if (temporalStart && temporalEnd) {
-      const startTime = parseInputDateToTime(temporalStart);
-      const endTime = parseInputDateToTime(temporalEnd);
-      if (startTime !== null && endTime !== null && startTime > endTime) {
-        errors.temporalCoverage = true;
-      }
+    const startRaw = (temporalStart || "").trim();
+    const endRaw = (temporalEnd || "").trim();
+    const startTime = startRaw ? parseInputDateToTime(startRaw) : null;
+    const endTime = endRaw ? parseInputDateToTime(endRaw) : null;
+
+    if ((startRaw && !endRaw) || (!startRaw && endRaw)) {
+      errors.temporalCoverageBothRequired = true;
     }
-    if (errors.temporalCoverage && Object.keys(errors).length === 1) {
+    if ((startRaw && startTime === null) || (endRaw && endTime === null)) {
+      errors.temporalCoverageInvalidFormat = true;
+    }
+    if (
+      !errors.temporalCoverageBothRequired &&
+      !errors.temporalCoverageInvalidFormat &&
+      startTime !== null &&
+      endTime !== null &&
+      startTime > endTime
+    ) {
+      errors.temporalCoverage = true;
+    }
+    if (
+      (errors.temporalCoverage ||
+        errors.temporalCoverageInvalidFormat ||
+        errors.temporalCoverageBothRequired) &&
+      Object.keys(errors).length === 1
+    ) {
       e?.preventDefault();
     }
     if (Object.keys(errors).length > 0) {
@@ -737,6 +765,15 @@ export default function DatasetsAdminClient({
 
   const auxiliarItems =
     currentStep === 3 || currentStep === 4 ? auxiliarItemsStep3 : auxiliarItemsStep2;
+  const hasTemporalCoverageError =
+    !!formErrors.temporalCoverage ||
+    !!formErrors.temporalCoverageInvalidFormat ||
+    !!formErrors.temporalCoverageBothRequired;
+  const temporalCoverageErrorText = formErrors.temporalCoverageInvalidFormat
+    ? "Formato de data inválido. Utilize o formato dd/mm/aaaa."
+    : formErrors.temporalCoverageBothRequired
+      ? "Preencha as duas datas da cobertura temporal ou remova a data preenchida."
+      : "A data de início não pode ser posterior à data de fim.";
 
   return (
     <>
@@ -1124,13 +1161,13 @@ export default function DatasetsAdminClient({
                       todayLabel="Hoje"
                       cancelLabel="Cancelar"
                       okLabel="OK"
-                      hasError={!!formErrors.temporalCoverage}
-                      hasFeedback={!!formErrors.temporalCoverage}
+                      hasError={hasTemporalCoverageError}
+                      hasFeedback={hasTemporalCoverageError}
                       feedbackState="danger"
-                      errorFeedbackText="A data de início não pode ser posterior à data de fim."
+                      errorFeedbackText={temporalCoverageErrorText}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setTemporalStart(e.target.value);
-                        clearError("temporalCoverage");
+                        clearTemporalCoverageErrors();
                       }}
                     />
                     <InputDate
@@ -1150,10 +1187,10 @@ export default function DatasetsAdminClient({
                       todayLabel="Hoje"
                       cancelLabel="Cancelar"
                       okLabel="OK"
-                      hasError={!!formErrors.temporalCoverage}
+                      hasError={hasTemporalCoverageError}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setTemporalEnd(e.target.value);
-                        clearError("temporalCoverage");
+                        clearTemporalCoverageErrors();
                       }}
                     />
                   </div>
