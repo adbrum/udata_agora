@@ -43,6 +43,7 @@ export default function CommunityResourceEditClient() {
   const [checksumType, setChecksumType] = useState("");
   const [checksumValue, setChecksumValue] = useState("");
   const [showChecksum, setShowChecksum] = useState(false);
+  const [saveCount, setSaveCount] = useState(0);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [format, setFormat] = useState("");
@@ -133,6 +134,7 @@ export default function CommunityResourceEditClient() {
     if (!resourceUrl.trim()) errors.url = true;
     if (!selectedTypeRef.current) errors.type = true;
     if (!selectedFormatRef.current) errors.format = true;
+    if (showChecksum && !checksumValue.trim()) errors.checksumValue = true;
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       requestAnimationFrame(() => {
@@ -164,8 +166,14 @@ export default function CommunityResourceEditClient() {
         format: selectedFormatRef.current.trim() || undefined,
         mime: mimeType.trim() || undefined,
         schema: schemaPayload,
+        ...(showChecksum
+          ? checksumValue
+            ? { checksum: { type: selectedChecksumTypeRef.current || checksumType, value: checksumValue } }
+            : {}
+          : { checksum: null }),
       });
       setResource(updated);
+      setSaveCount((c) => c + 1);
       setSelectedType(updated.type || "");
       const normFormat = updated.format?.toLowerCase() || "";
       setFormat(normFormat);
@@ -474,30 +482,42 @@ export default function CommunityResourceEditClient() {
             {showChecksum && (
               <div className="admin-page__fields-group">
                 <IsolatedSelect
-                  key={`checksum-${resource?.id || "loading"}`}
+                  key={`checksum-${resource?.id || "loading"}-${saveCount}`}
                   label="Tipo de soma de verificação"
                   placeholder="SHA1"
                   id="checksum-type"
                   defaultValue={checksumType}
                   onChangeRef={selectedChecksumTypeRef}
+                  onChangeCallback={(newType) => {
+                    if (newType !== checksumType) {
+                      setChecksumType(newType);
+                      setChecksumValue("");
+                    }
+                  }}
                 >
                   <DropdownSection name="checksum-types">
-                    <DropdownOption value="sha1">SHA1</DropdownOption>
-                    <DropdownOption value="sha256">SHA256</DropdownOption>
-                    <DropdownOption value="md5">MD5</DropdownOption>
-                    <DropdownOption value="crc">CRC</DropdownOption>
+                    <DropdownOption value="sha1" selected={checksumType === "sha1"}>SHA1</DropdownOption>
+                    <DropdownOption value="sha256" selected={checksumType === "sha256"}>SHA256</DropdownOption>
+                    <DropdownOption value="md5" selected={checksumType === "md5"}>MD5</DropdownOption>
+                    <DropdownOption value="crc" selected={checksumType === "crc"}>CRC</DropdownOption>
                   </DropdownSection>
                 </IsolatedSelect>
 
                 <InputText
-                  label="Valor de checksum"
-                  placeholder=""
+                  label="Valor de checksum *"
+                  placeholder="Introduza o valor do hash"
                   id="checksum-value"
                   value={checksumValue}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setChecksumValue(e.target.value)
-                  }
-                  readOnly
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    if (e.nativeEvent.isTrusted) {
+                      setChecksumValue(e.target.value);
+                      if (e.target.value.trim()) setFormErrors((prev) => { const next = { ...prev }; delete next.checksumValue; return next; });
+                    }
+                  }}
+                  hasError={!!formErrors.checksumValue}
+                  hasFeedback={!!formErrors.checksumValue}
+                  feedbackState="danger"
+                  errorFeedbackText="Campo obrigatório"
                 />
               </div>
             )}
