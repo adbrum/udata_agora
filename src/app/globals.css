@@ -1073,29 +1073,19 @@ ul.flex.items-center.justify-center.gap-8.xl\:gap-32 {
 /* 6.2 Login */
 .login-page .agora-tabs.desktop .tab-panel.current-neutral,
 .login-page .agora-tabs.desktop.vertically .tab-list.desktop .tab-list-item.active.current-neutral {
-  background-color: var(--color-secondary-50);
+  background-color: var(--color-primary-100);
 }
 
 .login-page .agora-tabs.desktop.vertically .tab-panel-content:before {
   display: none;
 }
 
-.login-page .agora-tabs.desktop .tab-panel-content::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 100%;
-  width: calc(38vw - 50%);
-  background: var(--color-secondary-50);
-}
 
-@media (min-width: 1280px) {
-  .login-page .agora-tabs.desktop .tab-panel .tab-panel-content {
-    max-width: 1280px;
-    padding-left: 6rem;
-    padding-right: 6rem;
-  }
+.login-page .agora-tabs.desktop .tab-panel .tab-panel-content {
+  padding-left: 64px;
+  padding-right: 64px;
+  max-width: 100%;
+  width: 100%;
 }
 
 /* 6.3 Page Detail & Links */
