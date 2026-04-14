@@ -305,12 +305,51 @@ export default function DatasetsAdminClient({
     }
   };
 
-  const handleStep2Next = async () => {
+  const parseInputDateToTime = (value: string): number | null => {
+    const raw = (value || "").trim();
+    if (!raw) return null;
+
+    // Supports "dd/mm/yyyy" and "dd-mm-yyyy"
+    const ptMatch = raw.match(/^(\d{2})[/-](\d{2})[/-](\d{4})$/);
+    if (ptMatch) {
+      const day = Number(ptMatch[1]);
+      const month = Number(ptMatch[2]);
+      const year = Number(ptMatch[3]);
+      const d = new Date(year, month - 1, day);
+      if (
+        d.getFullYear() === year &&
+        d.getMonth() === month - 1 &&
+        d.getDate() === day
+      ) {
+        return d.getTime();
+      }
+      return null;
+    }
+
+    // Supports ISO-like formats (e.g. yyyy-mm-dd)
+    const iso = new Date(raw);
+    const isoTime = iso.getTime();
+    return Number.isNaN(isoTime) ? null : isoTime;
+  };
+
+  const handleStep2Next = async (
+    e?: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     const errors: Record<string, boolean> = {};
     if (!selectedProducerRef.current) errors.datasetProducer = true;
     if (!datasetTitle.trim()) errors.datasetTitle = true;
     if (!datasetDescription.trim()) errors.datasetDescription = true;
     if (!selectedFrequencyRef.current) errors.datasetFrequency = true;
+    if (temporalStart && temporalEnd) {
+      const startTime = parseInputDateToTime(temporalStart);
+      const endTime = parseInputDateToTime(temporalEnd);
+      if (startTime !== null && endTime !== null && startTime > endTime) {
+        errors.temporalCoverage = true;
+      }
+    }
+    if (errors.temporalCoverage && Object.keys(errors).length === 1) {
+      e?.preventDefault();
+    }
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -1020,7 +1059,14 @@ export default function DatasetsAdminClient({
                       todayLabel="Hoje"
                       cancelLabel="Cancelar"
                       okLabel="OK"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTemporalStart(e.target.value)}
+                      hasError={!!formErrors.temporalCoverage}
+                      hasFeedback={!!formErrors.temporalCoverage}
+                      feedbackState="danger"
+                      errorFeedbackText="A data de início não pode ser posterior à data de fim."
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setTemporalStart(e.target.value);
+                        clearError("temporalCoverage");
+                      }}
                     />
                     <InputDate
                       label="Data de fim"
@@ -1038,7 +1084,11 @@ export default function DatasetsAdminClient({
                       todayLabel="Hoje"
                       cancelLabel="Cancelar"
                       okLabel="OK"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTemporalEnd(e.target.value)}
+                      hasError={!!formErrors.temporalCoverage}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setTemporalEnd(e.target.value);
+                        clearError("temporalCoverage");
+                      }}
                     />
                   </div>
                 </div>
