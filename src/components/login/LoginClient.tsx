@@ -149,7 +149,6 @@ function LoginContent() {
         setMigrationRequired(true);
         setError(null);
       } else {
-        console.error("Login error:", err);
         setError(message);
       }
     } finally {
@@ -403,15 +402,17 @@ function LoginContent() {
                       />
                     </div>
                   </div>
-                  <p className="text-sm text-neutral-900 my-32">
-                    <strong>Não tem Chave Móvel Digital?</strong>{" "}
+                  <div className="flex items-center gap-8 my-32">
+                    <p className="text-sm text-neutral-900">
+                      <strong>Não tem Chave Móvel Digital?</strong>
+                    </p>
                     <button
-                      className="text-primary-600 underline hover:text-primary-800 text-sm"
+                      className="text-primary-600 text-sm underline active:decoration-dashed bg-transparent border-0 p-0 cursor-pointer"
                       onClick={() => setCmdModalOpen(true)}
                     >
                       Descubra como criar conta
                     </button>
-                  </p>
+                  </div>
                   <div className="w-full h-[2px] bg-neutral-400"></div>
                   <div className="flex flex-col gap-24">
                     <div className="flex flex-col gap-8">
@@ -441,7 +442,7 @@ function LoginContent() {
                           href="/pages/faqs/terms"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-primary-600 underline hover:text-primary-800"
+                          className="text-primary-600 underline active:decoration-dashed hover:text-primary-800"
                         >
                           Termos e condições para o tratamento dos seus dados
                         </a>
@@ -503,15 +504,17 @@ function LoginContent() {
                       />
                     </div>
                   </div>
-                  <p className="text-sm text-neutral-900 my-32">
-                    <strong>Não tem autenticação com Cartão de Cidadão?</strong>{" "}
+                  <div className="flex items-center gap-8 mt-32">
+                    <p className="text-sm text-neutral-900">
+                      <strong>Não tem autenticação com Cartão de Cidadão?</strong>
+                    </p>
                     <button
-                      className="text-primary-600 underline hover:text-primary-800 text-sm"
+                      className="text-primary-600 text-sm underline active:decoration-dashed bg-transparent border-0 p-0 cursor-pointer"
                       onClick={() => setCcModalOpen(true)}
                     >
                       Descubra como criar conta
                     </button>
-                  </p>
+                  </div>
                   <div className="w-full h-[2px] bg-neutral-400 my-[32px]"></div>
                   <div className="flex flex-col gap-24">
                     <div className="flex flex-col gap-8 mt-8">
@@ -522,7 +525,7 @@ function LoginContent() {
                           href="/pages/faqs/terms"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-primary-600 underline hover:text-primary-800"
+                          className="text-primary-600 underline active:decoration-dashed hover:text-primary-800"
                         >
                           Termos e condições para o tratamento dos seus dados
                         </a>
@@ -591,15 +594,17 @@ function LoginContent() {
                       />
                     </div>
                   </div>
-                  <p className="text-sm text-neutral-900 mt-32">
-                    <strong>Não tem Autenticação Europeia?</strong>{" "}
+                  <div className="flex items-center gap-8 mt-32">
+                    <p className="text-sm text-neutral-900">
+                      <strong>Não tem Autenticação Europeia?</strong>
+                    </p>
                     <button
-                      className="text-primary-600 underline hover:text-primary-800 text-sm"
+                      className="text-primary-600 text-sm underline active:decoration-dashed bg-transparent border-0 p-0 cursor-pointer"
                       onClick={() => setEidasModalOpen(true)}
                     >
                       Descubra como criar conta
                     </button>
-                  </p>
+                  </div>
                   <div className="w-full h-[2px] bg-neutral-400 my-[32px]"></div>
                   <p className="text-sm text-neutral-900">
                     Precisa <strong>fornecer documentos</strong> que foram emitidos por uma entidade
@@ -618,7 +623,7 @@ function LoginContent() {
                           href="/pages/faqs/terms"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-primary-600 underline hover:text-primary-800"
+                          className="text-primary-600 underline active:decoration-dashed hover:text-primary-800"
                         >
                           termos e condições relativos ao tratamento de dados
                           pessoais
@@ -770,17 +775,13 @@ function LoginContent() {
                           />
                         </div>
 
-                        <div className="flex items-center mt-24 gap-4">
+                        <div className="flex items-center mt-24 gap-8">
                           <span className="text-sm text-neutral-900">
                             Esqueceu-se da palavra-passe?
                           </span>
-                          <Button
-                            variant="primary"
-                            appearance="link"
-                            className="p-0 h-auto font-bold text-sm"
-                          >
+                          <button className="text-primary-600 text-sm underline active:decoration-dashed bg-transparent border-0 p-0 cursor-pointer">
                             Recuperar palavra-passe
-                          </Button>
+                          </button>
                         </div>
                         <div className="mt-8">
                           <Button
