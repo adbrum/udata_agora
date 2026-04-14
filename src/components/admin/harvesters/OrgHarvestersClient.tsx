@@ -217,7 +217,7 @@ export default function OrgHarvestersClient() {
                       : "Ainda não"}
                   </TableCell>
                   <TableCell headerLabel="Conjuntos de dados">
-                    {harvester.last_job?.items?.length ?? 0}
+                    {harvester.datasets_count ?? 0}
                   </TableCell>
                   <TableCell headerLabel="API">
                     {harvester.backend}
