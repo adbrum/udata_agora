@@ -350,7 +350,7 @@ export default function DatasetDetailClient({ slug }: DatasetDetailClientProps) 
               {/* Metrics */}
               <div className="grid grid-cols-2 gap-16 mb-16">
                 <div className="bg-[#F2F6FF] rounded-4 p-32">
-                  <div className="text-sm mb-[8px]">Vistas</div>
+                  <div className="text-sm mb-[8px]">Visualizações</div>
                   <div className="text-l-semibold font-bold text-neutral-900 mb-[8px]">
                     {formatMetricValue(dataset.metrics?.views)}
                   </div>
