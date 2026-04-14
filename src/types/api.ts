@@ -973,6 +973,7 @@ export interface HarvestSource {
   created_at: string;
   last_modified: string;
   last_job: HarvestJob | null;
+  datasets_count: number;
 }
 
 export interface HarvestSourceCreatePayload {
