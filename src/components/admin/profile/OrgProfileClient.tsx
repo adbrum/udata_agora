@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Avatar,
   Breadcrumb,
@@ -11,13 +11,45 @@ import {
   InputText,
   InputTextArea,
   ButtonUploader,
+  StatusCard,
+  usePopupContext,
 } from "@ama-pt/agora-design-system";
-import { fetchOrganization, updateOrganization, uploadOrgLogo } from "@/services/api";
+import { fetchOrganization, updateOrganization, uploadOrgLogo, deleteOrganization } from "@/services/api";
 import { Organization } from "@/types/api";
 import { useActiveOrganization } from "@/hooks/useActiveOrganization";
 
+function DeleteOrgPopupContent({
+  onClose,
+  onConfirm,
+}: {
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-[16px]">
+      <p>Esta ação é irreversível.</p>
+      <div className="flex justify-end gap-[16px] pt-[16px]">
+        <Button appearance="outline" variant="neutral" onClick={onClose}>
+          Cancelar
+        </Button>
+        <Button
+          variant="danger"
+          onClick={onConfirm}
+          hasIcon
+          leadingIcon="agora-line-trash"
+          leadingIconHover="agora-solid-trash"
+        >
+          Eliminar
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function OrgProfileClient() {
   const params = useParams();
+  const router = useRouter();
+  const { show, hide } = usePopupContext();
   const routeOrgId = params?.orgId as string | undefined;
   const { activeOrg, isLoading: isOrgLoading } = useActiveOrganization();
 
@@ -30,6 +62,7 @@ export default function OrgProfileClient() {
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [nameError, setNameError] = useState(false);
 
   useEffect(() => {
@@ -80,6 +113,21 @@ export default function OrgProfileClient() {
       console.error("Error updating org profile:", error);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDeleteOrg = async () => {
+    if (!org) return;
+    setIsDeleting(true);
+    try {
+      await deleteOrganization(org.id);
+      hide();
+      router.push("/pages/admin");
+    } catch (error) {
+      console.error("Error deleting organization:", error);
+      hide();
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -249,6 +297,43 @@ export default function OrgProfileClient() {
                 >
                   {isSaving ? "A guardar..." : "Guardar"}
                 </Button>
+              </div>
+
+              <div className="dataset-edit-danger-actions">
+                <StatusCard
+                  type="danger"
+                  description={
+                    <>
+                      <strong>Atenção Esta ação é irreversível.</strong>
+                      <br />
+                      <Button
+                        appearance="link"
+                        variant="primary"
+                        hasIcon
+                        trailingIcon="agora-line-arrow-right-circle"
+                        trailingIconHover="agora-solid-arrow-right-circle"
+                        onClick={(e: React.MouseEvent) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          show(
+                            <DeleteOrgPopupContent
+                              onClose={hide}
+                              onConfirm={handleDeleteOrg}
+                            />,
+                            {
+                              title: "Tem a certeza que quer eliminar esta organização?",
+                              closeAriaLabel: "Fechar",
+                              dimensions: "m",
+                            },
+                          );
+                        }}
+                        disabled={isDeleting}
+                      >
+                        Eliminar a organização
+                      </Button>
+                    </>
+                  }
+                />
               </div>
             </div>
           </div>

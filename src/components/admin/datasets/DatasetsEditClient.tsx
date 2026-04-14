@@ -1479,7 +1479,7 @@ export default function DatasetsEditClient() {
                       onClick={handleSaveMetadata}
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? "A guardar..." : "Guardar alterações"}
+                      {isSubmitting ? "A guardar..." : "Guardar"}
                     </Button>
                   </div>
 

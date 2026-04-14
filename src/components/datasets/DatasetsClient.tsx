@@ -192,13 +192,13 @@ export default function DatasetsClient({
                 hasIcon
                 {...(filtersOpen
                   ? {
-                      leadingIcon: "agora-line-chevron-left",
-                      leadingIconHover: "agora-solid-chevron-left",
-                    }
+                    leadingIcon: "agora-line-chevron-left",
+                    leadingIconHover: "agora-solid-chevron-left",
+                  }
                   : {
-                      trailingIcon: "agora-line-chevron-right",
-                      trailingIconHover: "agora-solid-chevron-right",
-                    })}
+                    trailingIcon: "agora-line-chevron-right",
+                    trailingIconHover: "agora-solid-chevron-right",
+                  })}
                 onClick={() => setFiltersOpen(!filtersOpen)}
               >
                 {filtersOpen ? "Ocultar filtros" : "Abrir filtros"}
@@ -265,10 +265,10 @@ export default function DatasetsClient({
                       };
                       const timeAgo = dataset.last_modified
                         ? formatDistanceToNow(new Date(dataset.last_modified), { locale: pt })
-                            .replace("aproximadamente ", "")
-                            .replace("quase ", "")
-                            .replace("menos de ", "")
-                            .replace("cerca de ", "")
+                          .replace("aproximadamente ", "")
+                          .replace("quase ", "")
+                          .replace("menos de ", "")
+                          .replace("cerca de ", "")
                         : "Desconhecido";
 
                       return (
@@ -327,11 +327,7 @@ export default function DatasetsClient({
                                         title="Visualizações"
                                       >
                                         <Icon
-                                          name={
-                                            dataset.metrics?.views
-                                              ? "agora-solid-eye"
-                                              : "agora-line-eye"
-                                          }
+                                          name="agora-solid-eye"
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"
@@ -340,11 +336,7 @@ export default function DatasetsClient({
                                       </div>
                                       <div className="flex items-center gap-8" title="Downloads">
                                         <Icon
-                                          name={
-                                            dataset.metrics?.resources_downloads
-                                              ? "agora-solid-download"
-                                              : "agora-line-download"
-                                          }
+                                          name="agora-solid-download"
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"
@@ -353,25 +345,15 @@ export default function DatasetsClient({
                                           {formatMetric(dataset.metrics?.resources_downloads)}
                                         </span>
                                       </div>
-                                      <div
-                                        className="flex items-center gap-8"
-                                        title="Reutilizações"
-                                      >
-                                        <img
-                                          src="/Icons/bar_chart.svg"
-                                          className="w-16 h-16"
-                                          alt=""
-                                          aria-hidden="true"
-                                        />
+                                      <div className="flex items-center gap-8" title="Reutilizações">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" className="w-16 h-16 fill-neutral-700" aria-hidden="true">
+                                          <path d="M4 22.9091V15.2727C4 14.6702 4.47969 14.1818 5.07143 14.1818C5.66316 14.1818 6.14286 14.6702 6.14286 15.2727V22.9091C6.14286 23.5116 5.66316 24 5.07143 24C4.47969 24 4 23.5116 4 22.9091ZM10.4286 22.9091V1.09091C10.4286 0.488417 10.9083 0 11.5 0C12.0917 0 12.5714 0.488417 12.5714 1.09091V22.9091C12.5714 23.5116 12.0917 24 11.5 24C10.9083 24 10.4286 23.5116 10.4286 22.9091ZM16.8571 22.9091V9.81818C16.8571 9.21569 17.3368 8.72727 17.9286 8.72727C18.5203 8.72727 19 9.21569 19 9.81818V22.9091C19 23.5116 18.5203 24 17.9286 24C17.3368 24 16.8571 23.5116 16.8571 22.9091Z" />
+                                        </svg>
                                         <span>{dataset.metrics?.reuses || 0}</span>
                                       </div>
                                       <div className="flex items-center gap-8" title="Favoritos">
                                         <Icon
-                                          name={
-                                            dataset.metrics?.followers
-                                              ? "agora-solid-star"
-                                              : "agora-line-star"
-                                          }
+                                          name="agora-solid-star"
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"

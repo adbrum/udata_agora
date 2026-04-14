@@ -293,11 +293,15 @@ export default function OrganizationsClient({
                                         title="Visualizações"
                                       >
                                         <Icon
+<<<<<<< HEAD
+                                          name="agora-solid-eye"
+=======
                                           name={
                                             org.metrics?.views
                                               ? "agora-solid-eye"
                                               : "agora-line-eye"
                                           }
+>>>>>>> 2d22c8618b0be764ebe09b3f8dc9f699f7ccbda2
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"
@@ -306,17 +310,27 @@ export default function OrganizationsClient({
                                       </div>
                                       <div className="flex items-center gap-8" title="Datasets">
                                         <Icon
+<<<<<<< HEAD
+                                          name="agora-solid-layers-menu"
+=======
                                           name={
                                             org.metrics?.datasets
                                               ? "agora-solid-layers-menu"
                                               : "agora-line-layers-menu"
                                           }
+>>>>>>> 2d22c8618b0be764ebe09b3f8dc9f699f7ccbda2
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"
                                         />
                                         <span>{org.metrics?.datasets || 0}</span>
                                       </div>
+<<<<<<< HEAD
+                                      <div className="flex items-center gap-8" title="Reutilizações">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" className="w-16 h-16 fill-neutral-700" aria-hidden="true">
+                                          <path d="M4 22.9091V15.2727C4 14.6702 4.47969 14.1818 5.07143 14.1818C5.66316 14.1818 6.14286 14.6702 6.14286 15.2727V22.9091C6.14286 23.5116 5.66316 24 5.07143 24C4.47969 24 4 23.5116 4 22.9091ZM10.4286 22.9091V1.09091C10.4286 0.488417 10.9083 0 11.5 0C12.0917 0 12.5714 0.488417 12.5714 1.09091V22.9091C12.5714 23.5116 12.0917 24 11.5 24C10.9083 24 10.4286 23.5116 10.4286 22.9091ZM16.8571 22.9091V9.81818C16.8571 9.21569 17.3368 8.72727 17.9286 8.72727C18.5203 8.72727 19 9.21569 19 9.81818V22.9091C19 23.5116 18.5203 24 17.9286 24C17.3368 24 16.8571 23.5116 16.8571 22.9091Z" />
+                                        </svg>
+=======
                                       <div
                                         className="flex items-center gap-8"
                                         title="Reutilizações"
@@ -327,15 +341,20 @@ export default function OrganizationsClient({
                                           alt=""
                                           aria-hidden="true"
                                         />
+>>>>>>> 2d22c8618b0be764ebe09b3f8dc9f699f7ccbda2
                                         <span>{org.metrics?.reuses || 0}</span>
                                       </div>
                                       <div className="flex items-center gap-8" title="Favoritos">
                                         <Icon
+<<<<<<< HEAD
+                                          name="agora-solid-star"
+=======
                                           name={
                                             org.metrics?.followers
                                               ? "agora-solid-star"
                                               : "agora-line-star"
                                           }
+>>>>>>> 2d22c8618b0be764ebe09b3f8dc9f699f7ccbda2
                                           dimensions="xs"
                                           className="fill-neutral-700"
                                           aria-hidden="true"
