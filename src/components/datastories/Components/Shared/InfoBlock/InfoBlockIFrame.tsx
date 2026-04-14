@@ -20,8 +20,8 @@ export default function InfoBlockIFrame({
             url.searchParams.set('chromeless', '1');
             url.searchParams.set('navContentPaneEnabled', 'false');
             url.searchParams.set('filterPaneEnabled', 'false');
-            url.searchParams.set('actionBarEnabled', 'false');   
-            url.searchParams.set('pagesVisibility', 'false');     
+            url.searchParams.set('actionBarEnabled', 'false');
+            url.searchParams.set('pagesVisibility', 'false');
             url.searchParams.set('noSignInButton', 'true');
             url.searchParams.set('hints', 'false');
             url.searchParams.set('showcaseSampleData', 'false');
@@ -41,6 +41,10 @@ export default function InfoBlockIFrame({
                 ref={iframeRef}
                 src={embedUrl}
                 className='absolute top-0 left-0 w-full h-full'
+                style={{
+                    clipPath: 'inset(0 0 115px 0)',
+                    top: 0,
+                }}
                 allow="fullscreen"
             />
         </div>

@@ -60,6 +60,19 @@ const ALL_DATA_STORIES = [
     metrics: { views: 890, followers: 8 },
     datasets: [1, 2],
   },
+  {
+    id: '3',
+    slug: 'territorios-inteligentes/esperanca-de-vida-em-portugal',
+    title: 'Territórios Inteligentes: Esperança de vida em Portugal',
+    description:
+      'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+    organization: { name: 'Territórios Inteligentes' },
+    tema: 'territorios_inteligentes',
+    image: '/laptop.png',
+    created_at: '2024-03-10T12:00:00Z',
+    metrics: { views: 890, followers: 8 },
+    datasets: [1, 2],
+  },
 ];
 
 const TOGGLE_FILTERS = {
