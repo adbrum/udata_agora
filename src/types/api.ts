@@ -706,6 +706,7 @@ export interface DatasetFilters {
   private?: boolean;
   archived?: boolean;
   deleted?: boolean;
+  modified_since?: string;
 }
 
 
