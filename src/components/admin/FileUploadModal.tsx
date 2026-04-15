@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, usePopupContext } from "@ama-pt/agora-design-system";
+import { Button, ButtonUploader, usePopupContext } from "@ama-pt/agora-design-system";
 import FileUploadPopupContent from "@/components/admin/FileUploadPopupContent";
 
 interface FileUploadModalProps {
@@ -45,6 +45,7 @@ export default function FileUploadModal({
   return (
     <div className="flex flex-col gap-[8px]">
       <span className="text-primary-900 text-base font-medium leading-7">Ficheiros</span>
+
       <Button
         variant={hasError && !hasSelection ? "danger" : "primary"}
         appearance="outline"
@@ -56,17 +57,31 @@ export default function FileUploadModal({
       >
         Adicionar ficheiros
       </Button>
-      {hasSelection && (
-        <span className="text-neutral-600 text-sm">
-          {uploadedFiles.length > 0 && (
-            <span>{uploadedFiles.length} ficheiro(s) selecionado(s)</span>
-          )}
-          {uploadedFiles.length > 0 && hasValidUrl && <span> · </span>}
-          {hasValidUrl && <span>Link adicionado</span>}
-        </span>
-      )}
+
       {hasError && !hasSelection && (
         <span className="text-danger-500 text-sm">Campo obrigatório</span>
+      )}
+
+      {uploadedFiles.length > 0 && (
+        <ButtonUploader
+          multiple
+          hideLabel
+          label="Ficheiros adicionados"
+          inputLabel="Adicionar mais ficheiros"
+          selectedFilesLabel="ficheiros selecionados"
+          removeFileButtonLabel="Remover ficheiro"
+          replaceFileButtonLabel="Substituir ficheiro"
+          files={uploadedFiles}
+          maxCount={uploadedFiles.length}
+          onChange={(e) => {
+            const files = Array.from((e.target as HTMLInputElement).files || []);
+            onFilesChange(files);
+          }}
+        />
+      )}
+
+      {hasValidUrl && (
+        <span className="text-neutral-600 text-sm">Link adicionado: {resourceUrl}</span>
       )}
     </div>
   );
