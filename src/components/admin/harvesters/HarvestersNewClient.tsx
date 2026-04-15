@@ -355,6 +355,7 @@ export default function HarvestersNewClient() {
                     onChangeCallback={() => clearError("harvesterProducer")}
                     hasError={!!formErrors.harvesterProducer}
                     errorFeedbackText="Selecione uma organização"
+                    required
                   >
                     {producerOptions}
                   </IsolatedSelect>
@@ -376,6 +377,7 @@ export default function HarvestersNewClient() {
                     hasFeedback={!!formErrors.harvesterName}
                     feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
+                    required
                   />
 
                   <InputTextArea
@@ -402,6 +404,7 @@ export default function HarvestersNewClient() {
                     hasFeedback={!!formErrors.harvesterUrl}
                     feedbackState="danger"
                     errorFeedbackText="Campo obrigatório"
+                    required
                   />
                 </div>
 
@@ -409,7 +412,7 @@ export default function HarvestersNewClient() {
 
                 <div className="admin-page__fields-group">
                   <IsolatedSelect
-                    label="Tipo *"
+                    label="Tipo"
                     placeholder="Selecione um tipo..."
                     id="harvester-type"
                     searchable

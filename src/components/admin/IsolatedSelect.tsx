@@ -29,6 +29,7 @@ interface IsolatedSelectProps {
   errorFeedbackText?: string;
   hideLabel?: boolean;
   searchable?: boolean;
+  required?: boolean;
   searchInputPlaceholder?: string;
   searchNoResultsText?: string;
   onChangeCallback?: (value: string) => void;
@@ -49,6 +50,7 @@ const IsolatedSelect = React.memo(function IsolatedSelect({
   errorFeedbackText,
   hideLabel,
   searchable,
+  required,
   searchInputPlaceholder,
   searchNoResultsText,
   onChangeCallback,
@@ -93,6 +95,7 @@ const IsolatedSelect = React.memo(function IsolatedSelect({
       hasFeedback={hasError}
       feedbackState="danger"
       errorFeedbackText={errorFeedbackText}
+      required={required}
     >
       {children}
     </InputSelect>
