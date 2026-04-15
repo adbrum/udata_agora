@@ -322,6 +322,7 @@ export async function fetchDatasets(
       if (filters.sort) params.set("sort", filters.sort);
       if (filters.featured !== undefined) params.set("featured", String(filters.featured));
       if (filters.owner) params.set("owner", filters.owner);
+      if (filters.modified_since) params.set("modified_since", filters.modified_since);
 
       const arrayParams: [string, string | string[] | undefined][] = [
         ["tag", filters.tag],
@@ -914,6 +915,7 @@ export async function fetchReuses(
       if (filters.owner) params.set("owner", filters.owner);
       if (filters.dataset) params.set("dataset", filters.dataset);
       if (filters.sort) params.set("sort", filters.sort);
+      if (filters.modified_since) params.set("modified_since", filters.modified_since);
     }
 
     const url = `${API_BASE_URL}/reuses/?${params.toString()}`;
