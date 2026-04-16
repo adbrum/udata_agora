@@ -1594,24 +1594,24 @@ export default function DatasetsEditClient() {
                   <AuxiliarList
                     items={[
                       {
-                        title: "Nomeando seu conjunto de dados",
+                        title: "Dar o nome ao conjunto de dados",
                         content: (
                           <>
                             <p>O título do seu conjunto de dados deve ser o mais preciso e específico possível.</p>
-                            <p>Deve também corresponder ao vocabulário utilizado pelos utilizadores que, na maioria das vezes, procuram dados através de um motor de pesquisa.</p>
+                            <p>Deve também corresponder ao vocabulário utilizado pelos utilizadores que, na maioria das vezes, procuram dados através do motor de pesquisa.</p>
                           </>
                         ),
                         hasError: !!formErrors.title,
                       },
                       {
-                        title: "Adicione uma sigla ao conjunto de dados.",
-                        content: "Tem a opção de adicionar uma sigla ao seu conjunto de dados. As letras que compõem essa sigla não precisam ser separadas por pontos.",
+                        title: "Adicionar uma sigla ao conjunto de dados",
+                        content: "Tem a opção de adicionar uma sigla ao seu conjunto de dados. Não é necessário que as letras que compõem essa sigla estejam separadas por pontos.",
                       },
                       {
-                        title: "Escreva uma boa descrição",
+                        title: "Escrever uma boa descrição",
                         content: (
                           <>
-                            <p>A descrição do seu conjunto de dados permite que os utilizadores obtenham informações sobre o conteúdo e a estrutura dos recursos publicados.</p>
+                            <p>A descrição resumida apresenta o seu conjunto de dados, ajudando os utilizadores a entenderem rapidamente o conteúdo e melhora a sua visibilidade nos resultados de pesquisa.</p>
                             <ul className="list-disc pl-5 mt-2 flex flex-col gap-2">
                               <li>A lista de ficheiros disponibilizados;</li>
                               <li>Descrição do formato do ficheiro;</li>
@@ -1622,19 +1622,19 @@ export default function DatasetsEditClient() {
                         hasError: !!formErrors.description,
                       },
                       {
-                        title: "Escreva uma breve descrição.",
+                        title: "Escrever uma breve descrição",
                         content: "A descrição resumida apresenta seu conjunto de dados em uma ou duas frases. Isso ajuda os utilizadores a entenderem rapidamente o conteúdo e melhora sua visibilidade nos resultados de pesquisa.",
                       },
                       {
-                        title: "Selecione uma licença...",
+                        title: "Selecionar  uma licença",
                         content: "As licenças definem as regras para a reutilização. Ao escolher uma licença de reutilização, garante que o conjunto de dados publicado será reutilizado de acordo com os termos de uso que definiu.",
                       },
                       {
-                        title: "Escolha a frequência de atualização.",
-                        content: "A frequência de atualização refere-se à frequência com que planeja atualizar os dados publicados. Essa frequência de atualização é apenas indicativa.",
+                        title: "Escolher  a frequência de atualização",
+                        content: "A frequência de atualização refere-se à frequência com que planeia atualizar os dados publicados. Essa frequência de atualização é apenas indicativa.",
                       },
                       {
-                        title: "Forneça a cobertura de tempo.",
+                        title: "Fornecer  a cobertura de tempo",
                         content: (
                           <>
                             <p>A abrangência temporal indica o período de tempo dos dados publicados.</p>
