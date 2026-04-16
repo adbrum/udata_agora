@@ -189,10 +189,10 @@ export default function PostsEditClient() {
         setApiSuccess("Artigo despublicado com sucesso.");
         setTimeout(() => setApiSuccess(null), 10000);
       } else {
-        setApiError("Erro ao despublicar. Verifique a autenticação.");
+        setApiError("Erro ao retirar. Verifique a autenticação.");
       }
     } catch {
-      setApiError("Erro ao despublicar o artigo.");
+      setApiError("Erro ao retirar o artigo.");
     } finally {
       setIsSaving(false);
     }
@@ -460,7 +460,7 @@ export default function PostsEditClient() {
                       type="warning"
                       description={
                         <>
-                          <strong>Despublicar o artigo</strong>
+                          <strong>Retirar o artigo</strong>
                           <br />
                           Por favor, note que o item não será mais visível.
                           <br />
@@ -473,7 +473,7 @@ export default function PostsEditClient() {
                             onClick={handleUnpublish}
                             disabled={isSaving}
                           >
-                            {isSaving ? "A despublicar..." : "Despublicar"}
+                            {isSaving ? "A retirar..." : "Retirar"}
                           </Button>
                         </>
                       }

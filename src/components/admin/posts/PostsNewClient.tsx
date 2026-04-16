@@ -17,6 +17,7 @@ import { suggestTags, createPost } from "@/services/api";
 import type { TagSuggestion } from "@/types/api";
 import PublishDropdown from "@/components/admin/PublishDropdown";
 import type { PostCreatePayload } from "@/types/api";
+import { tr } from "date-fns/locale";
 
 export default function PostsNewClient() {
   const searchParams = useSearchParams();
@@ -67,11 +68,13 @@ export default function PostsNewClient() {
     if (!articleContent.trim()) {
       setFormErrors({ articleContent: true });
       requestAnimationFrame(() => {
-        document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document
+          .querySelector('[aria-invalid="true"]')
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
       });
       return;
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
     setIsSaving(true);
     setSaveError(null);
     try {
@@ -244,13 +247,20 @@ export default function PostsNewClient() {
                   searchable
                   searchInputPlaceholder="Escreva para pesquisar..."
                   searchNoResultsText="Nenhum resultado encontrado"
+                  pluralSelectedPlaceholder="selecionadas"
+                  hideSectionNames={true}
+                  multiple={true}
                   onChange={(options) => {
                     setSelectedTags(options.map((o) => o.value as string));
                   }}
                 >
                   <DropdownSection name="keywords">
                     {tags.map((tag) => (
-                      <DropdownOption key={tag.text} value={tag.text}>
+                      <DropdownOption
+                        key={tag.text}
+                        value={tag.text}
+                        selected={selectedTags.some((s) => s === tag.text)}
+                      >
                         {tag.text}
                       </DropdownOption>
                     ))}
