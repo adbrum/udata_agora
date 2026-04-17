@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button, ButtonUploader, InputText, usePopupContext } from "@ama-pt/agora-design-system";
 
 interface FileUploadPopupContentProps {
@@ -15,27 +15,43 @@ export default function FileUploadPopupContent({
   onConfirm,
 }: FileUploadPopupContentProps) {
   const { hide } = usePopupContext();
-  const [localFiles, setLocalFiles] = useState<File[]>(initialFiles);
+  // Accumulate files picked inside the popup before confirming
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [localUrl, setLocalUrl] = useState(initialUrl);
+  const uploaderRef = useRef<{ input: HTMLInputElement | null; reset: () => void } | null>(null);
 
   const handleConfirm = () => {
-    onConfirm(localFiles, localUrl);
+    // Merge newly picked files with the ones already on the page (initialFiles)
+    const names = new Set(initialFiles.map((f) => f.name));
+    const merged = [...initialFiles, ...pendingFiles.filter((f) => !names.has(f.name))];
+    onConfirm(merged, localUrl);
     hide();
   };
 
   return (
     <div className="flex flex-col gap-6 p-2">
+      {/*
+        The ButtonUploader resets its internal list after each pick so the popup
+        shows only the upload button. The selected files are accumulated in
+        pendingFiles and rendered as a list on the page after confirming.
+      */}
       <ButtonUploader
+        ref={uploaderRef}
+        multiple
         label="Ficheiros"
-        inputLabel="Selecione ou arraste o ficheiro"
+        inputLabel="Selecione ou arraste os ficheiros"
         selectedFilesLabel="ficheiros selecionados"
         removeFileButtonLabel="Remover ficheiro"
         replaceFileButtonLabel="Substituir ficheiro"
         onChange={(e) => {
-          const files = (e.target as HTMLInputElement).files;
-          if (files && files.length > 0) {
-            setLocalFiles(Array.from(files));
-          }
+          const picked = Array.from((e.target as HTMLInputElement).files || []);
+          if (picked.length === 0) return;
+          setPendingFiles((prev) => {
+            const existing = new Set(prev.map((f) => f.name));
+            return [...prev, ...picked.filter((f) => !existing.has(f.name))];
+          });
+          // Reset uploader display so only the button remains visible in the popup.
+          setTimeout(() => uploaderRef.current?.reset(), 0);
         }}
       />
 

@@ -12,12 +12,11 @@ import {
   InputTextArea,
   Icon,
   StatusCard,
-  Accordion,
-  AccordionGroup,
   InputDate,
   DropdownSection,
   DropdownOption,
   ProgressBar,
+  Checkbox,
 } from "@ama-pt/agora-design-system";
 import {
   createDataset,
@@ -26,6 +25,8 @@ import {
   createResource,
   fetchLicenses,
   fetchFrequencies,
+  fetchGranularities,
+  suggestSpatialZones,
   fetchDataset,
   fetchMyDatasets,
   suggestTags,
@@ -35,6 +36,8 @@ import {
 import {
   License,
   Frequency,
+  Granularity,
+  SpatialZone,
   Dataset,
   TagSuggestion,
   ContactPoint,
@@ -44,6 +47,7 @@ import IsolatedSelect from "@/components/admin/IsolatedSelect";
 import FileUploadModal from "@/components/admin/FileUploadModal";
 import { useAuth } from "@/context/AuthContext";
 import { getFrequencyLabel } from "@/utils/frequencyLabels";
+import { getGranularityLabel } from "@/utils/granularityLabels";
 
 interface DatasetsAdminClientProps {
   currentStep: number;
@@ -140,6 +144,9 @@ export default function DatasetsAdminClient({
   // Dropdown data
   const [licenses, setLicenses] = useState<License[]>([]);
   const [frequencies, setFrequencies] = useState<Frequency[]>([]);
+  const [granularities, setGranularities] = useState<Granularity[]>([]);
+  const [spatialZones, setSpatialZones] = useState<SpatialZone[]>([]);
+  const [spatialZoneSearch, setSpatialZoneSearch] = useState<SpatialZone[]>([]);
   const [tags, setTags] = useState<TagSuggestion[]>([]);
   const [selectedKeywordsValue, setSelectedKeywordsValue] = useState("");
   const producerDefaultValue =
@@ -225,6 +232,44 @@ export default function DatasetsAdminClient({
     return <DropdownSection name="keywords">{options}</DropdownSection>;
   }, [tags, selectedKeywords]);
 
+  const allSpatialZones = useMemo(() => {
+    const seen = new Set<string>();
+    const merged: SpatialZone[] = [];
+    for (const z of [...spatialZones, ...spatialZoneSearch]) {
+      if (!seen.has(z.id)) {
+        seen.add(z.id);
+        merged.push(z);
+      }
+    }
+    return merged;
+  }, [spatialZones, spatialZoneSearch]);
+
+  const spatialCoverageOptions = useMemo(() => {
+    const options = allSpatialZones.map((z) => (
+      <DropdownOption key={z.id} value={z.id} selected={false}>
+        {z.name}
+      </DropdownOption>
+    ));
+    if (options.length === 0) {
+      options.push(<DropdownOption key="empty" value="">—</DropdownOption>);
+    }
+    return <DropdownSection name="spatial-coverage">{options}</DropdownSection>;
+  }, [allSpatialZones]);
+
+  const granularityOptions = useMemo(() => {
+    const options = granularities.map((g) => (
+      <DropdownOption
+        key={g.id}
+        value={g.id}
+        selected={spatialGranularityDefaultValue === g.id}
+      >
+        {getGranularityLabel(g.id, g.name)}
+      </DropdownOption>
+    ));
+    return <DropdownSection name="spatial-granularity">{options}</DropdownSection>;
+  }, [granularities, spatialGranularityDefaultValue]);
+
+
   useEffect(() => {
     if (selectedKeywordsValue) return;
     const restored =
@@ -241,6 +286,9 @@ export default function DatasetsAdminClient({
         try {
           const response = await fetchOrgContactPoints(selectedProducer);
           setOrgContactPoints(response.data);
+          if (response.data.length > 0) {
+            setDraftContacts([]);
+          }
         } catch (error) {
           console.error("Error loading contact points:", error);
           setOrgContactPoints([]);
@@ -250,8 +298,15 @@ export default function DatasetsAdminClient({
     } else {
       setOrgContactPoints([]);
       setSelectedContactPointIds([]);
+      setDraftContacts([{ id: 0, name: "", email: "", link: "", saved: false, errors: {} }]);
     }
   }, [selectedProducer]);
+
+  const toggleExistingContact = (id: string) => {
+    setSelectedContactPointIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
 
   const updateDraft = (draftId: number, field: string, value: string) => {
     setDraftContacts((prev) =>
@@ -295,11 +350,7 @@ export default function DatasetsAdminClient({
       const newContact = await createContactPoint(payload);
       setOrgContactPoints((prev) => [...prev, newContact]);
       setSelectedContactPointIds((prev) => [...prev, newContact.id]);
-      setDraftContacts((prev) =>
-        prev.map((d) =>
-          d.id === draftId ? { ...d, saved: true, errors: {} } : d,
-        ),
-      );
+      setDraftContacts((prev) => prev.filter((d) => d.id !== draftId));
     } catch (error) {
       console.error("Error creating contact point:", error);
     }
@@ -344,15 +395,19 @@ export default function DatasetsAdminClient({
   useEffect(() => {
     async function loadDropdownData() {
       try {
-        const [licensesData, frequenciesData, myDatasetsData, tagsData] =
+        const [licensesData, frequenciesData, granularitiesData, zonesData, myDatasetsData, tagsData] =
           await Promise.all([
             fetchLicenses(),
             fetchFrequencies(),
+            fetchGranularities(),
+            suggestSpatialZones("pt", 50),
             fetchMyDatasets(1, 1),
             suggestTags("", 50),
           ]);
         setLicenses(licensesData);
         setFrequencies(frequenciesData);
+        setGranularities(granularitiesData);
+        setSpatialZones(zonesData);
         setHasDatasets(myDatasetsData.data.length > 0);
         setTags(tagsData);
       } catch (error) {
@@ -1000,62 +1055,29 @@ export default function DatasetsAdminClient({
                     </h2>
 
                     <div className="admin-page__fields-group">
-                      <span className="text-primary-900 text-base font-medium leading-7">
-                        Escolha um ponto de contato.
-                      </span>
+                      {orgContactPoints.length > 0 && (
+                        <div className="flex flex-col gap-2">
+                          {orgContactPoints.map((cp) => (
+                            <Checkbox
+                              key={cp.id}
+                              label={cp.name}
+                              value={cp.id}
+                              name="contact-points"
+                              checked={selectedContactPointIds.includes(cp.id)}
+                              onChange={() => toggleExistingContact(cp.id)}
+                            />
+                          ))}
+                        </div>
+                      )}
 
-                      {draftContacts.map((draft) =>
-                        draft.saved ? (
-                          <div
-                            key={draft.id}
-                            className="border border-neutral-300 rounded"
-                          >
-                            <div
-                              className="flex items-center justify-between
-                                px-4 py-3 border-b border-neutral-200"
-                            >
-                              <span className="text-primary-900 text-sm">
-                                {draft.name}
-                              </span>
-                              <div className="flex items-center gap-3">
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setDraftContacts((prev) =>
-                                      prev.filter((d) => d.id !== draft.id),
-                                    )
-                                  }
-                                  className="text-neutral-500 hover:text-neutral-700"
-                                  aria-label="Remover contato"
-                                >
-                                  <Icon
-                                    name="agora-line-trash"
-                                    className="w-4 h-4"
-                                  />
-                                </button>
-                              </div>
-                            </div>
-                            <div className="px-4 py-3 flex flex-col gap-1">
-                              {draft.email && (
-                                <span className="text-neutral-700 text-sm">
-                                  E-mail de contato : {draft.email}
-                                </span>
-                              )}
-                              {draft.link && (
-                                <span className="text-neutral-700 text-sm">
-                                  URL de contato: {draft.link}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        ) : (
+                      {draftContacts.map((draft) => (
                           <div key={draft.id}>
                             <div
                               className="text-primary-900 text-base
                                 font-medium leading-7"
                               style={{ paddingBottom: "16px" }}
                             >
-                              Escolha um ponto de contato.
+                              Novo ponto de contato
                             </div>
                             <div style={{ paddingBottom: "24px" }}>
                               <InputText
@@ -1248,24 +1270,12 @@ export default function DatasetsAdminClient({
                     searchInputPlaceholder="Escreva para pesquisar..."
                     searchNoResultsText="Nenhum resultado encontrado"
                     onChangeRef={spatialCoverageRef}
+                    onSearchCallback={(q) => {
+                      if (!q) return;
+                      suggestSpatialZones(q, 10).then(setSpatialZoneSearch);
+                    }}
                   >
-                    <DropdownSection name="spatial-coverage">
-                      <DropdownOption
-                        value="national"
-                        selected={spatialCoverageDefaultValue === "national"}
-                      >
-                        Nacional
-                      </DropdownOption>
-                      <DropdownOption
-                        value="regional"
-                        selected={spatialCoverageDefaultValue === "regional"}
-                      >
-                        Regional
-                      </DropdownOption>
-                      <DropdownOption value="local" selected={spatialCoverageDefaultValue === "local"}>
-                        Local
-                      </DropdownOption>
-                    </DropdownSection>
+                    {spatialCoverageOptions}
                   </IsolatedSelect>
 
                   <IsolatedSelect
@@ -1278,32 +1288,7 @@ export default function DatasetsAdminClient({
                     searchNoResultsText="Nenhum resultado encontrado"
                     onChangeRef={spatialGranularityRef}
                   >
-                    <DropdownSection name="spatial-granularity">
-                      <DropdownOption
-                        value="country"
-                        selected={spatialGranularityDefaultValue === "country"}
-                      >
-                        País
-                      </DropdownOption>
-                      <DropdownOption
-                        value="district"
-                        selected={spatialGranularityDefaultValue === "district"}
-                      >
-                        Distrito
-                      </DropdownOption>
-                      <DropdownOption
-                        value="municipality"
-                        selected={spatialGranularityDefaultValue === "municipality"}
-                      >
-                        Município
-                      </DropdownOption>
-                      <DropdownOption
-                        value="parish"
-                        selected={spatialGranularityDefaultValue === "parish"}
-                      >
-                        Freguesia
-                      </DropdownOption>
-                    </DropdownSection>
+                    {granularityOptions}
                   </IsolatedSelect>
                 </div>
 
