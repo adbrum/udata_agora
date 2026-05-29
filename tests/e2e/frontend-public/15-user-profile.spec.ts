@@ -1,88 +1,78 @@
 import { test, expect } from "playwright/test";
 
-const BASE_URL = "http://localhost:3000";
+const UNKNOWN_SLUG_URL = "/pages/users/this-user-cannot-exist-xyz123";
 
-test.describe("User Profile Page", () => {
-  let userUrl: string;
-
+test.describe("User Profile Page - Public Shell (unauthenticated)", () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate to organizations to find a user link, or use the API
-    await page.goto(`${BASE_URL}/pages/datasets`);
-    await page.waitForLoadState("networkidle");
-
-    // Try to find a user link from dataset cards
-    const userLink = page.locator(
-      'a[href*="/pages/users/"]'
-    );
-    if ((await userLink.count()) > 0) {
-      const href = await userLink.first().getAttribute("href");
-      userUrl = href?.startsWith("http") ? href : `${BASE_URL}${href}`;
-    } else {
-      // Fallback: attempt a known users page
-      userUrl = `${BASE_URL}/pages/users`;
-    }
-    await page.goto(userUrl);
+    const response = await page.goto(UNKNOWN_SLUG_URL);
+    expect(response?.status()).toBeLessThan(500);
     await page.waitForLoadState("networkidle");
   });
 
-  test("PF-01: Profile page loads", async ({ page }) => {
-    const body = await page.textContent("body");
-    expect(body).toBeTruthy();
-    expect(body?.length).toBeGreaterThan(0);
-  });
-
-  test("PF-02: Shows name, avatar, bio, website, registration date", async ({
+  test('PF-01: Profile page renders without crashing and shows "Perfil" heading', async ({
     page,
   }) => {
-    const heading = page.locator("h1, h2").first();
+    const heading = page.getByRole("heading", { name: /^Perfil$/i, level: 1 });
     await expect(heading).toBeVisible({ timeout: 10000 });
-
-    const avatar = page.locator(
-      'img[alt*="avatar"], img[alt*="Avatar"], img[class*="avatar"], [class*="avatar"] img, img[class*="profile"]'
-    );
-    if ((await avatar.count()) > 0) {
-      await expect(avatar.first()).toBeVisible();
-    }
-
-    const body = await page.textContent("body");
-    expect(body).toBeTruthy();
   });
 
-  test("PF-03: Metrics show datasets, reuses, followers, views, downloads", async ({
+  test("PF-02: Subscriptions button always renders (shows 0 count when unauthenticated)", async ({
     page,
   }) => {
-    const body = await page.textContent("body");
-    const hasMetrics =
-      body?.includes("dataset") ||
-      body?.includes("reutilizaç") ||
-      body?.includes("seguidore") ||
-      body?.includes("visualizaç") ||
-      body?.includes("download") ||
-      body?.match(/\d+/);
-    expect(hasMetrics).toBeTruthy();
+    const btn = page.getByRole("button", { name: /Subscrições?/i }).first();
+    await expect(btn).toBeVisible({ timeout: 10000 });
+    await expect(btn).toContainText(/\d+/);
   });
 
-  test("PF-04: Organizations section visible", async ({ page }) => {
-    const body = await page.textContent("body");
-    const hasOrgs =
-      body?.toLowerCase().includes("organizaç") ||
-      body?.toLowerCase().includes("organization");
-    // Organizations section may or may not be present for all users
-    expect(body).toBeTruthy();
-  });
-
-  test("PF-05: Default avatar shown for users without photo", async ({
+  test("PF-03: Acompanhamentos button always renders (shows 0 count when unauthenticated)", async ({
     page,
   }) => {
-    const avatar = page.locator(
-      '[class*="avatar"], img[class*="avatar"], img[class*="profile"]'
-    );
-    if ((await avatar.count()) > 0) {
-      await expect(avatar.first()).toBeVisible();
-    } else {
-      // May use initials or placeholder
-      const body = await page.textContent("body");
-      expect(body).toBeTruthy();
-    }
+    const btn = page.getByRole("button", { name: /Acompanhamentos?/i }).first();
+    await expect(btn).toBeVisible({ timeout: 10000 });
+    await expect(btn).toContainText(/\d+/);
+  });
+
+  test("PF-04: Clicking Subscrições toggles the subscriptions section", async ({
+    page,
+  }) => {
+    const btn = page.getByRole("button", { name: /Subscrições?/i }).first();
+    await btn.click();
+
+    // "Sem subscrições" is unique to the section; the button itself says "N Subscrições"
+    const emptyState = page.getByText(/Sem subscrições/i).first();
+    await expect(emptyState).toBeVisible({ timeout: 8000 });
+
+    // Clicking again collapses the section
+    await btn.click();
+    await page.waitForTimeout(300);
+    await expect(emptyState).not.toBeVisible({ timeout: 5000 });
+  });
+
+  test("PF-05: Datasets section renders with heading and empty state", async ({
+    page,
+  }) => {
+    const datasetsHeading = page.getByText(/Conjuntos de dados/i).first();
+    await expect(datasetsHeading).toBeVisible({ timeout: 10000 });
+
+    const emptyState = page.getByText(/Sem conjuntos de dados/i).first();
+    await expect(emptyState).toBeVisible({ timeout: 10000 });
+  });
+
+  test("PF-06: Reuses section renders with heading and empty state", async ({
+    page,
+  }) => {
+    const reusesHeading = page.getByText(/Reutilizações?/i).first();
+    await expect(reusesHeading).toBeVisible({ timeout: 10000 });
+
+    const emptyState = page.getByText(/Sem reutilizações/i).first();
+    await expect(emptyState).toBeVisible({ timeout: 10000 });
+  });
+
+  test('PF-07: "Editar o meu perfil" button is absent when not authenticated', async ({
+    page,
+  }) => {
+    const editBtn = page.getByRole("button", { name: /Editar o meu perfil/i });
+    await expect(editBtn).not.toBeVisible({ timeout: 5000 }).catch(() => {});
+    expect(await editBtn.count()).toBe(0);
   });
 });
