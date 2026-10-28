@@ -1,37 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# udata_agora
 
-## Getting Started
+Frontend of the Portuguese National Open Data Portal ([dados.gov.pt](https://dados.gov.pt)), built with Next.js and the Ágora Design System, the official design system of the Portuguese public administration. It consumes the REST API of the udata backend.
 
-First, run the development server:
+## Tech stack
+
+- Next.js 16 (App Router), React 19, TypeScript (strict mode)
+- [@ama-pt/agora-design-system](https://www.npmjs.com/package/@ama-pt/agora-design-system) and Tailwind CSS 4
+- Tiptap rich-text editor, react-markdown, date-fns and dayjs
+- Playwright for end-to-end tests
+- ESLint and Prettier
+
+## Getting started
+
+Requirements: Node.js 20+, npm, and a running udata backend (port 7000 by default).
 
 ```bash
+cp .env.example .env.local
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy `.env.example` to `.env.local` and adjust it. The main variables are:
 
-## Learn More
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_API_BASE`, `NEXT_PUBLIC_API_V2_BASE` | Relative API base paths used by the browser (`/api/1` and `/api/2`) |
+| `BACKEND_URL` | Absolute backend URL used by the Next.js rewrites (server-side only) |
+| `NEXT_PUBLIC_SAML_ENABLED` | Show the Autenticação.gov (SAML) login button |
 
-To learn more about Next.js, take a look at the following resources:
+Variables prefixed with `NEXT_PUBLIC_` are exposed to the browser. Client-side requests go through the Next.js rewrite proxy, so the browser never talks to the backend directly.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the development server |
+| `npm run build` | Create a production build |
+| `npm run start` | Serve the production build |
+| `npm run lint` | Run ESLint |
+| `npm run test:e2e` | Run the public frontend end-to-end tests |
+| `npm run test:e2e:backoffice` | Run the back office end-to-end tests |
+| `npm run test:e2e:all` | Run all end-to-end tests |
+| `npm run test:e2e:report` | Open the Playwright report |
 
-## Deploy on Vercel
+## Project structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Path | Purpose |
+|---|---|
+| `src/app/` | Routes (App Router), layouts and global styles |
+| `src/components/` | Components, organised by feature (datasets, reuses, organizations and so on) |
+| `src/services/` | Backend API calls |
+| `src/types/` | TypeScript types for API responses |
+| `src/context/`, `src/hooks/`, `src/utils/`, `src/config/` | Shared state, hooks, helpers and configuration |
+| `src/middleware.ts` | Request middleware |
+| `tests/` | Playwright end-to-end tests |
+| `public/` | Static assets |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# udata_agora
+## Conventions
+
+- Components use PascalCase names, named exports, and the `Client` suffix for components that manage a whole page's state.
+- Public pages are async Server Components with ISR caching, passing data to a child `*Client.tsx` component for interactivity.
+- Code, comments and commit messages are written in English. See `CLAUDE.md` for the full guidelines.
+
+## Docker
+
+The repository includes a `Dockerfile` and a `docker-compose.yml` for running the frontend in a container.
